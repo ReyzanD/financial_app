@@ -10,6 +10,8 @@ import 'package:financial_app/widgets/add_transaction/location_section.dart';
 import 'package:financial_app/widgets/add_transaction/date_time_section.dart';
 import 'package:financial_app/widgets/add_transaction/payment_method_section.dart';
 import 'package:financial_app/widgets/add_transaction/submit_button.dart';
+import 'package:financial_app/widgets/add_transaction/additional_options.dart';
+import 'package:financial_app/widgets/add_transaction/notes_field.dart';
 
 class AddTransactionScreen extends StatefulWidget {
   const AddTransactionScreen({super.key});
@@ -260,11 +262,14 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
               const SizedBox(height: 20),
 
               // Additional Options
-              _buildAdditionalOptions(),
+              AdditionalOptions(
+                isRecurring: _isRecurring,
+                onChanged: (value) => setState(() => _isRecurring = value),
+              ),
               const SizedBox(height: 20),
 
               // Notes
-              _buildNotesField(),
+              NotesField(controller: _notesController),
               const SizedBox(height: 30),
 
               // Save Button
@@ -272,67 +277,6 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
             ],
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _buildAdditionalOptions() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Opsi Tambahan',
-          style: GoogleFonts.poppins(
-            color: Colors.white,
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        const SizedBox(height: 12),
-        Row(
-          children: [
-            Switch(
-              value: _isRecurring,
-              onChanged: (value) {
-                setState(() => _isRecurring = value);
-              },
-              activeColor: const Color(0xFF8B5FBF),
-            ),
-            const SizedBox(width: 8),
-            Text(
-              'Transaksi Berulang',
-              style: GoogleFonts.poppins(color: Colors.white),
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-
-  Widget _buildNotesField() {
-    return TextFormField(
-      controller: _notesController,
-      maxLines: 3,
-      style: GoogleFonts.poppins(color: Colors.white),
-      decoration: InputDecoration(
-        labelText: 'Catatan (Opsional)',
-        labelStyle: GoogleFonts.poppins(color: Colors.grey[400]),
-        hintText: 'Tambahkan catatan atau detail tambahan...',
-        hintStyle: GoogleFonts.poppins(color: Colors.grey[600]),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.grey[700]!),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.grey[700]!),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: Color(0xFF8B5FBF)),
-        ),
-        filled: true,
-        fillColor: const Color(0xFF1A1A1A),
       ),
     );
   }
