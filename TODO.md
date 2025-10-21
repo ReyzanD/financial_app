@@ -1,13 +1,10 @@
-# Refactoring transaction_screen.dart
+# TODO: Add Recommendations for Cheaper Places in Transaction Details
 
 ## Tasks
 
-- [ ] Create lib/widgets/transactions/ directory
-- [ ] Extract Header widget (transaction_header.dart)
-- [ ] Extract Filter Chips widget (transaction_filters.dart)
-- [ ] Extract Transactions List widget (transaction_list.dart)
-- [ ] Extract Transaction Card widget (transaction_card.dart)
-- [ ] Extract Helper functions (transaction_helpers.dart)
-- [ ] Update transaction_screen.dart to use extracted widgets
-- [ ] Ensure line lengths are reasonable (break long lines)
-- [ ] Test compilation and fix any errors
+- [x] Enhance LocationRecommendationService with category-specific recommendations method
+- [x] Update TransactionDetailScreen to include "Rekomendasi Alternatif" section
+- [x] Create recommendation cards with place details, savings, distance, and CTA button
+- [x] Add loading states for recommendations
+- [x] Integrate recommendations based on transaction category
+- [x] Test UI with different transaction types
