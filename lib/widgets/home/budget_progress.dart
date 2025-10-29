@@ -1,33 +1,43 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:financial_app/utils/formatters.dart';
+import 'package:financial_app/services/api_service.dart';
 
-class BudgetProgress extends StatelessWidget {
+class BudgetProgress extends StatefulWidget {
   const BudgetProgress({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final budgets = [
-      {
-        'category': 'Makanan',
-        'used': 0,
-        'total': 1000000,
-        'color': Color(0xFFE74C3C),
-      },
-      {
-        'category': 'Transportasi',
-        'used': 300000,
-        'total': 500000,
-        'color': Color(0xFFF39C12),
-      },
-      {
-        'category': 'Hiburan',
-        'used': 200000,
-        'total': 300000,
-        'color': Color(0xFF9B59B6),
-      },
-    ];
+  State<BudgetProgress> createState() => _BudgetProgressState();
+}
 
+class _BudgetProgressState extends State<BudgetProgress> {
+  final ApiService _apiService = ApiService();
+  List<dynamic> _budgets = [];
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadBudgets();
+  }
+
+  Future<void> _loadBudgets() async {
+    try {
+      final budgets = await _apiService.getBudgets();
+      setState(() {
+        _budgets = budgets;
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
+      // Handle error - show empty state
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -52,24 +62,35 @@ class BudgetProgress extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 12),
-        ...budgets.map(
-          (budget) => _buildBudgetItem(
-            category: budget['category'] as String,
-            used: budget['used'] as int,
-            total: budget['total'] as int,
-            color: budget['color'] as Color,
-          ),
-        ),
+        if (_isLoading)
+          const Center(child: CircularProgressIndicator())
+        else if (_budgets.isEmpty)
+          Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: const Color(0xFF1A1A1A),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: Colors.grey[800]!),
+            ),
+            child: Center(
+              child: Text(
+                'Belum ada budget yang ditetapkan',
+                style: GoogleFonts.poppins(color: Colors.grey[500]),
+              ),
+            ),
+          )
+        else
+          ..._budgets.map((budget) => _buildBudgetItem(budget)),
       ],
     );
   }
 
-  Widget _buildBudgetItem({
-    required String category,
-    required int used,
-    required int total,
-    required Color color,
-  }) {
+  Widget _buildBudgetItem(dynamic budget) {
+    final category = budget['category_name'] ?? 'Unknown';
+    final used = budget['used_amount'] ?? 0;
+    final total = budget['budget_limit'] ?? 1;
+    final color = _getCategoryColor(category);
+
     final percentage = (used / total).clamp(0.0, 1.0);
 
     return Container(
@@ -118,5 +139,18 @@ class BudgetProgress extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  Color _getCategoryColor(String category) {
+    switch (category.toLowerCase()) {
+      case 'makanan':
+        return const Color(0xFFE74C3C);
+      case 'transportasi':
+        return const Color(0xFFF39C12);
+      case 'hiburan':
+        return const Color(0xFF9B59B6);
+      default:
+        return const Color(0xFF8B5FBF);
+    }
   }
 }

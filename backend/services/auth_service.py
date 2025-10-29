@@ -1,7 +1,10 @@
+import uuid
 from flask import jsonify
 from flask_jwt_extended import create_access_token, get_jwt_identity
 from models.user_model import UserModel
+from models.database import get_db
 from datetime import datetime
+import traceback
 
 class AuthService:
     @staticmethod
@@ -42,25 +45,35 @@ class AuthService:
         if existing_user:
             return None, "User already exists"
         
+        db = get_db()
+        cursor = db.cursor()
         try:
-            user_id = UserModel.create_user(email, password, full_name, phone_number)
+            # Step 1: Create the user (MySQL will generate the ID)
+            UserModel.create_user(cursor, email, password, full_name, phone_number)
+            
+            # Step 2: Get the user we just created to retrieve their new ID
+            newly_created_user = UserModel.get_user_by_email(email)
+            user_id = newly_created_user['user_id_232143']
             
             # Create default categories for the user
-            AuthService._create_default_categories(user_id)
+            AuthService._create_default_categories(cursor, user_id)
+            
+            db.commit()
             
             return {
                 'user_id': user_id,
                 'email': email,
                 'full_name': full_name
             }, None
-            
         except Exception as e:
+            db.rollback()
+            traceback.print_exc()  # This will print the full traceback to the server console
             return None, str(e)
+        finally:
+            cursor.close()
 
     @staticmethod
-    def _create_default_categories(user_id):
-        from models.database import get_db
-        
+    def _create_default_categories(cursor, user_id):
         default_categories = [
             # Income Categories
             ('Gaji', 'income', '#2ecc71', 'work'),
@@ -78,16 +91,21 @@ class AuthService:
             ('Tagihan & Utilitas', 'expense', '#95a5a6', 'receipt'),
         ]
         
-        db = get_db()
-        with db.cursor() as cursor:
-            for name, type, color, icon in default_categories:
-                category_id = str(uuid.uuid4())
-                sql = """
-                INSERT INTO categories_232143 (
-                    category_id_232143, user_id_232143, name_232143, 
-                    type_232143, color_232143, icon_232143, is_system_default_232143
-                ) VALUES (%s, %s, %s, %s, %s, %s, %s)
-                """
-                cursor.execute(sql, (category_id, user_id, name, type, color, icon, True))
+        for name, type, color, icon in default_categories:
+            category_id = str(uuid.uuid4())
+            sql = """
+            INSERT INTO categories_232143 (
+                category_id_232143, user_id_232143, name_232143, 
+                type_232143, color_232143, icon_232143, is_system_default_232143
+            ) VALUES (%s, %s, %s, %s, %s, %s, %s)
+            """
             
-            db.commit()
+            cursor.execute(sql, (
+                category_id,
+                user_id,
+                name,
+                type,
+                color,
+                icon,
+                True
+            ))

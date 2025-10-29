@@ -4,7 +4,9 @@ from flask_jwt_extended import JWTManager
 import config
 from models.database import init_app as init_db
 from routes.auth_routes import auth_bp
-from routes.transaction_routes import transaction_bp
+from routes.transaction_route import transaction_bp
+from routes.obligation_routes import obligation_bp
+from routes.category_routes import category_bp
 
 def create_app():
     app = Flask(__name__)
@@ -18,6 +20,7 @@ def create_app():
     # Register blueprints
     app.register_blueprint(auth_bp, url_prefix=f"{config.Config.API_PREFIX}/auth")
     app.register_blueprint(transaction_bp, url_prefix=f"{config.Config.API_PREFIX}/transactions_232143")
+    app.register_blueprint(obligation_bp, url_prefix=f"{config.Config.API_PREFIX}/obligations")
     
     # Health check route
     @app.route('/')

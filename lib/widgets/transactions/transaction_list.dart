@@ -1,92 +1,87 @@
 import 'package:flutter/material.dart';
 import 'package:financial_app/widgets/transactions/transaction_card.dart';
+import 'package:financial_app/services/api_service.dart';
 
-class TransactionList extends StatelessWidget {
+class TransactionList extends StatefulWidget {
   final String selectedFilter;
 
   const TransactionList({super.key, required this.selectedFilter});
 
   @override
-  Widget build(BuildContext context) {
-    final transactions = [
-      {
-        'id': '1',
-        'name': 'Gaji Bulanan',
-        'amount': 12500000,
-        'category': 'Gaji',
-        'type': 'income',
-        'date': '2024-01-15',
-        'location': 'PT. ABC Company',
-        'notes': 'Gaji bulan Januari',
-        'locationData': {
-          'latitude': -6.2088,
-          'longitude': 106.8456,
-          'address': 'Jl. Sudirman No. 1, Jakarta Pusat',
-          'placeId': 'ChIJdZOLiiCz0S0RgIJI',
-        },
-      },
-      {
-        'id': '2',
-        'name': 'Belanja Bulanan',
-        'amount': -750000,
-        'category': 'Belanja',
-        'type': 'expense',
-        'date': '2024-01-14',
-        'location': 'Supermarket XYZ',
-        'notes': 'Belanja kebutuhan mingguan',
-      },
-      {
-        'id': '3',
-        'name': 'Bensin Motor',
-        'amount': -50000,
-        'category': 'Transportasi',
-        'type': 'expense',
-        'date': '2024-01-14',
-        'location': 'SPBU Pertamina',
-        'notes': 'Isi bensin full tank',
-      },
-      {
-        'id': '4',
-        'name': 'Bayar Listrik',
-        'amount': -350000,
-        'category': 'Tagihan',
-        'type': 'expense',
-        'date': '2024-01-13',
-        'location': 'PLN',
-        'notes': 'Tagihan listrik bulan Januari',
-      },
-      {
-        'id': '5',
-        'name': 'Freelance Project',
-        'amount': 2500000,
-        'category': 'Freelance',
-        'type': 'income',
-        'date': '2024-01-12',
-        'location': 'Client ABC',
-        'notes': 'Payment website development',
-      },
-    ];
+  State<TransactionList> createState() => _TransactionListState();
+}
 
-    // Filter transactions based on selection
-    final filteredTransactions =
-        transactions.where((transaction) {
-          if (selectedFilter == 'Semua') return true;
-          if (selectedFilter == 'Pemasukan') {
-            return transaction['type'] == 'income';
-          }
-          if (selectedFilter == 'Pengeluaran') {
-            return transaction['type'] == 'expense';
-          }
-          // Add date filtering logic here
-          return true;
-        }).toList();
+class _TransactionListState extends State<TransactionList> {
+  final ApiService _apiService = ApiService();
+  List<dynamic> _transactions = [];
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadTransactions();
+  }
+
+  @override
+  void didUpdateWidget(TransactionList oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.selectedFilter != widget.selectedFilter) {
+      _loadTransactions();
+    }
+  }
+
+  Future<void> _loadTransactions() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      String? type;
+      if (widget.selectedFilter == 'Pemasukan') {
+        type = 'income';
+      } else if (widget.selectedFilter == 'Pengeluaran') {
+        type = 'expense';
+      }
+
+      final transactions = await _apiService.getTransactions(
+        type: type,
+        limit: 50,
+      );
+      setState(() {
+        _transactions = transactions;
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
+      // Handle error - show empty state
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_isLoading) {
+      return const Expanded(child: Center(child: CircularProgressIndicator()));
+    }
+
+    if (_transactions.isEmpty) {
+      return Expanded(
+        child: Center(
+          child: Text(
+            'Belum ada transaksi',
+            style: TextStyle(color: Colors.grey[500]),
+          ),
+        ),
+      );
+    }
 
     return Expanded(
       child: ListView.builder(
         padding: const EdgeInsets.all(16),
-        itemCount: filteredTransactions.length,
+        itemCount: _transactions.length,
         itemBuilder: (context, index) {
-          final transaction = filteredTransactions[index];
+          final transaction = _transactions[index];
           return TransactionCard(transaction: transaction);
         },
       ),

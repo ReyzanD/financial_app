@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../services/auth_service.dart';
 import '../widgets/login/login_header.dart';
 import '../widgets/login/login_form.dart';
 import '../widgets/login/social_login.dart';
@@ -38,11 +39,83 @@ class _LoginScreenState extends State<LoginScreen> {
   final _passwordController = TextEditingController();
   final _nameController = TextEditingController();
   bool _obscurePassword = true;
+  bool _isLoading = false;
+
+  final AuthService _authService = AuthService();
 
   void _toggleAuthMode() {
     setState(() {
       _isLogin = !_isLogin;
     });
+  }
+
+  Future<void> _handleLogin() async {
+    if (_emailController.text.isEmpty || _passwordController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please fill in all fields')),
+      );
+      return;
+    }
+
+    setState(() => _isLoading = true);
+
+    try {
+      final result = await _authService.login(
+        _emailController.text.trim(),
+        _passwordController.text,
+      );
+
+      if (result != null) {
+        Navigator.pushReplacementNamed(context, '/home');
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(e.toString())));
+    } finally {
+      setState(() => _isLoading = false);
+    }
+  }
+
+  Future<void> _handleRegister() async {
+    if (_nameController.text.isEmpty ||
+        _emailController.text.isEmpty ||
+        _passwordController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please fill in all fields')),
+      );
+      return;
+    }
+
+    setState(() => _isLoading = true);
+
+    try {
+      final result = await _authService.register(
+        _emailController.text.trim(),
+        _passwordController.text,
+        _nameController.text.trim(),
+      );
+
+      if (result != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Registration successful! Please login.'),
+          ),
+        );
+        _nameController.clear();
+        _emailController.clear();
+        _passwordController.clear();
+        setState(() {
+          _isLogin = true;
+        });
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(e.toString())));
+    } finally {
+      setState(() => _isLoading = false);
+    }
   }
 
   @override
@@ -77,10 +150,8 @@ class _LoginScreenState extends State<LoginScreen> {
                             _obscurePassword = !_obscurePassword;
                           });
                         },
-                        onLoginPressed: () {
-                          Navigator.pushReplacementNamed(context, '/home');
-                          // Handle login
-                        },
+                        onLoginPressed: _handleLogin,
+                        isLoading: _isLoading,
                       )
                       : RegisterForm(
                         nameController: _nameController,
@@ -92,9 +163,8 @@ class _LoginScreenState extends State<LoginScreen> {
                             _obscurePassword = !_obscurePassword;
                           });
                         },
-                        onRegisterPressed: () {
-                          // Handle registration
-                        },
+                        onRegisterPressed: _handleRegister,
+                        isLoading: _isLoading,
                       ),
             ),
 

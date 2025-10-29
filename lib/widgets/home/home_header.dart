@@ -1,9 +1,40 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
+import 'package:financial_app/services/api_service.dart';
 
-class HomeHeader extends StatelessWidget {
+class HomeHeader extends StatefulWidget {
   const HomeHeader({super.key});
+
+  @override
+  State<HomeHeader> createState() => _HomeHeaderState();
+}
+
+class _HomeHeaderState extends State<HomeHeader> {
+  final ApiService _apiService = ApiService();
+  Map<String, dynamic>? _userProfile;
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserProfile();
+  }
+
+  Future<void> _loadUserProfile() async {
+    try {
+      final profile = await _apiService.getUserProfile();
+      setState(() {
+        _userProfile = profile['user'];
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
+      // Handle error - maybe show default name
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +63,9 @@ class HomeHeader extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  'Reynaldi Gazali',
+                  _isLoading
+                      ? 'Loading...'
+                      : (_userProfile?['full_name'] ?? 'User'),
                   style: GoogleFonts.poppins(
                     color: Colors.white,
                     fontSize: 18,

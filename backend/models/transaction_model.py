@@ -1,6 +1,6 @@
 from .database import get_db
 import uuid
-from datetime import datetime
+from datetime import datetime, timedelta
 import json
 
 class TransactionModel:
@@ -19,6 +19,10 @@ class TransactionModel:
             ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
             """
             
+            location_data = None
+            if transaction_data.get('location_data'):
+                location_data = json.dumps(transaction_data['location_data'])
+            
             cursor.execute(sql, (
                 transaction_id,
                 transaction_data['user_id'],
@@ -26,7 +30,7 @@ class TransactionModel:
                 transaction_data['type'],
                 transaction_data.get('category_id'),
                 transaction_data['description'],
-                json.dumps(transaction_data.get('location_data')) if transaction_data.get('location_data') else None,
+                location_data,
                 transaction_data.get('payment_method', 'cash'),
                 transaction_data.get('transaction_date', datetime.now().date()),
                 datetime.now()
@@ -86,15 +90,18 @@ class TransactionModel:
     def update_transaction(transaction_id, user_id, update_data):
         db = get_db()
         with db.cursor() as cursor:
+            if not update_data:
+                return False
+                
             set_clause = ", ".join([f"{key} = %s" for key in update_data.keys()])
             sql = f"""
             UPDATE transactions_232143 
-            SET {set_clause} 
+            SET {set_clause}, updated_at_232143 = %s
             WHERE transaction_id_232143 = %s AND user_id_232143 = %s
             """
             
             values = list(update_data.values())
-            values.extend([transaction_id, user_id])
+            values.extend([datetime.now(), transaction_id, user_id])
             
             cursor.execute(sql, values)
             db.commit()
@@ -151,4 +158,19 @@ class TransactionModel:
             ORDER BY total_amount DESC
             """
             cursor.execute(sql, (user_id, start_date, end_date))
+            return cursor.fetchall()
+
+    @staticmethod
+    def get_recent_transactions(user_id, limit=10):
+        db = get_db()
+        with db.cursor() as cursor:
+            sql = """
+            SELECT t.*, c.name_232143 as category_name, c.color_232143 as category_color
+            FROM transactions_232143 t
+            LEFT JOIN categories_232143 c ON t.category_id_232143 = c.category_id_232143
+            WHERE t.user_id_232143 = %s
+            ORDER BY t.transaction_date_232143 DESC, t.created_at_232143 DESC
+            LIMIT %s
+            """
+            cursor.execute(sql, (user_id, limit))
             return cursor.fetchall()

@@ -9,6 +9,7 @@ class LoginForm extends StatefulWidget {
   final bool obscurePassword;
   final VoidCallback onToggleObscure;
   final VoidCallback onLoginPressed;
+  final bool isLoading;
 
   const LoginForm({
     super.key,
@@ -17,6 +18,7 @@ class LoginForm extends StatefulWidget {
     required this.obscurePassword,
     required this.onToggleObscure,
     required this.onLoginPressed,
+    this.isLoading = false,
   });
 
   @override
@@ -32,7 +34,7 @@ class _LoginFormState extends State<LoginForm> {
         // Username Field
         CustomTextField(
           controller: widget.emailController,
-          label: 'Username',
+          label: 'Email',
           icon: Icons.person_outline_rounded,
           isPassword: false,
         ),
@@ -68,7 +70,11 @@ class _LoginFormState extends State<LoginForm> {
         const SizedBox(height: 20),
 
         // Sign In Button
-        AuthButton(text: 'Sign In', onPressed: widget.onLoginPressed),
+        AuthButton(
+          text: 'Sign In',
+          onPressed: widget.onLoginPressed,
+          isLoading: widget.isLoading,
+        ),
       ],
     );
   }
@@ -81,6 +87,7 @@ class RegisterForm extends StatefulWidget {
   final bool obscurePassword;
   final VoidCallback onToggleObscure;
   final VoidCallback onRegisterPressed;
+  final bool isLoading;
 
   const RegisterForm({
     super.key,
@@ -90,6 +97,7 @@ class RegisterForm extends StatefulWidget {
     required this.obscurePassword,
     required this.onToggleObscure,
     required this.onRegisterPressed,
+    this.isLoading = false,
   });
 
   @override
@@ -132,7 +140,11 @@ class _RegisterFormState extends State<RegisterForm> {
         const SizedBox(height: 30),
 
         // Sign Up Button
-        AuthButton(text: 'Sign Up', onPressed: widget.onRegisterPressed),
+        AuthButton(
+          text: 'Sign Up',
+          onPressed: widget.onRegisterPressed,
+          isLoading: widget.isLoading,
+        ),
       ],
     );
   }

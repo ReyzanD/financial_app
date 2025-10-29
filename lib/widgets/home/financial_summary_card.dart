@@ -2,12 +2,71 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:financial_app/utils/formatters.dart';
+import 'package:financial_app/services/api_service.dart';
 
-class FinancialSummaryCard extends StatelessWidget {
+class FinancialSummaryCard extends StatefulWidget {
   const FinancialSummaryCard({super.key});
 
   @override
+  State<FinancialSummaryCard> createState() => _FinancialSummaryCardState();
+}
+
+class _FinancialSummaryCardState extends State<FinancialSummaryCard> {
+  final ApiService _apiService = ApiService();
+  Map<String, dynamic>? _summary;
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadFinancialSummary();
+  }
+
+  Future<void> _loadFinancialSummary() async {
+    try {
+      final summary = await _apiService.getFinancialSummary();
+      setState(() {
+        _summary = summary;
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
+      // Handle error - show default values
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+    if (_isLoading) {
+      return Container(
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            colors: [Color(0xFF8B5FBF), Color(0xFF6A3093)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: const Color(0xFF8B5FBF).withOpacity(0.3),
+              blurRadius: 15,
+              spreadRadius: 2,
+            ),
+          ],
+        ),
+        child: const Center(
+          child: CircularProgressIndicator(color: Colors.white),
+        ),
+      );
+    }
+
+    final balance = _summary?['balance'] ?? 0;
+    final income = _summary?['total_income'] ?? 0;
+    final expense = _summary?['total_expense'] ?? 0;
+
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -34,7 +93,7 @@ class FinancialSummaryCard extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            CurrencyFormatter.formatRupiah(8450000),
+            CurrencyFormatter.formatRupiah(balance),
             style: GoogleFonts.poppins(
               color: Colors.white,
               fontSize: 28,
@@ -49,13 +108,13 @@ class FinancialSummaryCard extends StatelessWidget {
             children: [
               _buildFinanceItem(
                 title: 'Pemasukan',
-                amount: CurrencyFormatter.formatRupiah(12500000),
+                amount: CurrencyFormatter.formatRupiah(income),
                 color: Colors.green[400]!,
                 icon: Iconsax.arrow_up,
               ),
               _buildFinanceItem(
                 title: 'Pengeluaran',
-                amount: CurrencyFormatter.formatRupiah(4050000),
+                amount: CurrencyFormatter.formatRupiah(expense),
                 color: Colors.red[400]!,
                 icon: Iconsax.arrow_down,
               ),

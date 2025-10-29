@@ -2,39 +2,43 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:financial_app/utils/formatters.dart';
+import 'package:financial_app/services/api_service.dart';
 
-class RecentTransactions extends StatelessWidget {
+class RecentTransactions extends StatefulWidget {
   const RecentTransactions({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final transactions = [
-      {
-        'name': 'Restaurant Sederhana',
-        'amount': -75000,
-        'category': 'Makanan',
-        'time': '19:30',
-      },
-      {
-        'name': 'SPBU Pertamina',
-        'amount': -150000,
-        'category': 'Transportasi',
-        'time': '18:15',
-      },
-      {
-        'name': 'Gaji Bulanan',
-        'amount': 12500000,
-        'category': 'Gaji',
-        'time': '08:00',
-      },
-      {
-        'name': 'Netflix',
-        'amount': -49000,
-        'category': 'Hiburan',
-        'time': '15:20',
-      },
-    ];
+  State<RecentTransactions> createState() => _RecentTransactionsState();
+}
 
+class _RecentTransactionsState extends State<RecentTransactions> {
+  final ApiService _apiService = ApiService();
+  List<dynamic> _transactions = [];
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadRecentTransactions();
+  }
+
+  Future<void> _loadRecentTransactions() async {
+    try {
+      final transactions = await _apiService.getTransactions(limit: 4);
+      setState(() {
+        _transactions = transactions;
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
+      // Handle error - show empty state
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -59,25 +63,39 @@ class RecentTransactions extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 12),
-        ...transactions.map(
-          (transaction) => _buildTransactionItem(
-            name: transaction['name'] as String,
-            amount: transaction['amount'] as int,
-            category: transaction['category'] as String,
-            time: transaction['time'] as String,
+        if (_isLoading)
+          const Center(child: CircularProgressIndicator())
+        else if (_transactions.isEmpty)
+          Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: const Color(0xFF1A1A1A),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: Colors.grey[800]!),
+            ),
+            child: Center(
+              child: Text(
+                'Belum ada transaksi',
+                style: GoogleFonts.poppins(color: Colors.grey[500]),
+              ),
+            ),
+          )
+        else
+          ..._transactions.map(
+            (transaction) => _buildTransactionItem(transaction),
           ),
-        ),
       ],
     );
   }
 
-  Widget _buildTransactionItem({
-    required String name,
-    required int amount,
-    required String category,
-    required String time,
-  }) {
-    final isIncome = amount > 0;
+  Widget _buildTransactionItem(dynamic transaction) {
+    final name = transaction['name_232143'] ?? 'Unknown';
+    final amount = transaction['amount_232143'] ?? 0;
+    final category = transaction['category_name'] ?? 'Uncategorized';
+    final type = transaction['type_232143'] ?? 'expense';
+    final time = transaction['created_at_232143'] ?? '';
+
+    final isIncome = type == 'income';
 
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
@@ -140,7 +158,7 @@ class RecentTransactions extends StatelessWidget {
                 ),
               ),
               Text(
-                time,
+                _formatTime(time),
                 style: GoogleFonts.poppins(
                   color: Colors.grey[500],
                   fontSize: 10,
@@ -151,5 +169,14 @@ class RecentTransactions extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  String _formatTime(String dateTimeString) {
+    try {
+      final dateTime = DateTime.parse(dateTimeString);
+      return '${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}';
+    } catch (e) {
+      return '';
+    }
   }
 }

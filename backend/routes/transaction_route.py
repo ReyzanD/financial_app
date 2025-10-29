@@ -93,19 +93,16 @@ def update_transaction(transaction_id):
         user_id = get_jwt_identity()
         data = request.get_json()
         
-        update_data = {}
-        allowed_fields = [
-            'amount_232143', 'type_232143', 'category_id_232143', 
-            'description_232143', 'location_data_232143', 'payment_method_232143'
-        ]
+        if not data:
+            return jsonify({'error': 'No data provided'}), 400
         
+        update_data = {}
         field_mapping = {
             'amount': 'amount_232143',
             'type': 'type_232143',
             'category_id': 'category_id_232143',
             'description': 'description_232143',
-            'location_data': 'location_data_232143',
-            'payment_method': 'payment_method_232143'
+            'payment_method': 'payment_method_232143',
         }
         
         for frontend_field, backend_field in field_mapping.items():
@@ -176,6 +173,23 @@ def get_category_spending():
             'start_date': start_date,
             'end_date': end_date,
             'category_spending': category_spending
+        }), 200
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@transaction_bp.route('/recent', methods=['GET'])
+@jwt_required()
+def get_recent_transactions():
+    try:
+        user_id = get_jwt_identity()
+        limit = request.args.get('limit', 10, type=int)
+        
+        transactions = TransactionModel.get_recent_transactions(user_id, limit)
+        
+        return jsonify({
+            'transactions': transactions,
+            'count': len(transactions)
         }), 200
         
     except Exception as e:

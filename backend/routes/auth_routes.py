@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify
-from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask_jwt_extended import jwt_required, get_jwt_identity, create_access_token
 from services.auth_service import AuthService
+from models.user_model import UserModel
 
 auth_bp = Blueprint('auth', __name__)
 
@@ -53,7 +54,6 @@ def login():
 def get_profile():
     try:
         user_id = get_jwt_identity()
-        from models.user_model import UserModel
         
         user = UserModel.get_user_by_id(user_id)
         if not user:
@@ -67,7 +67,6 @@ def get_profile():
             'income_range': user['income_range_232143'],
             'family_size': user['family_size_232143'],
             'base_location': user['base_location_232143'],
-            'financial_goals': user['financial_goals_232143'],
         }
         
         return jsonify({'user': user_data}), 200
@@ -82,22 +81,28 @@ def update_profile():
         user_id = get_jwt_identity()
         data = request.get_json()
         
-        from models.user_model import UserModel
+        if not data:
+            return jsonify({'error': 'No data provided'}), 400
         
         update_data = {}
-        allowed_fields = [
-            'full_name_232143', 'phone_number_232143', 'income_range_232143',
-            'family_size_232143', 'base_location_232143', 'financial_goals_232143'
-        ]
+        field_mapping = {
+            'full_name': 'full_name_232143',
+            'phone_number': 'phone_number_232143',
+            'income_range': 'income_range_232143',
+            'family_size': 'family_size_232143',
+            'base_location': 'base_location_232143',
+        }
         
-        for field in allowed_fields:
-            if field.replace('_232143', '') in data:
-                update_data[field] = data[field.replace('_232143', '')]
+        for frontend_field, backend_field in field_mapping.items():
+            if frontend_field in data:
+                update_data[backend_field] = data[frontend_field]
         
-        if update_data:
-            success = UserModel.update_user_profile(user_id, update_data)
-            if not success:
-                return jsonify({'error': 'Failed to update profile'}), 400
+        if not update_data:
+            return jsonify({'error': 'No valid fields to update'}), 400
+        
+        success = UserModel.update_user_profile(user_id, update_data)
+        if not success:
+            return jsonify({'error': 'Failed to update profile'}), 400
         
         user = UserModel.get_user_by_id(user_id)
         user_data = {

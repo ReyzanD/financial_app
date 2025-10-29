@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:financial_app/Screen/onboarding_screen.dart';
 import 'package:financial_app/Screen/login_screen.dart';
 import 'package:financial_app/Screen/home_screen.dart';
 
@@ -21,6 +22,7 @@ class MyApp extends StatelessWidget {
       routes: {
         '/login': (context) => const LoginScreen(),
         '/home': (context) => const HomeScreen(),
+        '/onboarding': (context) => const OnboardingScreen(),
       },
     );
   }
