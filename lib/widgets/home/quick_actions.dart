@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
+import 'package:financial_app/Screen/financial_obligations_screen.dart';
 
 class QuickActions extends StatelessWidget {
   const QuickActions({super.key});
@@ -8,7 +9,11 @@ class QuickActions extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final actions = [
-      {'icon': Iconsax.add, 'label': 'Tambah', 'color': Color(0xFF8B5FBF)},
+      {
+        'icon': Iconsax.receipt_2,
+        'label': 'Tagihan',
+        'color': Color(0xFF8B5FBF),
+      },
       {'icon': Iconsax.chart, 'label': 'Laporan', 'color': Color(0xFF4CAF50)},
       {'icon': Iconsax.code, 'label': 'Target', 'color': Color(0xFF2196F3)},
       {'icon': Iconsax.setting, 'label': 'Budget', 'color': Color(0xFFFF9800)},
@@ -18,7 +23,7 @@ class QuickActions extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Quick Actions',
+          'More Actions',
           style: GoogleFonts.poppins(
             color: Colors.white,
             fontSize: 18,
@@ -38,6 +43,7 @@ class QuickActions extends StatelessWidget {
           itemBuilder: (context, index) {
             final action = actions[index];
             return _buildQuickActionItem(
+              context: context,
               icon: action['icon'] as IconData,
               label: action['label'] as String,
               color: action['color'] as Color,
@@ -49,6 +55,7 @@ class QuickActions extends StatelessWidget {
   }
 
   Widget _buildQuickActionItem({
+    required BuildContext context,
     required IconData icon,
     required String label,
     required Color color,
@@ -56,6 +63,12 @@ class QuickActions extends StatelessWidget {
     return GestureDetector(
       onTap: () {
         // Handle quick action tap
+        print('Quick action: $label');
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => FinancialObligationsScreen()),
+        );
+        // open respective screens or perform actions here
       },
       child: Column(
         children: [

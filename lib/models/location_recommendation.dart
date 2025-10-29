@@ -127,4 +127,157 @@ class LocationRecommendationService {
       ),
     ];
   }
+
+  // Method to get category-specific alternative recommendations
+  Future<List<LocationRecommendation>> getCategoryBasedAlternatives(
+    String category,
+    Map<String, dynamic>? locationData,
+  ) async {
+    // Simulate API call delay
+    await Future.delayed(const Duration(seconds: 1));
+
+    // Mock recommendations based on category
+    switch (category.toLowerCase()) {
+      case 'belanja':
+        return [
+          LocationRecommendation(
+            id: 'alt_shop_1',
+            title: 'Diskon 25% di Toko Sebelah',
+            description:
+                'Toko grosir di Jl. Malioboro menawarkan produk serupa dengan diskon hingga 25%',
+            type: RecommendationType.price_alert,
+            estimatedSavings: 75000,
+            createdAt: DateTime.now(),
+            metadata: {
+              'location': 'Toko Grosir Malioboro',
+              'distance': '1.2 km',
+              'discount': '25%',
+              'category': 'shopping',
+            },
+          ),
+          LocationRecommendation(
+            id: 'alt_shop_2',
+            title: 'Pasar Tradisional Lebih Murah',
+            description:
+                'Pasar tradisional menawarkan harga 30% lebih rendah untuk kebutuhan sehari-hari',
+            type: RecommendationType.alternative_location,
+            estimatedSavings: 45000,
+            createdAt: DateTime.now(),
+            metadata: {
+              'location': 'Pasar Tradisional Ngasem',
+              'distance': '0.8 km',
+              'savingsPercentage': 30,
+              'category': 'shopping',
+            },
+          ),
+        ];
+
+      case 'transportasi':
+        return [
+          LocationRecommendation(
+            id: 'alt_transport_1',
+            title: 'Bensin Lebih Murah 3km Jauhnya',
+            description:
+                'SPBU di Jl. Sudirman menawarkan harga premium Rp 2.000 lebih murah per liter',
+            type: RecommendationType.price_alert,
+            estimatedSavings: 10000,
+            createdAt: DateTime.now(),
+            metadata: {
+              'location': 'SPBU Sudirman',
+              'distance': '3.1 km',
+              'priceDifference': 2000,
+              'category': 'fuel',
+            },
+          ),
+          LocationRecommendation(
+            id: 'alt_transport_2',
+            title: 'Alternatif Transportasi Hemat',
+            description:
+                'Gunakan angkutan umum untuk perjalanan ini, bisa hemat hingga Rp 15.000',
+            type: RecommendationType.alternative_location,
+            estimatedSavings: 15000,
+            createdAt: DateTime.now(),
+            metadata: {
+              'location': 'Halte Bus Terdekat',
+              'distance': '0.3 km',
+              'category': 'public_transport',
+            },
+          ),
+        ];
+
+      case 'makanan':
+      case 'restoran':
+        return [
+          LocationRecommendation(
+            id: 'alt_food_1',
+            title: 'Warung Makan Diskon Siang',
+            description:
+                'Warung makan di dekat sini menawarkan diskon 20% untuk makan siang',
+            type: RecommendationType.price_alert,
+            estimatedSavings: 20000,
+            createdAt: DateTime.now(),
+            metadata: {
+              'location': 'Warung Bu Siti',
+              'distance': '0.5 km',
+              'discount': '20%',
+              'time': 'lunch',
+              'category': 'food',
+            },
+          ),
+          LocationRecommendation(
+            id: 'alt_food_2',
+            title: 'Restoran Padang Promo',
+            description:
+                'Restoran Padang menawarkan paket makan dengan harga Rp 25.000 (normal Rp 35.000)',
+            type: RecommendationType.alternative_location,
+            estimatedSavings: 10000,
+            createdAt: DateTime.now(),
+            metadata: {
+              'location': 'Restoran Padang Minang',
+              'distance': '1.0 km',
+              'originalPrice': 35000,
+              'promoPrice': 25000,
+              'category': 'food',
+            },
+          ),
+        ];
+
+      case 'tagihan':
+        return [
+          LocationRecommendation(
+            id: 'alt_bill_1',
+            title: 'Pembayaran Online Lebih Murah',
+            description:
+                'Bayar tagihan listrik via aplikasi digital untuk dapat potongan biaya admin Rp 2.500',
+            type: RecommendationType.price_alert,
+            estimatedSavings: 2500,
+            createdAt: DateTime.now(),
+            metadata: {
+              'location': 'Aplikasi PLN Mobile',
+              'distance': '0 km',
+              'adminFeeSavings': 2500,
+              'category': 'bills',
+            },
+          ),
+        ];
+
+      default:
+        return [
+          LocationRecommendation(
+            id: 'alt_general_1',
+            title: 'Cek Promo di Aplikasi',
+            description:
+                'Banyak tempat menawarkan diskon melalui aplikasi. Cek aplikasi favorit Anda!',
+            type: RecommendationType.general,
+            estimatedSavings: 0,
+            createdAt: DateTime.now(),
+            metadata: {
+              'location': 'Aplikasi Promo',
+              'distance': '0 km',
+              'category': 'general',
+            },
+          ),
+        ];
+    }
+  }
 }
