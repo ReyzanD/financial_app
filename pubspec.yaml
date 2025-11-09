@@ -44,6 +44,9 @@ dependencies:
   provider: ^6.1.1 # State management
   flutter_dotenv: ^5.0.2 # Untuk environment variables
   uuid: ^4.4.0 # For generating unique identifiers
+  google_maps_flutter: ^2.5.3 # Google Maps integration
+  geolocator: ^13.0.1 # Location services
+  permission_handler: ^12.0.0 # Permission handling
 
 dev_dependencies:
   flutter_test:

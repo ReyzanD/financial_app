@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:financial_app/models/location_recommendation.dart';
 import 'package:financial_app/widgets/home/home_header.dart';
 import 'package:financial_app/widgets/home/financial_summary_card.dart';
@@ -22,6 +23,22 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _currentIndex = 0;
   final PageController _pageController = PageController();
+
+  @override
+  void initState() {
+    super.initState();
+    _loadDefaultTab();
+  }
+
+  Future<void> _loadDefaultTab() async {
+    final prefs = await SharedPreferences.getInstance();
+    final defaultTabIndex =
+        prefs.getInt('default_tab_index') ?? 2; // Default to goals (2)
+    setState(() {
+      _currentIndex = defaultTabIndex;
+    });
+    _pageController.jumpToPage(defaultTabIndex);
+  }
 
   @override
   Widget build(BuildContext context) {

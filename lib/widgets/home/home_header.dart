@@ -85,7 +85,10 @@ class _HomeHeaderState extends State<HomeHeader> {
                 hasNotification: true,
               ),
               const SizedBox(width: 8),
-              _buildIconButton(icon: Iconsax.setting, onPressed: () {}),
+              _buildIconButton(
+                icon: Iconsax.setting,
+                onPressed: () => Navigator.pushNamed(context, '/settings'),
+              ),
             ],
           ),
         ],

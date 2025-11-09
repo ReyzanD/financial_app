@@ -24,14 +24,18 @@ class _BudgetProgressState extends State<BudgetProgress> {
   Future<void> _loadBudgets() async {
     try {
       final budgets = await _apiService.getBudgets();
-      setState(() {
-        _budgets = budgets;
-        _isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _budgets = budgets;
+          _isLoading = false;
+        });
+      }
     } catch (e) {
-      setState(() {
-        _isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
       // Handle error - show empty state
     }
   }

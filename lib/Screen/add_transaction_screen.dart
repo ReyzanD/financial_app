@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:financial_app/models/location_data.dart';
+import 'package:financial_app/services/api_service.dart';
 import 'package:financial_app/widgets/add_transaction/amount_field.dart';
 import 'package:financial_app/widgets/add_transaction/type_selector.dart';
 import 'package:financial_app/widgets/add_transaction/category_section.dart';
@@ -25,6 +26,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
   final _amountController = TextEditingController();
   final _descriptionController = TextEditingController();
   final _notesController = TextEditingController();
+  final ApiService _apiService = ApiService();
 
   // Form state
   String _selectedType = 'expense';
@@ -35,6 +37,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
   LocationData? _currentLocation;
   bool _isGettingLocation = false;
   bool _isRecurring = false;
+  bool _isSubmitting = false;
 
   @override
   void initState() {
@@ -142,33 +145,61 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
     }
   }
 
-  void _submitForm() {
+  void _submitForm() async {
     if (_formKey.currentState!.validate()) {
-      // Save transaction logic here
-      final transaction = {
-        'amount': double.parse(_amountController.text),
-        'type': _selectedType,
-        'category': _selectedCategory,
-        'description': _descriptionController.text,
-        'notes': _notesController.text,
-        'paymentMethod': _selectedPaymentMethod,
-        'date': _selectedDate,
-        'time': _selectedTime,
-        'location': _currentLocation,
-        'isRecurring': _isRecurring,
-      };
+      setState(() => _isSubmitting = true);
 
-      print('Transaction data: $transaction');
+      try {
+        // Prepare transaction data for API
+        final transactionData = {
+          'amount': double.parse(_amountController.text),
+          'type': _selectedType,
+          'category': _selectedCategory,
+          'description': _descriptionController.text,
+          'notes': _notesController.text,
+          'payment_method': _selectedPaymentMethod,
+          'date':
+              _selectedDate.toIso8601String().split(
+                'T',
+              )[0], // Just the date part
+          'time':
+              '${_selectedTime.hour.toString().padLeft(2, '0')}:${_selectedTime.minute.toString().padLeft(2, '0')}',
+          'latitude': _currentLocation?.latitude,
+          'longitude': _currentLocation?.longitude,
+          'location_name': _currentLocation?.placeName,
+          'location_address': _currentLocation?.address,
+          'is_recurring': _isRecurring,
+        };
 
-      // Show success message
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Transaksi berhasil disimpan!'),
-          backgroundColor: Colors.green,
-        ),
-      );
+        print('Transaction data: $transactionData');
 
-      Navigator.pop(context);
+        // Call API to add transaction
+        final response = await _apiService.addTransaction(transactionData);
+        print('API Response: $response');
+
+        // Show success message
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Transaksi berhasil disimpan!'),
+            backgroundColor: Colors.green,
+          ),
+        );
+
+        // Refresh dashboard data - this will be handled by the home screen
+        // when we pop back to it
+
+        Navigator.pop(context, true); // Return true to indicate success
+      } catch (e) {
+        print('Error adding transaction: $e');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Gagal menyimpan transaksi: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      } finally {
+        setState(() => _isSubmitting = false);
+      }
     }
   }
 
@@ -273,7 +304,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
               const SizedBox(height: 30),
 
               // Save Button
-              SubmitButton(onPressed: _submitForm),
+              SubmitButton(onPressed: _submitForm, isLoading: _isSubmitting),
             ],
           ),
         ),

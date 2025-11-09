@@ -9,6 +9,11 @@ class FinancialSummaryCard extends StatefulWidget {
 
   @override
   State<FinancialSummaryCard> createState() => _FinancialSummaryCardState();
+
+  static void refresh(BuildContext context) {
+    final state = context.findAncestorStateOfType<_FinancialSummaryCardState>();
+    state?.refreshSummary();
+  }
 }
 
 class _FinancialSummaryCardState extends State<FinancialSummaryCard> {
@@ -25,16 +30,24 @@ class _FinancialSummaryCardState extends State<FinancialSummaryCard> {
   Future<void> _loadFinancialSummary() async {
     try {
       final summary = await _apiService.getFinancialSummary();
-      setState(() {
-        _summary = summary;
-        _isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _summary = summary;
+          _isLoading = false;
+        });
+      }
     } catch (e) {
-      setState(() {
-        _isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
       // Handle error - show default values
     }
+  }
+
+  void refreshSummary() {
+    _loadFinancialSummary();
   }
 
   @override
@@ -63,9 +76,12 @@ class _FinancialSummaryCardState extends State<FinancialSummaryCard> {
       );
     }
 
-    final balance = _summary?['balance'] ?? 0;
-    final income = _summary?['total_income'] ?? 0;
-    final expense = _summary?['total_expense'] ?? 0;
+    final Map<String, dynamic> summaries = _summary?['summary'] ?? {};
+    final income =
+        (summaries['income'] as Map<String, dynamic>?)?['total_amount'] ?? 0.0;
+    final expense =
+        (summaries['expense'] as Map<String, dynamic>?)?['total_amount'] ?? 0.0;
+    final balance = income - expense;
 
     return Container(
       padding: const EdgeInsets.all(20),

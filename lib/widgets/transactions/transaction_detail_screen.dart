@@ -1,11 +1,13 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:financial_app/utils/formatters.dart';
 import 'package:financial_app/widgets/transactions/transaction_helpers.dart';
-import 'package:financial_app/widgets/transactions/location_insight_card.dart';
 import 'package:financial_app/widgets/transactions/alternative_recommendation_card.dart';
+import 'package:financial_app/widgets/transactions/location_insight_card.dart';
 import 'package:financial_app/models/location_recommendation.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class TransactionDetailScreen extends StatefulWidget {
   final Map<String, dynamic> transaction;
@@ -18,54 +20,38 @@ class TransactionDetailScreen extends StatefulWidget {
 }
 
 class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
-  LocationInsight? _locationInsight;
-  bool _isLoadingInsight = false;
+  LatLng? _transactionLocation;
   List<LocationRecommendation>? _alternativeRecommendations;
   bool _isLoadingRecommendations = false;
 
   @override
   void initState() {
     super.initState();
-    _loadLocationInsight();
+    _loadLocationData();
     _loadAlternativeRecommendations();
   }
 
-  Future<void> _loadLocationInsight() async {
-    if (widget.transaction['locationData'] == null) return;
-
-    setState(() => _isLoadingInsight = true);
-
-    try {
-      // Simulate API call for location insight
-      await Future.delayed(const Duration(seconds: 2));
-      // For now, create a mock insight
-      setState(
-        () =>
-            _locationInsight = LocationInsight(
-              averagePrice: 85000,
-              priceComparison: '15% lebih mahal dari rata-rata',
-              recommendation:
-                  'Coba cari tempat yang lebih hemat di sekitar area ini',
-              savingsPotential: 12750,
-            ),
-      );
-    } catch (e) {
-      print('Error loading location insight: $e');
-    } finally {
-      setState(() => _isLoadingInsight = false);
+  Future<void> _loadLocationData() async {
+    if (_decodedLocationData != null &&
+        _decodedLocationData!['latitude'] != null &&
+        _decodedLocationData!['longitude'] != null) {
+      setState(() {
+        _transactionLocation = LatLng(
+          _decodedLocationData!['latitude'] as double,
+          _decodedLocationData!['longitude'] as double,
+        );
+      });
     }
   }
 
   Future<void> _loadAlternativeRecommendations() async {
-    final category = widget.transaction['category'] as String;
-    final locationData =
-        widget.transaction['locationData'] as Map<String, dynamic>?;
+    final category = widget.transaction['category'] ?? 'Uncategorized';
 
     setState(() => _isLoadingRecommendations = true);
 
     try {
       final recommendations = await LocationRecommendationService()
-          .getCategoryBasedAlternatives(category, locationData);
+          .getCategoryBasedAlternatives(category, _decodedLocationData);
 
       setState(() => _alternativeRecommendations = recommendations);
     } catch (e) {
@@ -75,14 +61,20 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
     }
   }
 
+  Map<String, dynamic>? _decodedLocationData;
+
   @override
   Widget build(BuildContext context) {
+    // Debug: Print the entire transaction data
+    print('TransactionDetailScreen Data: ${json.encode(widget.transaction)}');
+
     final isIncome = widget.transaction['type'] == 'income';
-    final amount = widget.transaction['amount'] as int;
-    final category = widget.transaction['category'] as String;
-    final date = widget.transaction['date'] as String;
-    final location = widget.transaction['location'] as String;
-    final notes = widget.transaction['notes'] as String?;
+    final amount =
+        double.tryParse(widget.transaction['amount']?.toString() ?? '0') ?? 0.0;
+    final category = widget.transaction['category'] ?? 'Uncategorized';
+    final date = widget.transaction['date'] as String? ?? '';
+    final location = widget.transaction['location'] as String? ?? '';
+    final notes = widget.transaction['description'] as String?;
 
     return Scaffold(
       backgroundColor: const Color(0xFF0A0A0A),
@@ -118,7 +110,7 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
             const SizedBox(height: 20),
 
             // Location Insight Section
-            if (widget.transaction['locationData'] != null) ...[
+            if (widget.transaction['location'] != '') ...[
               _buildLocationInsightSection(),
               const SizedBox(height: 20),
             ],
@@ -137,7 +129,7 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
 
   Widget _buildTransactionCard(
     bool isIncome,
-    int amount,
+    double amount,
     String category,
     String date,
     String location,
@@ -174,7 +166,7 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      widget.transaction['name'] as String,
+                      widget.transaction['description'] as String? ?? 'No name',
                       style: GoogleFonts.poppins(
                         color: Colors.white,
                         fontSize: 18,
@@ -265,7 +257,7 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Analisis Lokasi',
+          'Location Insight',
           style: GoogleFonts.poppins(
             color: Colors.white,
             fontSize: 18,
@@ -274,55 +266,15 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
         ),
         const SizedBox(height: 12),
 
-        if (_isLoadingInsight)
-          _buildLoadingInsight()
-        else if (_locationInsight != null)
-          LocationInsightCard(insight: _locationInsight!)
-        else
-          _buildNoInsightAvailable(),
+        LocationInsightCard(
+          transactionId: widget.transaction['id']?.toString() ?? 'unknown',
+          transactionLocation: _transactionLocation,
+        ),
       ],
     );
   }
 
-  Widget _buildLoadingInsight() {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: const Color(0xFF1A1A1A),
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Row(
-        children: [
-          CircularProgressIndicator(color: const Color(0xFF8B5FBF)),
-          const SizedBox(width: 12),
-          Text(
-            'Menganalisis harga lokasi...',
-            style: GoogleFonts.poppins(color: Colors.white),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildNoInsightAvailable() {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: const Color(0xFF1A1A1A),
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Row(
-        children: [
-          Icon(Iconsax.info_circle, color: Colors.grey[500]),
-          const SizedBox(width: 8),
-          Text(
-            'Tidak ada data lokasi untuk analisis',
-            style: GoogleFonts.poppins(color: Colors.grey[500]),
-          ),
-        ],
-      ),
-    );
-  }
+  // Removed unused methods _buildLoadingInsight and _buildNoInsightAvailable
 
   Widget _buildAlternativeRecommendationsSection() {
     return Column(
@@ -415,16 +367,13 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
             children: [
               _buildDetailRow(
                 'Tanggal',
-                formatDate(widget.transaction['date'] as String),
+                formatDate(widget.transaction['date'] as String? ?? ''),
               ),
               _buildDetailRow(
                 'Kategori',
-                widget.transaction['category'] as String,
+                widget.transaction['category'] ?? 'Uncategorized',
               ),
-              _buildDetailRow(
-                'Lokasi',
-                widget.transaction['location'] as String,
-              ),
+              _buildDetailRow('Lokasi', widget.transaction['location'] ?? ''),
               _buildDetailRow(
                 'Tipe',
                 widget.transaction['type'] == 'income'

@@ -21,6 +21,7 @@ def create_app():
     app.register_blueprint(auth_bp, url_prefix=f"{config.Config.API_PREFIX}/auth")
     app.register_blueprint(transaction_bp, url_prefix=f"{config.Config.API_PREFIX}/transactions_232143")
     app.register_blueprint(obligation_bp, url_prefix=f"{config.Config.API_PREFIX}/obligations")
+    app.register_blueprint(category_bp, url_prefix=f"{config.Config.API_PREFIX}/categories_232143")
     
     # Health check route
     @app.route('/')

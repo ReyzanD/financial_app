@@ -72,16 +72,69 @@ class ApiService {
   // Transactions
   Future<List<dynamic>> getTransactions({String? type, int limit = 10}) async {
     String endpoint = 'transactions_232143';
-    if (type != null) {
-      endpoint += '?type=$type';
+    List<String> params = [];
+
+    if (type != null) params.add('type_232143=$type');
+    if (limit > 0) params.add('limit=$limit');
+
+    if (params.isNotEmpty) {
+      endpoint += '?' + params.join('&');
     }
+
     final response = await get(endpoint);
     return response['transactions'] ?? [];
   }
 
+  // Cache for financial summary
+  Map<String, dynamic>? _cachedSummary;
+  DateTime? _lastSummaryFetch;
+  static const _summaryTtl = Duration(minutes: 5);
+
   // Financial Summary
   Future<Map<String, dynamic>> getFinancialSummary() async {
-    return await get('transactions_232143/summary');
+    // Check if we have a valid cached response
+    if (_cachedSummary != null && _lastSummaryFetch != null) {
+      final age = DateTime.now().difference(_lastSummaryFetch!);
+      if (age < _summaryTtl) {
+        return _cachedSummary!;
+      }
+    }
+
+    try {
+      final response = await get('transactions_232143/analytics/summary');
+
+      // Convert the list of summaries into a map by type
+      final List<dynamic> summaryList = response['summary'] ?? [];
+      Map<String, dynamic> summaryMap = {};
+      for (var item in summaryList) {
+        summaryMap[item['type_232143']] = {
+          'total_amount': double.parse(
+            item['total_amount_232143']?.toString() ?? '0',
+          ),
+          'transaction_count': int.parse(
+            item['transaction_count']?.toString() ?? '0',
+          ),
+        };
+      }
+
+      final result = {
+        'year': response['year'] ?? DateTime.now().year,
+        'month': response['month'] ?? DateTime.now().month,
+        'summary': summaryMap,
+      };
+
+      // Update cache
+      _cachedSummary = result;
+      _lastSummaryFetch = DateTime.now();
+
+      return result;
+    } catch (e) {
+      // If we have cached data and there's an error, return cached data
+      if (_cachedSummary != null) {
+        return _cachedSummary!;
+      }
+      rethrow;
+    }
   }
 
   // Budgets
@@ -96,6 +149,14 @@ class ApiService {
 
   // Categories
   Future<List<dynamic>> getCategories() async {
-    return await get('categories');
+    final response = await get('categories_232143');
+    return response['categories'] ?? [];
+  }
+
+  // Add Transaction
+  Future<Map<String, dynamic>> addTransaction(
+    Map<String, dynamic> transactionData,
+  ) async {
+    return await post('transactions_232143', transactionData);
   }
 }
