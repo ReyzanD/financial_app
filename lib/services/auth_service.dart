@@ -61,9 +61,23 @@ class AuthService {
 
   Future<void> logout() async {
     await _storage.delete(key: 'auth_token');
+    await _storage.deleteAll(); // Clear all stored data
   }
 
   Future<String?> getToken() async {
     return await _storage.read(key: 'auth_token');
+  }
+
+  /// Validates if the JWT token has correct format (3 segments)
+  bool isValidTokenFormat(String? token) {
+    if (token == null || token.isEmpty) return false;
+    final segments = token.split('.');
+    return segments.length == 3;
+  }
+
+  /// Checks if user has a valid token stored
+  Future<bool> hasValidToken() async {
+    final token = await getToken();
+    return isValidTokenFormat(token);
   }
 }

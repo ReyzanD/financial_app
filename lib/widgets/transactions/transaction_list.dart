@@ -80,15 +80,22 @@ class _TransactionListState extends State<TransactionList> {
               itemBuilder: (context, index) {
                 final transaction = filteredTransactions[index];
                 final transactionMap = {
+                  'id': transaction.id, // Required for delete and edit
                   'amount': transaction.amount,
                   'type': transaction.type,
                   'description': transaction.description,
                   'category': transaction.categoryName,
+                  'category_id': transaction.categoryId, // Required for edit
+                  'payment_method':
+                      transaction.paymentMethod, // Required for edit
                   'date': transaction.transactionDate.toIso8601String(),
                   'location': '',
                   'category_color': transaction.categoryColor,
                 };
-                return TransactionCard(transaction: transactionMap);
+                return TransactionCard(
+                  transaction: transactionMap,
+                  onDeleted: () => appState.refreshData(),
+                );
               },
             ),
           ),

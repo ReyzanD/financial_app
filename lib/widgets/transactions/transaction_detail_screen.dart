@@ -8,11 +8,17 @@ import 'package:financial_app/widgets/transactions/alternative_recommendation_ca
 import 'package:financial_app/widgets/transactions/location_insight_card.dart';
 import 'package:financial_app/models/location_recommendation.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:financial_app/Screen/add_transaction_screen.dart';
 
 class TransactionDetailScreen extends StatefulWidget {
   final Map<String, dynamic> transaction;
+  final VoidCallback? onDeleted;
 
-  const TransactionDetailScreen({super.key, required this.transaction});
+  const TransactionDetailScreen({
+    super.key,
+    required this.transaction,
+    this.onDeleted,
+  });
 
   @override
   State<TransactionDetailScreen> createState() =>
@@ -92,6 +98,28 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
           icon: const Icon(Iconsax.arrow_left, color: Colors.white),
           onPressed: () => Navigator.pop(context),
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Iconsax.edit_2, color: Colors.white),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder:
+                      (context) => AddTransactionScreen(
+                        transaction: widget.transaction,
+                        onUpdated: () {
+                          // Refresh parent screen
+                          widget.onDeleted?.call();
+                          // Close detail screen
+                          Navigator.pop(context);
+                        },
+                      ),
+                ),
+              );
+            },
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),

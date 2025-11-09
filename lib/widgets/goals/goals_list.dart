@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:financial_app/widgets/goals/goal_card.dart';
+import 'package:financial_app/services/api_service.dart';
 
 class GoalsList extends StatefulWidget {
   const GoalsList({super.key});
@@ -10,7 +11,9 @@ class GoalsList extends StatefulWidget {
 }
 
 class _GoalsListState extends State<GoalsList> {
+  final ApiService _apiService = ApiService();
   List<Map<String, dynamic>> goals = [];
+  bool _isLoading = true;
 
   @override
   void initState() {
@@ -19,50 +22,47 @@ class _GoalsListState extends State<GoalsList> {
   }
 
   Future<void> _loadGoals() async {
-    final prefs = await SharedPreferences.getInstance();
-    final onboardingCompleted = prefs.getBool('onboarding_completed') ?? false;
-
-    if (!onboardingCompleted) {
-      // New user - show default goals
-      goals = [
-        {
-          'id': '1',
-          'name': 'Dana Darurat',
-          'target': 10000000,
-          'saved': 0,
-          'deadline': '2024-12-31',
-          'type': 'emergency_fund',
-          'priority': 'high',
-        },
-        {
-          'id': '2',
-          'name': 'Liburan Impian',
-          'target': 5000000,
-          'saved': 0,
-          'deadline': '2024-12-31',
-          'type': 'vacation',
-          'priority': 'medium',
-        },
-        {
-          'id': '3',
-          'name': 'Investasi Awal',
-          'target': 3000000,
-          'saved': 0,
-          'deadline': '2024-12-31',
-          'type': 'investment',
-          'priority': 'medium',
-        },
-      ];
-    } else {
-      // Existing user - load from database (for now, show empty state)
-      goals = [];
+    try {
+      final fetchedGoals = await _apiService.getGoals();
+      if (mounted) {
+        setState(() {
+          goals = fetchedGoals.map((goal) {
+            return {
+              'id': goal['id'],
+              'name': goal['name'],
+              'target': goal['target'],
+              'saved': goal['saved'],
+              'deadline': goal['deadline'],
+              'type': goal['type'],
+              'priority': goal['priority'] ?? 3,
+              'progress': goal['progress'] ?? 0,
+              'description': goal['description'],
+            };
+          }).toList();
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+      // Show error or keep empty state
     }
-
-    setState(() {});
   }
+
 
   @override
   Widget build(BuildContext context) {
+    if (_isLoading) {
+      return const Expanded(
+        child: Center(
+          child: CircularProgressIndicator(color: Color(0xFF8B5FBF)),
+        ),
+      );
+    }
+
     if (goals.isEmpty) {
       return Expanded(
         child: Center(

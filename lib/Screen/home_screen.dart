@@ -23,6 +23,8 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _currentIndex = 0;
   final PageController _pageController = PageController();
+  final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
+      GlobalKey<RefreshIndicatorState>();
 
   @override
   void initState() {
@@ -86,35 +88,49 @@ class _HomeScreenState extends State<HomeScreen> {
 
   // MARK: - Dashboard Tab
   Widget _buildDashboardTab() {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        children: [
-          // Financial Summary Card
-          const FinancialSummaryCard(),
-          const SizedBox(height: 20),
+    return RefreshIndicator(
+      key: _refreshIndicatorKey,
+      onRefresh: _refreshDashboard,
+      color: const Color(0xFF8B5FBF),
+      backgroundColor: const Color(0xFF1A1A1A),
+      child: SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          children: [
+            // Financial Summary Card
+            const FinancialSummaryCard(),
+            const SizedBox(height: 20),
 
-          // Quick Actions
-          const QuickActions(),
-          const SizedBox(height: 20),
+            // Quick Actions
+            const QuickActions(),
+            const SizedBox(height: 20),
 
-          // Location-Based Recommendations
-          _buildLocationRecommendations(),
-          const SizedBox(height: 20),
+            // Location-Based Recommendations
+            _buildLocationRecommendations(),
+            const SizedBox(height: 20),
 
-          // Budget Progress
-          const BudgetProgress(),
-          const SizedBox(height: 20),
+            // Budget Progress
+            const BudgetProgress(),
+            const SizedBox(height: 20),
 
-          // Recent Transactions
-          const RecentTransactions(),
-          const SizedBox(height: 20),
+            // Recent Transactions
+            const RecentTransactions(),
+            const SizedBox(height: 20),
 
-          // AI Recommendations
-          const AIRecommendations(),
-        ],
+            // AI Recommendations
+            const AIRecommendations(),
+          ],
+        ),
       ),
     );
+  }
+
+  Future<void> _refreshDashboard() async {
+    // Trigger refresh for all dashboard widgets
+    setState(() {});
+    // Add a small delay for better UX
+    await Future.delayed(const Duration(milliseconds: 500));
   }
 
   // Location Recommendations Section

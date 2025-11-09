@@ -72,6 +72,9 @@ def create_transaction():
         user_id = get_jwt_identity()
         data = request.get_json()
         
+        print(f" Creating transaction for user: {user_id}")
+        print(f" Request data: {data}")
+        
         # Validate required fields
         required_fields = ['amount', 'type', 'description']
         for field in required_fields:
@@ -89,7 +92,12 @@ def create_transaction():
             'transaction_date': data.get('transaction_date', datetime.now().date().isoformat())
         }
         
+        print(f" Transaction data to save: {transaction_data}")
+        print(f" Category ID: {transaction_data['category_id']}")
+        
         transaction_id = TransactionModel.create_transaction(transaction_data)
+        
+        print(f" Transaction created with ID: {transaction_id}")
         
         return jsonify({
             'message': 'Transaction created successfully',
@@ -199,7 +207,11 @@ def get_monthly_summary():
         year = request.args.get('year', datetime.now().year, type=int)
         month = request.args.get('month', datetime.now().month, type=int)
         
+        print(f" Fetching summary for user {user_id}, year={year}, month={month}")
+        
         summary = TransactionModel.get_monthly_summary(user_id, year, month)
+        
+        print(f" Raw summary from DB: {summary}")
         
         # Transform the summary data to match frontend expectations
         transformed_summary = []
@@ -211,13 +223,20 @@ def get_monthly_summary():
             }
             transformed_summary.append(transformed_item)
 
-        return jsonify({
+        result = {
             'year': year,
             'month': month,
             'summary': transformed_summary
-        }), 200
+        }
+        
+        print(f" Returning summary: {result}")
+        
+        return jsonify(result), 200
         
     except Exception as e:
+        print(f" Error in get_monthly_summary: {str(e)}")
+        import traceback
+        traceback.print_exc()
         return jsonify({'error': str(e)}), 500
 
 @transaction_bp.route('/analytics/categories', methods=['GET'])

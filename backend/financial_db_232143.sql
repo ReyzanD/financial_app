@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Nov 03, 2025 at 12:07 AM
+-- Generation Time: Nov 09, 2025 at 05:20 PM
 -- Server version: 8.0.30
 -- PHP Version: 8.3.15
 
@@ -403,6 +403,7 @@ INSERT INTO `transactions_232143` (`transaction_id_232143`, `user_id_232143`, `a
 ('38e9e6e4-4bcc-44da-9cb2-375e93fe3eec', '5ae93c37-b4c3-11f0-815b-bc0ff35ec8eb', '1000.00', 'income', NULL, 'a', NULL, 'cash', NULL, 0, NULL, NULL, NULL, 1, NULL, '2025-11-03', NULL, '2025-11-02 22:08:46', '2025-11-02 22:08:45'),
 ('54964383-cd08-4e5a-9ea7-a480135dbfdd', 'ff42a623-53be-4bbb-a3a1-ab4ebbb83bdf', '25.50', 'expense', 'bea508c6-3d14-4498-9b61-cf7c9bfa052d', 'Lunch at restaurant', NULL, 'debit_card', NULL, 0, NULL, NULL, NULL, 1, NULL, '2025-10-28', NULL, '2025-10-29 11:05:36', '2025-10-29 11:05:35'),
 ('58c798bc-9774-408f-a5d2-38aee68e2687', 'ff42a623-53be-4bbb-a3a1-ab4ebbb83bdf', '150.00', 'expense', '63fb57d5-8c51-46d5-bab7-ac56dc5ff038', 'Gas station', NULL, 'debit_card', NULL, 0, NULL, NULL, NULL, 1, NULL, '2025-10-27', NULL, '2025-10-29 11:05:36', '2025-10-29 11:05:35'),
+('5ee1ca71-14ba-4296-b8cc-e4dc11110535', '5ae93c37-b4c3-11f0-815b-bc0ff35ec8eb', '1000.00', 'income', NULL, 'a', NULL, 'cash', NULL, 0, NULL, NULL, NULL, 1, NULL, '2025-11-03', NULL, '2025-11-03 00:22:17', '2025-11-03 00:22:17'),
 ('6e1d2d03-a4e9-4a7b-b266-a89a51c40da9', '5ae93c37-b4c3-11f0-815b-bc0ff35ec8eb', '1000.00', 'income', NULL, 'a', NULL, 'cash', NULL, 0, NULL, NULL, NULL, 1, NULL, '2025-11-03', NULL, '2025-11-02 22:29:05', '2025-11-02 22:29:05'),
 ('82fe80be-366b-46da-87ae-6a0164f5916c', 'ff42a623-53be-4bbb-a3a1-ab4ebbb83bdf', '3000.00', 'income', 'cd0603ad-0160-438f-949e-dc92f1eed1cb', 'Monthly salary', NULL, 'bank_transfer', NULL, 0, NULL, NULL, NULL, 1, NULL, '2025-10-24', NULL, '2025-10-29 11:06:20', '2025-10-29 11:06:20'),
 ('b18e1a40-aa10-45e0-ae50-7cfed742d705', 'ff42a623-53be-4bbb-a3a1-ab4ebbb83bdf', '25.50', 'expense', '07f2295f-8244-49ab-a509-ae260f059f7f', 'Lunch at restaurant', NULL, 'debit_card', NULL, 0, NULL, NULL, NULL, 1, NULL, '2025-10-28', NULL, '2025-10-29 11:06:20', '2025-10-29 11:06:20'),
@@ -467,7 +468,7 @@ INSERT INTO `users_232143` (`user_id_232143`, `email_232143`, `password_hash_232
 ('1750058a-9408-4f79-926b-37113be5529e', 'anotheruser@example.com', '$2b$12$ICC23HJs4JbCUP88FwgxSeT0n4BRZ8FS2kw8h5seMmfdxlKbb73hK', 'Another User', NULL, NULL, NULL, NULL, 1, 'IDR', NULL, '{\"vacation\": 0, \"investment\": 0, \"debt_payment\": 0, \"emergency_fund\": 0}', 3, '{\"budget_alerts\": true, \"goal_reminders\": true, \"spending_insights\": true, \"push_notifications\": true}', '2025-10-29 11:09:51', '2025-10-29 11:09:50', NULL, 1),
 ('306a3434-d3bd-4727-b42d-8943825ee8d5', 'newuser@example.com', '$2b$12$dC7xZu7XkVpqFA8Fn9GZwO4lrDzf4YQLXMHS8QmfOGnkCh3JeWn0O', 'New User', NULL, NULL, NULL, NULL, 1, 'IDR', NULL, '{\"vacation\": 0, \"investment\": 0, \"debt_payment\": 0, \"emergency_fund\": 0}', 3, '{\"budget_alerts\": true, \"goal_reminders\": true, \"spending_insights\": true, \"push_notifications\": true}', '2025-10-29 11:09:20', '2025-10-29 11:09:20', NULL, 1),
 ('5284d4d6-e197-4053-a902-b4b7f7ee5e20', 'asa@gmail.com', '$2b$12$sqV3ZOItsnNGwWbqgIucrui/h8Vv7E82LJ6Weqh2sD4K7OV46jLQC', 'das', NULL, NULL, NULL, NULL, 1, 'IDR', NULL, '{\"vacation\": 0, \"investment\": 0, \"debt_payment\": 0, \"emergency_fund\": 0}', 3, '{\"budget_alerts\": true, \"goal_reminders\": true, \"spending_insights\": true, \"push_notifications\": true}', '2025-10-29 11:51:46', '2025-10-29 11:51:45', NULL, 1),
-('5ae93c37-b4c3-11f0-815b-bc0ff35ec8eb', 'Q@gmail.com', '$2b$12$Qb9lmZS1.QvD/oF2h6ubfe22lyoOwcNlWximKwTChdrwlBO7aq0e2', 'ada', NULL, NULL, NULL, NULL, 1, 'IDR', NULL, '{\"vacation\": 0, \"investment\": 0, \"debt_payment\": 0, \"emergency_fund\": 0}', 3, '{\"budget_alerts\": true, \"goal_reminders\": true, \"spending_insights\": true, \"push_notifications\": true}', '2025-10-29 12:32:39', '2025-11-03 00:05:00', '2025-11-03 00:05:00', 1),
+('5ae93c37-b4c3-11f0-815b-bc0ff35ec8eb', 'Q@gmail.com', '$2b$12$Qb9lmZS1.QvD/oF2h6ubfe22lyoOwcNlWximKwTChdrwlBO7aq0e2', 'ada', NULL, NULL, NULL, NULL, 1, 'IDR', NULL, '{\"vacation\": 0, \"investment\": 0, \"debt_payment\": 0, \"emergency_fund\": 0}', 3, '{\"budget_alerts\": true, \"goal_reminders\": true, \"spending_insights\": true, \"push_notifications\": true}', '2025-10-29 12:32:39', '2025-11-03 01:19:45', '2025-11-03 01:19:45', 1),
 ('71fa0c62-66f2-4e10-a5e5-791cb80647ce', 'asda@gmail.com', '$2b$12$njSsU35.9t5.Pz09ryDlU.GonVGhOHGTcdUCR5ILHqtuo0acXWOeq', 'das', NULL, NULL, NULL, NULL, 1, 'IDR', NULL, '{\"vacation\": 0, \"investment\": 0, \"debt_payment\": 0, \"emergency_fund\": 0}', 3, '{\"budget_alerts\": true, \"goal_reminders\": true, \"spending_insights\": true, \"push_notifications\": true}', '2025-10-29 11:50:16', '2025-10-29 11:50:16', NULL, 1),
 ('769d87ce-9e5c-4705-9744-99a26f06e5a4', 'test2@example.com', '$2b$12$hrY2fqyZ.qqBSPZTqIzbLukTTPsj7tl2Iq8bJ18W90saItyGn6rtK', '', NULL, NULL, NULL, NULL, 1, 'IDR', NULL, '{\"vacation\": 0, \"investment\": 0, \"debt_payment\": 0, \"emergency_fund\": 0}', 3, '{\"budget_alerts\": true, \"goal_reminders\": true, \"spending_insights\": true, \"push_notifications\": true}', '2025-10-29 10:58:47', '2025-10-29 10:58:46', NULL, 1),
 ('7d89af61-65df-4497-86a2-d4ba81c2ed35', 'testreg@example.com', '$2b$12$4F4S8M83LMxGiUVOnulrFe9xXYCRYboX24qrYdyTZfUtoc3no7shi', 'Test Reg', NULL, NULL, NULL, NULL, 1, 'IDR', NULL, '{\"vacation\": 0, \"investment\": 0, \"debt_payment\": 0, \"emergency_fund\": 0}', 3, '{\"budget_alerts\": true, \"goal_reminders\": true, \"spending_insights\": true, \"push_notifications\": true}', '2025-10-29 11:10:01', '2025-10-29 11:10:07', '2025-10-29 11:10:07', 1),
@@ -612,7 +613,9 @@ ALTER TABLE `transactions_232143`
   ADD KEY `idx_transactions_category_232143` (`category_id_232143`),
   ADD KEY `idx_transactions_type_232143` (`type_232143`),
   ADD KEY `idx_transactions_recurring_232143` (`is_recurring_232143`),
-  ADD KEY `idx_transactions_created_232143` (`created_at_232143`);
+  ADD KEY `idx_transactions_created_232143` (`created_at_232143`),
+  ADD KEY `idx_transaction_date_user` (`user_id_232143`,`transaction_date_232143`),
+  ADD KEY `idx_type_date` (`type_232143`,`transaction_date_232143`);
 
 --
 -- Indexes for table `users_232143`

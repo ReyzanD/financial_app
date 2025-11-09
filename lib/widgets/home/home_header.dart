@@ -24,14 +24,18 @@ class _HomeHeaderState extends State<HomeHeader> {
   Future<void> _loadUserProfile() async {
     try {
       final profile = await _apiService.getUserProfile();
-      setState(() {
-        _userProfile = profile['user'];
-        _isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _userProfile = profile['user'];
+          _isLoading = false;
+        });
+      }
     } catch (e) {
-      setState(() {
-        _isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
       // Handle error - maybe show default name
     }
   }

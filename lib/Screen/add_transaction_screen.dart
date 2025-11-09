@@ -15,10 +15,15 @@ import 'package:financial_app/widgets/add_transaction/additional_options.dart';
 import 'package:financial_app/widgets/add_transaction/notes_field.dart';
 
 class AddTransactionScreen extends StatefulWidget {
-  const AddTransactionScreen({super.key});
+  final Map<String, dynamic>? transaction; // Optional for edit mode
+  final VoidCallback? onUpdated;
+
+  const AddTransactionScreen({super.key, this.transaction, this.onUpdated});
 
   @override
   State<AddTransactionScreen> createState() => _AddTransactionScreenState();
+
+  bool get isEditMode => transaction != null;
 }
 
 class _AddTransactionScreenState extends State<AddTransactionScreen> {
@@ -30,7 +35,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
 
   // Form state
   String _selectedType = 'expense';
-  String? _selectedCategory;
+  String? _selectedCategory; // This will now store category_id (UUID)
   String _selectedPaymentMethod = 'cash';
   DateTime _selectedDate = DateTime.now();
   TimeOfDay _selectedTime = TimeOfDay.now();
@@ -39,11 +44,92 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
   bool _isRecurring = false;
   bool _isSubmitting = false;
 
+  // Category data from API
+  List<Map<String, dynamic>> _categories = [];
+  bool _isLoadingCategories = true;
+
   @override
   void initState() {
     super.initState();
-    // Auto-get location when screen opens
-    _getCurrentLocation();
+
+    // If editing, populate form with existing data
+    if (widget.isEditMode) {
+      _populateFormData();
+    }
+
+    // Load categories from API
+    _loadCategories();
+
+    // Auto-get location when screen opens (only for new transactions)
+    if (!widget.isEditMode) {
+      _getCurrentLocation();
+    }
+  }
+
+  void _populateFormData() {
+    final transaction = widget.transaction!;
+    _amountController.text = transaction['amount']?.toString() ?? '';
+    _descriptionController.text = transaction['description']?.toString() ?? '';
+    _selectedType = transaction['type']?.toString() ?? 'expense';
+    _selectedCategory = transaction['category_id']?.toString();
+    _selectedPaymentMethod =
+        transaction['payment_method']?.toString() ?? 'cash';
+
+    // Parse date
+    if (transaction['date'] != null) {
+      try {
+        final date = DateTime.parse(transaction['date'].toString());
+        _selectedDate = date;
+        _selectedTime = TimeOfDay(hour: date.hour, minute: date.minute);
+      } catch (e) {
+        print('Error parsing date: $e');
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _amountController.dispose();
+    _descriptionController.dispose();
+    _notesController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _loadCategories() async {
+    try {
+      print('🔄 Loading categories from API...');
+      final categories = await _apiService.getCategories().timeout(
+        const Duration(seconds: 10),
+        onTimeout: () {
+          print('⏱️ Category loading timed out');
+          return [];
+        },
+      );
+      print('✅ Categories loaded: ${categories.length}');
+      if (mounted) {
+        setState(() {
+          _categories = categories.cast<Map<String, dynamic>>();
+          _isLoadingCategories = false;
+        });
+      }
+    } catch (e) {
+      print('❌ Error loading categories: $e');
+      if (mounted) {
+        setState(() {
+          _isLoadingCategories = false;
+        });
+        // Show error to user
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Gagal memuat kategori: ${e.toString()}'),
+              backgroundColor: Colors.red,
+              duration: const Duration(seconds: 3),
+            ),
+          );
+        }
+      }
+    }
   }
 
   Future<void> _getCurrentLocation() async {
@@ -80,16 +166,31 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
   }
 
   void _autoCategorizeFromLocation() {
+    // Find category by name from loaded categories
+    String? categoryName;
+
     if (_currentLocation?.placeType == 'restaurant' ||
         _currentLocation?.placeName?.toLowerCase().contains('restaurant') ==
             true) {
-      setState(() {
-        _selectedCategory = 'food';
-      });
+      categoryName = 'food';
     } else if (_currentLocation?.placeType == 'gas_station') {
-      setState(() {
-        _selectedCategory = 'transport';
-      });
+      categoryName = 'transport';
+    }
+
+    if (categoryName != null) {
+      // Find the category ID from the loaded categories
+      final category = _categories.firstWhere(
+        (cat) =>
+            cat['name']?.toString().toLowerCase().contains(categoryName!) ??
+            false,
+        orElse: () => {},
+      );
+
+      if (category.isNotEmpty && category['id'] != null) {
+        setState(() {
+          _selectedCategory = category['id'].toString();
+        });
+      }
     }
   }
 
@@ -154,20 +255,25 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
         final transactionData = {
           'amount': double.parse(_amountController.text),
           'type': _selectedType,
-          'category': _selectedCategory,
+          'category_id': _selectedCategory, // Now sending category_id (UUID)
           'description': _descriptionController.text,
           'notes': _notesController.text,
           'payment_method': _selectedPaymentMethod,
-          'date':
+          'transaction_date':
               _selectedDate.toIso8601String().split(
                 'T',
               )[0], // Just the date part
           'time':
               '${_selectedTime.hour.toString().padLeft(2, '0')}:${_selectedTime.minute.toString().padLeft(2, '0')}',
-          'latitude': _currentLocation?.latitude,
-          'longitude': _currentLocation?.longitude,
-          'location_name': _currentLocation?.placeName,
-          'location_address': _currentLocation?.address,
+          'location_data':
+              _currentLocation != null
+                  ? {
+                    'latitude': _currentLocation?.latitude,
+                    'longitude': _currentLocation?.longitude,
+                    'place_name': _currentLocation?.placeName,
+                    'address': _currentLocation?.address,
+                  }
+                  : null,
           'is_recurring': _isRecurring,
         };
 
@@ -256,8 +362,10 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
               CategorySection(
                 selectedType: _selectedType,
                 selectedCategory: _selectedCategory,
-                onCategorySelected: (category) {
-                  setState(() => _selectedCategory = category);
+                categories: _categories,
+                isLoading: _isLoadingCategories,
+                onCategorySelected: (categoryId) {
+                  setState(() => _selectedCategory = categoryId);
                 },
               ),
               const SizedBox(height: 20),

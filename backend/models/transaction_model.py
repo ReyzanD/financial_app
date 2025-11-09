@@ -129,11 +129,13 @@ class TransactionModel:
 
     @staticmethod
     def get_monthly_summary(user_id, year, month):
+        from calendar import monthrange
         db = get_db()
         with db.cursor() as cursor:
-            # Create date range for the month to avoid using YEAR() and MONTH() functions
+            # Get the correct last day of the month
+            last_day_num = monthrange(year, month)[1]
             first_day = f"{year}-{month:02d}-01"
-            last_day = f"{year}-{month:02d}-31"
+            last_day = f"{year}-{month:02d}-{last_day_num}"
             
             sql = """
             SELECT 
@@ -142,7 +144,7 @@ class TransactionModel:
                 COUNT(*) as transaction_count
             FROM transactions_232143 
             WHERE user_id_232143 = %s 
-                AND transaction_date_232143 BETWEEN %s AND %s
+                AND DATE(transaction_date_232143) BETWEEN %s AND %s
             GROUP BY type_232143
             """
             cursor.execute(sql, (user_id, first_day, last_day))
