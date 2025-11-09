@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:financial_app/widgets/transactions/transaction_card.dart';
-import 'package:financial_app/services/api_service.dart';
+import 'package:financial_app/state/app_state.dart';
+import 'package:financial_app/models/transaction_model.dart';
 
 class TransactionList extends StatefulWidget {
   final String selectedFilter;
@@ -12,79 +14,93 @@ class TransactionList extends StatefulWidget {
 }
 
 class _TransactionListState extends State<TransactionList> {
-  final ApiService _apiService = ApiService();
-  List<dynamic> _transactions = [];
-  bool _isLoading = true;
-
-  @override
-  void initState() {
-    super.initState();
-    _loadTransactions();
-  }
-
-  @override
-  void didUpdateWidget(TransactionList oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.selectedFilter != widget.selectedFilter) {
-      _loadTransactions();
+  List<TransactionModel> _filterTransactions(
+    List<TransactionModel> transactions,
+  ) {
+    if (widget.selectedFilter == 'Semua') {
+      return transactions;
+    } else if (widget.selectedFilter == 'Pemasukan') {
+      return transactions.where((t) => t.type == 'income').toList();
+    } else if (widget.selectedFilter == 'Pengeluaran') {
+      return transactions.where((t) => t.type == 'expense').toList();
     }
-  }
-
-  Future<void> _loadTransactions() async {
-    setState(() {
-      _isLoading = true;
-    });
-
-    try {
-      String? type;
-      if (widget.selectedFilter == 'Pemasukan') {
-        type = 'income';
-      } else if (widget.selectedFilter == 'Pengeluaran') {
-        type = 'expense';
-      }
-
-      final transactions = await _apiService.getTransactions(
-        type: type,
-        limit: 50,
-      );
-      setState(() {
-        _transactions = transactions;
-        _isLoading = false;
-      });
-    } catch (e) {
-      setState(() {
-        _isLoading = false;
-      });
-      // Handle error - show empty state
-    }
+    return transactions;
   }
 
   @override
   Widget build(BuildContext context) {
-    if (_isLoading) {
-      return const Expanded(child: Center(child: CircularProgressIndicator()));
-    }
+    return Consumer<AppState>(
+      builder: (context, appState, child) {
+        if (appState.isLoading) {
+          return const Expanded(
+            child: Center(child: CircularProgressIndicator()),
+          );
+        }
 
-    if (_transactions.isEmpty) {
-      return Expanded(
-        child: Center(
-          child: Text(
-            'Belum ada transaksi',
-            style: TextStyle(color: Colors.grey[500]),
+        if (appState.error != null) {
+          return Expanded(
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    'Error: ${appState.error}',
+                    style: const TextStyle(color: Colors.white),
+                  ),
+                  const SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: () => appState.refreshData(),
+                    child: const Text('Retry'),
+                  ),
+                ],
+              ),
+            ),
+          );
+        }
+
+        final filteredTransactions = _filterTransactions(appState.transactions);
+
+        if (filteredTransactions.isEmpty) {
+          return Expanded(
+            child: Center(
+              child: Text(
+                'Belum ada transaksi',
+                style: TextStyle(color: Colors.grey[500]),
+              ),
+            ),
+          );
+        }
+
+        return Expanded(
+          child: RefreshIndicator(
+            onRefresh: () => appState.refreshData(),
+            child: ListView.builder(
+              padding: const EdgeInsets.all(16),
+              itemCount: filteredTransactions.length,
+              itemBuilder: (context, index) {
+                final transaction = filteredTransactions[index];
+                final transactionMap = {
+                  'id': transaction.id, // Required for delete and edit
+                  'amount': transaction.amount,
+                  'type': transaction.type,
+                  'description': transaction.description,
+                  'category': transaction.categoryName,
+                  'category_id': transaction.categoryId, // Required for edit
+                  'payment_method':
+                      transaction.paymentMethod, // Required for edit
+                  'date': transaction.transactionDate.toIso8601String(),
+                  'location': '',
+                  'category_color': transaction.categoryColor,
+                };
+                return TransactionCard(
+                  transaction: transactionMap,
+                  onDeleted: () => appState.refreshData(),
+                );
+              },
+            ),
           ),
-        ),
-      );
-    }
-
-    return Expanded(
-      child: ListView.builder(
-        padding: const EdgeInsets.all(16),
-        itemCount: _transactions.length,
-        itemBuilder: (context, index) {
-          final transaction = _transactions[index];
-          return TransactionCard(transaction: transaction);
-        },
-      ),
+        );
+      },
     );
   }
 }

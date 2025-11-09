@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:financial_app/utils/formatters.dart';
 import 'package:financial_app/services/api_service.dart';
 
@@ -24,15 +25,32 @@ class _AIRecommendationsState extends State<AIRecommendations> {
 
   Future<void> _loadAIRecommendations() async {
     try {
+      // Check if AI recommendations are enabled
+      final prefs = await SharedPreferences.getInstance();
+      final aiEnabled = prefs.getBool('ai_recommendations_enabled') ?? true;
+
+      if (!aiEnabled) {
+        if (mounted) {
+          setState(() {
+            _isLoading = false;
+          });
+        }
+        return;
+      }
+
       final recommendations = await _apiService.getAIRecommendations();
-      setState(() {
-        _recommendations = recommendations;
-        _isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _recommendations = recommendations;
+          _isLoading = false;
+        });
+      }
     } catch (e) {
-      setState(() {
-        _isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
       // Handle error - show default message
     }
   }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../services/auth_service.dart';
 import '../widgets/login/login_header.dart';
 import '../widgets/login/login_form.dart';
@@ -66,7 +67,18 @@ class _LoginScreenState extends State<LoginScreen> {
       );
 
       if (result != null) {
-        Navigator.pushReplacementNamed(context, '/home');
+        // Check if user has completed onboarding
+        final prefs = await SharedPreferences.getInstance();
+        final onboardingCompleted =
+            prefs.getBool('onboarding_completed') ?? false;
+
+        if (!onboardingCompleted) {
+          // New user - redirect to onboarding
+          Navigator.pushReplacementNamed(context, '/onboarding');
+        } else {
+          // Existing user - go to home
+          Navigator.pushReplacementNamed(context, '/home');
+        }
       }
     } catch (e) {
       ScaffoldMessenger.of(

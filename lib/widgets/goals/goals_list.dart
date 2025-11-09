@@ -1,40 +1,90 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:financial_app/widgets/goals/goal_card.dart';
+import 'package:financial_app/services/api_service.dart';
 
-class GoalsList extends StatelessWidget {
+class GoalsList extends StatefulWidget {
   const GoalsList({super.key});
 
   @override
+  State<GoalsList> createState() => _GoalsListState();
+}
+
+class _GoalsListState extends State<GoalsList> {
+  final ApiService _apiService = ApiService();
+  List<Map<String, dynamic>> goals = [];
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadGoals();
+  }
+
+  Future<void> _loadGoals() async {
+    try {
+      final fetchedGoals = await _apiService.getGoals();
+      if (mounted) {
+        setState(() {
+          goals = fetchedGoals.map((goal) {
+            return {
+              'id': goal['id'],
+              'name': goal['name'],
+              'target': goal['target'],
+              'saved': goal['saved'],
+              'deadline': goal['deadline'],
+              'type': goal['type'],
+              'priority': goal['priority'] ?? 3,
+              'progress': goal['progress'] ?? 0,
+              'description': goal['description'],
+            };
+          }).toList();
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+      // Show error or keep empty state
+    }
+  }
+
+
+  @override
   Widget build(BuildContext context) {
-    final goals = [
-      {
-        'id': '1',
-        'name': 'Dana Darurat',
-        'target': 10000000,
-        'saved': 6500000,
-        'deadline': '2024-06-30',
-        'type': 'emergency_fund',
-        'priority': 'high',
-      },
-      {
-        'id': '2',
-        'name': 'Liburan ke Bali',
-        'target': 5000000,
-        'saved': 2500000,
-        'deadline': '2024-04-15',
-        'type': 'vacation',
-        'priority': 'medium',
-      },
-      {
-        'id': '3',
-        'name': 'Upgrade Laptop',
-        'target': 8000000,
-        'saved': 3000000,
-        'deadline': '2024-08-31',
-        'type': 'electronics',
-        'priority': 'low',
-      },
-    ];
+    if (_isLoading) {
+      return const Expanded(
+        child: Center(
+          child: CircularProgressIndicator(color: Color(0xFF8B5FBF)),
+        ),
+      );
+    }
+
+    if (goals.isEmpty) {
+      return Expanded(
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.flag_outlined, size: 64, color: Colors.grey[600]),
+              const SizedBox(height: 16),
+              Text(
+                'Belum ada tujuan keuangan',
+                style: TextStyle(color: Colors.grey[400], fontSize: 16),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Tambahkan tujuan pertama Anda',
+                style: TextStyle(color: Colors.grey[600], fontSize: 14),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
 
     return Expanded(
       child: ListView.builder(

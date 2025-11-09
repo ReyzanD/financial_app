@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:financial_app/services/location_service.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -262,9 +264,37 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     }
   }
 
-  void _completeOnboarding() {
-    // Mark onboarding as completed (you can use SharedPreferences here)
-    Navigator.pushReplacementNamed(context, '/home');
+  Future<void> _completeOnboarding() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+
+      // Set user defaults for new users
+      await prefs.setBool('onboarding_completed', true);
+      await prefs.setInt('default_tab_index', 2); // Goals tab (index 2)
+      await prefs.setBool('ai_recommendations_enabled', true);
+
+      // Fetch and store user location
+      final position = await LocationService.getCurrentPosition();
+      if (position != null) {
+        await prefs.setDouble('user_latitude', position.latitude);
+        await prefs.setDouble('user_longitude', position.longitude);
+      }
+
+      // Navigate to home
+      if (mounted) {
+        Navigator.pushReplacementNamed(context, '/home');
+      }
+    } catch (e) {
+      // If there's an error, still complete onboarding but without location
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setBool('onboarding_completed', true);
+      await prefs.setInt('default_tab_index', 2);
+      await prefs.setBool('ai_recommendations_enabled', true);
+
+      if (mounted) {
+        Navigator.pushReplacementNamed(context, '/home');
+      }
+    }
   }
 }
 

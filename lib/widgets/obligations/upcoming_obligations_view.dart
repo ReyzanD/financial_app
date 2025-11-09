@@ -13,8 +13,9 @@ class UpcomingObligationsView extends StatelessWidget {
     return FutureBuilder<List<FinancialObligation>>(
       future: ObligationService().getUpcomingObligations(),
       builder: (context, snapshot) {
-        if (!snapshot.hasData)
+        if (!snapshot.hasData) {
           return Center(child: CircularProgressIndicator());
+        }
 
         final obligations = snapshot.data!;
 

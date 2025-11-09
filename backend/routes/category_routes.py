@@ -9,8 +9,10 @@ category_bp = Blueprint('categories', __name__)
 def get_categories():
     try:
         user_id = get_jwt_identity()
+        print(f" Fetching categories for user: {user_id}")
         
         categories = CategoryModel.get_user_categories(user_id)
+        print(f" Found {len(categories)} categories")
         
         return jsonify({
             'categories': categories,
@@ -18,6 +20,9 @@ def get_categories():
         }), 200
         
     except Exception as e:
+        print(f" Error in get_categories: {str(e)}")
+        import traceback
+        traceback.print_exc()
         return jsonify({'error': str(e)}), 500
 
 @category_bp.route('', methods=['POST'])
