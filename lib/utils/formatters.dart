@@ -1,12 +1,22 @@
 import 'package:intl/intl.dart';
 
 class CurrencyFormatter {
-  static String formatRupiah(int amount) {
+  static String formatRupiah(num amount) {
     final formatter = NumberFormat.currency(
       locale: 'id_ID',
       symbol: 'Rp ',
-      decimalDigits: 0,
+      decimalDigits:
+          0, // Indonesian Rupiah typically doesn't show decimal places
     );
-    return formatter.format(amount);
+
+    // Format with proper Indonesian thousand separators
+    String formatted = formatter.format(amount);
+
+    // Ensure we have proper spacing after the Rp symbol
+    if (!formatted.startsWith('Rp ')) {
+      formatted = formatted.replaceFirst('Rp', 'Rp ');
+    }
+
+    return formatted;
   }
 }

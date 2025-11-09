@@ -1,43 +1,86 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:fl_chart/fl_chart.dart';
 
 class CategoryBreakdown extends StatelessWidget {
-  const CategoryBreakdown({super.key});
+  final List<dynamic> transactions;
+
+  const CategoryBreakdown({super.key, required this.transactions});
 
   @override
   Widget build(BuildContext context) {
-    final categories = [
-      {
-        'name': 'Makanan',
-        'amount': 750000,
-        'percentage': 35,
-        'color': Colors.red,
-      },
-      {
-        'name': 'Transportasi',
-        'amount': 500000,
-        'percentage': 25,
-        'color': Colors.orange,
-      },
-      {
-        'name': 'Belanja',
-        'amount': 400000,
-        'percentage': 20,
-        'color': Colors.blue,
-      },
-      {
-        'name': 'Hiburan',
-        'amount': 250000,
-        'percentage': 12,
-        'color': Colors.purple,
-      },
-      {
-        'name': 'Lainnya',
-        'amount': 150000,
-        'percentage': 8,
-        'color': Colors.grey,
-      },
-    ];
+    print(
+      '🧩 CategoryBreakdown: Processing ${transactions.length} transactions',
+    );
+
+    // Calculate category data from all transactions
+    final Map<String, Map<String, dynamic>> categoryMap = {};
+    double totalAmount = 0;
+
+    // Count all transactions
+    for (var transaction in transactions) {
+      final amount =
+          double.tryParse(transaction['amount']?.toString() ?? '0') ?? 0.0;
+      final category = transaction['category']?.toString() ?? 'Uncategorized';
+      final categoryColor =
+          transaction['category_color'] != null
+              ? Color(
+                int.parse(
+                      transaction['category_color'].substring(1, 7),
+                      radix: 16,
+                    ) +
+                    0xFF000000,
+              )
+              : Colors.grey;
+
+      if (!categoryMap.containsKey(category)) {
+        categoryMap[category] = {
+          'name': category,
+          'amount': 0.0,
+          'color': categoryColor,
+        };
+      }
+      categoryMap[category]!['amount'] =
+          (categoryMap[category]!['amount'] as double) + amount;
+      totalAmount += amount;
+    }
+
+    // Convert to list and sort by amount
+    final categories =
+        categoryMap.values.toList()..sort(
+          (a, b) => (b['amount'] as double).compareTo(a['amount'] as double),
+        );
+
+    // Calculate percentages
+    for (var category in categories) {
+      final amount = category['amount'] as double;
+      category['percentage'] =
+          totalAmount > 0 ? (amount / totalAmount * 100).toInt() : 0;
+    }
+
+    print(
+      '📊 Found ${categories.length} categories, total amount: $totalAmount',
+    );
+    if (categories.isNotEmpty) {
+      print('🏆 Top category: ${categories.first}');
+    }
+
+    if (categories.isEmpty) {
+      return Container(
+        padding: const EdgeInsets.all(32),
+        decoration: BoxDecoration(
+          color: const Color(0xFF1A1A1A),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: Colors.grey[800]!),
+        ),
+        child: Center(
+          child: Text(
+            'Belum ada transaksi',
+            style: GoogleFonts.poppins(color: Colors.grey[500]),
+          ),
+        ),
+      );
+    }
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -50,15 +93,44 @@ class CategoryBreakdown extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Breakdown Kategori',
+            'Breakdown Transaksi per Kategori',
             style: GoogleFonts.poppins(
               color: Colors.white,
               fontSize: 16,
               fontWeight: FontWeight.w600,
             ),
           ),
-          const SizedBox(height: 16),
-          ...categories.map((category) => _buildCategoryItem(category)),
+          const SizedBox(height: 24),
+
+          // Pie Chart
+          SizedBox(
+            height: 200,
+            child: PieChart(
+              PieChartData(
+                sectionsSpace: 2,
+                centerSpaceRadius: 40,
+                sections:
+                    categories.take(5).map((category) {
+                      final percentage = category['percentage'] as int;
+                      return PieChartSectionData(
+                        color: category['color'] as Color,
+                        value: (category['amount'] as double),
+                        title: '$percentage%',
+                        radius: 50,
+                        titleStyle: GoogleFonts.poppins(
+                          color: Colors.white,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      );
+                    }).toList(),
+              ),
+            ),
+          ),
+          const SizedBox(height: 24),
+
+          // Category List
+          ...categories.take(5).map((category) => _buildCategoryItem(category)),
         ],
       ),
     );

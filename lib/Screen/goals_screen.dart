@@ -13,6 +13,15 @@ class GoalsScreen extends StatefulWidget {
 }
 
 class _GoalsScreenState extends State<GoalsScreen> {
+  // Use a simple refresh key that changes to rebuild widgets
+  int _refreshKey = 0;
+
+  void _refreshGoals() {
+    setState(() {
+      _refreshKey++;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -24,10 +33,10 @@ class _GoalsScreenState extends State<GoalsScreen> {
             const GoalsHeader(),
 
             // Goals Progress Summary
-            const ProgressSummary(),
+            ProgressSummary(key: ValueKey('progress_$_refreshKey')),
 
             // Goals List
-            const GoalsList(),
+            GoalsList(key: ValueKey('goals_$_refreshKey')),
           ],
         ),
       ),
@@ -39,8 +48,8 @@ class _GoalsScreenState extends State<GoalsScreen> {
     );
   }
 
-  void _showAddGoalModal() {
-    showModalBottomSheet(
+  void _showAddGoalModal() async {
+    final result = await showModalBottomSheet(
       context: context,
       backgroundColor: Colors.black,
       isScrollControlled: true,
@@ -51,5 +60,10 @@ class _GoalsScreenState extends State<GoalsScreen> {
         return const AddGoalModal();
       },
     );
+
+    // Refresh the list if a goal was added
+    if (result == true) {
+      _refreshGoals();
+    }
   }
 }

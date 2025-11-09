@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:financial_app/Screen/financial_obligations_screen.dart';
+import 'package:financial_app/Screen/map_screen.dart';
 
 class QuickActions extends StatelessWidget {
   const QuickActions({super.key});
@@ -13,10 +14,36 @@ class QuickActions extends StatelessWidget {
         'icon': Iconsax.receipt_2,
         'label': 'Tagihan',
         'color': Color(0xFF8B5FBF),
+        'onTap':
+            () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => FinancialObligationsScreen(),
+              ),
+            ),
       },
-      {'icon': Iconsax.chart, 'label': 'Laporan', 'color': Color(0xFF4CAF50)},
-      {'icon': Iconsax.code, 'label': 'Target', 'color': Color(0xFF2196F3)},
-      {'icon': Iconsax.setting, 'label': 'Budget', 'color': Color(0xFFFF9800)},
+      {
+        'icon': Iconsax.map,
+        'label': 'Maps',
+        'color': Color(0xFF4CAF50),
+        'onTap':
+            () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const MapScreen()),
+            ),
+      },
+      {
+        'icon': Iconsax.code,
+        'label': 'Target',
+        'color': Color(0xFF2196F3),
+        'onTap': () {},
+      },
+      {
+        'icon': Iconsax.setting,
+        'label': 'Budget',
+        'color': Color(0xFFFF9800),
+        'onTap': () {},
+      },
     ];
 
     return Column(
@@ -47,6 +74,7 @@ class QuickActions extends StatelessWidget {
               icon: action['icon'] as IconData,
               label: action['label'] as String,
               color: action['color'] as Color,
+              onTap: action['onTap'] as VoidCallback,
             );
           },
         ),
@@ -59,17 +87,10 @@ class QuickActions extends StatelessWidget {
     required IconData icon,
     required String label,
     required Color color,
+    required VoidCallback onTap,
   }) {
     return GestureDetector(
-      onTap: () {
-        // Handle quick action tap
-        print('Quick action: $label');
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => FinancialObligationsScreen()),
-        );
-        // open respective screens or perform actions here
-      },
+      onTap: onTap,
       child: Column(
         children: [
           Container(

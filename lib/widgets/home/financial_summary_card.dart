@@ -9,38 +9,109 @@ class FinancialSummaryCard extends StatefulWidget {
 
   @override
   State<FinancialSummaryCard> createState() => _FinancialSummaryCardState();
+
+  static void refresh(BuildContext context) {
+    final state = context.findAncestorStateOfType<_FinancialSummaryCardState>();
+    state?.refreshSummary();
+  }
 }
 
-class _FinancialSummaryCardState extends State<FinancialSummaryCard> {
+class _FinancialSummaryCardState extends State<FinancialSummaryCard>
+    with SingleTickerProviderStateMixin {
   final ApiService _apiService = ApiService();
   Map<String, dynamic>? _summary;
   bool _isLoading = true;
+  String? _errorMessage;
+  DateTime _selectedDate = DateTime.now();
+  late AnimationController _animationController;
+  late Animation<double> _fadeAnimation;
 
   @override
   void initState() {
     super.initState();
+    _animationController = AnimationController(
+      duration: const Duration(milliseconds: 600),
+      vsync: this,
+    );
+    _fadeAnimation = CurvedAnimation(
+      parent: _animationController,
+      curve: Curves.easeInOut,
+    );
     _loadFinancialSummary();
   }
 
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
+
   Future<void> _loadFinancialSummary() async {
+    if (mounted) {
+      setState(() {
+        _isLoading = true;
+        _errorMessage = null;
+      });
+    }
+
     try {
       final summary = await _apiService.getFinancialSummary();
-      setState(() {
-        _summary = summary;
-        _isLoading = false;
-      });
+
+      if (mounted) {
+        setState(() {
+          _summary = summary;
+          _isLoading = false;
+          _errorMessage = null;
+        });
+        _animationController.forward();
+      }
     } catch (e) {
-      setState(() {
-        _isLoading = false;
-      });
-      // Handle error - show default values
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+          _errorMessage = 'Gagal memuat data. Tap untuk coba lagi.';
+        });
+      }
     }
+  }
+
+  void _showMonthPicker() async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: _selectedDate,
+      firstDate: DateTime(2020),
+      lastDate: DateTime.now(),
+      helpText: 'Pilih Bulan & Tahun',
+      builder: (context, child) {
+        return Theme(
+          data: ThemeData.dark().copyWith(
+            colorScheme: const ColorScheme.dark(
+              primary: Color(0xFF8B5FBF),
+              surface: Color(0xFF1A1A1A),
+            ),
+          ),
+          child: child!,
+        );
+      },
+    );
+
+    if (picked != null && picked != _selectedDate) {
+      setState(() {
+        _selectedDate = picked;
+      });
+      _loadFinancialSummary();
+    }
+  }
+
+  void refreshSummary() {
+    _loadFinancialSummary();
   }
 
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
       return Container(
+        height: 200,
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
           gradient: const LinearGradient(
@@ -63,66 +134,175 @@ class _FinancialSummaryCardState extends State<FinancialSummaryCard> {
       );
     }
 
-    final balance = _summary?['balance'] ?? 0;
-    final income = _summary?['total_income'] ?? 0;
-    final expense = _summary?['total_expense'] ?? 0;
-
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [Color(0xFF8B5FBF), Color(0xFF6A3093)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: const Color(0xFF8B5FBF).withOpacity(0.3),
-            blurRadius: 15,
-            spreadRadius: 2,
-          ),
-        ],
-      ),
-      child: Column(
-        children: [
-          // Balance
-          Text(
-            'Saldo Bulan Ini',
-            style: GoogleFonts.poppins(color: Colors.white70, fontSize: 14),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            CurrencyFormatter.formatRupiah(balance),
-            style: GoogleFonts.poppins(
-              color: Colors.white,
-              fontSize: 28,
-              fontWeight: FontWeight.bold,
+    if (_errorMessage != null) {
+      return GestureDetector(
+        onTap: _loadFinancialSummary,
+        child: Container(
+          height: 200,
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            gradient: const LinearGradient(
+              colors: [Color(0xFF8B5FBF), Color(0xFF6A3093)],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
             ),
-          ),
-          const SizedBox(height: 20),
-
-          // Income vs Expense
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              _buildFinanceItem(
-                title: 'Pemasukan',
-                amount: CurrencyFormatter.formatRupiah(income),
-                color: Colors.green[400]!,
-                icon: Iconsax.arrow_up,
-              ),
-              _buildFinanceItem(
-                title: 'Pengeluaran',
-                amount: CurrencyFormatter.formatRupiah(expense),
-                color: Colors.red[400]!,
-                icon: Iconsax.arrow_down,
+            borderRadius: BorderRadius.circular(20),
+            boxShadow: [
+              BoxShadow(
+                color: const Color(0xFF8B5FBF).withOpacity(0.3),
+                blurRadius: 15,
+                spreadRadius: 2,
               ),
             ],
           ),
-        ],
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(Icons.error_outline, color: Colors.white, size: 48),
+                const SizedBox(height: 12),
+                Text(
+                  _errorMessage!,
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.poppins(
+                    color: Colors.white70,
+                    fontSize: 14,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+
+    final Map<String, dynamic> summaries = _summary?['summary'] ?? {};
+    final income =
+        (summaries['income'] as Map<String, dynamic>?)?['total_amount'] ?? 0.0;
+    final expense =
+        (summaries['expense'] as Map<String, dynamic>?)?['total_amount'] ?? 0.0;
+    final balance = income - expense;
+
+    print('💰 Income: $income | Expense: $expense | Balance: $balance');
+
+    return FadeTransition(
+      opacity: _fadeAnimation,
+      child: Container(
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            colors: [Color(0xFF8B5FBF), Color(0xFF6A3093)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: const Color(0xFF8B5FBF).withOpacity(0.3),
+              blurRadius: 15,
+              spreadRadius: 2,
+            ),
+          ],
+        ),
+        child: Column(
+          children: [
+            // Month selector
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Saldo Bulan Ini',
+                  style: GoogleFonts.poppins(
+                    color: Colors.white70,
+                    fontSize: 14,
+                  ),
+                ),
+                GestureDetector(
+                  onTap: _showMonthPicker,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 6,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(color: Colors.white.withOpacity(0.2)),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          '${_getMonthName(_selectedDate.month)} ${_selectedDate.year}',
+                          style: GoogleFonts.poppins(
+                            color: Colors.white,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        const SizedBox(width: 4),
+                        const Icon(
+                          Icons.arrow_drop_down,
+                          color: Colors.white,
+                          size: 20,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Text(
+              CurrencyFormatter.formatRupiah(balance),
+              style: GoogleFonts.poppins(
+                color: Colors.white,
+                fontSize: 28,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 20),
+
+            // Income vs Expense
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                _buildFinanceItem(
+                  title: 'Pemasukan',
+                  amount: CurrencyFormatter.formatRupiah(income),
+                  color: Colors.green[400]!,
+                  icon: Iconsax.arrow_up,
+                ),
+                _buildFinanceItem(
+                  title: 'Pengeluaran',
+                  amount: CurrencyFormatter.formatRupiah(expense),
+                  color: Colors.red[400]!,
+                  icon: Iconsax.arrow_down,
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
+  }
+
+  String _getMonthName(int month) {
+    const months = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'Mei',
+      'Jun',
+      'Jul',
+      'Agu',
+      'Sep',
+      'Okt',
+      'Nov',
+      'Des',
+    ];
+    return months[month - 1];
   }
 
   Widget _buildFinanceItem({
