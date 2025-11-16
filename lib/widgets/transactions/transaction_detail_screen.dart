@@ -7,7 +7,7 @@ import 'package:financial_app/widgets/transactions/transaction_helpers.dart';
 import 'package:financial_app/widgets/transactions/alternative_recommendation_card.dart';
 import 'package:financial_app/widgets/transactions/location_insight_card.dart';
 import 'package:financial_app/models/location_recommendation.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:financial_app/Screen/add_transaction_screen.dart';
 
 class TransactionDetailScreen extends StatefulWidget {

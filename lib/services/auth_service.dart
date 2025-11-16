@@ -80,4 +80,30 @@ class AuthService {
     final token = await getToken();
     return isValidTokenFormat(token);
   }
+
+  Future<void> deleteAccount() async {
+    try {
+      final token = await getToken();
+      if (token == null || token.isEmpty) {
+        throw Exception('Not authenticated');
+      }
+
+      final response = await http.delete(
+        Uri.parse('$baseUrl/account'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        await logout();
+      } else {
+        final error = json.decode(response.body);
+        throw Exception(error['error'] ?? 'Failed to delete account');
+      }
+    } catch (e) {
+      throw Exception('Delete account error: $e');
+    }
+  }
 }

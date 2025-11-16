@@ -1,6 +1,5 @@
 import 'package:geolocator/geolocator.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class LocationService {
   static Future<bool> requestLocationPermission() async {
@@ -24,12 +23,9 @@ class LocationService {
     }
   }
 
-  static Future<LatLng?> getCurrentLatLng() async {
-    final position = await getCurrentPosition();
-    if (position != null) {
-      return LatLng(position.latitude, position.longitude);
-    }
-    return null;
+  // Helper method for backward compatibility
+  static Future<Position?> getCurrentLatLng() async {
+    return await getCurrentPosition();
   }
 
   static Stream<Position> getPositionStream() {
@@ -41,18 +37,18 @@ class LocationService {
     );
   }
 
-  static double calculateDistance(LatLng start, LatLng end) {
-    return Geolocator.distanceBetween(
-      start.latitude,
-      start.longitude,
-      end.latitude,
-      end.longitude,
-    );
+  static double calculateDistance(
+    double startLat,
+    double startLng,
+    double endLat,
+    double endLng,
+  ) {
+    return Geolocator.distanceBetween(startLat, startLng, endLat, endLng);
   }
 
-  static Future<String> getAddressFromLatLng(LatLng position) async {
-    // Note: Reverse geocoding requires additional setup with Google Maps API
+  static String getAddressFromCoordinates(double lat, double lng) {
+    // Note: Reverse geocoding requires additional setup
     // For now, return coordinates as string
-    return '${position.latitude.toStringAsFixed(4)}, ${position.longitude.toStringAsFixed(4)}';
+    return '${lat.toStringAsFixed(4)}, ${lng.toStringAsFixed(4)}';
   }
 }

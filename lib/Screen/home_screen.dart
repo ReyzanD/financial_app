@@ -35,7 +35,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> _loadDefaultTab() async {
     final prefs = await SharedPreferences.getInstance();
     final defaultTabIndex =
-        prefs.getInt('default_tab_index') ?? 2; // Default to goals (2)
+        prefs.getInt('default_tab_index') ?? 0; // Default to dashboard (0)
     setState(() {
       _currentIndex = defaultTabIndex;
     });

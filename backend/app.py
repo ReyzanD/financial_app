@@ -9,6 +9,7 @@ from routes.obligation_routes import obligation_bp
 from routes.category_routes import category_bp
 from routes.goal_routes import goal_bp
 from routes.budget_routes import budget_bp
+from routes.data_routes import data_bp
 
 def create_app():
     app = Flask(__name__)
@@ -47,6 +48,7 @@ def create_app():
     app.register_blueprint(category_bp, url_prefix=f"{config.Config.API_PREFIX}/categories_232143")
     app.register_blueprint(goal_bp, url_prefix=f"{config.Config.API_PREFIX}/goals")
     app.register_blueprint(budget_bp, url_prefix=f"{config.Config.API_PREFIX}/budgets")
+    app.register_blueprint(data_bp, url_prefix=f"{config.Config.API_PREFIX}/data")
     
     # Health check route
     @app.route('/')

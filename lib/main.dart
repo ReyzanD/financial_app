@@ -17,8 +17,8 @@ void main() async {
   final apiService = ApiService();
   final dataService = DataService(apiService);
 
-  // Initial data load
-  await dataService.refreshAllData();
+  // Don't load data here - it will be loaded after login
+  // await dataService.refreshAllData();
 
   runApp(
     ChangeNotifierProvider(

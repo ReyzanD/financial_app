@@ -14,6 +14,15 @@ class ApiService {
     };
   }
 
+  // Public methods for use by other services
+  Future<Map<String, String>> getHeaders() async {
+    return await _getHeaders();
+  }
+
+  dynamic handleResponse(http.Response response) {
+    return _handleResponse(response);
+  }
+
   // Generic GET request
   Future<dynamic> get(String endpoint) async {
     print('🔼 GET: $baseUrl/$endpoint');
@@ -83,7 +92,24 @@ class ApiService {
     return await get('auth/profile');
   }
 
-  // Transactions
+  // Update User Profile
+  Future<Map<String, dynamic>> updateProfile(
+    Map<String, dynamic> profileData,
+  ) async {
+    try {
+      final response = await http.put(
+        Uri.parse('$baseUrl/auth/profile'),
+        headers: await _getHeaders(),
+        body: json.encode(profileData),
+      );
+      return _handleResponse(response);
+    } catch (e) {
+      throw Exception('Network error: $e');
+    }
+  }
+
+  // Transactions - Delegated to TransactionApiService
+  // Use: TransactionApiService().getTransactions()
   Future<List<dynamic>> getTransactions({String? type, int limit = 10}) async {
     String endpoint = 'transactions_232143';
     List<String> params = [];
@@ -104,9 +130,9 @@ class ApiService {
   DateTime? _lastSummaryFetch;
   static const _summaryTtl = Duration(minutes: 5);
 
-  // Financial Summary
+  // Financial Summary - Delegated to TransactionApiService
+  // Use: TransactionApiService().getFinancialSummary()
   Future<Map<String, dynamic>> getFinancialSummary() async {
-    // Check if we have a valid cached response
     if (_cachedSummary != null && _lastSummaryFetch != null) {
       final age = DateTime.now().difference(_lastSummaryFetch!);
       if (age < _summaryTtl) {
@@ -116,8 +142,6 @@ class ApiService {
 
     try {
       final response = await get('transactions_232143/analytics/summary');
-
-      // Convert the list of summaries into a map by type
       final List<dynamic> summaryList = response['summary'] ?? [];
       Map<String, dynamic> summaryMap = {};
       for (var item in summaryList) {
@@ -137,13 +161,11 @@ class ApiService {
         'summary': summaryMap,
       };
 
-      // Update cache
       _cachedSummary = result;
       _lastSummaryFetch = DateTime.now();
 
       return result;
     } catch (e) {
-      // If we have cached data and there's an error, return cached data
       if (_cachedSummary != null) {
         return _cachedSummary!;
       }

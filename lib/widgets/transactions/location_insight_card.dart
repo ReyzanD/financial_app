@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:financial_app/services/location_service.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong2/latlong.dart';
+import 'package:geolocator/geolocator.dart';
 
 class LocationInsightCard extends StatefulWidget {
   final String transactionId;
@@ -19,7 +21,7 @@ class LocationInsightCard extends StatefulWidget {
 }
 
 class _LocationInsightCardState extends State<LocationInsightCard> {
-  LatLng? _currentLocation;
+  Position? _currentLocation;
   double? _distance;
   String _locationString = 'Loading...';
 
@@ -35,16 +37,21 @@ class _LocationInsightCardState extends State<LocationInsightCard> {
 
     // Calculate distance if transaction location is available
     if (widget.transactionLocation != null && _currentLocation != null) {
-      _distance = LocationService.calculateDistance(
-        _currentLocation!,
-        widget.transactionLocation!,
-      );
+      _distance =
+          LocationService.calculateDistance(
+            _currentLocation!.latitude,
+            _currentLocation!.longitude,
+            widget.transactionLocation!.latitude,
+            widget.transactionLocation!.longitude,
+          ) /
+          1000; // Convert meters to kilometers
     }
 
     // Get location string
     if (widget.transactionLocation != null) {
-      _locationString = await LocationService.getAddressFromLatLng(
-        widget.transactionLocation!,
+      _locationString = LocationService.getAddressFromCoordinates(
+        widget.transactionLocation!.latitude,
+        widget.transactionLocation!.longitude,
       );
     } else {
       _locationString = 'Location not available';
@@ -102,23 +109,35 @@ class _LocationInsightCardState extends State<LocationInsightCard> {
                 widget.transactionLocation != null
                     ? ClipRRect(
                       borderRadius: BorderRadius.circular(8),
-                      child: GoogleMap(
-                        initialCameraPosition: CameraPosition(
-                          target: widget.transactionLocation!,
-                          zoom: 15,
-                        ),
-                        markers: {
-                          Marker(
-                            markerId: const MarkerId('transaction_location'),
-                            position: widget.transactionLocation!,
-                            infoWindow: const InfoWindow(
-                              title: 'Transaction Location',
-                            ),
+                      child: FlutterMap(
+                        options: MapOptions(
+                          initialCenter: widget.transactionLocation!,
+                          initialZoom: 15.0,
+                          interactionOptions: const InteractionOptions(
+                            flags: InteractiveFlag.none,
                           ),
-                        },
-                        zoomControlsEnabled: false,
-                        myLocationEnabled: false,
-                        myLocationButtonEnabled: false,
+                        ),
+                        children: [
+                          TileLayer(
+                            urlTemplate:
+                                'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                            userAgentPackageName: 'com.example.financial_app',
+                          ),
+                          MarkerLayer(
+                            markers: [
+                              Marker(
+                                point: widget.transactionLocation!,
+                                width: 40,
+                                height: 40,
+                                child: const Icon(
+                                  Icons.location_on,
+                                  color: Colors.red,
+                                  size: 40,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
                     )
                     : Center(

@@ -70,6 +70,20 @@ class TransactionModel:
                 if filters.get('category_id'):
                     sql += " AND t.category_id_232143 = %s"
                     params.append(filters['category_id'])
+                
+                # Filter by amount range
+                if filters.get('min_amount') is not None:
+                    sql += " AND t.amount_232143 >= %s"
+                    params.append(filters['min_amount'])
+                
+                if filters.get('max_amount') is not None:
+                    sql += " AND t.amount_232143 <= %s"
+                    params.append(filters['max_amount'])
+                
+                # Search by description text
+                if filters.get('search'):
+                    sql += " AND t.description_232143 LIKE %s"
+                    params.append(f"%{filters['search']}%")
             
             sql += " ORDER BY t.transaction_date_232143 DESC, t.created_at_232143 DESC"
             

@@ -121,3 +121,24 @@ def update_profile():
         
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
+@auth_bp.route('/account', methods=['DELETE'])
+@jwt_required()
+def delete_account():
+    """Delete the currently authenticated user's account and all related data."""
+    try:
+        user_id = get_jwt_identity()
+
+        user = UserModel.get_user_by_id(user_id)
+        if not user:
+            return jsonify({'error': 'User not found'}), 404
+
+        success = UserModel.delete_user(user_id)
+        if not success:
+            return jsonify({'error': 'Failed to delete account'}), 400
+
+        # Related data is removed via ON DELETE CASCADE constraints in the database
+        return jsonify({'message': 'Account and all related data deleted successfully'}), 200
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500

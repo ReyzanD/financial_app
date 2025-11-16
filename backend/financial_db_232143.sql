@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Nov 09, 2025 at 05:20 PM
+-- Generation Time: Nov 16, 2025 at 02:30 PM
 -- Server version: 8.0.30
 -- PHP Version: 8.3.15
 
@@ -93,6 +93,14 @@ CREATE TABLE `budgets_232143` (
   `remaining_amount_232143` decimal(15,2) GENERATED ALWAYS AS ((`amount_232143` - `spent_amount_232143`)) STORED
 ) ;
 
+--
+-- Dumping data for table `budgets_232143`
+--
+
+INSERT INTO `budgets_232143` (`budget_id_232143`, `user_id_232143`, `category_id_232143`, `amount_232143`, `period_232143`, `period_start_232143`, `period_end_232143`, `spent_amount_232143`, `rollover_enabled_232143`, `alert_threshold_232143`, `is_active_232143`, `recommended_amount_232143`, `recommendation_reason_232143`, `created_at_232143`, `updated_at_232143`) VALUES
+('889cee23-bd9d-11f0-a0c1-bc0ff35ec8eb', '5ae93c37-b4c3-11f0-815b-bc0ff35ec8eb', NULL, '10000000.00', 'monthly', '2025-11-01', '2025-11-30', '0.00', 0, 80, 1, NULL, NULL, '2025-11-09 18:54:34', '2025-11-09 18:54:34'),
+('c72b09c8-bd9c-11f0-a0c1-bc0ff35ec8eb', '5ae93c37-b4c3-11f0-815b-bc0ff35ec8eb', NULL, '5000000.00', 'monthly', '2025-11-01', '2025-11-30', '0.00', 0, 80, 1, NULL, NULL, '2025-11-09 18:49:10', '2025-11-09 18:49:10');
+
 -- --------------------------------------------------------
 
 --
@@ -125,6 +133,7 @@ CREATE TABLE `categories_232143` (
 INSERT INTO `categories_232143` (`category_id_232143`, `user_id_232143`, `name_232143`, `type_232143`, `color_232143`, `icon_232143`, `budget_limit_232143`, `budget_period_232143`, `is_fixed_232143`, `keywords_232143`, `location_patterns_232143`, `parent_category_id_232143`, `display_order_232143`, `is_system_default_232143`, `created_at_232143`, `updated_at_232143`) VALUES
 ('07f2295f-8244-49ab-a509-ae260f059f7f', 'ff42a623-53be-4bbb-a3a1-ab4ebbb83bdf', 'Food & Dining', 'expense', '#FF6B6B', 'receipt', NULL, 'monthly', 0, NULL, NULL, NULL, 0, 0, '2025-10-29 11:06:20', '2025-10-29 11:06:20'),
 ('0b8b6149-8a68-4f54-bd5b-b4149ea041fc', 'ff42a623-53be-4bbb-a3a1-ab4ebbb83bdf', 'Utilities', 'expense', '#96CEB4', 'receipt', NULL, 'monthly', 0, NULL, NULL, NULL, 0, 0, '2025-10-29 11:04:15', '2025-10-29 11:04:15'),
+('0cfa7e92-96fd-4816-8bfb-9eed35c4be21', '109d253e-bda2-11f0-a0c1-bc0ff35ec8eb', 'Investasi', 'income', '#27ae60', 'trending_up', NULL, 'monthly', 0, NULL, NULL, NULL, 0, 1, '2025-11-09 19:27:00', '2025-11-09 19:27:00'),
 ('15c77de5-368f-45ea-9c30-8942eb3a38ab', 'ff42a623-53be-4bbb-a3a1-ab4ebbb83bdf', 'Salary', 'income', '#FFEAA7', 'receipt', NULL, 'monthly', 0, NULL, NULL, NULL, 0, 0, '2025-10-29 11:04:15', '2025-10-29 11:04:15'),
 ('1642a251-8116-47cc-b4d4-714bef117bac', 'ff42a623-53be-4bbb-a3a1-ab4ebbb83bdf', 'Food & Dining', 'expense', '#FF6B6B', 'receipt', NULL, 'monthly', 0, NULL, NULL, NULL, 0, 0, '2025-10-29 11:04:15', '2025-10-29 11:04:15'),
 ('1fb8708f-8815-4773-995f-7b6836ebac8a', 'e651e739-b4c2-11f0-815b-bc0ff35ec8eb', 'Hiburan', 'expense', '#34495e', 'movie', NULL, 'monthly', 0, NULL, NULL, NULL, 0, 1, '2025-10-29 12:29:22', '2025-10-29 12:29:22'),
@@ -138,16 +147,21 @@ INSERT INTO `categories_232143` (`category_id_232143`, `user_id_232143`, `name_2
 ('474e9023-5038-41c3-9feb-a0c04b7fbf1e', '5ae93c37-b4c3-11f0-815b-bc0ff35ec8eb', 'Transportasi', 'expense', '#f39c12', 'directions_car', NULL, 'monthly', 0, NULL, NULL, NULL, 0, 1, '2025-10-29 12:32:38', '2025-10-29 12:32:38'),
 ('49a07475-f591-42d8-8c7e-90a89a0f492a', 'ff42a623-53be-4bbb-a3a1-ab4ebbb83bdf', 'Salary', 'income', '#FFEAA7', 'receipt', NULL, 'monthly', 0, NULL, NULL, NULL, 0, 0, '2025-10-29 11:05:35', '2025-10-29 11:05:35'),
 ('4dc0f2a3-7362-4300-b761-3966d43baff5', '5ae93c37-b4c3-11f0-815b-bc0ff35ec8eb', 'Belanja', 'expense', '#9b59b6', 'shopping_cart', NULL, 'monthly', 0, NULL, NULL, NULL, 0, 1, '2025-10-29 12:32:38', '2025-10-29 12:32:38'),
+('4deb6886-02bf-4ab8-bbe6-b8f86c1c4744', '109d253e-bda2-11f0-a0c1-bc0ff35ec8eb', 'Belanja', 'expense', '#9b59b6', 'shopping_cart', NULL, 'monthly', 0, NULL, NULL, NULL, 0, 1, '2025-11-09 19:27:01', '2025-11-09 19:27:01'),
 ('4e53ab9c-0d1c-44ca-a136-0dd4016d692f', 'e651e739-b4c2-11f0-815b-bc0ff35ec8eb', 'Investasi', 'income', '#27ae60', 'trending_up', NULL, 'monthly', 0, NULL, NULL, NULL, 0, 1, '2025-10-29 12:29:22', '2025-10-29 12:29:22'),
 ('501116b3-b087-4ffc-97d8-b8f4597fa21e', '5ae93c37-b4c3-11f0-815b-bc0ff35ec8eb', 'Hiburan', 'expense', '#34495e', 'movie', NULL, 'monthly', 0, NULL, NULL, NULL, 0, 1, '2025-10-29 12:32:38', '2025-10-29 12:32:38'),
+('61c79494-165b-46b2-b427-af7ec6bb218c', '109d253e-bda2-11f0-a0c1-bc0ff35ec8eb', 'Tabungan', 'expense', '#16a085', 'savings', NULL, 'monthly', 0, NULL, NULL, NULL, 0, 1, '2025-11-09 19:27:01', '2025-11-09 19:27:01'),
+('63d2a78d-86a1-4187-9a6e-26f158c21bd8', '109d253e-bda2-11f0-a0c1-bc0ff35ec8eb', 'Transportasi', 'expense', '#f39c12', 'directions_car', NULL, 'monthly', 0, NULL, NULL, NULL, 0, 1, '2025-11-09 19:27:00', '2025-11-09 19:27:00'),
 ('63fb57d5-8c51-46d5-bab7-ac56dc5ff038', 'ff42a623-53be-4bbb-a3a1-ab4ebbb83bdf', 'Transportation', 'expense', '#4ECDC4', 'receipt', NULL, 'monthly', 0, NULL, NULL, NULL, 0, 0, '2025-10-29 11:05:35', '2025-10-29 11:05:35'),
 ('69f68018-60c3-4944-9bde-90662cac8e9b', 'ff42a623-53be-4bbb-a3a1-ab4ebbb83bdf', 'Entertainment', 'expense', '#45B7D1', 'receipt', NULL, 'monthly', 0, NULL, NULL, NULL, 0, 0, '2025-10-29 11:04:15', '2025-10-29 11:04:15'),
+('6ae53023-7c1e-4441-a367-567384883fa3', '109d253e-bda2-11f0-a0c1-bc0ff35ec8eb', 'Freelance', 'income', '#1abc9c', 'computer', NULL, 'monthly', 0, NULL, NULL, NULL, 0, 1, '2025-11-09 19:27:00', '2025-11-09 19:27:00'),
 ('718f68ca-ee21-42a2-a866-df59caa911cc', '7d89af61-65df-4497-86a2-d4ba81c2ed35', 'Freelance', 'income', '#1abc9c', 'computer', NULL, 'monthly', 0, NULL, NULL, NULL, 0, 1, '2025-10-29 11:10:01', '2025-10-29 11:10:01'),
 ('72c3bb6b-fbf5-4e02-9f55-252711534f81', '7d89af61-65df-4497-86a2-d4ba81c2ed35', 'Makanan & Minuman', 'expense', '#e74c3c', 'restaurant', NULL, 'monthly', 0, NULL, NULL, NULL, 0, 1, '2025-10-29 11:10:01', '2025-10-29 11:10:01'),
 ('757ffc00-d2e1-4510-947e-51a71f6bf1ed', '7d89af61-65df-4497-86a2-d4ba81c2ed35', 'Gaji', 'income', '#2ecc71', 'work', NULL, 'monthly', 0, NULL, NULL, NULL, 0, 1, '2025-10-29 11:10:01', '2025-10-29 11:10:01'),
 ('7aeb538d-39fe-4bc4-aabc-812bfebdffdb', 'ff42a623-53be-4bbb-a3a1-ab4ebbb83bdf', 'Freelance', 'income', '#DDA0DD', 'receipt', NULL, 'monthly', 0, NULL, NULL, NULL, 0, 0, '2025-10-29 11:05:35', '2025-10-29 11:05:35'),
 ('7e1d6d5b-3934-4695-b280-c2c88be52b8d', 'ff42a623-53be-4bbb-a3a1-ab4ebbb83bdf', 'Entertainment', 'expense', '#45B7D1', 'receipt', NULL, 'monthly', 0, NULL, NULL, NULL, 0, 0, '2025-10-29 11:06:20', '2025-10-29 11:06:20'),
 ('80805e4a-a607-4140-86f6-aa22c451f258', '7d89af61-65df-4497-86a2-d4ba81c2ed35', 'Transportasi', 'expense', '#f39c12', 'directions_car', NULL, 'monthly', 0, NULL, NULL, NULL, 0, 1, '2025-10-29 11:10:01', '2025-10-29 11:10:01'),
+('8f5308e1-6d5e-4c55-8dbc-616a44c74286', '109d253e-bda2-11f0-a0c1-bc0ff35ec8eb', 'Tagihan & Utilitas', 'expense', '#95a5a6', 'receipt', NULL, 'monthly', 0, NULL, NULL, NULL, 0, 1, '2025-11-09 19:27:01', '2025-11-09 19:27:01'),
 ('912f645e-cd59-404b-9314-58a1a4d68398', 'ff42a623-53be-4bbb-a3a1-ab4ebbb83bdf', 'Freelance', 'income', '#DDA0DD', 'receipt', NULL, 'monthly', 0, NULL, NULL, NULL, 0, 0, '2025-10-29 11:04:15', '2025-10-29 11:04:15'),
 ('94eaf908-a8a5-4fe4-90d9-d75102134414', 'ff42a623-53be-4bbb-a3a1-ab4ebbb83bdf', 'Transportation', 'expense', '#4ECDC4', 'receipt', NULL, 'monthly', 0, NULL, NULL, NULL, 0, 0, '2025-10-29 11:06:20', '2025-10-29 11:06:20'),
 ('97b8b9b8-9fa6-11f0-9aee-bc0ff35ec8eb', NULL, 'Gaji', 'income', '#2ecc71', 'work', NULL, 'monthly', 0, NULL, NULL, NULL, 1, 1, '2025-10-02 15:43:50', '2025-10-02 15:43:50'),
@@ -164,10 +178,13 @@ INSERT INTO `categories_232143` (`category_id_232143`, `user_id_232143`, `name_2
 ('97b8c40c-9fa6-11f0-9aee-bc0ff35ec8eb', NULL, 'Travel', 'expense', '#8e44ad', 'flight', NULL, 'monthly', 0, NULL, NULL, NULL, 12, 1, '2025-10-02 15:43:50', '2025-10-02 15:43:50'),
 ('9c839f78-3f63-4fae-b185-5f2dae1f83e1', '7d89af61-65df-4497-86a2-d4ba81c2ed35', 'Kesehatan', 'expense', '#e67e22', 'local_hospital', NULL, 'monthly', 0, NULL, NULL, NULL, 0, 1, '2025-10-29 11:10:01', '2025-10-29 11:10:01'),
 ('9e650d7b-2582-4f4a-b8ac-c48993e053ff', '7d89af61-65df-4497-86a2-d4ba81c2ed35', 'Tabungan', 'expense', '#16a085', 'savings', NULL, 'monthly', 0, NULL, NULL, NULL, 0, 1, '2025-10-29 11:10:01', '2025-10-29 11:10:01'),
+('9ef82cbe-5ed8-45e6-bb22-ba4eee91d19b', '109d253e-bda2-11f0-a0c1-bc0ff35ec8eb', 'Hiburan', 'expense', '#34495e', 'movie', NULL, 'monthly', 0, NULL, NULL, NULL, 0, 1, '2025-11-09 19:27:01', '2025-11-09 19:27:01'),
 ('aa3f80cb-27cf-4e55-b685-bd77fa2af878', '7d89af61-65df-4497-86a2-d4ba81c2ed35', 'Tagihan & Utilitas', 'expense', '#95a5a6', 'receipt', NULL, 'monthly', 0, NULL, NULL, NULL, 0, 1, '2025-10-29 11:10:01', '2025-10-29 11:10:01'),
 ('abb1f362-f727-418e-bb25-bf368d8b7c8d', 'e651e739-b4c2-11f0-815b-bc0ff35ec8eb', 'Makanan & Minuman', 'expense', '#e74c3c', 'restaurant', NULL, 'monthly', 0, NULL, NULL, NULL, 0, 1, '2025-10-29 12:29:22', '2025-10-29 12:29:22'),
 ('acd4cb09-ce8c-4e73-80ed-322f4a909295', 'e651e739-b4c2-11f0-815b-bc0ff35ec8eb', 'Belanja', 'expense', '#9b59b6', 'shopping_cart', NULL, 'monthly', 0, NULL, NULL, NULL, 0, 1, '2025-10-29 12:29:22', '2025-10-29 12:29:22'),
 ('ada0faf6-bbb9-461f-bcfc-063d2f3beff0', 'e651e739-b4c2-11f0-815b-bc0ff35ec8eb', 'Kesehatan', 'expense', '#e67e22', 'local_hospital', NULL, 'monthly', 0, NULL, NULL, NULL, 0, 1, '2025-10-29 12:29:22', '2025-10-29 12:29:22'),
+('adeeb4e2-96a4-4ccf-a392-5f0edbc125e0', '109d253e-bda2-11f0-a0c1-bc0ff35ec8eb', 'Gaji', 'income', '#2ecc71', 'work', NULL, 'monthly', 0, NULL, NULL, NULL, 0, 1, '2025-11-09 19:27:00', '2025-11-09 19:27:00'),
+('b1f70160-22b9-42ea-9d17-9e593dd169e5', '109d253e-bda2-11f0-a0c1-bc0ff35ec8eb', 'Pendidikan', 'expense', '#2980b9', 'school', NULL, 'monthly', 0, NULL, NULL, NULL, 0, 1, '2025-11-09 19:27:01', '2025-11-09 19:27:01'),
 ('b4bcd446-4914-4b26-b376-ae7d900a12a4', '5ae93c37-b4c3-11f0-815b-bc0ff35ec8eb', 'Investasi', 'income', '#27ae60', 'trending_up', NULL, 'monthly', 0, NULL, NULL, NULL, 0, 1, '2025-10-29 12:32:38', '2025-10-29 12:32:38'),
 ('ba6e2f4e-13f1-40dc-9530-3fb46a1d0142', '5ae93c37-b4c3-11f0-815b-bc0ff35ec8eb', 'Kesehatan', 'expense', '#e67e22', 'local_hospital', NULL, 'monthly', 0, NULL, NULL, NULL, 0, 1, '2025-10-29 12:32:38', '2025-10-29 12:32:38'),
 ('bea508c6-3d14-4498-9b61-cf7c9bfa052d', 'ff42a623-53be-4bbb-a3a1-ab4ebbb83bdf', 'Food & Dining', 'expense', '#FF6B6B', 'receipt', NULL, 'monthly', 0, NULL, NULL, NULL, 0, 0, '2025-10-29 11:05:35', '2025-10-29 11:05:35'),
@@ -179,9 +196,11 @@ INSERT INTO `categories_232143` (`category_id_232143`, `user_id_232143`, `name_2
 ('cd40f21a-0866-404c-8815-03acdd968187', 'e651e739-b4c2-11f0-815b-bc0ff35ec8eb', 'Gaji', 'income', '#2ecc71', 'work', NULL, 'monthly', 0, NULL, NULL, NULL, 0, 1, '2025-10-29 12:29:22', '2025-10-29 12:29:22'),
 ('d0bcf532-f59a-4c5d-9118-1668570719f5', 'e651e739-b4c2-11f0-815b-bc0ff35ec8eb', 'Tabungan', 'expense', '#16a085', 'savings', NULL, 'monthly', 0, NULL, NULL, NULL, 0, 1, '2025-10-29 12:29:22', '2025-10-29 12:29:22'),
 ('d13d1dab-ace7-467d-9192-c16f45e75936', 'e651e739-b4c2-11f0-815b-bc0ff35ec8eb', 'Tagihan & Utilitas', 'expense', '#95a5a6', 'receipt', NULL, 'monthly', 0, NULL, NULL, NULL, 0, 1, '2025-10-29 12:29:22', '2025-10-29 12:29:22'),
+('d5f2425d-036e-4e49-8dce-eaee0c84207b', '109d253e-bda2-11f0-a0c1-bc0ff35ec8eb', 'Kesehatan', 'expense', '#e67e22', 'local_hospital', NULL, 'monthly', 0, NULL, NULL, NULL, 0, 1, '2025-11-09 19:27:01', '2025-11-09 19:27:01'),
 ('d5f3eaaa-9f02-488a-a526-4dfd23c0543f', '7d89af61-65df-4497-86a2-d4ba81c2ed35', 'Hiburan', 'expense', '#34495e', 'movie', NULL, 'monthly', 0, NULL, NULL, NULL, 0, 1, '2025-10-29 11:10:01', '2025-10-29 11:10:01'),
 ('da23ef8f-ad25-40ab-9f9a-e43446d20200', '5ae93c37-b4c3-11f0-815b-bc0ff35ec8eb', 'Freelance', 'income', '#1abc9c', 'computer', NULL, 'monthly', 0, NULL, NULL, NULL, 0, 1, '2025-10-29 12:32:38', '2025-10-29 12:32:38'),
 ('de05fcf6-0e39-4263-afe9-a77d31bca245', 'ff42a623-53be-4bbb-a3a1-ab4ebbb83bdf', 'Utilities', 'expense', '#96CEB4', 'receipt', NULL, 'monthly', 0, NULL, NULL, NULL, 0, 0, '2025-10-29 11:06:20', '2025-10-29 11:06:20'),
+('df16732b-57e4-49c4-b637-fff7cea492b0', '109d253e-bda2-11f0-a0c1-bc0ff35ec8eb', 'Makanan & Minuman', 'expense', '#e74c3c', 'restaurant', NULL, 'monthly', 0, NULL, NULL, NULL, 0, 1, '2025-11-09 19:27:00', '2025-11-09 19:27:00'),
 ('e26fdb47-908b-4197-98ab-8461fbc2c2ba', '5ae93c37-b4c3-11f0-815b-bc0ff35ec8eb', 'Tagihan & Utilitas', 'expense', '#95a5a6', 'receipt', NULL, 'monthly', 0, NULL, NULL, NULL, 0, 1, '2025-10-29 12:32:38', '2025-10-29 12:32:38'),
 ('ed97e04c-ed7a-48f1-b420-f81b9b51a2b2', '7d89af61-65df-4497-86a2-d4ba81c2ed35', 'Belanja', 'expense', '#9b59b6', 'shopping_cart', NULL, 'monthly', 0, NULL, NULL, NULL, 0, 1, '2025-10-29 11:10:01', '2025-10-29 11:10:01'),
 ('f753fa9a-e767-495e-8695-1f14e4a4d3b7', 'e651e739-b4c2-11f0-815b-bc0ff35ec8eb', 'Pendidikan', 'expense', '#2980b9', 'school', NULL, 'monthly', 0, NULL, NULL, NULL, 0, 1, '2025-10-29 12:29:22', '2025-10-29 12:29:22'),
@@ -215,6 +234,13 @@ CREATE TABLE `financial_goals_232143` (
   `updated_at_232143` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `progress_percentage_232143` decimal(5,2) GENERATED ALWAYS AS ((case when (`target_amount_232143` > 0) then round(((`current_amount_232143` / `target_amount_232143`) * 100),2) else 0 end)) STORED
 ) ;
+
+--
+-- Dumping data for table `financial_goals_232143`
+--
+
+INSERT INTO `financial_goals_232143` (`goal_id_232143`, `user_id_232143`, `name_232143`, `description_232143`, `goal_type_232143`, `target_amount_232143`, `current_amount_232143`, `start_date_232143`, `target_date_232143`, `is_completed_232143`, `completed_date_232143`, `priority_232143`, `monthly_target_232143`, `auto_deduct_232143`, `deduct_percentage_232143`, `recommended_monthly_saving_232143`, `feasibility_score_232143`, `created_at_232143`, `updated_at_232143`) VALUES
+('60e01129-9046-4a80-8494-7c0cea984bad', '5ae93c37-b4c3-11f0-815b-bc0ff35ec8eb', 'a', 'a', 'emergency_fund', '1000.00', '600.00', '2025-11-10', '2026-11-09', 0, NULL, 3, NULL, 0, NULL, '83.33', NULL, '2025-11-09 20:05:54', '2025-11-09 20:28:11');
 
 -- --------------------------------------------------------
 
@@ -406,10 +432,13 @@ INSERT INTO `transactions_232143` (`transaction_id_232143`, `user_id_232143`, `a
 ('5ee1ca71-14ba-4296-b8cc-e4dc11110535', '5ae93c37-b4c3-11f0-815b-bc0ff35ec8eb', '1000.00', 'income', NULL, 'a', NULL, 'cash', NULL, 0, NULL, NULL, NULL, 1, NULL, '2025-11-03', NULL, '2025-11-03 00:22:17', '2025-11-03 00:22:17'),
 ('6e1d2d03-a4e9-4a7b-b266-a89a51c40da9', '5ae93c37-b4c3-11f0-815b-bc0ff35ec8eb', '1000.00', 'income', NULL, 'a', NULL, 'cash', NULL, 0, NULL, NULL, NULL, 1, NULL, '2025-11-03', NULL, '2025-11-02 22:29:05', '2025-11-02 22:29:05'),
 ('82fe80be-366b-46da-87ae-6a0164f5916c', 'ff42a623-53be-4bbb-a3a1-ab4ebbb83bdf', '3000.00', 'income', 'cd0603ad-0160-438f-949e-dc92f1eed1cb', 'Monthly salary', NULL, 'bank_transfer', NULL, 0, NULL, NULL, NULL, 1, NULL, '2025-10-24', NULL, '2025-10-29 11:06:20', '2025-10-29 11:06:20'),
+('a53e8383-6558-417f-bf39-7f92db76c37a', '5ae93c37-b4c3-11f0-815b-bc0ff35ec8eb', '100000.00', 'income', NULL, 'as', NULL, 'cash', NULL, 0, NULL, NULL, NULL, 1, NULL, '2025-11-10', NULL, '2025-11-09 18:39:38', '2025-11-09 18:39:37'),
 ('b18e1a40-aa10-45e0-ae50-7cfed742d705', 'ff42a623-53be-4bbb-a3a1-ab4ebbb83bdf', '25.50', 'expense', '07f2295f-8244-49ab-a509-ae260f059f7f', 'Lunch at restaurant', NULL, 'debit_card', NULL, 0, NULL, NULL, NULL, 1, NULL, '2025-10-28', NULL, '2025-10-29 11:06:20', '2025-10-29 11:06:20'),
 ('ba999e1a-2674-478f-912e-876944ee11d7', 'ff42a623-53be-4bbb-a3a1-ab4ebbb83bdf', '150.00', 'expense', '94eaf908-a8a5-4fe4-90d9-d75102134414', 'Gas station', NULL, 'debit_card', NULL, 0, NULL, NULL, NULL, 1, NULL, '2025-10-27', NULL, '2025-10-29 11:06:20', '2025-10-29 11:06:20'),
 ('d15d8d19-f08f-4b32-9ef8-95c36ea929a3', '5ae93c37-b4c3-11f0-815b-bc0ff35ec8eb', '100.00', 'income', NULL, 'a', NULL, 'cash', NULL, 0, NULL, NULL, NULL, 1, NULL, '2025-11-02', NULL, '2025-11-02 13:15:17', '2025-11-02 13:15:17'),
-('df2e7d5c-4707-4055-96cc-dda6ff53b1af', 'ff42a623-53be-4bbb-a3a1-ab4ebbb83bdf', '45.00', 'expense', '7e1d6d5b-3934-4695-b280-c2c88be52b8d', 'Movie tickets', NULL, 'debit_card', NULL, 0, NULL, NULL, NULL, 1, NULL, '2025-10-26', NULL, '2025-10-29 11:06:20', '2025-10-29 11:06:20');
+('df2e7d5c-4707-4055-96cc-dda6ff53b1af', 'ff42a623-53be-4bbb-a3a1-ab4ebbb83bdf', '45.00', 'expense', '7e1d6d5b-3934-4695-b280-c2c88be52b8d', 'Movie tickets', NULL, 'debit_card', NULL, 0, NULL, NULL, NULL, 1, NULL, '2025-10-26', NULL, '2025-10-29 11:06:20', '2025-10-29 11:06:20'),
+('e142cea0-8172-47a3-bd30-697873526f73', '5ae93c37-b4c3-11f0-815b-bc0ff35ec8eb', '123000.00', 'income', NULL, 'gaji', '{\"address\": \"Jl. Sudirman No. 123, Jakarta\", \"latitude\": -6.2088, \"longitude\": 106.8456, \"place_name\": \"Restaurant Sederhana\"}', 'cash', NULL, 0, NULL, NULL, NULL, 1, NULL, '2025-11-10', NULL, '2025-11-10 02:50:30', '2025-11-10 02:50:30'),
+('f2249ba1-c936-4c23-80c9-2749f58e60bd', '5ae93c37-b4c3-11f0-815b-bc0ff35ec8eb', '1.00', 'expense', NULL, 'q', '{\"address\": \"Jl. Sudirman No. 123, Jakarta\", \"latitude\": -6.2088, \"longitude\": 106.8456, \"place_name\": \"Restaurant Sederhana\"}', 'cash', NULL, 0, NULL, NULL, NULL, 1, NULL, '2025-11-09', NULL, '2025-11-09 21:11:51', '2025-11-09 21:11:50');
 
 --
 -- Triggers `transactions_232143`
@@ -465,10 +494,11 @@ CREATE TABLE `users_232143` (
 --
 
 INSERT INTO `users_232143` (`user_id_232143`, `email_232143`, `password_hash_232143`, `full_name_232143`, `phone_number_232143`, `date_of_birth_232143`, `occupation_232143`, `income_range_232143`, `family_size_232143`, `currency_232143`, `base_location_232143`, `financial_goals_232143`, `risk_tolerance_232143`, `notification_settings_232143`, `created_at_232143`, `updated_at_232143`, `last_login_232143`, `is_active_232143`) VALUES
+('109d253e-bda2-11f0-a0c1-bc0ff35ec8eb', 'R@gmail.com', '$2b$12$qh0Ejok4p7KzF8RUVzSdc.CkcFHwf9KRHS/QWhIzOVYQ67pSO0Ywi', 'rey', NULL, NULL, NULL, NULL, 1, 'IDR', NULL, '{\"vacation\": 0, \"investment\": 0, \"debt_payment\": 0, \"emergency_fund\": 0}', 3, '{\"budget_alerts\": true, \"goal_reminders\": true, \"spending_insights\": true, \"push_notifications\": true}', '2025-11-09 19:27:01', '2025-11-09 19:30:38', '2025-11-09 19:30:38', 1),
 ('1750058a-9408-4f79-926b-37113be5529e', 'anotheruser@example.com', '$2b$12$ICC23HJs4JbCUP88FwgxSeT0n4BRZ8FS2kw8h5seMmfdxlKbb73hK', 'Another User', NULL, NULL, NULL, NULL, 1, 'IDR', NULL, '{\"vacation\": 0, \"investment\": 0, \"debt_payment\": 0, \"emergency_fund\": 0}', 3, '{\"budget_alerts\": true, \"goal_reminders\": true, \"spending_insights\": true, \"push_notifications\": true}', '2025-10-29 11:09:51', '2025-10-29 11:09:50', NULL, 1),
 ('306a3434-d3bd-4727-b42d-8943825ee8d5', 'newuser@example.com', '$2b$12$dC7xZu7XkVpqFA8Fn9GZwO4lrDzf4YQLXMHS8QmfOGnkCh3JeWn0O', 'New User', NULL, NULL, NULL, NULL, 1, 'IDR', NULL, '{\"vacation\": 0, \"investment\": 0, \"debt_payment\": 0, \"emergency_fund\": 0}', 3, '{\"budget_alerts\": true, \"goal_reminders\": true, \"spending_insights\": true, \"push_notifications\": true}', '2025-10-29 11:09:20', '2025-10-29 11:09:20', NULL, 1),
 ('5284d4d6-e197-4053-a902-b4b7f7ee5e20', 'asa@gmail.com', '$2b$12$sqV3ZOItsnNGwWbqgIucrui/h8Vv7E82LJ6Weqh2sD4K7OV46jLQC', 'das', NULL, NULL, NULL, NULL, 1, 'IDR', NULL, '{\"vacation\": 0, \"investment\": 0, \"debt_payment\": 0, \"emergency_fund\": 0}', 3, '{\"budget_alerts\": true, \"goal_reminders\": true, \"spending_insights\": true, \"push_notifications\": true}', '2025-10-29 11:51:46', '2025-10-29 11:51:45', NULL, 1),
-('5ae93c37-b4c3-11f0-815b-bc0ff35ec8eb', 'Q@gmail.com', '$2b$12$Qb9lmZS1.QvD/oF2h6ubfe22lyoOwcNlWximKwTChdrwlBO7aq0e2', 'ada', NULL, NULL, NULL, NULL, 1, 'IDR', NULL, '{\"vacation\": 0, \"investment\": 0, \"debt_payment\": 0, \"emergency_fund\": 0}', 3, '{\"budget_alerts\": true, \"goal_reminders\": true, \"spending_insights\": true, \"push_notifications\": true}', '2025-10-29 12:32:39', '2025-11-03 01:19:45', '2025-11-03 01:19:45', 1),
+('5ae93c37-b4c3-11f0-815b-bc0ff35ec8eb', 'Q@gmail.com', '$2b$12$Qb9lmZS1.QvD/oF2h6ubfe22lyoOwcNlWximKwTChdrwlBO7aq0e2', 'ada', NULL, NULL, NULL, NULL, 1, 'IDR', NULL, '{\"vacation\": 0, \"investment\": 0, \"debt_payment\": 0, \"emergency_fund\": 0}', 3, '{\"budget_alerts\": true, \"goal_reminders\": true, \"spending_insights\": true, \"push_notifications\": true}', '2025-10-29 12:32:39', '2025-11-10 02:49:34', '2025-11-10 02:49:34', 1),
 ('71fa0c62-66f2-4e10-a5e5-791cb80647ce', 'asda@gmail.com', '$2b$12$njSsU35.9t5.Pz09ryDlU.GonVGhOHGTcdUCR5ILHqtuo0acXWOeq', 'das', NULL, NULL, NULL, NULL, 1, 'IDR', NULL, '{\"vacation\": 0, \"investment\": 0, \"debt_payment\": 0, \"emergency_fund\": 0}', 3, '{\"budget_alerts\": true, \"goal_reminders\": true, \"spending_insights\": true, \"push_notifications\": true}', '2025-10-29 11:50:16', '2025-10-29 11:50:16', NULL, 1),
 ('769d87ce-9e5c-4705-9744-99a26f06e5a4', 'test2@example.com', '$2b$12$hrY2fqyZ.qqBSPZTqIzbLukTTPsj7tl2Iq8bJ18W90saItyGn6rtK', '', NULL, NULL, NULL, NULL, 1, 'IDR', NULL, '{\"vacation\": 0, \"investment\": 0, \"debt_payment\": 0, \"emergency_fund\": 0}', 3, '{\"budget_alerts\": true, \"goal_reminders\": true, \"spending_insights\": true, \"push_notifications\": true}', '2025-10-29 10:58:47', '2025-10-29 10:58:46', NULL, 1),
 ('7d89af61-65df-4497-86a2-d4ba81c2ed35', 'testreg@example.com', '$2b$12$4F4S8M83LMxGiUVOnulrFe9xXYCRYboX24qrYdyTZfUtoc3no7shi', 'Test Reg', NULL, NULL, NULL, NULL, 1, 'IDR', NULL, '{\"vacation\": 0, \"investment\": 0, \"debt_payment\": 0, \"emergency_fund\": 0}', 3, '{\"budget_alerts\": true, \"goal_reminders\": true, \"spending_insights\": true, \"push_notifications\": true}', '2025-10-29 11:10:01', '2025-10-29 11:10:07', '2025-10-29 11:10:07', 1),

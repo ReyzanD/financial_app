@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from models.transaction_model import TransactionModel
+from services.recommendation_service import RecommendationService
 from datetime import datetime
 import json
 
@@ -27,20 +28,36 @@ def get_transactions():
         # Filter by category
         if request.args.get('category_id'):
             filters['category_id'] = request.args.get('category_id')
+
+        # Filter by amount range
+        if request.args.get('min_amount') is not None:
+            filters['min_amount'] = request.args.get('min_amount', type=float)
+
+        if request.args.get('max_amount') is not None:
+            filters['max_amount'] = request.args.get('max_amount', type=float)
+
+        # Search by description text
+        if request.args.get('search'):
+            filters['search'] = request.args.get('search')
         
         transactions = TransactionModel.get_user_transactions(user_id, filters)
         
         # Transform the data to match frontend expectations
         formatted_transactions = []
         for t in transactions:
-            # Parse location data if it exists
-            location_address = None
+            # Parse location data if it exists (return full object for map display)
+            location_obj = None
             if t['location_data_232143']:
                 try:
                     location_data = json.loads(t['location_data_232143'])
-                    location_address = location_data.get('address')
+                    location_obj = {
+                        'address': location_data.get('address'),
+                        'latitude': location_data.get('latitude'),
+                        'longitude': location_data.get('longitude'),
+                        'place_name': location_data.get('place_name')
+                    }
                 except:
-                    location_address = None
+                    location_obj = None
 
             formatted_transaction = {
                 'id': t['transaction_id_232143'],
@@ -53,7 +70,7 @@ def get_transactions():
                 'payment_method': t['payment_method_232143'],
                 'date': t['transaction_date_232143'].isoformat() if t['transaction_date_232143'] else None,
                 'created_at': t['created_at_232143'].isoformat() if t['created_at_232143'] else None,
-                'location': location_address
+                'location': location_obj
             }
             formatted_transactions.append(formatted_transaction)
         
@@ -275,3 +292,21 @@ def get_recent_transactions():
         
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
+@transaction_bp.route('/recommendations', methods=['GET'])
+@jwt_required()
+def get_ai_recommendations():
+    """Get AI-powered financial recommendations based on user's spending patterns"""
+    try:
+        user_id = get_jwt_identity()
+        recommendations = RecommendationService.generate_recommendations(user_id)
+        return jsonify(recommendations), 200
+        
+    except Exception as e:
+        print(f'❌ Error in get_ai_recommendations: {str(e)}')
+        import traceback
+        traceback.print_exc()
+        return jsonify({
+            'recommendation': 'Belum ada rekomendasi AI tersedia',
+            'potential_savings': 0
+        }), 200

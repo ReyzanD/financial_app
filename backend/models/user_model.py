@@ -58,3 +58,12 @@ class UserModel:
             db.commit()
             
             return cursor.rowcount > 0
+
+    @staticmethod
+    def delete_user(user_id):
+        db = get_db()
+        with db.cursor() as cursor:
+            sql = "DELETE FROM users_232143 WHERE user_id_232143 = %s"
+            cursor.execute(sql, (user_id,))
+            db.commit()
+            return cursor.rowcount > 0

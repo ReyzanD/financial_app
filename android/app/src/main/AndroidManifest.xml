@@ -24,8 +24,6 @@
               android:name="io.flutter.embedding.android.NormalTheme"
               android:resource="@style/NormalTheme"
               />
-              <meta-data android:name="com.google.android.geo.API_KEY"
-               android:value="AIzaSyDXVHDQWDsRTA0NqAULy7smV_NW-3v1nfk"/>
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
@@ -36,10 +34,5 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
-
-        <!-- Google Maps API Key -->
-        <meta-data
-            android:name="com.google.android.geo.API_KEY"
-            android:value="YOUR_GOOGLE_MAPS_API_KEY_HERE"/>
     </application>
 </manifest>
