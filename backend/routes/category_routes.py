@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from models.category_model import CategoryModel
+import uuid
 
 category_bp = Blueprint('categories', __name__)
 
@@ -13,6 +14,9 @@ def get_categories():
         
         categories = CategoryModel.get_user_categories(user_id)
         print(f" Found {len(categories)} categories")
+        
+        if len(categories) == 0:
+            print(f" WARNING: No categories found for user {user_id}!")
         
         return jsonify({
             'categories': categories,
@@ -52,4 +56,33 @@ def create_category():
         }), 201
         
     except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@category_bp.route('/setup-defaults', methods=['POST'])
+@jwt_required()
+def setup_default_categories():
+    """Create default categories for users who don't have any"""
+    try:
+        user_id = get_jwt_identity()
+        
+        # Check if user already has categories
+        existing = CategoryModel.get_user_categories(user_id)
+        if existing:
+            return jsonify({
+                'message': 'You already have categories',
+                'count': len(existing)
+            }), 200
+        
+        # Create default categories
+        CategoryModel.create_default_categories(user_id)
+        
+        return jsonify({
+            'message': 'Default categories created successfully',
+            'count': 11
+        }), 201
+        
+    except Exception as e:
+        print(f'Error creating default categories: {e}')
+        import traceback
+        traceback.print_exc()
         return jsonify({'error': str(e)}), 500

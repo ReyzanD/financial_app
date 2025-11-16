@@ -9,7 +9,7 @@ class CategoryModel:
         with db.cursor() as cursor:
             sql = """
             SELECT * FROM categories_232143 
-            WHERE user_id_232143 = %s OR is_system_default_232143 = TRUE
+            WHERE user_id_232143 = %s
             ORDER BY type_232143, display_order_232143
             """
             cursor.execute(sql, (user_id,))

@@ -98,13 +98,15 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
   Future<void> _loadCategories() async {
     try {
       print('🔄 Loading categories from API...');
-      final categories = await _apiService.getCategories().timeout(
-        const Duration(seconds: 10),
-        onTimeout: () {
-          print('⏱️ Category loading timed out');
-          return [];
-        },
-      );
+      final categories = await _apiService
+          .getCategories(forceRefresh: true)
+          .timeout(
+            const Duration(seconds: 10),
+            onTimeout: () {
+              print('⏱️ Category loading timed out');
+              return [];
+            },
+          );
       print('✅ Categories loaded: ${categories.length}');
       if (mounted) {
         setState(() {

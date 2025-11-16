@@ -34,5 +34,10 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+        
+        <!-- Placeholder API key for Google Play Services -->
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyDU050RZ1Gv8ebZm8HMjvjokSiTmdih98w"/>
     </application>
 </manifest>

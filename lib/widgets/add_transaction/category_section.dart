@@ -125,7 +125,9 @@ class CategorySection extends StatelessWidget {
     // Filter categories by type
     final filteredCategories =
         categories.where((cat) {
-          final type = cat['type']?.toString().toLowerCase() ?? '';
+          final type =
+              (cat['type_232143'] ?? cat['type'])?.toString().toLowerCase() ??
+              '';
           return type == selectedType;
         }).toList();
 
@@ -171,12 +173,17 @@ class CategorySection extends StatelessWidget {
             runSpacing: 8,
             children:
                 filteredCategories.map((category) {
-                  final categoryId = category['id']?.toString() ?? '';
+                  final categoryId =
+                      (category['category_id_232143'] ?? category['id'])
+                          ?.toString() ??
+                      '';
                   final isSelected = selectedCategory == categoryId;
                   final categoryName =
-                      category['name']?.toString() ?? 'Unknown';
+                      (category['name_232143'] ?? category['name'])
+                          ?.toString() ??
+                      'Unknown';
                   final categoryColor = _parseColor(
-                    category['color']?.toString(),
+                    (category['color_232143'] ?? category['color'])?.toString(),
                   );
                   final categoryIcon = _getCategoryIcon(categoryName);
 
