@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:financial_app/models/financial_obligation.dart';
+import 'package:financial_app/widgets/obligations/add_obligation_modal.dart';
+import 'package:financial_app/widgets/obligations/obligation_details_modal.dart';
 
 class ObligationHelpers {
   static Color getObligationColor(FinancialObligation obligation) {
@@ -25,20 +27,35 @@ class ObligationHelpers {
     }
   }
 
-  static void showAddObligationModal(BuildContext context) {
-    // Stub implementation
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Tambah kewajiban - fitur akan segera hadir')),
+  static Future<void> showAddObligationModal(BuildContext context) async {
+    final result = await showModalBottomSheet<bool>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: const Color(0xFF0D0D0D),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) => const AddObligationModal(),
     );
+
+    // Optionally refresh the screen if obligation was added
+    if (result == true) {
+      // You can add a callback here if needed
+    }
   }
 
-  static void showObligationDetails(
+  static Future<void> showObligationDetails(
     BuildContext context,
     FinancialObligation obligation,
-  ) {
-    // Stub implementation
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text('Detail ${obligation.name}')));
+  ) async {
+    await showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: const Color(0xFF0D0D0D),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) => ObligationDetailsModal(obligation: obligation),
+    );
   }
 }

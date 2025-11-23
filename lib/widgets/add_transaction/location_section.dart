@@ -7,12 +7,16 @@ class LocationSection extends StatelessWidget {
   final LocationData? currentLocation;
   final bool isGettingLocation;
   final VoidCallback onGetLocation;
+  final VoidCallback onPickFromMap;
+  final VoidCallback onClearLocation;
 
   const LocationSection({
     super.key,
     required this.currentLocation,
     required this.isGettingLocation,
     required this.onGetLocation,
+    required this.onPickFromMap,
+    required this.onClearLocation,
   });
 
   @override
@@ -52,29 +56,56 @@ class LocationSection extends StatelessWidget {
   }
 
   Widget _buildLocationButton() {
-    return OutlinedButton.icon(
-      onPressed: isGettingLocation ? null : onGetLocation,
-      icon:
-          isGettingLocation
-              ? SizedBox(
-                width: 16,
-                height: 16,
-                child: CircularProgressIndicator(
-                  strokeWidth: 2,
-                  color: const Color(0xFF8B5FBF),
-                ),
-              )
-              : const Icon(Iconsax.location, size: 16),
-      label: Text(
-        isGettingLocation ? 'Mendeteksi Lokasi...' : 'Ambil Lokasi Saat Ini',
-        style: GoogleFonts.poppins(fontSize: 12),
-      ),
-      style: OutlinedButton.styleFrom(
-        foregroundColor: const Color(0xFF8B5FBF),
-        side: BorderSide(color: const Color(0xFF8B5FBF)),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      ),
+    return Row(
+      children: [
+        Expanded(
+          child: OutlinedButton.icon(
+            onPressed: isGettingLocation ? null : onGetLocation,
+            icon:
+                isGettingLocation
+                    ? const SizedBox(
+                      width: 16,
+                      height: 16,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: Color(0xFF8B5FBF),
+                      ),
+                    )
+                    : const Icon(Iconsax.location, size: 16),
+            label: Text(
+              isGettingLocation ? 'Mendeteksi...' : 'Lokasi Saat Ini',
+              style: GoogleFonts.poppins(fontSize: 12),
+            ),
+            style: OutlinedButton.styleFrom(
+              foregroundColor: const Color(0xFF8B5FBF),
+              side: const BorderSide(color: Color(0xFF8B5FBF)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+            ),
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: OutlinedButton.icon(
+            onPressed: isGettingLocation ? null : onPickFromMap,
+            icon: const Icon(Iconsax.map, size: 16),
+            label: Text(
+              'Pilih dari Peta',
+              style: GoogleFonts.poppins(fontSize: 12),
+            ),
+            style: OutlinedButton.styleFrom(
+              foregroundColor: Colors.green,
+              side: const BorderSide(color: Colors.green),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+            ),
+          ),
+        ),
+      ],
     );
   }
 
@@ -91,7 +122,7 @@ class LocationSection extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Icon(Iconsax.location, color: Colors.green, size: 20),
+          const Icon(Iconsax.location, color: Colors.green, size: 20),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
@@ -119,17 +150,36 @@ class LocationSection extends StatelessWidget {
                 ],
                 const SizedBox(height: 4),
                 Text(
-                  'Lokasi akan digunakan untuk analisis harga',
-                  style: GoogleFonts.poppins(color: Colors.green, fontSize: 10),
+                  'Lat: ${currentLocation!.latitude.toStringAsFixed(4)}, Lng: ${currentLocation!.longitude.toStringAsFixed(4)}',
+                  style: GoogleFonts.poppins(
+                    color: Colors.grey[600],
+                    fontSize: 10,
+                  ),
                 ),
               ],
             ),
           ),
-          IconButton(
-            icon: Icon(Iconsax.close_circle, size: 20, color: Colors.grey[500]),
-            onPressed: () {
-              // TODO: Implement clear location
-            },
+          Column(
+            children: [
+              IconButton(
+                icon: const Icon(
+                  Iconsax.edit,
+                  size: 18,
+                  color: Color(0xFF8B5FBF),
+                ),
+                onPressed: onPickFromMap,
+                tooltip: 'Edit di peta',
+              ),
+              IconButton(
+                icon: Icon(
+                  Iconsax.close_circle,
+                  size: 18,
+                  color: Colors.grey[500],
+                ),
+                onPressed: onClearLocation,
+                tooltip: 'Hapus lokasi',
+              ),
+            ],
           ),
         ],
       ),

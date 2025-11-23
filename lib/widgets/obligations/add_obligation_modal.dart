@@ -1,0 +1,485 @@
+import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:financial_app/services/obligation_service.dart';
+
+class AddObligationModal extends StatefulWidget {
+  final Map<String, dynamic>? initialObligation;
+
+  const AddObligationModal({super.key, this.initialObligation});
+
+  @override
+  State<AddObligationModal> createState() => _AddObligationModalState();
+}
+
+class _AddObligationModalState extends State<AddObligationModal> {
+  final _formKey = GlobalKey<FormState>();
+  final ObligationService _obligationService = ObligationService();
+
+  late TextEditingController _nameController;
+  late TextEditingController _monthlyAmountController;
+  late TextEditingController _originalAmountController;
+  late TextEditingController _currentBalanceController;
+  late TextEditingController _interestRateController;
+  late TextEditingController _minimumPaymentController;
+
+  String _selectedType = 'bill';
+  String _selectedCategory = 'other';
+  int _dueDayOfMonth = 1;
+  String? _subscriptionCycle;
+  String? _payoffStrategy;
+  bool _isLoading = false;
+
+  bool get _isEdit => widget.initialObligation != null;
+
+  @override
+  void initState() {
+    super.initState();
+    _nameController = TextEditingController();
+    _monthlyAmountController = TextEditingController();
+    _originalAmountController = TextEditingController();
+    _currentBalanceController = TextEditingController();
+    _interestRateController = TextEditingController();
+    _minimumPaymentController = TextEditingController();
+
+    final initial = widget.initialObligation;
+    if (initial != null) {
+      _nameController.text = initial['name_232143']?.toString() ?? '';
+      _monthlyAmountController.text =
+          (initial['monthly_amount_232143'] as num?)?.toStringAsFixed(0) ?? '';
+      _selectedType = initial['type_232143']?.toString() ?? 'bill';
+      _selectedCategory = initial['category_232143']?.toString() ?? 'other';
+      _dueDayOfMonth =
+          int.tryParse(initial['due_date_232143']?.toString() ?? '1') ?? 1;
+
+      if (initial['original_amount_232143'] != null) {
+        _originalAmountController.text =
+            (initial['original_amount_232143'] as num?)?.toStringAsFixed(0) ??
+            '';
+      }
+      if (initial['current_balance_232143'] != null) {
+        _currentBalanceController.text =
+            (initial['current_balance_232143'] as num?)?.toStringAsFixed(0) ??
+            '';
+      }
+      if (initial['interest_rate_232143'] != null) {
+        _interestRateController.text =
+            (initial['interest_rate_232143'] as num?)?.toStringAsFixed(2) ?? '';
+      }
+      if (initial['minimum_payment_232143'] != null) {
+        _minimumPaymentController.text =
+            (initial['minimum_payment_232143'] as num?)?.toStringAsFixed(0) ??
+            '';
+      }
+
+      _subscriptionCycle = initial['subscription_cycle_232143']?.toString();
+      _payoffStrategy = initial['payoff_strategy_232143']?.toString();
+    }
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _monthlyAmountController.dispose();
+    _originalAmountController.dispose();
+    _currentBalanceController.dispose();
+    _interestRateController.dispose();
+    _minimumPaymentController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _submit() async {
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final data = <String, dynamic>{
+        'name': _nameController.text,
+        'type': _selectedType,
+        'category': _selectedCategory,
+        'monthly_amount': double.parse(_monthlyAmountController.text),
+        'due_date': _dueDayOfMonth,
+      };
+
+      if (_originalAmountController.text.isNotEmpty) {
+        data['original_amount'] = double.parse(_originalAmountController.text);
+      }
+      if (_currentBalanceController.text.isNotEmpty) {
+        data['current_balance'] = double.parse(_currentBalanceController.text);
+      }
+      if (_interestRateController.text.isNotEmpty) {
+        data['interest_rate'] = double.parse(_interestRateController.text);
+      }
+      if (_minimumPaymentController.text.isNotEmpty) {
+        data['minimum_payment'] = double.parse(_minimumPaymentController.text);
+      }
+      if (_subscriptionCycle != null && _subscriptionCycle!.isNotEmpty) {
+        data['subscription_cycle'] = _subscriptionCycle;
+        data['is_subscription'] = true;
+      }
+      if (_payoffStrategy != null && _payoffStrategy!.isNotEmpty) {
+        data['payoff_strategy'] = _payoffStrategy;
+      }
+
+      if (_isEdit) {
+        final id =
+            widget.initialObligation?['obligation_id_232143']?.toString();
+        if (id == null) {
+          throw Exception('ID kewajiban tidak valid');
+        }
+        await _obligationService.updateObligation(id, data);
+      } else {
+        await _obligationService.createObligation(data);
+      }
+
+      if (!mounted) return;
+
+      Navigator.pop(context, true);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            _isEdit
+                ? 'Kewajiban berhasil diperbarui.'
+                : 'Kewajiban berhasil ditambahkan.',
+          ),
+          backgroundColor: const Color(0xFF8B5FBF),
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _isLoading = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error: ${e.toString()}'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.only(
+        bottom: MediaQuery.of(context).viewInsets.bottom,
+        left: 20,
+        right: 20,
+        top: 20,
+      ),
+      child: SingleChildScrollView(
+        child: Form(
+          key: _formKey,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: Colors.grey[600],
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              const SizedBox(height: 20),
+              Text(
+                _isEdit ? 'Edit Kewajiban' : 'Tambah Kewajiban',
+                style: GoogleFonts.poppins(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 24),
+
+              // Name
+              TextFormField(
+                controller: _nameController,
+                style: const TextStyle(color: Colors.white),
+                decoration: InputDecoration(
+                  labelText: 'Nama Kewajiban',
+                  labelStyle: TextStyle(color: Colors.grey[400]),
+                  filled: true,
+                  fillColor: const Color(0xFF1A1A1A),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide.none,
+                  ),
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Nama harus diisi';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 16),
+
+              // Type
+              DropdownButtonFormField<String>(
+                value: _selectedType,
+                dropdownColor: const Color(0xFF1A1A1A),
+                style: const TextStyle(color: Colors.white),
+                decoration: InputDecoration(
+                  labelText: 'Tipe',
+                  labelStyle: TextStyle(color: Colors.grey[400]),
+                  filled: true,
+                  fillColor: const Color(0xFF1A1A1A),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide.none,
+                  ),
+                ),
+                items: const [
+                  DropdownMenuItem(value: 'bill', child: Text('Tagihan')),
+                  DropdownMenuItem(value: 'debt', child: Text('Hutang')),
+                  DropdownMenuItem(
+                    value: 'subscription',
+                    child: Text('Langganan'),
+                  ),
+                ],
+                onChanged: (value) {
+                  if (value != null) {
+                    setState(() {
+                      _selectedType = value;
+                    });
+                  }
+                },
+              ),
+              const SizedBox(height: 16),
+
+              // Category
+              DropdownButtonFormField<String>(
+                value: _selectedCategory,
+                dropdownColor: const Color(0xFF1A1A1A),
+                style: const TextStyle(color: Colors.white),
+                decoration: InputDecoration(
+                  labelText: 'Kategori',
+                  labelStyle: TextStyle(color: Colors.grey[400]),
+                  filled: true,
+                  fillColor: const Color(0xFF1A1A1A),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide.none,
+                  ),
+                ),
+                items: const [
+                  DropdownMenuItem(value: 'utilities', child: Text('Utilitas')),
+                  DropdownMenuItem(value: 'housing', child: Text('Perumahan')),
+                  DropdownMenuItem(
+                    value: 'transportation',
+                    child: Text('Transportasi'),
+                  ),
+                  DropdownMenuItem(
+                    value: 'entertainment',
+                    child: Text('Hiburan'),
+                  ),
+                  DropdownMenuItem(value: 'other', child: Text('Lainnya')),
+                ],
+                onChanged: (value) {
+                  if (value != null) {
+                    setState(() {
+                      _selectedCategory = value;
+                    });
+                  }
+                },
+              ),
+              const SizedBox(height: 16),
+
+              // Monthly Amount
+              TextFormField(
+                controller: _monthlyAmountController,
+                keyboardType: TextInputType.number,
+                style: const TextStyle(color: Colors.white),
+                decoration: InputDecoration(
+                  labelText: 'Jumlah Bulanan (Rp)',
+                  labelStyle: TextStyle(color: Colors.grey[400]),
+                  filled: true,
+                  fillColor: const Color(0xFF1A1A1A),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide.none,
+                  ),
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Jumlah harus diisi';
+                  }
+                  if (double.tryParse(value) == null ||
+                      double.parse(value) <= 0) {
+                    return 'Masukkan angka yang valid';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 16),
+
+              // Due Day of Month
+              DropdownButtonFormField<int>(
+                value: _dueDayOfMonth,
+                dropdownColor: const Color(0xFF1A1A1A),
+                style: const TextStyle(color: Colors.white),
+                decoration: InputDecoration(
+                  labelText: 'Jatuh Tempo (Tanggal)',
+                  labelStyle: TextStyle(color: Colors.grey[400]),
+                  filled: true,
+                  fillColor: const Color(0xFF1A1A1A),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide.none,
+                  ),
+                ),
+                items: List.generate(
+                  31,
+                  (index) => DropdownMenuItem(
+                    value: index + 1,
+                    child: Text('${index + 1}'),
+                  ),
+                ),
+                onChanged: (value) {
+                  if (value != null) {
+                    setState(() {
+                      _dueDayOfMonth = value;
+                    });
+                  }
+                },
+              ),
+              const SizedBox(height: 16),
+
+              // Show additional fields for debt type
+              if (_selectedType == 'debt') ...[
+                TextFormField(
+                  controller: _originalAmountController,
+                  keyboardType: TextInputType.number,
+                  style: const TextStyle(color: Colors.white),
+                  decoration: InputDecoration(
+                    labelText: 'Jumlah Awal Hutang (Opsional)',
+                    labelStyle: TextStyle(color: Colors.grey[400]),
+                    filled: true,
+                    fillColor: const Color(0xFF1A1A1A),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide.none,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                TextFormField(
+                  controller: _currentBalanceController,
+                  keyboardType: TextInputType.number,
+                  style: const TextStyle(color: Colors.white),
+                  decoration: InputDecoration(
+                    labelText: 'Saldo Saat Ini (Opsional)',
+                    labelStyle: TextStyle(color: Colors.grey[400]),
+                    filled: true,
+                    fillColor: const Color(0xFF1A1A1A),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide.none,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                TextFormField(
+                  controller: _interestRateController,
+                  keyboardType: TextInputType.number,
+                  style: const TextStyle(color: Colors.white),
+                  decoration: InputDecoration(
+                    labelText: 'Bunga (%) (Opsional)',
+                    labelStyle: TextStyle(color: Colors.grey[400]),
+                    filled: true,
+                    fillColor: const Color(0xFF1A1A1A),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide.none,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                TextFormField(
+                  controller: _minimumPaymentController,
+                  keyboardType: TextInputType.number,
+                  style: const TextStyle(color: Colors.white),
+                  decoration: InputDecoration(
+                    labelText: 'Pembayaran Minimum (Opsional)',
+                    labelStyle: TextStyle(color: Colors.grey[400]),
+                    filled: true,
+                    fillColor: const Color(0xFF1A1A1A),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide.none,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+              ],
+
+              // Show subscription cycle for subscription type
+              if (_selectedType == 'subscription') ...[
+                DropdownButtonFormField<String>(
+                  value: _subscriptionCycle,
+                  dropdownColor: const Color(0xFF1A1A1A),
+                  style: const TextStyle(color: Colors.white),
+                  decoration: InputDecoration(
+                    labelText: 'Siklus Langganan',
+                    labelStyle: TextStyle(color: Colors.grey[400]),
+                    filled: true,
+                    fillColor: const Color(0xFF1A1A1A),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide.none,
+                    ),
+                  ),
+                  items: const [
+                    DropdownMenuItem(value: 'monthly', child: Text('Bulanan')),
+                    DropdownMenuItem(value: 'yearly', child: Text('Tahunan')),
+                    DropdownMenuItem(value: 'weekly', child: Text('Mingguan')),
+                  ],
+                  onChanged: (value) {
+                    setState(() {
+                      _subscriptionCycle = value;
+                    });
+                  },
+                ),
+                const SizedBox(height: 16),
+              ],
+
+              const SizedBox(height: 24),
+              ElevatedButton(
+                onPressed: _isLoading ? null : _submit,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF8B5FBF),
+                  foregroundColor: Colors.white,
+                  disabledBackgroundColor: Colors.grey[800],
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  minimumSize: const Size(double.infinity, 50),
+                ),
+                child:
+                    _isLoading
+                        ? const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.white,
+                          ),
+                        )
+                        : Text(
+                          _isEdit ? 'Simpan Perubahan' : 'Tambah Kewajiban',
+                        ),
+              ),
+              const SizedBox(height: 20),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}

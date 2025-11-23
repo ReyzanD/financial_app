@@ -4,7 +4,9 @@ import 'package:financial_app/services/api_service.dart';
 import 'package:intl/intl.dart';
 
 class AddGoalModal extends StatefulWidget {
-  const AddGoalModal({super.key});
+  final Map<String, dynamic>? initialGoal;
+
+  const AddGoalModal({super.key, this.initialGoal});
 
   @override
   State<AddGoalModal> createState() => _AddGoalModalState();
@@ -13,18 +15,22 @@ class AddGoalModal extends StatefulWidget {
 class _AddGoalModalState extends State<AddGoalModal> {
   final _formKey = GlobalKey<FormState>();
   final ApiService _apiService = ApiService();
-  
+
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _targetAmountController = TextEditingController();
-  
+
   String _selectedType = 'emergency_fund';
   DateTime _targetDate = DateTime.now().add(const Duration(days: 365));
   int _priority = 3;
   bool _isLoading = false;
 
   final List<Map<String, dynamic>> _goalTypes = [
-    {'value': 'emergency_fund', 'label': 'Dana Darurat', 'icon': Icons.security},
+    {
+      'value': 'emergency_fund',
+      'label': 'Dana Darurat',
+      'icon': Icons.security,
+    },
     {'value': 'vacation', 'label': 'Liburan', 'icon': Icons.beach_access},
     {'value': 'investment', 'label': 'Investasi', 'icon': Icons.trending_up},
     {'value': 'debt_payment', 'label': 'Bayar Hutang', 'icon': Icons.payment},
@@ -34,6 +40,59 @@ class _AddGoalModalState extends State<AddGoalModal> {
     {'value': 'wedding', 'label': 'Pernikahan', 'icon': Icons.favorite},
     {'value': 'other', 'label': 'Lainnya', 'icon': Icons.more_horiz},
   ];
+
+  bool get _isEdit => widget.initialGoal != null;
+
+  @override
+  void initState() {
+    super.initState();
+
+    final initial = widget.initialGoal;
+    if (initial != null) {
+      final name = initial['name'] as String?;
+      if (name != null) {
+        _nameController.text = name;
+      }
+
+      final description = initial['description'] as String?;
+      if (description != null) {
+        _descriptionController.text = description;
+      }
+
+      final targetValue = initial['target'];
+      double? targetAmount;
+      if (targetValue is num) {
+        targetAmount = targetValue.toDouble();
+      } else if (targetValue != null) {
+        targetAmount = double.tryParse(targetValue.toString());
+      }
+      if (targetAmount != null) {
+        _targetAmountController.text = targetAmount.toStringAsFixed(0);
+      }
+
+      final type = initial['type'] as String?;
+      if (type != null && type.isNotEmpty) {
+        _selectedType = type;
+      }
+
+      final deadlineStr = initial['deadline'] as String?;
+      if (deadlineStr != null && deadlineStr.isNotEmpty) {
+        try {
+          _targetDate = DateTime.parse(deadlineStr);
+        } catch (_) {}
+      }
+
+      final priorityValue = initial['priority'];
+      if (priorityValue is int) {
+        _priority = priorityValue;
+      } else if (priorityValue is String) {
+        final parsed = int.tryParse(priorityValue);
+        if (parsed != null) {
+          _priority = parsed;
+        }
+      }
+    }
+  }
 
   @override
   void dispose() {
@@ -72,14 +131,14 @@ class _AddGoalModalState extends State<AddGoalModal> {
 
   Future<void> _submitGoal() async {
     print('🔹 Submit button pressed');
-    
+
     if (!_formKey.currentState!.validate()) {
       print('❌ Form validation failed');
       return;
     }
 
     print('✅ Form validated successfully');
-    
+
     setState(() {
       _isLoading = true;
     });
@@ -92,27 +151,49 @@ class _AddGoalModalState extends State<AddGoalModal> {
         'target_amount': double.parse(_targetAmountController.text),
         'target_date': DateFormat('yyyy-MM-dd').format(_targetDate),
         'priority': _priority,
-        'current_amount': 0,
       };
 
-      print('📤 Sending goal data: $goalData');
-      
-      final response = await _apiService.createGoal(goalData);
-      
-      print('✅ Goal created successfully: $response');
+      if (_isEdit) {
+        final goalId = widget.initialGoal?['id']?.toString();
+        if (goalId == null || goalId.isEmpty) {
+          throw Exception('ID goal tidak valid');
+        }
 
-      if (mounted) {
-        Navigator.pop(context, true); // Return true to indicate success
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Target berhasil ditambahkan!'),
-            backgroundColor: Color(0xFF8B5FBF),
-          ),
-        );
+        print('📤 Updating goal $goalId with data: $goalData');
+        final response = await _apiService.updateGoal(goalId, goalData);
+        print('✅ Goal updated successfully: $response');
+
+        if (mounted) {
+          Navigator.pop(context, true);
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Target berhasil diperbarui!'),
+              backgroundColor: Color(0xFF8B5FBF),
+            ),
+          );
+        }
+      } else {
+        final createData = {...goalData, 'current_amount': 0};
+
+        print('📤 Sending goal data: $createData');
+
+        final response = await _apiService.createGoal(createData);
+
+        print('✅ Goal created successfully: $response');
+
+        if (mounted) {
+          Navigator.pop(context, true); // Return true to indicate success
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Target berhasil ditambahkan!'),
+              backgroundColor: Color(0xFF8B5FBF),
+            ),
+          );
+        }
       }
     } catch (e) {
       print('❌ Error creating goal: $e');
-      
+
       if (mounted) {
         setState(() {
           _isLoading = false;
@@ -199,18 +280,23 @@ class _AddGoalModalState extends State<AddGoalModal> {
                     borderSide: BorderSide.none,
                   ),
                 ),
-                items: _goalTypes.map<DropdownMenuItem<String>>((type) {
-                  return DropdownMenuItem<String>(
-                    value: type['value'] as String,
-                    child: Row(
-                      children: [
-                        Icon(type['icon'] as IconData, color: const Color(0xFF8B5FBF), size: 20),
-                        const SizedBox(width: 8),
-                        Text(type['label'] as String),
-                      ],
-                    ),
-                  );
-                }).toList(),
+                items:
+                    _goalTypes.map<DropdownMenuItem<String>>((type) {
+                      return DropdownMenuItem<String>(
+                        value: type['value'] as String,
+                        child: Row(
+                          children: [
+                            Icon(
+                              type['icon'] as IconData,
+                              color: const Color(0xFF8B5FBF),
+                              size: 20,
+                            ),
+                            const SizedBox(width: 8),
+                            Text(type['label'] as String),
+                          ],
+                        ),
+                      );
+                    }).toList(),
                 onChanged: (value) {
                   setState(() {
                     _selectedType = value!;
@@ -280,7 +366,15 @@ class _AddGoalModalState extends State<AddGoalModal> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Prioritas: ${_priority == 5 ? "Sangat Tinggi" : _priority == 4 ? "Tinggi" : _priority == 3 ? "Sedang" : _priority == 2 ? "Rendah" : "Sangat Rendah"}',
+                    'Prioritas: ${_priority == 5
+                        ? "Sangat Tinggi"
+                        : _priority == 4
+                        ? "Tinggi"
+                        : _priority == 3
+                        ? "Sedang"
+                        : _priority == 2
+                        ? "Rendah"
+                        : "Sangat Rendah"}',
                     style: TextStyle(color: Colors.grey[400]),
                   ),
                   Slider(
@@ -330,16 +424,17 @@ class _AddGoalModalState extends State<AddGoalModal> {
                   ),
                   minimumSize: const Size(double.infinity, 50),
                 ),
-                child: _isLoading
-                    ? const SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          color: Colors.white,
-                        ),
-                      )
-                    : const Text('Tambah Target'),
+                child:
+                    _isLoading
+                        ? const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.white,
+                          ),
+                        )
+                        : const Text('Tambah Target'),
               ),
               const SizedBox(height: 20),
             ],

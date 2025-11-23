@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
-import 'package:financial_app/models/financial_obligation.dart';
 import 'package:financial_app/services/obligation_service.dart';
 import 'package:financial_app/widgets/obligations/obligation_view_tabs.dart';
 import 'package:financial_app/widgets/obligations/upcoming_obligations_view.dart';
@@ -56,6 +55,7 @@ class _FinancialObligationsScreenState
         ],
       ),
       floatingActionButton: FloatingActionButton(
+        heroTag: 'obligations_fab',
         onPressed: () => ObligationHelpers.showAddObligationModal(context),
         child: Icon(Iconsax.add),
       ),
@@ -104,39 +104,13 @@ class _FinancialObligationsScreenState
   Widget _buildSelectedView() {
     switch (_selectedView) {
       case 'upcoming':
-        return UpcomingObligationsView(
-          onObligationTap:
-              () => ObligationHelpers.showObligationDetails(
-                context,
-                FinancialObligation(
-                  id: 'dummy',
-                  name: 'Dummy',
-                  monthlyAmount: 0,
-                  dueDate: DateTime.now(),
-                  type: ObligationType.bill,
-                  daysUntilDue: 0,
-                ),
-              ),
-        );
+        return const UpcomingObligationsView();
       case 'debts':
-        return DebtsView();
+        return const DebtsView();
       case 'subscriptions':
-        return SubscriptionsView();
+        return const SubscriptionsView();
       default:
-        return UpcomingObligationsView(
-          onObligationTap:
-              () => ObligationHelpers.showObligationDetails(
-                context,
-                FinancialObligation(
-                  id: 'dummy',
-                  name: 'Dummy',
-                  monthlyAmount: 0,
-                  dueDate: DateTime.now(),
-                  type: ObligationType.bill,
-                  daysUntilDue: 0,
-                ),
-              ),
-        );
+        return const UpcomingObligationsView();
     }
   }
 

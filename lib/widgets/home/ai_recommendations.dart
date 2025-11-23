@@ -3,7 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:financial_app/utils/formatters.dart';
-import 'package:financial_app/services/api_service.dart';
+import 'package:financial_app/services/ai_service.dart';
 
 class AIRecommendations extends StatefulWidget {
   const AIRecommendations({super.key});
@@ -13,7 +13,7 @@ class AIRecommendations extends StatefulWidget {
 }
 
 class _AIRecommendationsState extends State<AIRecommendations> {
-  final ApiService _apiService = ApiService();
+  final AIService _aiService = AIService();
   Map<String, dynamic>? _recommendations;
   bool _isLoading = true;
 
@@ -38,7 +38,7 @@ class _AIRecommendationsState extends State<AIRecommendations> {
         return;
       }
 
-      final recommendations = await _apiService.getAIRecommendations();
+      final recommendations = await _aiService.generateRecommendations();
       if (mounted) {
         setState(() {
           _recommendations = recommendations;
@@ -55,6 +55,32 @@ class _AIRecommendationsState extends State<AIRecommendations> {
     }
   }
 
+  IconData _getPriorityIcon(String? priority) {
+    switch (priority) {
+      case 'high':
+        return Iconsax.danger;
+      case 'medium':
+        return Iconsax.info_circle;
+      case 'low':
+        return Iconsax.medal;
+      default:
+        return Iconsax.flash;
+    }
+  }
+
+  Color _getPriorityColor(String? priority) {
+    switch (priority) {
+      case 'high':
+        return Colors.red;
+      case 'medium':
+        return Colors.orange;
+      case 'low':
+        return Colors.green;
+      default:
+        return const Color(0xFF8B5FBF);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
@@ -63,7 +89,7 @@ class _AIRecommendationsState extends State<AIRecommendations> {
         decoration: BoxDecoration(
           color: const Color(0xFF1A1A1A),
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Color(0xFF8B5FBF).withOpacity(0.3)),
+          border: Border.all(color: const Color(0xFF8B5FBF).withOpacity(0.3)),
         ),
         child: const Center(
           child: CircularProgressIndicator(color: Color(0xFF8B5FBF)),
@@ -74,48 +100,157 @@ class _AIRecommendationsState extends State<AIRecommendations> {
     final recommendation =
         _recommendations?['recommendation'] ??
         'Belum ada rekomendasi AI tersedia';
-    final savings = _recommendations?['potential_savings'] ?? 0;
+    final savings = (_recommendations?['potential_savings'] ?? 0).toDouble();
+    final priority = _recommendations?['priority'];
+    final category = _recommendations?['category'];
+
+    final priorityColor = _getPriorityColor(priority);
+    final priorityIcon = _getPriorityIcon(priority);
 
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: const Color(0xFF1A1A1A),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Color(0xFF8B5FBF).withOpacity(0.3)),
+        border: Border.all(color: priorityColor.withOpacity(0.3)),
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [priorityColor.withOpacity(0.05), Colors.transparent],
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Icon(Iconsax.flash, color: Color(0xFF8B5FBF), size: 20),
-              const SizedBox(width: 8),
-              Text(
-                'AI Recommendations',
-                style: GoogleFonts.poppins(
-                  color: Colors.white,
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: priorityColor.withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Icon(priorityIcon, color: priorityColor, size: 20),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'AI Smart Insights',
+                      style: GoogleFonts.poppins(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    if (category != null)
+                      Text(
+                        category,
+                        style: GoogleFonts.poppins(
+                          color: Colors.grey[500],
+                          fontSize: 11,
+                        ),
+                      ),
+                  ],
                 ),
               ),
+              if (priority != null)
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
+                  decoration: BoxDecoration(
+                    color: priorityColor.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Text(
+                    priority == 'high'
+                        ? 'URGENT'
+                        : priority == 'medium'
+                        ? 'PENTING'
+                        : 'INFO',
+                    style: GoogleFonts.poppins(
+                      color: priorityColor,
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
             ],
           ),
           const SizedBox(height: 12),
           Text(
             recommendation,
-            style: GoogleFonts.poppins(color: Colors.white70, fontSize: 12),
+            style: GoogleFonts.poppins(
+              color: Colors.white,
+              fontSize: 13,
+              height: 1.5,
+            ),
           ),
           if (savings > 0) ...[
-            const SizedBox(height: 8),
-            Text(
-              'Potensi penghematan: ${CurrencyFormatter.formatRupiah(savings)}/bulan',
-              style: GoogleFonts.poppins(
-                color: Color(0xFF8B5FBF),
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
+            const SizedBox(height: 12),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.green.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: Colors.green.withOpacity(0.3)),
+              ),
+              child: Row(
+                children: [
+                  const Icon(
+                    Iconsax.wallet_money,
+                    color: Colors.green,
+                    size: 16,
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Potensi Penghematan',
+                          style: GoogleFonts.poppins(
+                            color: Colors.grey[400],
+                            fontSize: 11,
+                          ),
+                        ),
+                        Text(
+                          '${CurrencyFormatter.formatRupiah(savings)}/bulan',
+                          style: GoogleFonts.poppins(
+                            color: Colors.green,
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
             ),
           ],
+          const SizedBox(height: 12),
+          GestureDetector(
+            onTap: _loadAIRecommendations,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Iconsax.refresh, color: Colors.grey[600], size: 14),
+                const SizedBox(width: 4),
+                Text(
+                  'Refresh Rekomendasi',
+                  style: GoogleFonts.poppins(
+                    color: Colors.grey[600],
+                    fontSize: 11,
+                  ),
+                ),
+              ],
+            ),
+          ),
         ],
       ),
     );

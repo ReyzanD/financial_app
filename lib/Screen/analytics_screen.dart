@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../widgets/analytics/analytics_header.dart';
 import '../widgets/analytics/period_selector.dart';
 import '../widgets/analytics/spending_chart.dart';
@@ -18,6 +19,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
   String _selectedPeriod = 'Minggu Ini';
   final ApiService _apiService = ApiService();
   bool _isLoading = true;
+  String? _errorMessage;
   List<dynamic> _transactions = [];
   Map<String, dynamic> _summary = {};
 
@@ -28,11 +30,37 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
   }
 
   Future<void> _loadData() async {
-    setState(() => _isLoading = true);
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
     try {
       print('📊 Loading analytics data...');
-      final transactions = await _apiService.getTransactions(limit: 100);
-      final summary = await _apiService.getFinancialSummary();
+
+      final now = DateTime.now();
+      DateTime? startDate;
+      DateTime? endDate = now;
+
+      if (_selectedPeriod == 'Minggu Ini') {
+        final today = DateTime(now.year, now.month, now.day);
+        startDate = today.subtract(Duration(days: today.weekday - 1));
+      } else if (_selectedPeriod == 'Bulan Ini') {
+        startDate = DateTime(now.year, now.month, 1);
+      } else if (_selectedPeriod == '3 Bulan') {
+        startDate = DateTime(now.year, now.month - 2, 1);
+      } else if (_selectedPeriod == 'Tahun Ini') {
+        startDate = DateTime(now.year, 1, 1);
+      }
+
+      final transactions = await _apiService.getTransactions(
+        limit: 100,
+        startDate: startDate,
+        endDate: endDate,
+      );
+      final summary = await _apiService.getFinancialSummary(
+        year: now.year,
+        month: now.month,
+      );
 
       print('✅ Loaded ${transactions.length} transactions');
       print('✅ Summary: $summary');
@@ -50,9 +78,130 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
     } catch (e) {
       print('❌ Error loading analytics: $e');
       if (mounted) {
-        setState(() => _isLoading = false);
+        setState(() {
+          _isLoading = false;
+          _errorMessage = _getErrorMessage(e);
+        });
       }
     }
+  }
+
+  String _getErrorMessage(dynamic error) {
+    final errorStr = error.toString().toLowerCase();
+    if (errorStr.contains('timeout')) {
+      return 'Koneksi timeout. Cek koneksi internet Anda.';
+    } else if (errorStr.contains('connection') ||
+        errorStr.contains('network')) {
+      return 'Gagal terhubung ke server. Pastikan backend berjalan.';
+    } else if (errorStr.contains('unauthorized') || errorStr.contains('401')) {
+      return 'Sesi berakhir. Silakan login kembali.';
+    } else {
+      return 'Gagal memuat data analitik.';
+    }
+  }
+
+  List<dynamic> _getFilteredTransactions() {
+    return _transactions;
+  }
+
+  Widget _buildBody() {
+    if (_errorMessage != null) {
+      return ListView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        padding: const EdgeInsets.all(16),
+        children: [
+          Container(
+            padding: const EdgeInsets.all(24),
+            decoration: BoxDecoration(
+              color: const Color(0xFF1A1A1A),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: Colors.red.withOpacity(0.3)),
+            ),
+            child: Column(
+              children: [
+                Icon(Icons.error_outline, color: Colors.red[400], size: 40),
+                const SizedBox(height: 12),
+                Text(
+                  'Gagal memuat analitik',
+                  style: GoogleFonts.poppins(
+                    color: Colors.grey[300],
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  _errorMessage!,
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.poppins(
+                    color: Colors.grey[500],
+                    fontSize: 12,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      );
+    }
+
+    final filtered = _getFilteredTransactions();
+
+    if (filtered.isEmpty) {
+      return ListView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        padding: const EdgeInsets.all(16),
+        children: [
+          Container(
+            padding: const EdgeInsets.all(32),
+            decoration: BoxDecoration(
+              color: const Color(0xFF1A1A1A),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: Colors.grey[800]!),
+            ),
+            child: Column(
+              children: [
+                Icon(Icons.insights, color: Colors.grey[600], size: 48),
+                const SizedBox(height: 12),
+                Text(
+                  'Belum ada data untuk periode ini',
+                  style: GoogleFonts.poppins(
+                    color: Colors.grey[400],
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  'Tambahkan transaksi untuk melihat analitik keuangan Anda.',
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.poppins(
+                    color: Colors.grey[600],
+                    fontSize: 12,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      );
+    }
+
+    return SingleChildScrollView(
+      physics: const AlwaysScrollableScrollPhysics(),
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        children: [
+          SpendingChart(transactions: filtered),
+          const SizedBox(height: 16),
+          CategoryBreakdown(transactions: filtered),
+          const SizedBox(height: 16),
+          MonthlyComparison(transactions: filtered),
+          const SizedBox(height: 16),
+          SpendingInsights(transactions: filtered, summary: _summary),
+        ],
+      ),
+    );
   }
 
   @override
@@ -69,6 +218,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                 setState(() {
                   _selectedPeriod = period;
                 });
+                _loadData();
               },
             ),
             Expanded(
@@ -82,23 +232,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                       : RefreshIndicator(
                         onRefresh: _loadData,
                         color: const Color(0xFF8B5FBF),
-                        child: SingleChildScrollView(
-                          padding: const EdgeInsets.all(16),
-                          child: Column(
-                            children: [
-                              SpendingChart(transactions: _transactions),
-                              const SizedBox(height: 16),
-                              CategoryBreakdown(transactions: _transactions),
-                              const SizedBox(height: 16),
-                              MonthlyComparison(transactions: _transactions),
-                              const SizedBox(height: 16),
-                              SpendingInsights(
-                                transactions: _transactions,
-                                summary: _summary,
-                              ),
-                            ],
-                          ),
-                        ),
+                        child: _buildBody(),
                       ),
             ),
           ],

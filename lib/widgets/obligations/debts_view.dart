@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:financial_app/models/financial_obligation.dart';
 import 'package:financial_app/services/obligation_service.dart';
+import 'package:financial_app/widgets/obligations/obligation_helpers.dart';
 import 'debt_progress_card.dart';
 import 'debt_item.dart';
 import 'payoff_strategy_card.dart';
@@ -18,6 +19,15 @@ class DebtsView extends StatelessWidget {
 
         final summary = snapshot.data!;
 
+        if (summary.debts.isEmpty) {
+          return Center(
+            child: Text(
+              'Tidak ada hutang aktif',
+              style: TextStyle(color: Colors.grey[400]),
+            ),
+          );
+        }
+
         return Column(
           children: [
             // Debt Progress
@@ -29,7 +39,14 @@ class DebtsView extends StatelessWidget {
                 padding: EdgeInsets.all(16),
                 itemCount: summary.debts.length,
                 itemBuilder: (context, index) {
-                  return DebtItem(debt: summary.debts[index]);
+                  return GestureDetector(
+                    onTap:
+                        () => ObligationHelpers.showObligationDetails(
+                          context,
+                          summary.debts[index],
+                        ),
+                    child: DebtItem(debt: summary.debts[index]),
+                  );
                 },
               ),
             ),

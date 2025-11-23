@@ -36,11 +36,15 @@ class _GoalsScreenState extends State<GoalsScreen> {
             ProgressSummary(key: ValueKey('progress_$_refreshKey')),
 
             // Goals List
-            GoalsList(key: ValueKey('goals_$_refreshKey')),
+            GoalsList(
+              key: ValueKey('goals_$_refreshKey'),
+              onGoalsChanged: _refreshGoals,
+            ),
           ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
+        heroTag: 'goals_fab',
         onPressed: _showAddGoalModal,
         backgroundColor: const Color(0xFF8B5FBF),
         child: const Icon(Iconsax.add, color: Colors.white),

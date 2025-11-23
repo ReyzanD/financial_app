@@ -76,3 +76,44 @@ logs/
 # Database
 *.db
 *.sqlite3
+
+# Sensitive Data - DO NOT COMMIT
+*.key
+*.pem
+*.p12
+*.keystore
+*.jks
+key.properties
+google-services.json
+GoogleService-Info.plist
+
+# API Keys & Secrets
+secrets.dart
+api_keys.dart
+.env
+.env.local
+.env.production
+
+# Generated Documentation
+*.md.backup
+CHECKPOINT*.md
+*_COMPLETE.md
+
+# Android Signing
+android/key.properties
+android/app/upload-keystore.jks
+android/app/debug.keystore
+android/app/release-keystore.jks
+
+# iOS Provisioning
+ios/Runner/GoogleService-Info.plist
+ios/Runner.xcworkspace/
+
+# Flutter Secure Storage Keys
+*.aes
+*.encrypted
+
+# Local Testing
+test_data/
+mock_data/
+debug_logs/

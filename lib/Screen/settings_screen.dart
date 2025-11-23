@@ -4,6 +4,7 @@ import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:financial_app/services/auth_service.dart';
 import 'package:financial_app/services/api_service.dart';
+import 'package:financial_app/Screen/profile_screen.dart';
 import 'dart:convert';
 
 class SettingsScreen extends StatefulWidget {
@@ -107,7 +108,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
               title: 'Profil Pengguna',
               subtitle: 'Kelola informasi akun Anda',
               onTap: () {
-                // TODO: Navigate to profile screen
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const ProfileScreen(),
+                  ),
+                );
               },
             ),
             _buildSettingTile(
@@ -115,7 +121,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
               title: 'Keamanan',
               subtitle: 'Ubah kata sandi dan pengaturan keamanan',
               onTap: () {
-                // TODO: Navigate to security screen
+                // Show security options
+                _showSecurityOptions();
               },
             ),
 
@@ -333,6 +340,79 @@ class _SettingsScreenState extends State<SettingsScreen> {
         ),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
+    );
+  }
+
+  void _showSecurityOptions() {
+    showDialog(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+            backgroundColor: const Color(0xFF1A1A1A),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
+            ),
+            title: Text(
+              'Keamanan',
+              style: GoogleFonts.poppins(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ListTile(
+                  leading: const Icon(Iconsax.lock, color: Color(0xFF8B5FBF)),
+                  title: Text(
+                    'Ubah PIN',
+                    style: GoogleFonts.poppins(color: Colors.white),
+                  ),
+                  subtitle: Text(
+                    'Ubah PIN keamanan aplikasi',
+                    style: GoogleFonts.poppins(
+                      color: Colors.grey[400],
+                      fontSize: 12,
+                    ),
+                  ),
+                  onTap: () {
+                    Navigator.pop(context);
+                    Navigator.pushNamed(context, '/pin-change');
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(Iconsax.key, color: Color(0xFF8B5FBF)),
+                  title: Text(
+                    'Ubah Kata Sandi',
+                    style: GoogleFonts.poppins(color: Colors.white),
+                  ),
+                  subtitle: Text(
+                    'Ubah kata sandi login',
+                    style: GoogleFonts.poppins(
+                      color: Colors.grey[400],
+                      fontSize: 12,
+                    ),
+                  ),
+                  onTap: () {
+                    Navigator.pop(context);
+                    // TODO: Navigate to change password screen
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Fitur akan segera hadir')),
+                    );
+                  },
+                ),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text(
+                  'Tutup',
+                  style: GoogleFonts.poppins(color: const Color(0xFF8B5FBF)),
+                ),
+              ),
+            ],
+          ),
     );
   }
 

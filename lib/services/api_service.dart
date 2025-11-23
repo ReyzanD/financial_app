@@ -54,6 +54,35 @@ class ApiService {
     }
   }
 
+  // Generic PUT request
+  Future<dynamic> put(String endpoint, dynamic data) async {
+    try {
+      final response = await http.put(
+        Uri.parse('$baseUrl/$endpoint'),
+        headers: await _getHeaders(),
+        body: json.encode(data),
+      );
+
+      return _handleResponse(response);
+    } catch (e) {
+      throw Exception('Network error: $e');
+    }
+  }
+
+  // Generic DELETE request
+  Future<dynamic> delete(String endpoint) async {
+    try {
+      final response = await http.delete(
+        Uri.parse('$baseUrl/$endpoint'),
+        headers: await _getHeaders(),
+      );
+
+      return _handleResponse(response);
+    } catch (e) {
+      throw Exception('Network error: $e');
+    }
+  }
+
   dynamic _handleResponse(http.Response response) {
     switch (response.statusCode) {
       case 200:
@@ -110,11 +139,30 @@ class ApiService {
 
   // Transactions - Delegated to TransactionApiService
   // Use: TransactionApiService().getTransactions()
-  Future<List<dynamic>> getTransactions({String? type, int limit = 10}) async {
+  Future<List<dynamic>> getTransactions({
+    String? type,
+    int limit = 10,
+    DateTime? startDate,
+    DateTime? endDate,
+    String? categoryId,
+    double? minAmount,
+    double? maxAmount,
+    String? search,
+  }) async {
     String endpoint = 'transactions_232143';
     List<String> params = [];
 
-    if (type != null) params.add('type_232143=$type');
+    if (type != null) params.add('type=$type');
+    if (startDate != null) {
+      params.add('start_date=${_formatDate(startDate)}');
+    }
+    if (endDate != null) {
+      params.add('end_date=${_formatDate(endDate)}');
+    }
+    if (categoryId != null) params.add('category_id=$categoryId');
+    if (minAmount != null) params.add('min_amount=$minAmount');
+    if (maxAmount != null) params.add('max_amount=$maxAmount');
+    if (search != null && search.isNotEmpty) params.add('search=$search');
     if (limit > 0) params.add('limit=$limit');
 
     if (params.isNotEmpty) {
@@ -125,15 +173,34 @@ class ApiService {
     return response['transactions'] ?? [];
   }
 
+  String _formatDate(DateTime date) {
+    final y = date.year.toString().padLeft(4, '0');
+    final m = date.month.toString().padLeft(2, '0');
+    final d = date.day.toString().padLeft(2, '0');
+    return '$y-$m-$d';
+  }
+
   // Cache for financial summary
   Map<String, dynamic>? _cachedSummary;
   DateTime? _lastSummaryFetch;
+  int? _cachedSummaryYear;
+  int? _cachedSummaryMonth;
   static const _summaryTtl = Duration(minutes: 5);
 
   // Financial Summary - Delegated to TransactionApiService
   // Use: TransactionApiService().getFinancialSummary()
-  Future<Map<String, dynamic>> getFinancialSummary() async {
-    if (_cachedSummary != null && _lastSummaryFetch != null) {
+  Future<Map<String, dynamic>> getFinancialSummary({
+    int? year,
+    int? month,
+  }) async {
+    final now = DateTime.now();
+    final targetYear = year ?? now.year;
+    final targetMonth = month ?? now.month;
+
+    if (_cachedSummary != null &&
+        _lastSummaryFetch != null &&
+        _cachedSummaryYear == targetYear &&
+        _cachedSummaryMonth == targetMonth) {
       final age = DateTime.now().difference(_lastSummaryFetch!);
       if (age < _summaryTtl) {
         return _cachedSummary!;
@@ -141,7 +208,9 @@ class ApiService {
     }
 
     try {
-      final response = await get('transactions_232143/analytics/summary');
+      final response = await get(
+        'transactions_232143/analytics/summary?year=$targetYear&month=$targetMonth',
+      );
       final List<dynamic> summaryList = response['summary'] ?? [];
       Map<String, dynamic> summaryMap = {};
       for (var item in summaryList) {
@@ -156,12 +225,14 @@ class ApiService {
       }
 
       final result = {
-        'year': response['year'] ?? DateTime.now().year,
-        'month': response['month'] ?? DateTime.now().month,
+        'year': targetYear,
+        'month': targetMonth,
         'summary': summaryMap,
       };
 
       _cachedSummary = result;
+      _cachedSummaryYear = targetYear;
+      _cachedSummaryMonth = targetMonth;
       _lastSummaryFetch = DateTime.now();
 
       return result;
@@ -227,7 +298,7 @@ class ApiService {
   }
 
   // AI Recommendations
-  Future<Map<String, dynamic>> getAIRecommendations() async {
+  Future<dynamic> getAIRecommendations() async {
     return await get('transactions_232143/recommendations');
   }
 
@@ -371,5 +442,134 @@ class ApiService {
 
   Future<Map<String, dynamic>> getGoalsSummary() async {
     return await get('goals/summary');
+  }
+
+  // Obligations
+  Future<List<dynamic>> getObligations({String? type}) async {
+    String endpoint = 'obligations';
+    if (type != null && type.isNotEmpty) {
+      endpoint += '?type=$type';
+    }
+    final response = await get(endpoint);
+    return response['obligations'] ?? [];
+  }
+
+  Future<List<dynamic>> getUpcomingObligations({int days = 7}) async {
+    final response = await get('obligations/upcoming?days=$days');
+    return response['obligations'] ?? [];
+  }
+
+  Future<Map<String, dynamic>> createObligation(
+    Map<String, dynamic> obligationData,
+  ) async {
+    return await post('obligations', obligationData);
+  }
+
+  Future<Map<String, dynamic>> updateObligation(
+    String obligationId,
+    Map<String, dynamic> obligationData,
+  ) async {
+    try {
+      final response = await http.put(
+        Uri.parse('$baseUrl/obligations/$obligationId'),
+        headers: await _getHeaders(),
+        body: json.encode(obligationData),
+      );
+      return _handleResponse(response);
+    } catch (e) {
+      throw Exception('Network error: $e');
+    }
+  }
+
+  Future<Map<String, dynamic>> deleteObligation(String obligationId) async {
+    try {
+      final response = await http.delete(
+        Uri.parse('$baseUrl/obligations/$obligationId'),
+        headers: await _getHeaders(),
+      );
+      return _handleResponse(response);
+    } catch (e) {
+      throw Exception('Network error: $e');
+    }
+  }
+
+  Future<Map<String, dynamic>> recordObligationPayment(
+    String obligationId,
+    Map<String, dynamic> paymentData,
+  ) async {
+    return await post('obligations/$obligationId/payments', paymentData);
+  }
+
+  /// Calculate obligations summary from obligations list
+  Future<Map<String, dynamic>> getObligationsSummary() async {
+    final obligations = await getObligations();
+
+    double monthlyTotal = 0.0;
+    double totalDebt = 0.0;
+
+    for (var obligation in obligations) {
+      final monthlyAmount =
+          (obligation['monthly_amount_232143'] as num?)?.toDouble() ?? 0.0;
+      monthlyTotal += monthlyAmount;
+
+      if (obligation['type_232143'] == 'debt') {
+        final currentBalance =
+            (obligation['current_balance_232143'] as num?)?.toDouble() ?? 0.0;
+        totalDebt += currentBalance;
+      }
+    }
+
+    return {
+      'monthlyTotal': monthlyTotal,
+      'totalDebt': totalDebt,
+      'obligationsCount': obligations.length,
+    };
+  }
+
+  // Recurring Transactions
+  Future<List<dynamic>> getRecurringTransactions({
+    bool activeOnly = true,
+  }) async {
+    String endpoint = 'recurring-transactions';
+    if (!activeOnly) {
+      endpoint += '?active_only=false';
+    }
+    final response = await get(endpoint);
+    return response['recurring_transactions'] ?? [];
+  }
+
+  Future<Map<String, dynamic>> getRecurringTransaction(String id) async {
+    final response = await get('recurring-transactions/$id');
+    return response['recurring_transaction'] ?? {};
+  }
+
+  Future<Map<String, dynamic>> createRecurringTransaction(
+    Map<String, dynamic> data,
+  ) async {
+    return await post('recurring-transactions', data);
+  }
+
+  Future<Map<String, dynamic>> updateRecurringTransaction(
+    String id,
+    Map<String, dynamic> data,
+  ) async {
+    return await put('recurring-transactions/$id', data);
+  }
+
+  Future<void> deleteRecurringTransaction(String id) async {
+    await delete('recurring-transactions/$id');
+  }
+
+  Future<Map<String, dynamic>> pauseRecurringTransaction(String id) async {
+    return await post('recurring-transactions/$id/pause', {});
+  }
+
+  Future<Map<String, dynamic>> resumeRecurringTransaction(String id) async {
+    return await post('recurring-transactions/$id/resume', {});
+  }
+
+  Future<List<dynamic>> getUpcomingRecurringTransactions({int days = 7}) async {
+    final response = await get('recurring-transactions/upcoming?days=$days');
+    return response['upcoming'] ?? [];
   }
 }

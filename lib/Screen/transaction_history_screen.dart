@@ -1,0 +1,783 @@
+import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:iconsax_flutter/iconsax_flutter.dart';
+import 'package:intl/intl.dart';
+import 'package:financial_app/services/api_service.dart';
+
+class TransactionHistoryScreen extends StatefulWidget {
+  const TransactionHistoryScreen({super.key});
+
+  @override
+  State<TransactionHistoryScreen> createState() =>
+      _TransactionHistoryScreenState();
+}
+
+class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
+  final ApiService _apiService = ApiService();
+  final TextEditingController _searchController = TextEditingController();
+  List<Map<String, dynamic>> _transactions = [];
+  List<Map<String, dynamic>> _filteredTransactions = [];
+  bool _isLoading = true;
+  String _filterType = 'all'; // all, income, expense
+  String _sortBy = 'date_desc'; // date_desc, date_asc, amount_desc, amount_asc
+  String _searchQuery = '';
+  String _selectedCategory = 'all';
+  DateTimeRange? _dateRange;
+  double _runningBalance = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadTransactions();
+    _searchController.addListener(_onSearchChanged);
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  void _onSearchChanged() {
+    setState(() {
+      _searchQuery = _searchController.text.toLowerCase();
+      _applyAllFilters();
+    });
+  }
+
+  Future<void> _loadTransactions() async {
+    setState(() => _isLoading = true);
+
+    try {
+      final data = await _apiService.getTransactions(limit: 1000);
+      final transactions = List<Map<String, dynamic>>.from(data);
+
+      // Sort by date descending (newest first) initially
+      transactions.sort((a, b) {
+        final dateA = DateTime.parse(
+          a['date'] ?? DateTime.now().toIso8601String(),
+        );
+        final dateB = DateTime.parse(
+          b['date'] ?? DateTime.now().toIso8601String(),
+        );
+        return dateB.compareTo(dateA);
+      });
+
+      // Calculate running balance
+      _calculateRunningBalance(transactions);
+
+      setState(() {
+        _transactions = transactions;
+        _filteredTransactions = transactions;
+        _isLoading = false;
+      });
+    } catch (e) {
+      print('Error loading transactions: $e');
+      setState(() => _isLoading = false);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Gagal memuat transaksi: ${e.toString()}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
+  void _calculateRunningBalance(List<Map<String, dynamic>> transactions) {
+    // Start from oldest transaction
+    final reversed = transactions.reversed.toList();
+    double balance = 0;
+
+    for (var transaction in reversed) {
+      final amount = (transaction['amount'] ?? 0).toDouble();
+      final type = transaction['type']?.toString().toLowerCase() ?? 'expense';
+
+      if (type == 'income') {
+        balance += amount;
+      } else if (type == 'expense') {
+        balance -= amount;
+      }
+
+      transaction['running_balance'] = balance;
+    }
+
+    _runningBalance = balance;
+  }
+
+  void _applyAllFilters() {
+    List<Map<String, dynamic>> filtered = List.from(_transactions);
+
+    // Apply type filter
+    if (_filterType != 'all') {
+      filtered =
+          filtered
+              .where((t) => t['type']?.toString().toLowerCase() == _filterType)
+              .toList();
+    }
+
+    // Apply category filter
+    if (_selectedCategory != 'all') {
+      filtered =
+          filtered
+              .where((t) => t['category_name']?.toString() == _selectedCategory)
+              .toList();
+    }
+
+    // Apply date range filter
+    if (_dateRange != null) {
+      filtered =
+          filtered.where((t) {
+            try {
+              final date = DateTime.parse(t['date'] ?? '');
+              return date.isAfter(
+                    _dateRange!.start.subtract(const Duration(days: 1)),
+                  ) &&
+                  date.isBefore(_dateRange!.end.add(const Duration(days: 1)));
+            } catch (e) {
+              return false;
+            }
+          }).toList();
+    }
+
+    // Apply search filter
+    if (_searchQuery.isNotEmpty) {
+      filtered =
+          filtered.where((t) {
+            final description =
+                (t['description'] ?? '').toString().toLowerCase();
+            final category =
+                (t['category_name'] ?? '').toString().toLowerCase();
+            final amount = (t['amount'] ?? 0).toString();
+            final notes = (t['notes'] ?? '').toString().toLowerCase();
+
+            return description.contains(_searchQuery) ||
+                category.contains(_searchQuery) ||
+                amount.contains(_searchQuery) ||
+                notes.contains(_searchQuery);
+          }).toList();
+    }
+
+    setState(() {
+      _filteredTransactions = filtered;
+    });
+  }
+
+  void _applyFilter(String filterType) {
+    setState(() {
+      _filterType = filterType;
+      _applyAllFilters();
+    });
+  }
+
+  void _applyCategoryFilter(String category) {
+    setState(() {
+      _selectedCategory = category;
+      _applyAllFilters();
+    });
+  }
+
+  void _applyDateRangeFilter(DateTimeRange? range) {
+    setState(() {
+      _dateRange = range;
+      _applyAllFilters();
+    });
+  }
+
+  void _clearAllFilters() {
+    setState(() {
+      _filterType = 'all';
+      _selectedCategory = 'all';
+      _dateRange = null;
+      _searchQuery = '';
+      _searchController.clear();
+      _applyAllFilters();
+    });
+  }
+
+  void _applySorting() {
+    setState(() {
+      switch (_sortBy) {
+        case 'date_desc':
+          _filteredTransactions.sort((a, b) {
+            final dateA = DateTime.parse(
+              a['date'] ?? DateTime.now().toIso8601String(),
+            );
+            final dateB = DateTime.parse(
+              b['date'] ?? DateTime.now().toIso8601String(),
+            );
+            return dateB.compareTo(dateA);
+          });
+          break;
+        case 'date_asc':
+          _filteredTransactions.sort((a, b) {
+            final dateA = DateTime.parse(
+              a['date'] ?? DateTime.now().toIso8601String(),
+            );
+            final dateB = DateTime.parse(
+              b['date'] ?? DateTime.now().toIso8601String(),
+            );
+            return dateA.compareTo(dateB);
+          });
+          break;
+        case 'amount_desc':
+          _filteredTransactions.sort((a, b) {
+            final amountA = (a['amount'] ?? 0).toDouble();
+            final amountB = (b['amount'] ?? 0).toDouble();
+            return amountB.compareTo(amountA);
+          });
+          break;
+        case 'amount_asc':
+          _filteredTransactions.sort((a, b) {
+            final amountA = (a['amount'] ?? 0).toDouble();
+            final amountB = (b['amount'] ?? 0).toDouble();
+            return amountA.compareTo(amountB);
+          });
+          break;
+      }
+    });
+  }
+
+  String _formatCurrency(double amount) {
+    final formatter = NumberFormat.currency(
+      locale: 'id_ID',
+      symbol: 'Rp ',
+      decimalDigits: 0,
+    );
+    return formatter.format(amount);
+  }
+
+  String _formatDate(String dateStr) {
+    try {
+      final date = DateTime.parse(dateStr);
+      return DateFormat('dd MMM yyyy, HH:mm', 'id_ID').format(date);
+    } catch (e) {
+      return dateStr;
+    }
+  }
+
+  Color _getTypeColor(String type) {
+    switch (type.toLowerCase()) {
+      case 'income':
+        return Colors.green;
+      case 'expense':
+        return Colors.red;
+      case 'transfer':
+        return Colors.orange;
+      default:
+        return Colors.grey;
+    }
+  }
+
+  IconData _getTypeIcon(String type) {
+    switch (type.toLowerCase()) {
+      case 'income':
+        return Iconsax.arrow_down_1;
+      case 'expense':
+        return Iconsax.arrow_up_3;
+      case 'transfer':
+        return Iconsax.repeat;
+      default:
+        return Iconsax.wallet_3;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.black,
+      appBar: AppBar(
+        backgroundColor: Colors.black,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Iconsax.arrow_left, color: Colors.white),
+          onPressed: () => Navigator.pop(context),
+        ),
+        title: Text(
+          'Riwayat Transaksi',
+          style: GoogleFonts.poppins(
+            color: Colors.white,
+            fontSize: 20,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        actions: [
+          IconButton(
+            icon: const Icon(Iconsax.refresh, color: Colors.white),
+            onPressed: _loadTransactions,
+            tooltip: 'Muat Ulang',
+          ),
+        ],
+      ),
+      body:
+          _isLoading
+              ? const Center(
+                child: CircularProgressIndicator(color: Color(0xFF8B5FBF)),
+              )
+              : Column(
+                children: [
+                  _buildSummaryCard(),
+                  _buildFiltersAndSort(),
+                  Expanded(child: _buildTransactionsList()),
+                ],
+              ),
+    );
+  }
+
+  Widget _buildSummaryCard() {
+    final totalIncome = _transactions
+        .where((t) => t['type']?.toString().toLowerCase() == 'income')
+        .fold(0.0, (sum, t) => sum + (t['amount'] ?? 0).toDouble());
+
+    final totalExpense = _transactions
+        .where((t) => t['type']?.toString().toLowerCase() == 'expense')
+        .fold(0.0, (sum, t) => sum + (t['amount'] ?? 0).toDouble());
+
+    return Container(
+      margin: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: [Color(0xFF8B5FBF), Color(0xFF6A3093)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              _buildSummaryItem(
+                'Total Pemasukan',
+                totalIncome,
+                Colors.green,
+                Iconsax.arrow_down_1,
+              ),
+              Container(width: 1, height: 40, color: Colors.white24),
+              _buildSummaryItem(
+                'Total Pengeluaran',
+                totalExpense,
+                Colors.red,
+                Iconsax.arrow_up_3,
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(Iconsax.wallet_3, color: Colors.white, size: 20),
+                const SizedBox(width: 8),
+                Text(
+                  'Saldo Akhir: ',
+                  style: GoogleFonts.poppins(
+                    color: Colors.white70,
+                    fontSize: 14,
+                  ),
+                ),
+                Text(
+                  _formatCurrency(_runningBalance),
+                  style: GoogleFonts.poppins(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSummaryItem(
+    String label,
+    double amount,
+    Color color,
+    IconData icon,
+  ) {
+    return Expanded(
+      child: Column(
+        children: [
+          Icon(icon, color: color, size: 24),
+          const SizedBox(height: 8),
+          Text(
+            label,
+            style: GoogleFonts.poppins(color: Colors.white70, fontSize: 11),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 4),
+          Text(
+            _formatCurrency(amount),
+            style: GoogleFonts.poppins(
+              color: Colors.white,
+              fontSize: 14,
+              fontWeight: FontWeight.bold,
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFiltersAndSort() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Column(
+        children: [
+          // Search bar
+          TextField(
+            controller: _searchController,
+            style: GoogleFonts.poppins(color: Colors.white, fontSize: 14),
+            decoration: InputDecoration(
+              hintText: 'Cari transaksi...',
+              hintStyle: GoogleFonts.poppins(color: Colors.grey[600]),
+              prefixIcon: const Icon(
+                Iconsax.search_normal,
+                color: Color(0xFF8B5FBF),
+              ),
+              suffixIcon:
+                  _searchQuery.isNotEmpty
+                      ? IconButton(
+                        icon: const Icon(
+                          Iconsax.close_circle,
+                          color: Colors.grey,
+                        ),
+                        onPressed: () {
+                          _searchController.clear();
+                        },
+                      )
+                      : null,
+              filled: true,
+              fillColor: const Color(0xFF1A1A1A),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(color: Colors.grey[800]!),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(color: Colors.grey[800]!),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: const BorderSide(
+                  color: Color(0xFF8B5FBF),
+                  width: 2,
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 12),
+          // Filter chips
+          Row(
+            children: [
+              Text(
+                'Filter: ',
+                style: GoogleFonts.poppins(
+                  color: Colors.white,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: [
+                      _buildFilterChip('Semua', 'all'),
+                      _buildFilterChip('Pemasukan', 'income'),
+                      _buildFilterChip('Pengeluaran', 'expense'),
+                    ],
+                  ),
+                ),
+              ),
+              // Clear filters button
+              if (_searchQuery.isNotEmpty ||
+                  _filterType != 'all' ||
+                  _selectedCategory != 'all' ||
+                  _dateRange != null)
+                IconButton(
+                  icon: const Icon(
+                    Iconsax.refresh_2,
+                    color: Color(0xFF8B5FBF),
+                    size: 20,
+                  ),
+                  onPressed: _clearAllFilters,
+                  tooltip: 'Reset Filter',
+                ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          // Sort dropdown
+          Row(
+            children: [
+              Text(
+                'Urutkan: ',
+                style: GoogleFonts.poppins(
+                  color: Colors.white,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF1A1A1A),
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(
+                      color: const Color(0xFF8B5FBF).withOpacity(0.3),
+                    ),
+                  ),
+                  child: DropdownButtonHideUnderline(
+                    child: DropdownButton<String>(
+                      value: _sortBy,
+                      dropdownColor: const Color(0xFF1A1A1A),
+                      icon: const Icon(
+                        Iconsax.arrow_down_1,
+                        color: Colors.white70,
+                        size: 16,
+                      ),
+                      style: GoogleFonts.poppins(
+                        color: Colors.white,
+                        fontSize: 12,
+                      ),
+                      onChanged: (value) {
+                        if (value != null) {
+                          setState(() {
+                            _sortBy = value;
+                            _applySorting();
+                          });
+                        }
+                      },
+                      items: const [
+                        DropdownMenuItem(
+                          value: 'date_desc',
+                          child: Text('Tanggal Terbaru'),
+                        ),
+                        DropdownMenuItem(
+                          value: 'date_asc',
+                          child: Text('Tanggal Terlama'),
+                        ),
+                        DropdownMenuItem(
+                          value: 'amount_desc',
+                          child: Text('Jumlah Terbesar'),
+                        ),
+                        DropdownMenuItem(
+                          value: 'amount_asc',
+                          child: Text('Jumlah Terkecil'),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Divider(color: Colors.grey.withOpacity(0.2)),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFilterChip(String label, String value) {
+    final isSelected = _filterType == value;
+    return Padding(
+      padding: const EdgeInsets.only(right: 8),
+      child: GestureDetector(
+        onTap: () => _applyFilter(value),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+          decoration: BoxDecoration(
+            color:
+                isSelected ? const Color(0xFF8B5FBF) : const Color(0xFF1A1A1A),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color:
+                  isSelected
+                      ? const Color(0xFF8B5FBF)
+                      : Colors.grey.withOpacity(0.3),
+            ),
+          ),
+          child: Text(
+            label,
+            style: GoogleFonts.poppins(
+              color: isSelected ? Colors.white : Colors.white70,
+              fontSize: 11,
+              fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTransactionsList() {
+    if (_filteredTransactions.isEmpty) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Iconsax.empty_wallet, size: 64, color: Colors.grey[600]),
+            const SizedBox(height: 16),
+            Text(
+              'Tidak ada transaksi',
+              style: GoogleFonts.poppins(color: Colors.grey[500], fontSize: 16),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return ListView.builder(
+      padding: const EdgeInsets.all(16),
+      itemCount: _filteredTransactions.length,
+      itemBuilder: (context, index) {
+        final transaction = _filteredTransactions[index];
+        return _buildTransactionItem(transaction);
+      },
+    );
+  }
+
+  Widget _buildTransactionItem(Map<String, dynamic> transaction) {
+    final type = transaction['type']?.toString().toLowerCase() ?? 'expense';
+    final amount = (transaction['amount'] ?? 0).toDouble();
+    final runningBalance = (transaction['running_balance'] ?? 0).toDouble();
+    final description = transaction['description'] ?? 'Transaksi';
+    final date = transaction['date'] ?? DateTime.now().toIso8601String();
+    final category = transaction['category_name'] ?? type;
+
+    final typeColor = _getTypeColor(type);
+    final typeIcon = _getTypeIcon(type);
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: const Color(0xFF1A1A1A),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: typeColor.withOpacity(0.2), width: 1),
+      ),
+      child: Row(
+        children: [
+          // Icon
+          Container(
+            width: 48,
+            height: 48,
+            decoration: BoxDecoration(
+              color: typeColor.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(typeIcon, color: typeColor, size: 24),
+          ),
+          const SizedBox(width: 12),
+          // Details
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  description,
+                  style: GoogleFonts.poppins(
+                    color: Colors.white,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: 4),
+                Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 2,
+                      ),
+                      decoration: BoxDecoration(
+                        color: typeColor.withOpacity(0.2),
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: Text(
+                        category,
+                        style: GoogleFonts.poppins(
+                          color: typeColor,
+                          fontSize: 10,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      _formatDate(date),
+                      style: GoogleFonts.poppins(
+                        color: Colors.grey[500],
+                        fontSize: 11,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.05),
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Iconsax.wallet_3, size: 12, color: Colors.grey[500]),
+                      const SizedBox(width: 4),
+                      Text(
+                        'Saldo: ${_formatCurrency(runningBalance)}',
+                        style: GoogleFonts.poppins(
+                          color: Colors.grey[400],
+                          fontSize: 10,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          // Amount
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Text(
+                type == 'income'
+                    ? '+${_formatCurrency(amount)}'
+                    : '-${_formatCurrency(amount)}',
+                style: GoogleFonts.poppins(
+                  color: typeColor,
+                  fontSize: 15,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}

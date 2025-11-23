@@ -5,6 +5,7 @@ import 'package:financial_app/utils/formatters.dart';
 import 'package:provider/provider.dart';
 import 'package:financial_app/state/app_state.dart';
 import 'package:financial_app/models/transaction_model.dart';
+import 'package:financial_app/Screen/transaction_screen.dart';
 
 class RecentTransactions extends StatelessWidget {
   const RecentTransactions({super.key});
@@ -111,11 +112,21 @@ class RecentTransactions extends StatelessWidget {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  Text(
-                    'View All',
-                    style: GoogleFonts.poppins(
-                      color: Color(0xFF8B5FBF),
-                      fontSize: 12,
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const TransactionsScreen(),
+                        ),
+                      );
+                    },
+                    child: Text(
+                      'View All',
+                      style: GoogleFonts.poppins(
+                        color: Color(0xFF8B5FBF),
+                        fontSize: 12,
+                      ),
                     ),
                   ),
                 ],

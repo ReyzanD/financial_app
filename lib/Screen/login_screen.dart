@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../services/auth_service.dart';
+import '../services/pin_auth_service.dart';
 import '../widgets/login/login_header.dart';
 import '../widgets/login/login_form.dart';
 import '../widgets/login/social_login.dart';
@@ -76,8 +77,21 @@ class _LoginScreenState extends State<LoginScreen> {
           // New user - redirect to onboarding
           Navigator.pushReplacementNamed(context, '/onboarding');
         } else {
-          // Existing user - go to home
-          Navigator.pushReplacementNamed(context, '/home');
+          // Check if user has PIN set up
+          final pinAuthService = PinAuthService();
+          final hasPin = await pinAuthService.hasPin();
+
+          if (!hasPin) {
+            // No PIN - redirect to PIN setup (mandatory)
+            if (mounted) {
+              Navigator.pushReplacementNamed(context, '/pin-setup');
+            }
+          } else {
+            // Has PIN - go to home (PIN unlock handled by AuthGate)
+            if (mounted) {
+              Navigator.pushReplacementNamed(context, '/home');
+            }
+          }
         }
       }
     } catch (e) {

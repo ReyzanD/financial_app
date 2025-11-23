@@ -4,7 +4,9 @@ import 'package:financial_app/widgets/goals/goal_card.dart';
 import 'package:financial_app/services/api_service.dart';
 
 class GoalsList extends StatefulWidget {
-  const GoalsList({super.key});
+  final VoidCallback? onGoalsChanged;
+
+  const GoalsList({super.key, this.onGoalsChanged});
 
   @override
   State<GoalsList> createState() => _GoalsListState();
@@ -26,19 +28,20 @@ class _GoalsListState extends State<GoalsList> {
       final fetchedGoals = await _apiService.getGoals();
       if (mounted) {
         setState(() {
-          goals = fetchedGoals.map((goal) {
-            return {
-              'id': goal['id'],
-              'name': goal['name'],
-              'target': goal['target'],
-              'saved': goal['saved'],
-              'deadline': goal['deadline'],
-              'type': goal['type'],
-              'priority': goal['priority'] ?? 3,
-              'progress': goal['progress'] ?? 0,
-              'description': goal['description'],
-            };
-          }).toList();
+          goals =
+              fetchedGoals.map((goal) {
+                return {
+                  'id': goal['id'],
+                  'name': goal['name'],
+                  'target': goal['target'],
+                  'saved': goal['saved'],
+                  'deadline': goal['deadline'],
+                  'type': goal['type'],
+                  'priority': goal['priority'] ?? 3,
+                  'progress': goal['progress'] ?? 0,
+                  'description': goal['description'],
+                };
+              }).toList();
           _isLoading = false;
         });
       }
@@ -51,7 +54,6 @@ class _GoalsListState extends State<GoalsList> {
       // Show error or keep empty state
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -92,7 +94,7 @@ class _GoalsListState extends State<GoalsList> {
         itemCount: goals.length,
         itemBuilder: (context, index) {
           final goal = goals[index];
-          return GoalCard(goal: goal);
+          return GoalCard(goal: goal, onUpdated: widget.onGoalsChanged);
         },
       ),
     );

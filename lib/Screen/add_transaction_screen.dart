@@ -3,6 +3,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:financial_app/models/location_data.dart';
 import 'package:financial_app/services/api_service.dart';
+import 'package:financial_app/services/location_service.dart';
+import 'package:financial_app/widgets/maps/location_picker_map.dart';
 import 'package:financial_app/widgets/add_transaction/amount_field.dart';
 import 'package:financial_app/widgets/add_transaction/type_selector.dart';
 import 'package:financial_app/widgets/add_transaction/category_section.dart';
@@ -134,26 +136,72 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
     }
   }
 
+  Future<void> _pickLocationFromMap() async {
+    // Import the location picker map
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder:
+            (context) => LocationPickerMap(initialLocation: _currentLocation),
+      ),
+    );
+
+    if (result != null && result is LocationData) {
+      setState(() {
+        _currentLocation = result;
+      });
+    }
+  }
+
+  void _clearLocation() {
+    setState(() {
+      _currentLocation = null;
+    });
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Lokasi dihapus'),
+        backgroundColor: Color(0xFF8B5FBF),
+        duration: Duration(seconds: 2),
+      ),
+    );
+  }
+
   Future<void> _getCurrentLocation() async {
     setState(() => _isGettingLocation = true);
 
     try {
       // Simulate location service
-      await Future.delayed(const Duration(seconds: 2));
+      final position = await LocationService.getCurrentLatLng();
+      if (position == null) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                'Gagal mendapatkan lokasi. Pastikan izin lokasi aktif.',
+                style: GoogleFonts.poppins(),
+              ),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      } else {
+        // Mock location data - in real app, use geolocator package
+        setState(() {
+          _currentLocation = LocationData(
+            latitude: position.latitude,
+            longitude: position.longitude,
+            placeName: LocationService.getAddressFromCoordinates(
+              position.latitude,
+              position.longitude,
+            ),
+            address: null,
+            placeType: null,
+          );
+        });
 
-      // Mock location data - in real app, use geolocator package
-      setState(() {
-        _currentLocation = LocationData(
-          latitude: -6.2088,
-          longitude: 106.8456,
-          placeName: 'Restaurant Sederhana',
-          address: 'Jl. Sudirman No. 123, Jakarta',
-          placeType: 'restaurant',
-        );
-      });
-
-      // Auto-categorize based on location
-      _autoCategorizeFromLocation();
+        // Auto-categorize based on location
+        _autoCategorizeFromLocation();
+      }
     } catch (e) {
       print('Error getting location: $e');
       ScaffoldMessenger.of(context).showSnackBar(
@@ -381,6 +429,8 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                 currentLocation: _currentLocation,
                 isGettingLocation: _isGettingLocation,
                 onGetLocation: _getCurrentLocation,
+                onPickFromMap: _pickLocationFromMap,
+                onClearLocation: _clearLocation,
               ),
               const SizedBox(height: 20),
 

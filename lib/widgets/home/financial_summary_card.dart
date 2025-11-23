@@ -55,7 +55,10 @@ class _FinancialSummaryCardState extends State<FinancialSummaryCard>
     }
 
     try {
-      final summary = await _apiService.getFinancialSummary();
+      final summary = await _apiService.getFinancialSummary(
+        year: _selectedDate.year,
+        month: _selectedDate.month,
+      );
 
       if (mounted) {
         setState(() {

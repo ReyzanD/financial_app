@@ -3,6 +3,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:financial_app/widgets/goals/goals_helpers.dart';
 import 'package:financial_app/services/api_service.dart';
+import 'package:financial_app/widgets/goals/add_goal_modal.dart';
+import 'package:financial_app/widgets/goals/contribute_modal.dart';
 
 class GoalCard extends StatelessWidget {
   final Map<String, dynamic> goal;
@@ -212,7 +214,26 @@ class GoalCard extends StatelessWidget {
     );
   }
 
-  void _showContributeDialog(BuildContext context) {
+  void _showContributeDialog(BuildContext context) async {
+    final result = await showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.black,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        return ContributeModal(goal: goal);
+      },
+    );
+
+    // Refresh if contribution was successful
+    if (result == true) {
+      onUpdated?.call();
+    }
+  }
+
+  void _showContributeDialogOLD(BuildContext context) {
     final amountController = TextEditingController();
     final apiService = ApiService();
 
@@ -341,15 +362,21 @@ class GoalCard extends StatelessWidget {
   }
 
   void _showEditDialog(BuildContext context) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          'Fitur edit goal akan segera hadir',
-          style: GoogleFonts.poppins(),
-        ),
-        backgroundColor: Colors.blue,
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.black,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-    );
+      builder: (context) {
+        return AddGoalModal(initialGoal: goal);
+      },
+    ).then((result) {
+      if (result == true) {
+        onUpdated?.call();
+      }
+    });
   }
 
   void _showDeleteDialog(BuildContext context) {

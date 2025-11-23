@@ -73,7 +73,7 @@ class _MapScreenState extends State<MapScreen> {
 
   Future<void> _loadTransactionMarkers() async {
     try {
-      final transactions = await _apiService.getTransactions();
+      final transactions = await _apiService.getTransactions(limit: 100);
 
       for (var transaction in transactions) {
         final location = transaction['location'];
@@ -89,30 +89,93 @@ class _MapScreenState extends State<MapScreen> {
                   ? double.parse(location['longitude'])
                   : location['longitude'].toDouble();
 
+          final type = transaction['type']?.toString() ?? 'expense';
+          final amount = transaction['amount'] ?? 0;
+          final description = transaction['description'] ?? 'Transaksi';
+          final date = transaction['date']?.toString() ?? '';
+
           _addTransactionMarker(
             LatLng(lat, lng),
-            transaction['description'] ?? 'Transaction',
-            '${transaction['type']}: Rp ${transaction['amount']?.toStringAsFixed(0)}',
+            description,
+            type,
+            amount.toDouble(),
+            date,
           );
         }
+      }
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              '${_markers.length - 1} lokasi transaksi ditampilkan',
+            ),
+            backgroundColor: const Color(0xFF8B5FBF),
+            duration: const Duration(seconds: 2),
+          ),
+        );
       }
     } catch (e) {
       print('Error loading transaction markers: $e');
     }
   }
 
-  void _addTransactionMarker(LatLng position, String title, String snippet) {
+  Color _getMarkerColor(String type) {
+    switch (type.toLowerCase()) {
+      case 'income':
+        return Colors.green;
+      case 'expense':
+        return Colors.red;
+      case 'transfer':
+        return Colors.orange;
+      default:
+        return Colors.red;
+    }
+  }
+
+  IconData _getMarkerIcon(String type) {
+    switch (type.toLowerCase()) {
+      case 'income':
+        return Icons.add_circle;
+      case 'expense':
+        return Icons.remove_circle;
+      case 'transfer':
+        return Icons.swap_horiz;
+      default:
+        return Icons.location_on;
+    }
+  }
+
+  void _addTransactionMarker(
+    LatLng position,
+    String description,
+    String type,
+    double amount,
+    String date,
+  ) {
+    final color = _getMarkerColor(type);
+    final icon = _getMarkerIcon(type);
+
     setState(() {
       _markers.add(
         Marker(
           point: position,
-          width: 80,
-          height: 80,
+          width: 45,
+          height: 45,
           child: GestureDetector(
             onTap: () {
-              _showMarkerInfo(title, snippet);
+              _showTransactionMarkerInfo(description, type, amount, date);
             },
-            child: const Icon(Icons.location_on, color: Colors.red, size: 40),
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                Icon(Icons.location_on, color: color, size: 45),
+                Positioned(
+                  top: 8,
+                  child: Icon(icon, color: Colors.white, size: 16),
+                ),
+              ],
+            ),
           ),
         ),
       );
@@ -134,12 +197,100 @@ class _MapScreenState extends State<MapScreen> {
               TextButton(
                 onPressed: () => Navigator.pop(context),
                 child: Text(
-                  'Close',
+                  'Tutup',
                   style: GoogleFonts.poppins(color: const Color(0xFF8B5FBF)),
                 ),
               ),
             ],
           ),
+    );
+  }
+
+  void _showTransactionMarkerInfo(
+    String description,
+    String type,
+    double amount,
+    String date,
+  ) {
+    final typeLabel =
+        type == 'income'
+            ? 'Pemasukan'
+            : type == 'expense'
+            ? 'Pengeluaran'
+            : 'Transfer';
+    final color = _getMarkerColor(type);
+
+    showDialog(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+            backgroundColor: const Color(0xFF1A1A1A),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            title: Row(
+              children: [
+                Icon(_getMarkerIcon(type), color: color, size: 24),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    description,
+                    style: GoogleFonts.poppins(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildInfoRow('Tipe', typeLabel, color),
+                const SizedBox(height: 12),
+                _buildInfoRow(
+                  'Jumlah',
+                  'Rp ${amount.toStringAsFixed(0).replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]}.')}',
+                  color,
+                ),
+                if (date.isNotEmpty) ...[
+                  const SizedBox(height: 12),
+                  _buildInfoRow('Tanggal', date.split('T')[0], Colors.grey),
+                ],
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text(
+                  'Tutup',
+                  style: GoogleFonts.poppins(color: const Color(0xFF8B5FBF)),
+                ),
+              ),
+            ],
+          ),
+    );
+  }
+
+  Widget _buildInfoRow(String label, String value, Color color) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          label,
+          style: GoogleFonts.poppins(color: Colors.grey[400], fontSize: 14),
+        ),
+        Text(
+          value,
+          style: GoogleFonts.poppins(
+            color: color,
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ],
     );
   }
 
@@ -149,13 +300,29 @@ class _MapScreenState extends State<MapScreen> {
       appBar: AppBar(
         backgroundColor: Colors.black,
         title: Text(
-          'Location Map',
-          style: GoogleFonts.poppins(color: Colors.white),
+          'Peta Transaksi',
+          style: GoogleFonts.poppins(
+            color: Colors.white,
+            fontWeight: FontWeight.w600,
+          ),
         ),
         leading: IconButton(
           icon: const Icon(Iconsax.arrow_left, color: Colors.white),
           onPressed: () => Navigator.of(context).pop(),
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Iconsax.refresh, color: Colors.white),
+            onPressed: () {
+              setState(() {
+                _markers.clear();
+              });
+              _initializeLocation();
+              _loadTransactionMarkers();
+            },
+            tooltip: 'Muat ulang',
+          ),
+        ],
       ),
       body:
           _isLoading
@@ -166,9 +333,9 @@ class _MapScreenState extends State<MapScreen> {
                   initialCenter:
                       _currentPosition ??
                       const LatLng(
-                        -6.2088,
-                        106.8456,
-                      ), // Jakarta - change if needed
+                        -5.1477,
+                        119.4327,
+                      ), // Makassar, Sulawesi Selatan
                   initialZoom: 15.0,
                   minZoom: 5.0,
                   maxZoom: 18.0,
@@ -183,6 +350,7 @@ class _MapScreenState extends State<MapScreen> {
                 ],
               ),
       floatingActionButton: FloatingActionButton(
+        heroTag: 'map_fab',
         onPressed: () async {
           final position = await LocationService.getCurrentLatLng();
           if (position != null) {

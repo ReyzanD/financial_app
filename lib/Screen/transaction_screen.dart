@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:financial_app/state/app_state.dart';
 import 'package:financial_app/widgets/transactions/transaction_header.dart';
 import 'package:financial_app/widgets/transactions/transaction_filters.dart';
 import 'package:financial_app/widgets/transactions/transaction_list.dart';
@@ -12,6 +14,15 @@ class TransactionsScreen extends StatefulWidget {
 
 class _TransactionsScreenState extends State<TransactionsScreen> {
   String _selectedFilter = 'Semua';
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final appState = Provider.of<AppState>(context, listen: false);
+      appState.refreshData();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {

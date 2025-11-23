@@ -85,7 +85,7 @@ class _HomeHeaderState extends State<HomeHeader> {
             children: [
               _buildIconButton(
                 icon: Iconsax.notification,
-                onPressed: () {},
+                onPressed: () => Navigator.pushNamed(context, '/notifications'),
                 hasNotification: true,
               ),
               const SizedBox(width: 8),

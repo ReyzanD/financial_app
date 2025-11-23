@@ -3,12 +3,14 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:financial_app/models/location_recommendation.dart';
+import 'package:financial_app/services/location_intelligence_service.dart';
 import 'package:financial_app/widgets/home/home_header.dart';
 import 'package:financial_app/widgets/home/financial_summary_card.dart';
 import 'package:financial_app/widgets/home/quick_actions.dart';
 import 'package:financial_app/widgets/home/budget_progress.dart';
 import 'package:financial_app/widgets/home/recent_transactions.dart';
 import 'package:financial_app/widgets/home/ai_recommendations.dart';
+import 'package:financial_app/widgets/home/quick_add_widget.dart';
 import 'package:financial_app/widgets/home/bottom_nav_bar.dart';
 import 'package:financial_app/widgets/home/floating_action_button.dart';
 import 'package:financial_app/widgets/home/tab_placeholders.dart';
@@ -106,6 +108,10 @@ class _HomeScreenState extends State<HomeScreen> {
             const QuickActions(),
             const SizedBox(height: 20),
 
+            // Quick Add Widget
+            QuickAddWidget(onTransactionAdded: _refreshDashboard),
+            const SizedBox(height: 20),
+
             // Location-Based Recommendations
             _buildLocationRecommendations(),
             const SizedBox(height: 20),
@@ -136,7 +142,7 @@ class _HomeScreenState extends State<HomeScreen> {
   // Location Recommendations Section
   Widget _buildLocationRecommendations() {
     return FutureBuilder<List<LocationRecommendation>>(
-      future: LocationRecommendationService().getDailyLocationInsights(),
+      future: LocationIntelligenceService().generateLocationInsights(),
       builder: (context, snapshot) {
         if (!snapshot.hasData || snapshot.data!.isEmpty) {
           return Container(); // Don't show if no data

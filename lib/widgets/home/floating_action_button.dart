@@ -11,6 +11,7 @@ class HomeFloatingActionButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FloatingActionButton(
+      heroTag: 'home_fab',
       onPressed: () async {
         final result = await Navigator.push(
           context,

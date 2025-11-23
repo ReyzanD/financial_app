@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:financial_app/Screen/add_transaction_screen.dart';
 import 'package:financial_app/widgets/transactions/transaction_card.dart';
 import 'package:financial_app/state/app_state.dart';
 import 'package:financial_app/models/transaction_model.dart';
@@ -23,6 +24,37 @@ class _TransactionListState extends State<TransactionList> {
       return transactions.where((t) => t.type == 'income').toList();
     } else if (widget.selectedFilter == 'Pengeluaran') {
       return transactions.where((t) => t.type == 'expense').toList();
+    } else if (widget.selectedFilter == 'Hari Ini') {
+      final now = DateTime.now();
+      return transactions
+          .where(
+            (t) =>
+                t.transactionDate.year == now.year &&
+                t.transactionDate.month == now.month &&
+                t.transactionDate.day == now.day,
+          )
+          .toList();
+    } else if (widget.selectedFilter == 'Minggu Ini') {
+      final now = DateTime.now();
+      final today = DateTime(now.year, now.month, now.day);
+      final startOfWeek = today.subtract(Duration(days: today.weekday - 1));
+      final endOfWeek = startOfWeek.add(const Duration(days: 7));
+      return transactions
+          .where(
+            (t) =>
+                !t.transactionDate.isBefore(startOfWeek) &&
+                t.transactionDate.isBefore(endOfWeek),
+          )
+          .toList();
+    } else if (widget.selectedFilter == 'Bulan Ini') {
+      final now = DateTime.now();
+      return transactions
+          .where(
+            (t) =>
+                t.transactionDate.year == now.year &&
+                t.transactionDate.month == now.month,
+          )
+          .toList();
     }
     return transactions;
   }
@@ -63,9 +95,29 @@ class _TransactionListState extends State<TransactionList> {
         if (filteredTransactions.isEmpty) {
           return Expanded(
             child: Center(
-              child: Text(
-                'Belum ada transaksi',
-                style: TextStyle(color: Colors.grey[500]),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    'Belum ada transaksi',
+                    style: TextStyle(color: Colors.grey[500]),
+                  ),
+                  const SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: () async {
+                      final result = await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const AddTransactionScreen(),
+                        ),
+                      );
+                      if (result == true) {
+                        await appState.refreshData();
+                      }
+                    },
+                    child: const Text('Tambah transaksi'),
+                  ),
+                ],
               ),
             ),
           );

@@ -6,9 +6,14 @@ class FinancialObligation {
   final double monthlyAmount;
   final DateTime dueDate;
   final ObligationType type;
+  final String? category;
+  final double? originalAmount;
   final double? currentBalance;
+  final double? interestRate;
   final bool isSubscription;
   final String? subscriptionCycle;
+  final double? minimumPayment;
+  final String? payoffStrategy;
   final int daysUntilDue;
 
   FinancialObligation({
@@ -17,9 +22,14 @@ class FinancialObligation {
     required this.monthlyAmount,
     required this.dueDate,
     required this.type,
+    this.category,
+    this.originalAmount,
     this.currentBalance,
+    this.interestRate,
     this.isSubscription = false,
     this.subscriptionCycle,
+    this.minimumPayment,
+    this.payoffStrategy,
     required this.daysUntilDue,
   });
 

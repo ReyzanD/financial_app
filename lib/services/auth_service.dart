@@ -1,11 +1,13 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:financial_app/services/pin_auth_service.dart';
 
 class AuthService {
   // Use 10.0.2.2 for Android emulator to connect to localhost on the host machine
   static const String baseUrl = 'http://10.0.2.2:5000/api/v1/auth';
   final FlutterSecureStorage _storage = const FlutterSecureStorage();
+  final PinAuthService _pinAuthService = PinAuthService();
 
   Future<Map<String, dynamic>?> login(String email, String password) async {
     try {
@@ -60,6 +62,9 @@ class AuthService {
   }
 
   Future<void> logout() async {
+    // Clear PIN first
+    await _pinAuthService.clearPin();
+    // Then clear auth token and other data
     await _storage.delete(key: 'auth_token');
     await _storage.deleteAll(); // Clear all stored data
   }
