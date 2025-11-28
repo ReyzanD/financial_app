@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:financial_app/services/obligation_service.dart';
 import 'package:financial_app/widgets/obligations/obligation_view_tabs.dart';
+import 'package:financial_app/widgets/obligations/all_obligations_view.dart';
 import 'package:financial_app/widgets/obligations/upcoming_obligations_view.dart';
 import 'package:financial_app/widgets/obligations/debts_view.dart';
 import 'package:financial_app/widgets/obligations/subscriptions_view.dart';
@@ -18,7 +19,14 @@ class FinancialObligationsScreen extends StatefulWidget {
 
 class _FinancialObligationsScreenState
     extends State<FinancialObligationsScreen> {
-  String _selectedView = 'upcoming'; // 'upcoming', 'debts', 'subscriptions'
+  String _selectedView = 'all'; // 'all', 'upcoming', 'debts', 'subscriptions'
+  int _refreshKey = 0;
+
+  void _refreshScreen() {
+    setState(() {
+      _refreshKey++;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -56,7 +64,14 @@ class _FinancialObligationsScreenState
       ),
       floatingActionButton: FloatingActionButton(
         heroTag: 'obligations_fab',
-        onPressed: () => ObligationHelpers.showAddObligationModal(context),
+        onPressed: () async {
+          final result = await ObligationHelpers.showAddObligationModal(
+            context,
+          );
+          if (result == true) {
+            _refreshScreen();
+          }
+        },
         child: Icon(Iconsax.add),
       ),
     );
@@ -64,6 +79,7 @@ class _FinancialObligationsScreenState
 
   Widget _buildSummaryCards() {
     return FutureBuilder<Map<String, dynamic>>(
+      key: ValueKey('summary_$_refreshKey'),
       future: ObligationService().getObligationsSummary(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) return SizedBox();
@@ -103,14 +119,16 @@ class _FinancialObligationsScreenState
 
   Widget _buildSelectedView() {
     switch (_selectedView) {
+      case 'all':
+        return AllObligationsView(key: ValueKey('all_$_refreshKey'));
       case 'upcoming':
-        return const UpcomingObligationsView();
+        return UpcomingObligationsView(key: ValueKey('upcoming_$_refreshKey'));
       case 'debts':
-        return const DebtsView();
+        return DebtsView(key: ValueKey('debts_$_refreshKey'));
       case 'subscriptions':
-        return const SubscriptionsView();
+        return SubscriptionsView(key: ValueKey('subscriptions_$_refreshKey'));
       default:
-        return const UpcomingObligationsView();
+        return AllObligationsView(key: ValueKey('all_$_refreshKey'));
     }
   }
 

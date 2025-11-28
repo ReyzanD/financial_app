@@ -211,12 +211,41 @@ class _NotificationCenterScreenState extends State<NotificationCenterScreen>
             child: const Icon(Iconsax.trash, color: Colors.white),
           ),
           direction: DismissDirection.endToStart,
-          onDismissed: (direction) async {
-            await _historyService.deleteNotification(notification['id']);
-            _loadData();
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(const SnackBar(content: Text('Notifikasi dihapus')));
+          onDismissed: (direction) {
+            // Immediately remove from list to prevent error
+            setState(() {
+              _history.removeAt(index);
+              if (notification['read'] == false && _unreadCount > 0) {
+                _unreadCount--;
+              }
+            });
+
+            // Perform API call in background
+            final notificationId = notification['id'];
+            _historyService
+                .deleteNotification(notificationId)
+                .then((_) {
+                  if (mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Notifikasi dihapus'),
+                        duration: Duration(seconds: 2),
+                      ),
+                    );
+                  }
+                })
+                .catchError((e) {
+                  // If delete fails, reload to restore the item
+                  if (mounted) {
+                    _loadData();
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('Gagal menghapus: $e'),
+                        backgroundColor: Colors.red,
+                      ),
+                    );
+                  }
+                });
           },
           child: InkWell(
             onTap: () async {

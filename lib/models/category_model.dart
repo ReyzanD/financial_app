@@ -23,18 +23,38 @@ class CategoryModel {
 
   factory CategoryModel.fromJson(Map<String, dynamic> json) {
     return CategoryModel(
-      id: json['category_id_232143'],
-      name: json['name_232143'],
-      type: json['type_232143'],
-      color: json['color_232143'],
-      icon: json['icon_232143'],
+      id:
+          json['category_id_232143']?.toString() ??
+          json['id']?.toString() ??
+          '',
+      name:
+          json['name_232143']?.toString() ??
+          json['name']?.toString() ??
+          'Unknown',
+      type:
+          json['type_232143']?.toString() ??
+          json['type']?.toString() ??
+          'expense',
+      color:
+          json['color_232143']?.toString() ??
+          json['color']?.toString() ??
+          '#3498db',
+      icon:
+          json['icon_232143']?.toString() ??
+          json['icon']?.toString() ??
+          'receipt',
       budgetLimit:
           json['budget_limit_232143'] != null
               ? double.parse(json['budget_limit_232143'].toString())
               : null,
-      budgetPeriod: json['budget_period_232143'] ?? 'monthly',
-      isSystemDefault: json['is_system_default_232143'] == 1,
-      displayOrder: json['display_order_232143'] ?? 0,
+      budgetPeriod:
+          json['budget_period_232143']?.toString() ??
+          json['budget_period']?.toString() ??
+          'monthly',
+      isSystemDefault:
+          json['is_system_default_232143'] == 1 ||
+          json['is_system_default'] == 1,
+      displayOrder: json['display_order_232143'] ?? json['display_order'] ?? 0,
     );
   }
 }

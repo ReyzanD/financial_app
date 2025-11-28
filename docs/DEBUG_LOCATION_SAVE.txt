@@ -1,0 +1,94 @@
+===============================================
+   DEBUG: LOCATION NOT SAVING - TEST THIS
+===============================================
+
+🔍 I've added detailed logging to track the issue.
+
+═══════════════════════════════════════════════
+WHAT TO DO:
+═══════════════════════════════════════════════
+
+1. Hot Restart the App
+
+2. Add ONE New Expense Transaction:
+   - Open Add Transaction
+   - Select "Expense"
+   - Enter amount (any)
+   - Select category
+   - Add description
+   - Click Save
+
+3. Watch Console Carefully
+
+═══════════════════════════════════════════════
+WHAT YOU SHOULD SEE IN CONSOLE:
+═══════════════════════════════════════════════
+
+SCENARIO A: Location Working (Expected)
+  📍 [AddTransaction] Attempting to get current location...
+  ✅ [AddTransaction] Location received: -6.xxx, 106.xxx
+  📍 [AddTransaction] Place name: Restaurant ABC
+  ✅ [AddTransaction] Location set: LocationData(...)
+  
+  (When you save:)
+  ═══════════════════════════════════════
+  📤 SENDING Transaction data:
+     Location Name: Restaurant ABC
+     Latitude: -6.xxx
+     Longitude: 106.xxx
+     Full data: {...}
+  ═══════════════════════════════════════
+
+SCENARIO B: Location Service Failed
+  📍 [AddTransaction] Attempting to get current location...
+  ❌ [AddTransaction] Location service returned null
+  → PROBLEM: LocationService not working
+
+SCENARIO C: Location Not Being Sent
+  (No location logs when opening screen)
+  
+  (When you save:)
+  ═══════════════════════════════════════
+  📤 SENDING Transaction data:
+     Location Name: null
+     Latitude: null
+     Longitude: null
+  ═══════════════════════════════════════
+  → PROBLEM: Location not being included
+
+═══════════════════════════════════════════════
+AFTER YOU TEST, TELL ME:
+═══════════════════════════════════════════════
+
+1. Did you see "📍 Attempting to get current location"?
+   YES / NO
+
+2. Did you see "✅ Location received"?
+   YES / NO
+
+3. What does "📤 SENDING Transaction data" show?
+   - Location Name: ???
+   - Latitude: ???
+   - Longitude: ???
+
+4. After saving, check the transaction data in console.
+   Does it show "location": "" or "location": "Place Name"?
+
+═══════════════════════════════════════════════
+EXPECTED VS ACTUAL:
+═══════════════════════════════════════════════
+
+EXPECTED:
+  📍 Attempting to get location
+  ✅ Location received
+  📤 SENDING with Location Name: "Some Place"
+  → Saved with location in database
+
+ACTUAL (Your current issue):
+  ??? (Need to see your logs)
+  📤 SENDING with Location Name: null?
+  → Saved with "location": ""
+
+The logs will tell us EXACTLY where the problem is!
+
+🔍 PLEASE TEST AND SHARE THE CONSOLE LOGS! 🔍

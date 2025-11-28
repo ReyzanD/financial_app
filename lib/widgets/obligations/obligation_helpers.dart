@@ -27,7 +27,7 @@ class ObligationHelpers {
     }
   }
 
-  static Future<void> showAddObligationModal(BuildContext context) async {
+  static Future<bool?> showAddObligationModal(BuildContext context) async {
     final result = await showModalBottomSheet<bool>(
       context: context,
       isScrollControlled: true,
@@ -38,10 +38,7 @@ class ObligationHelpers {
       builder: (context) => const AddObligationModal(),
     );
 
-    // Optionally refresh the screen if obligation was added
-    if (result == true) {
-      // You can add a callback here if needed
-    }
+    return result;
   }
 
   static Future<void> showObligationDetails(

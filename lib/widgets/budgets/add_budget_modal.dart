@@ -35,6 +35,10 @@ class _AddBudgetModalState extends State<AddBudgetModal> {
   @override
   void initState() {
     super.initState();
+    print(
+      '🔍 AddBudgetModal - Received ${widget.categories.length} categories',
+    );
+    print('📝 Categories: ${widget.categories}');
     _amountController = TextEditingController();
     final initial = widget.initialBudget;
     if (initial != null) {

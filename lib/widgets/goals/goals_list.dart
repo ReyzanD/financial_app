@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:financial_app/widgets/goals/goal_card.dart';
 import 'package:financial_app/services/api_service.dart';
+import 'package:financial_app/widgets/common/shimmer_loading.dart';
+import 'package:financial_app/widgets/common/empty_state.dart';
+import 'package:financial_app/utils/page_transitions.dart';
 
 class GoalsList extends StatefulWidget {
   final VoidCallback? onGoalsChanged;
@@ -59,31 +62,16 @@ class _GoalsListState extends State<GoalsList> {
   Widget build(BuildContext context) {
     if (_isLoading) {
       return const Expanded(
-        child: Center(
-          child: CircularProgressIndicator(color: Color(0xFF8B5FBF)),
-        ),
+        child: CardListShimmer(itemCount: 4, cardHeight: 180),
       );
     }
 
     if (goals.isEmpty) {
       return Expanded(
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(Icons.flag_outlined, size: 64, color: Colors.grey[600]),
-              const SizedBox(height: 16),
-              Text(
-                'Belum ada tujuan keuangan',
-                style: TextStyle(color: Colors.grey[400], fontSize: 16),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'Tambahkan tujuan pertama Anda',
-                style: TextStyle(color: Colors.grey[600], fontSize: 14),
-              ),
-            ],
-          ),
+        child: EmptyState(
+          icon: Icons.flag_outlined,
+          title: 'Belum Ada Target',
+          subtitle: 'Tetapkan target keuangan dan capai impian Anda',
         ),
       );
     }
@@ -94,7 +82,10 @@ class _GoalsListState extends State<GoalsList> {
         itemCount: goals.length,
         itemBuilder: (context, index) {
           final goal = goals[index];
-          return GoalCard(goal: goal, onUpdated: widget.onGoalsChanged);
+          return StaggeredListAnimation(
+            index: index,
+            child: GoalCard(goal: goal, onUpdated: widget.onGoalsChanged),
+          );
         },
       ),
     );

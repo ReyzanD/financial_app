@@ -62,21 +62,40 @@ class ObligationModel:
     def get_upcoming_obligations(user_id, days=7):
         db = get_db()
         with db.cursor() as cursor:
-            sql = """
-            SELECT *,
-                   DATEDIFF(
-                       STR_TO_DATE(CONCAT(YEAR(CURDATE()), '-', MONTH(CURDATE()), '-', due_date_232143), '%Y-%m-%d'),
-                       CURDATE()
-                   ) as days_until_due
-            FROM financial_obligations_232143 
-            WHERE user_id_232143 = %s 
-            AND status_232143 = 'active'
-            AND due_date_232143 IS NOT NULL
-            HAVING days_until_due BETWEEN 0 AND %s
-            ORDER BY days_until_due ASC
-            """
-            cursor.execute(sql, (user_id, days))
-            return cursor.fetchall()
+            try:
+                sql = """
+                SELECT *,
+                       DATEDIFF(
+                           DATE_ADD(
+                               CURDATE(),
+                               INTERVAL (due_date_232143 - DAY(CURDATE())) DAY
+                           ),
+                           CURDATE()
+                       ) as days_until_due
+                FROM financial_obligations_232143 
+                WHERE user_id_232143 = %s 
+                AND status_232143 = 'active'
+                AND due_date_232143 IS NOT NULL
+                AND due_date_232143 BETWEEN 1 AND 31
+                HAVING days_until_due BETWEEN 0 AND %s
+                ORDER BY days_until_due ASC
+                """
+                cursor.execute(sql, (user_id, days))
+                return cursor.fetchall()
+            except Exception as e:
+                print(f'Error in get_upcoming_obligations: {e}')
+                # Return basic query without days calculation as fallback
+                sql_fallback = """
+                SELECT *
+                FROM financial_obligations_232143 
+                WHERE user_id_232143 = %s 
+                AND status_232143 = 'active'
+                AND due_date_232143 IS NOT NULL
+                ORDER BY due_date_232143 ASC
+                LIMIT 10
+                """
+                cursor.execute(sql_fallback, (user_id,))
+                return cursor.fetchall()
 
     @staticmethod
     def record_payment(payment_data):

@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:financial_app/utils/formatters.dart';
 import 'package:financial_app/services/api_service.dart';
+import 'package:financial_app/utils/app_refresh.dart';
 
 class FinancialSummaryCard extends StatefulWidget {
   const FinancialSummaryCard({super.key});
@@ -37,7 +38,11 @@ class _FinancialSummaryCardState extends State<FinancialSummaryCard>
       parent: _animationController,
       curve: Curves.easeInOut,
     );
-    _loadFinancialSummary();
+
+    // Delay initial load slightly to ensure context is ready
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _loadFinancialSummary();
+    });
   }
 
   @override
@@ -111,7 +116,28 @@ class _FinancialSummaryCardState extends State<FinancialSummaryCard>
   }
 
   @override
+  void didUpdateWidget(FinancialSummaryCard oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Reload when widget is rebuilt with new key
+    if (widget.key != oldWidget.key) {
+      print('🔄 [FinancialSummaryCard] Widget key changed, reloading data');
+      _loadFinancialSummary();
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+    return NotificationListener<DataRefreshNotification>(
+      onNotification: (notification) {
+        print('📩 [FinancialSummaryCard] Received refresh notification');
+        _loadFinancialSummary();
+        return true;
+      },
+      child: _buildContent(),
+    );
+  }
+
+  Widget _buildContent() {
     if (_isLoading) {
       return Container(
         height: 200,
@@ -184,9 +210,13 @@ class _FinancialSummaryCardState extends State<FinancialSummaryCard>
         (summaries['income'] as Map<String, dynamic>?)?['total_amount'] ?? 0.0;
     final expense =
         (summaries['expense'] as Map<String, dynamic>?)?['total_amount'] ?? 0.0;
-    final balance = income - expense;
+    final actualBalance = income - expense;
+    final balance = actualBalance < 0 ? 0.0 : actualBalance; // Clamp to 0
+    final isNegative = actualBalance < 0;
 
-    print('💰 Income: $income | Expense: $expense | Balance: $balance');
+    print(
+      '💰 Income: $income | Expense: $expense | Balance: $balance (Actual: $actualBalance)',
+    );
 
     return FadeTransition(
       opacity: _fadeAnimation,
@@ -264,6 +294,39 @@ class _FinancialSummaryCardState extends State<FinancialSummaryCard>
                 fontWeight: FontWeight.bold,
               ),
             ),
+            if (isNegative) ...[
+              const SizedBox(height: 8),
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 6,
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.red.withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: Colors.red.withOpacity(0.5)),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(
+                      Icons.warning_amber_rounded,
+                      color: Colors.red,
+                      size: 16,
+                    ),
+                    const SizedBox(width: 6),
+                    Text(
+                      'Pengeluaran melebihi pemasukan',
+                      style: GoogleFonts.poppins(
+                        color: Colors.red[300],
+                        fontSize: 11,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
             const SizedBox(height: 20),
 
             // Income vs Expense

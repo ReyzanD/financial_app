@@ -21,35 +21,60 @@ class DataService {
   Timer? _updateTimer;
 
   DataService(this._apiService) {
-    // Immediately start data updates
-    startPeriodicUpdates();
+    // Don't start periodic updates immediately
+    // Wait for explicit data load after authentication
+    print('📦 [DataService] Service initialized, waiting for data load');
   }
 
   void startPeriodicUpdates() {
+    // Stop any existing timer
+    _updateTimer?.cancel();
+
     // Fetch initial data
     refreshAllData();
 
-    // Set up periodic updates every 30 seconds
-    _updateTimer = Timer.periodic(const Duration(seconds: 30), (timer) {
+    // Set up periodic updates every 2 minutes (reduced from 30s for better performance)
+    _updateTimer = Timer.periodic(const Duration(minutes: 2), (timer) {
       refreshAllData();
     });
+
+    print('⏰ [DataService] Periodic updates started (every 2 minutes)');
   }
 
   bool _isRefreshing = false;
   DateTime? _lastRefresh;
 
-  Future<void> refreshAllData() async {
-    // Prevent multiple simultaneous refreshes
-    if (_isRefreshing) return;
+  Future<void> refreshAllData({bool forceRefresh = false}) async {
+    // If forced, allow immediate refresh
+    if (forceRefresh) {
+      // Wait for ongoing refresh to complete if any
+      if (_isRefreshing) {
+        await Future.delayed(const Duration(milliseconds: 100));
+      }
+    } else {
+      // Prevent multiple simultaneous refreshes
+      if (_isRefreshing) return;
 
-    // Don't refresh more often than every 5 seconds
-    if (_lastRefresh != null &&
-        DateTime.now().difference(_lastRefresh!) < const Duration(seconds: 5)) {
-      return;
+      // Don't refresh more often than every 2 seconds (reduced from 5)
+      if (_lastRefresh != null &&
+          DateTime.now().difference(_lastRefresh!) <
+              const Duration(seconds: 2)) {
+        print(
+          '⏭️ Skipping refresh - throttled (last refresh: ${DateTime.now().difference(_lastRefresh!).inSeconds}s ago)',
+        );
+        return;
+      }
     }
 
     _isRefreshing = true;
     try {
+      print('🔄 Refreshing all data (forced: $forceRefresh)');
+
+      // Clear API cache on force refresh to get fresh data
+      if (forceRefresh) {
+        ApiService.clearCache();
+      }
+
       // Fetch all data types in parallel
       await Future.wait([
         refreshTransactions(),
@@ -66,12 +91,17 @@ class DataService {
 
   Future<void> refreshTransactions() async {
     try {
+      print('📥 [DataService] Fetching transactions from API...');
       final transactions = await _apiService.getTransactions();
+      print(
+        '✅ [DataService] Received ${transactions.length} transactions from API',
+      );
       if (!_transactionsController.isClosed) {
         _transactionsController.add(transactions);
+        print('📤 [DataService] Transactions pushed to stream');
       }
     } catch (e) {
-      print('Error fetching transactions: $e');
+      print('❌ [DataService] Error fetching transactions: $e');
       if (!_transactionsController.isClosed) {
         _transactionsController.add([]); // Add empty list on error
       }

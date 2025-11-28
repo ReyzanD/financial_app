@@ -134,19 +134,50 @@ class RecentTransactions extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             if (appState.isLoading)
-              const Center(child: CircularProgressIndicator())
+              Padding(
+                padding: const EdgeInsets.all(32.0),
+                child: Center(
+                  child: CircularProgressIndicator(
+                    color: Color(0xFF8B5FBF),
+                    strokeWidth: 2,
+                  ),
+                ),
+              )
             else if (recentTransactions.isEmpty)
-              Center(
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Container(
-                  padding: const EdgeInsets.all(20),
+                  padding: const EdgeInsets.all(24),
                   decoration: BoxDecoration(
                     color: const Color(0xFF1A1A1A),
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(color: Colors.grey[800]!),
                   ),
-                  child: Text(
-                    'No transactions yet',
-                    style: GoogleFonts.poppins(color: Colors.grey[500]),
+                  child: Column(
+                    children: [
+                      Icon(
+                        Icons.receipt_long_outlined,
+                        color: Colors.grey[600],
+                        size: 48,
+                      ),
+                      SizedBox(height: 12),
+                      Text(
+                        'No transactions yet',
+                        style: GoogleFonts.poppins(
+                          color: Colors.grey[400],
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      SizedBox(height: 4),
+                      Text(
+                        'Start by adding your first transaction',
+                        style: GoogleFonts.poppins(
+                          color: Colors.grey[600],
+                          fontSize: 11,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               )

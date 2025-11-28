@@ -33,7 +33,21 @@ class _BudgetProgressState extends State<BudgetProgress>
       parent: _animationController,
       curve: Curves.easeInOut,
     );
-    _loadData();
+
+    // Delay initial load to ensure context is ready
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _loadData();
+    });
+  }
+
+  @override
+  void didUpdateWidget(BudgetProgress oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Reload when widget is rebuilt with new key
+    if (widget.key != oldWidget.key) {
+      print('🔄 [BudgetProgress] Widget key changed, reloading data');
+      _loadData();
+    }
   }
 
   @override

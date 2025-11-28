@@ -1,0 +1,85 @@
+╔══════════════════════════════════════════════════════════╗
+║                                                          ║
+║   🚨 DATABASE MIGRATION REQUIRED!                        ║
+║                                                          ║
+║   The error "Server error - Please try again later"     ║
+║   is because database columns don't exist yet.          ║
+║                                                          ║
+╚══════════════════════════════════════════════════════════╝
+
+═══════════════════════════════════════════════════════════
+  STEP 1: RUN THE MIGRATION
+═══════════════════════════════════════════════════════════
+
+Open a NEW terminal in the backend folder and run:
+
+    cd d:\CODE\Project\FinancialApp\financial_app\backend
+    python migrations\add_location_columns.py
+
+═══════════════════════════════════════════════════════════
+  STEP 2: RESTART BACKEND
+═══════════════════════════════════════════════════════════
+
+After migration completes:
+1. Stop current backend (Ctrl+C)
+2. Restart: python app.py
+
+═══════════════════════════════════════════════════════════
+  STEP 3: TEST IN APP
+═══════════════════════════════════════════════════════════
+
+1. Hot restart Flutter app
+2. Add ONE expense transaction
+3. Let location auto-fetch
+4. Save it
+5. Check console - should now succeed!
+
+═══════════════════════════════════════════════════════════
+  EXPECTED OUTPUT FROM MIGRATION:
+═══════════════════════════════════════════════════════════
+
+🔄 Starting migration: Adding location fields...
+   Adding location_name_232143 column...
+   ✅ location_name_232143 added
+   Adding latitude_232143 column...
+   ✅ latitude_232143 added
+   Adding longitude_232143 column...
+   ✅ longitude_232143 added
+   Creating index for location queries...
+   ✅ Index created
+
+✅ Migration completed successfully!
+
+📊 Columns added:
+   - location_name_232143 (TEXT)
+   - latitude_232143 (DECIMAL)
+   - longitude_232143 (DECIMAL)
+
+💡 Location-based recommendations will now work!
+
+═══════════════════════════════════════════════════════════
+  AFTER MIGRATION:
+═══════════════════════════════════════════════════════════
+
+✅ Transactions will save location data
+✅ LocationIntelligence will find transactions with location
+✅ Recommendations will show on home screen
+
+═══════════════════════════════════════════════════════════
+  TROUBLESHOOTING:
+═══════════════════════════════════════════════════════════
+
+ERROR: "Access denied"
+FIX: Update DB_CONFIG in add_location_columns.py
+     with correct MySQL password
+
+ERROR: "pymysql not found"
+FIX: pip install pymysql
+
+ERROR: "Database does not exist"
+FIX: Make sure financial_db_232143 database exists
+
+═══════════════════════════════════════════════════════════
+
+🎯 RUN THE MIGRATION NOW:
+   python migrations\add_location_columns.py

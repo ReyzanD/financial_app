@@ -16,9 +16,10 @@ class ObligationViewTabs extends StatelessWidget {
       padding: EdgeInsets.symmetric(horizontal: 16),
       child: Row(
         children: [
+          _buildViewTab('Semua', 'all'),
           _buildViewTab('Mendatang', 'upcoming'),
           _buildViewTab('Hutang', 'debts'),
-          _buildViewTab('Subscription', 'subscriptions'),
+          _buildViewTab('Langganan', 'subscriptions'),
         ],
       ),
     );

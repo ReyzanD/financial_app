@@ -14,9 +14,27 @@ class AppState extends ChangeNotifier {
   bool _isLoading = false;
   String? _error;
   bool _isDisposed = false;
+  bool _initialLoadDone = false;
 
   AppState(this._dataService) {
     _subscribeToDataStreams();
+  }
+
+  /// Call this when user successfully logs in or app starts with valid auth
+  Future<void> loadInitialData() async {
+    if (_initialLoadDone) {
+      print('⏭️ [AppState] Initial data already loaded, skipping');
+      return;
+    }
+
+    print('🎬 [AppState] Loading initial data...');
+    _initialLoadDone = true;
+
+    // Start periodic updates (this will also fetch initial data)
+    _dataService.startPeriodicUpdates();
+
+    // Also do a forced refresh to ensure fresh data
+    await refreshData(forceRefresh: true);
   }
 
   void _subscribeToDataStreams() {
@@ -83,14 +101,19 @@ class AppState extends ChangeNotifier {
   String? get error => _error;
 
   // Methods
-  Future<void> refreshData() async {
+  Future<void> refreshData({bool forceRefresh = false}) async {
+    print('🔄 [AppState] refreshData called (forceRefresh: $forceRefresh)');
     _isLoading = true;
     _error = null;
     notifyListeners();
 
     try {
-      await _dataService.refreshAllData();
+      await _dataService.refreshAllData(forceRefresh: forceRefresh);
+      print(
+        '✅ [AppState] refreshData completed - transactions: ${_transactions.length}',
+      );
     } catch (e) {
+      print('❌ [AppState] refreshData error: $e');
       _error = e.toString();
     } finally {
       _isLoading = false;

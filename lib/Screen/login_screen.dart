@@ -45,6 +45,28 @@ class _LoginScreenState extends State<LoginScreen> {
 
   final AuthService _authService = AuthService();
 
+  @override
+  void initState() {
+    super.initState();
+    // Clear all form fields when screen is initialized
+    // This ensures no credentials from previous user are shown
+    _clearFormFields();
+  }
+
+  void _clearFormFields() {
+    _emailController.clear();
+    _passwordController.clear();
+    _nameController.clear();
+  }
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    _nameController.dispose();
+    super.dispose();
+  }
+
   void _toggleAuthMode() {
     setState(() {
       _isLogin = !_isLogin;

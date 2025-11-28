@@ -18,9 +18,22 @@ def get_categories():
         if len(categories) == 0:
             print(f" WARNING: No categories found for user {user_id}!")
         
+        # Format categories with proper field names
+        formatted_categories = []
+        for cat in categories:
+            formatted_categories.append({
+                'id': cat['category_id_232143'],
+                'name': cat['name_232143'],
+                'type': cat['type_232143'],
+                'color': cat.get('color_232143', '#3498db'),
+                'icon': cat.get('icon_232143', 'receipt'),
+                'budget_limit': float(cat['budget_limit_232143']) if cat.get('budget_limit_232143') else None,
+                'budget_period': cat.get('budget_period_232143', 'monthly'),
+            })
+        
         return jsonify({
-            'categories': categories,
-            'count': len(categories)
+            'categories': formatted_categories,
+            'count': len(formatted_categories)
         }), 200
         
     except Exception as e:

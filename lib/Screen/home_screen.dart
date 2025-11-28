@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:financial_app/models/location_recommendation.dart';
 import 'package:financial_app/services/location_intelligence_service.dart';
+import 'package:financial_app/state/app_state.dart';
 import 'package:financial_app/widgets/home/home_header.dart';
 import 'package:financial_app/widgets/home/financial_summary_card.dart';
 import 'package:financial_app/widgets/home/quick_actions.dart';
@@ -14,6 +16,7 @@ import 'package:financial_app/widgets/home/quick_add_widget.dart';
 import 'package:financial_app/widgets/home/bottom_nav_bar.dart';
 import 'package:financial_app/widgets/home/floating_action_button.dart';
 import 'package:financial_app/widgets/home/tab_placeholders.dart';
+import 'package:financial_app/utils/app_refresh.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -27,11 +30,54 @@ class _HomeScreenState extends State<HomeScreen> {
   final PageController _pageController = PageController();
   final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
       GlobalKey<RefreshIndicatorState>();
+  int _refreshCounter = 0; // Add refresh counter for forcing widget rebuilds
+
+  // Cache location recommendations to avoid rebuilding
+  Future<List<LocationRecommendation>>? _locationRecommendationsFuture;
 
   @override
   void initState() {
     super.initState();
     _loadDefaultTab();
+    _loadLocationRecommendations();
+
+    // Listen to global refresh notifications
+    RefreshNotifier().addListener(_onGlobalRefresh);
+
+    // Load initial data after first frame
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _loadInitialData();
+    });
+  }
+
+  Future<void> _loadInitialData() async {
+    print('🎬 [HomeScreen] Triggering initial data load...');
+    try {
+      final appState = Provider.of<AppState>(context, listen: false);
+      await appState.loadInitialData();
+      print('✅ [HomeScreen] Initial data load completed');
+    } catch (e) {
+      print('❌ [HomeScreen] Error loading initial data: $e');
+    }
+  }
+
+  void _onGlobalRefresh() {
+    print('🔔 [HomeScreen] Received global refresh notification');
+    _refreshDashboard();
+  }
+
+  @override
+  void dispose() {
+    RefreshNotifier().removeListener(_onGlobalRefresh);
+    super.dispose();
+  }
+
+  void _loadLocationRecommendations() {
+    setState(() {
+      print('🔄 [HomeScreen] Loading location recommendations...');
+      _locationRecommendationsFuture =
+          LocationIntelligenceService().generateLocationInsights();
+    });
   }
 
   Future<void> _loadDefaultTab() async {
@@ -100,8 +146,8 @@ class _HomeScreenState extends State<HomeScreen> {
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            // Financial Summary Card
-            const FinancialSummaryCard(),
+            // Financial Summary Card (forced refresh with key)
+            FinancialSummaryCard(key: ValueKey('summary_$_refreshCounter')),
             const SizedBox(height: 20),
 
             // Quick Actions
@@ -109,19 +155,25 @@ class _HomeScreenState extends State<HomeScreen> {
             const SizedBox(height: 20),
 
             // Quick Add Widget
-            QuickAddWidget(onTransactionAdded: _refreshDashboard),
+            QuickAddWidget(
+              key: ValueKey('quick_add_$_refreshCounter'),
+              onTransactionAdded: _refreshDashboard,
+            ),
             const SizedBox(height: 20),
 
-            // Location-Based Recommendations
-            _buildLocationRecommendations(),
+            // Location-Based Recommendations (rebuild with counter)
+            KeyedSubtree(
+              key: ValueKey('location_recs_$_refreshCounter'),
+              child: _buildLocationRecommendations(),
+            ),
             const SizedBox(height: 20),
 
-            // Budget Progress
-            const BudgetProgress(),
+            // Budget Progress (forced refresh with key)
+            BudgetProgress(key: ValueKey('budget_$_refreshCounter')),
             const SizedBox(height: 20),
 
-            // Recent Transactions
-            const RecentTransactions(),
+            // Recent Transactions (forced refresh with key)
+            RecentTransactions(key: ValueKey('transactions_$_refreshCounter')),
             const SizedBox(height: 20),
 
             // AI Recommendations
@@ -133,22 +185,122 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _refreshDashboard() async {
+    print('🔄 [HomeScreen] Refreshing dashboard...');
     // Trigger refresh for all dashboard widgets
-    setState(() {});
+    setState(() {
+      _refreshCounter++; // Increment to force widget rebuilds
+      // Reload location recommendations on manual refresh
+      print('🔄 [HomeScreen] Reloading location recommendations...');
+      _locationRecommendationsFuture =
+          LocationIntelligenceService().generateLocationInsights();
+    });
     // Add a small delay for better UX
     await Future.delayed(const Duration(milliseconds: 500));
+    print('✅ [HomeScreen] Dashboard refreshed (counter: $_refreshCounter)');
   }
 
   // Location Recommendations Section
   Widget _buildLocationRecommendations() {
+    print('🏗️ [HomeScreen] Building location recommendations widget');
     return FutureBuilder<List<LocationRecommendation>>(
-      future: LocationIntelligenceService().generateLocationInsights(),
+      future: _locationRecommendationsFuture,
       builder: (context, snapshot) {
+        print(
+          '🔍 [FutureBuilder] State: ${snapshot.connectionState}, HasData: ${snapshot.hasData}, DataLength: ${snapshot.data?.length ?? 0}',
+        );
+
+        // Show loading state
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          print('⏳ [LocationRecommendations] Loading...');
+          return Container(
+            padding: const EdgeInsets.all(16),
+            child: Center(
+              child: CircularProgressIndicator(
+                color: Color(0xFF8B5FBF),
+                strokeWidth: 2,
+              ),
+            ),
+          );
+        }
+
+        // Show error state (with debug info)
+        if (snapshot.hasError) {
+          print('❌ [LocationRecommendations] Error: ${snapshot.error}');
+          print('❌ Stack trace: ${snapshot.stackTrace}');
+          return Container(); // Hide on error
+        }
+
+        // Handle empty data - SHOW the section with helpful message
         if (!snapshot.hasData || snapshot.data!.isEmpty) {
-          return Container(); // Don't show if no data
+          print(
+            'ℹ️ [LocationRecommendations] No recommendations available (hasData: ${snapshot.hasData}, isEmpty: ${snapshot.data?.isEmpty})',
+          );
+          // Still show the section header and a helpful message
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Icon(
+                    Iconsax.location,
+                    color: const Color(0xFF8B5FBF),
+                    size: 20,
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    'Rekomendasi Lokal',
+                    style: GoogleFonts.poppins(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF1A1A1A),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: Colors.grey[800]!),
+                ),
+                child: Column(
+                  children: [
+                    Icon(
+                      Iconsax.location_tick,
+                      color: Colors.grey[600],
+                      size: 40,
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      'Belum Ada Rekomendasi',
+                      style: GoogleFonts.poppins(
+                        color: Colors.grey[400],
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      'Tambahkan lokasi saat mencatat pengeluaran untuk mendapat rekomendasi hemat',
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.poppins(
+                        color: Colors.grey[600],
+                        fontSize: 11,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          );
         }
 
         final recommendations = snapshot.data!;
+        print(
+          '✅ [LocationRecommendations] Showing ${recommendations.length} recommendations',
+        );
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,

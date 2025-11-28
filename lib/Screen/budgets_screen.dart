@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:financial_app/services/api_service.dart';
-import 'package:financial_app/utils/formatters.dart';
 import 'package:financial_app/widgets/budgets/add_budget_modal.dart';
+import 'package:financial_app/utils/formatters.dart';
+import 'package:financial_app/widgets/common/shimmer_loading.dart';
+import 'package:financial_app/widgets/common/empty_state.dart';
+import 'package:financial_app/utils/page_transitions.dart';
 
 class BudgetsScreen extends StatefulWidget {
   const BudgetsScreen({super.key});
@@ -54,12 +58,17 @@ class _BudgetsScreenState extends State<BudgetsScreen> {
       for (final cat in categories) {
         final id = cat['id'];
         final name = cat['name'];
-        if (id != null && name != null) {
+        final type = cat['type'];
+        // Only include expense categories for budgets
+        if (id != null && name != null && type == 'expense') {
           categoryMap[id.toString()] = name.toString();
         }
       }
 
       if (!mounted) return;
+
+      print('✅ Filtered expense categories: ${categoryMap.length}');
+      print('📋 Categories: ${categoryMap.keys.toList()}');
 
       setState(() {
         _categories = categoryMap;
@@ -218,103 +227,15 @@ class _BudgetsScreenState extends State<BudgetsScreen> {
 
   Widget _buildBody() {
     if (_isLoading) {
-      return ListView(
-        physics: const AlwaysScrollableScrollPhysics(),
-        padding: const EdgeInsets.all(16),
-        children: const [
-          SizedBox(
-            height: 200,
-            child: Center(
-              child: CircularProgressIndicator(color: Color(0xFF8B5FBF)),
-            ),
-          ),
-        ],
-      );
+      return const CardListShimmer(itemCount: 5, cardHeight: 150);
     }
 
     if (_errorMessage != null) {
-      return ListView(
-        physics: const AlwaysScrollableScrollPhysics(),
-        padding: const EdgeInsets.all(16),
-        children: [
-          Container(
-            padding: const EdgeInsets.all(24),
-            decoration: BoxDecoration(
-              color: const Color(0xFF1A1A1A),
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: Colors.red.withOpacity(0.3)),
-            ),
-            child: Column(
-              children: [
-                Icon(Icons.error_outline, color: Colors.red[400], size: 40),
-                const SizedBox(height: 12),
-                Text(
-                  'Gagal memuat budget',
-                  style: GoogleFonts.poppins(
-                    color: Colors.grey[300],
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  _errorMessage!,
-                  textAlign: TextAlign.center,
-                  style: GoogleFonts.poppins(
-                    color: Colors.grey[500],
-                    fontSize: 12,
-                  ),
-                ),
-                const SizedBox(height: 12),
-                TextButton(
-                  onPressed: _loadData,
-                  child: const Text('Coba lagi'),
-                ),
-              ],
-            ),
-          ),
-        ],
-      );
+      return EmptyStates.serverError(_loadData);
     }
 
     if (_budgets.isEmpty) {
-      return ListView(
-        physics: const AlwaysScrollableScrollPhysics(),
-        padding: const EdgeInsets.all(16),
-        children: [
-          Container(
-            padding: const EdgeInsets.all(32),
-            decoration: BoxDecoration(
-              color: const Color(0xFF1A1A1A),
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: Colors.grey[800]!),
-            ),
-            child: Column(
-              children: [
-                Icon(Icons.wallet_outlined, color: Colors.grey[600], size: 48),
-                const SizedBox(height: 12),
-                Text(
-                  'Belum ada budget',
-                  style: GoogleFonts.poppins(
-                    color: Colors.grey[400],
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  'Tambahkan budget untuk mulai mengatur pengeluaran.',
-                  textAlign: TextAlign.center,
-                  style: GoogleFonts.poppins(
-                    color: Colors.grey[600],
-                    fontSize: 12,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      );
+      return EmptyStates.noBudgets(_showAddBudgetModal);
     }
 
     return ListView.builder(
@@ -323,7 +244,10 @@ class _BudgetsScreenState extends State<BudgetsScreen> {
       itemCount: _budgets.length,
       itemBuilder: (context, index) {
         final budget = _budgets[index];
-        return _buildBudgetItem(budget);
+        return StaggeredListAnimation(
+          index: index,
+          child: _buildBudgetItem(budget),
+        );
       },
     );
   }

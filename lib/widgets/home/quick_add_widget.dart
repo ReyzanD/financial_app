@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:financial_app/services/api_service.dart';
 import 'package:financial_app/utils/formatters.dart';
+import 'package:financial_app/utils/app_refresh.dart';
 
 class QuickAddWidget extends StatefulWidget {
   final VoidCallback? onTransactionAdded;
@@ -36,36 +37,48 @@ class _QuickAddWidgetState extends State<QuickAddWidget> {
 
   Future<void> _loadRecentCategories() async {
     try {
-      // Get recent transactions to find most used categories
-      final transactions = await _apiService.getTransactions(limit: 50);
+      // Get all categories (will use cache if available)
+      final categories = await _apiService.getCategories();
+
+      // Get recent transactions to find most used categories (reduced from 50 to 20)
+      final transactions = await _apiService.getTransactions(limit: 20);
 
       // Count category usage
-      final Map<String, dynamic> categoryUsage = {};
+      final Map<String, int> categoryUsageCount = {};
       for (var transaction in transactions) {
         final categoryId = transaction['category_id'];
-        final categoryName = transaction['category_name'];
-        if (categoryId != null && categoryName != null) {
+        if (categoryId != null) {
           final idString = categoryId.toString();
-          if (categoryUsage.containsKey(idString)) {
-            categoryUsage[idString]['count']++;
-          } else {
-            categoryUsage[idString] = {
-              'id': idString,
-              'name': categoryName.toString(),
-              'count': 1,
-            };
-          }
+          categoryUsageCount[idString] =
+              (categoryUsageCount[idString] ?? 0) + 1;
         }
       }
 
-      // Sort by usage and get top 6
-      final sortedCategories =
-          categoryUsage.values.toList()
-            ..sort((a, b) => b['count'].compareTo(a['count']));
+      // Convert categories to list with usage count
+      final List<Map<String, dynamic>> categoryList = [];
+      for (var category in categories) {
+        if (category != null &&
+            category['id'] != null &&
+            category['name'] != null) {
+          final idString = category['id'].toString();
+          categoryList.add({
+            'id': idString,
+            'name': category['name'].toString(),
+            'count': categoryUsageCount[idString] ?? 0,
+          });
+        }
+      }
+
+      // Sort by usage (most used first), then alphabetically
+      categoryList.sort((a, b) {
+        final countCompare = b['count'].compareTo(a['count']);
+        if (countCompare != 0) return countCompare;
+        return a['name'].toString().compareTo(b['name'].toString());
+      });
 
       if (mounted) {
         setState(() {
-          _recentCategories = sortedCategories.take(6).toList();
+          _recentCategories = categoryList.take(6).toList();
           _isLoadingCategories = false;
         });
       }
@@ -125,6 +138,9 @@ class _QuickAddWidgetState extends State<QuickAddWidget> {
           ),
         );
       }
+
+      // Trigger immediate refresh
+      if (mounted) await AppRefresh.refreshAll(context);
 
       // Callback to refresh parent
       widget.onTransactionAdded?.call();
@@ -239,18 +255,43 @@ class _QuickAddWidgetState extends State<QuickAddWidget> {
                 }).toList(),
           ),
 
-          // Recent categories (if loaded)
-          if (_recentCategories.isNotEmpty) ...[
-            const SizedBox(height: 16),
-            Text(
-              'Kategori Sering',
-              style: GoogleFonts.poppins(
-                color: Colors.white70,
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
-              ),
+          // Recent categories section
+          const SizedBox(height: 16),
+          Text(
+            'Kategori Sering',
+            style: GoogleFonts.poppins(
+              color: Colors.white70,
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
             ),
-            const SizedBox(height: 8),
+          ),
+          const SizedBox(height: 8),
+          if (_isLoadingCategories)
+            const Center(
+              child: Padding(
+                padding: EdgeInsets.all(8.0),
+                child: CircularProgressIndicator(
+                  color: Color(0xFF8B5FBF),
+                  strokeWidth: 2,
+                ),
+              ),
+            )
+          else if (_recentCategories.isEmpty)
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.grey.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Text(
+                'Belum ada kategori yang sering digunakan',
+                style: GoogleFonts.poppins(
+                  color: Colors.grey[600],
+                  fontSize: 11,
+                ),
+              ),
+            )
+          else
             Wrap(
               spacing: 8,
               runSpacing: 8,
@@ -259,7 +300,6 @@ class _QuickAddWidgetState extends State<QuickAddWidget> {
                     return _buildCategoryChip(category);
                   }).toList(),
             ),
-          ],
         ],
       ),
     );
@@ -433,6 +473,182 @@ class _QuickAddModalState extends State<QuickAddModal> {
     }
   }
 
+  Future<bool> _checkBalanceBeforeExpense(double expenseAmount) async {
+    try {
+      // Get current financial summary
+      final summary = await _apiService.getFinancialSummary();
+      final summaries = summary['summary'] as Map<String, dynamic>?;
+
+      if (summaries == null) return true; // Allow if we can't check
+
+      final income =
+          (summaries['income'] as Map<String, dynamic>?)?['total_amount'] ??
+          0.0;
+      final expense =
+          (summaries['expense'] as Map<String, dynamic>?)?['total_amount'] ??
+          0.0;
+      final currentBalance = income - expense;
+      final newBalance = currentBalance - expenseAmount;
+
+      // If balance would be negative, block the transaction
+      if (newBalance < 0) {
+        await showDialog(
+          context: context,
+          builder:
+              (context) => AlertDialog(
+                backgroundColor: const Color(0xFF1A1A1A),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                title: Row(
+                  children: [
+                    const Icon(Icons.block, color: Colors.red, size: 28),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        'Saldo Tidak Cukup',
+                        style: GoogleFonts.poppins(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                content: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Transaksi ditolak! Saldo Anda tidak mencukupi untuk pengeluaran ini.',
+                      style: GoogleFonts.poppins(
+                        color: Colors.white70,
+                        fontSize: 14,
+                        height: 1.5,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: Colors.red.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: Colors.red.withOpacity(0.3)),
+                      ),
+                      child: Column(
+                        children: [
+                          _buildBalanceRow(
+                            'Saldo Tersedia',
+                            currentBalance,
+                            Colors.white70,
+                          ),
+                          const SizedBox(height: 8),
+                          _buildBalanceRow(
+                            'Pengeluaran',
+                            expenseAmount,
+                            Colors.red[300]!,
+                          ),
+                          const Divider(color: Colors.grey, height: 20),
+                          _buildBalanceRow(
+                            'Kekurangan',
+                            newBalance.abs(),
+                            Colors.red[400]!,
+                            isBold: true,
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: Colors.blue.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: Colors.blue.withOpacity(0.3)),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.lightbulb_outline,
+                            color: Colors.blue[300],
+                            size: 18,
+                          ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              'Tambahkan pemasukan terlebih dahulu atau kurangi jumlah pengeluaran.',
+                              style: GoogleFonts.poppins(
+                                color: Colors.blue[300],
+                                fontSize: 11,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                actions: [
+                  ElevatedButton(
+                    onPressed: () => Navigator.pop(context),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF8B5FBF),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      minimumSize: const Size(double.infinity, 45),
+                    ),
+                    child: Text(
+                      'Mengerti',
+                      style: GoogleFonts.poppins(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+        );
+        return false; // Block the transaction
+      }
+
+      return true; // Balance is fine, proceed
+    } catch (e) {
+      print('Error checking balance: $e');
+      return true; // Allow transaction if check fails
+    }
+  }
+
+  Widget _buildBalanceRow(
+    String label,
+    double amount,
+    Color color, {
+    bool isBold = false,
+  }) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          label,
+          style: GoogleFonts.poppins(
+            color: color,
+            fontSize: 12,
+            fontWeight: isBold ? FontWeight.w600 : FontWeight.normal,
+          ),
+        ),
+        Text(
+          CurrencyFormatter.formatRupiah(amount.abs()),
+          style: GoogleFonts.poppins(
+            color: color,
+            fontSize: 12,
+            fontWeight: isBold ? FontWeight.bold : FontWeight.w600,
+          ),
+        ),
+      ],
+    );
+  }
+
   Future<void> _submitTransaction() async {
     final amount = double.tryParse(_amountController.text);
     final description = _descriptionController.text.trim();
@@ -457,6 +673,14 @@ class _QuickAddModalState extends State<QuickAddModal> {
       return;
     }
 
+    // Check balance before adding expense
+    if (widget.type == 'expense') {
+      final shouldContinue = await _checkBalanceBeforeExpense(amount);
+      if (!shouldContinue) {
+        return;
+      }
+    }
+
     setState(() => _isLoading = true);
 
     try {
@@ -472,6 +696,9 @@ class _QuickAddModalState extends State<QuickAddModal> {
       });
 
       if (mounted) {
+        // Trigger immediate refresh
+        await AppRefresh.refreshAll(context);
+
         Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(

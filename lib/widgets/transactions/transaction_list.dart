@@ -4,6 +4,9 @@ import 'package:financial_app/Screen/add_transaction_screen.dart';
 import 'package:financial_app/widgets/transactions/transaction_card.dart';
 import 'package:financial_app/state/app_state.dart';
 import 'package:financial_app/models/transaction_model.dart';
+import 'package:financial_app/widgets/common/shimmer_loading.dart';
+import 'package:financial_app/widgets/common/empty_state.dart';
+import 'package:financial_app/utils/page_transitions.dart';
 
 class TransactionList extends StatefulWidget {
   final String selectedFilter;
@@ -64,29 +67,12 @@ class _TransactionListState extends State<TransactionList> {
     return Consumer<AppState>(
       builder: (context, appState, child) {
         if (appState.isLoading) {
-          return const Expanded(
-            child: Center(child: CircularProgressIndicator()),
-          );
+          return const Expanded(child: TransactionShimmer());
         }
 
         if (appState.error != null) {
           return Expanded(
-            child: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    'Error: ${appState.error}',
-                    style: const TextStyle(color: Colors.white),
-                  ),
-                  const SizedBox(height: 16),
-                  ElevatedButton(
-                    onPressed: () => appState.refreshData(),
-                    child: const Text('Retry'),
-                  ),
-                ],
-              ),
-            ),
+            child: EmptyStates.serverError(() => appState.refreshData()),
           );
         }
 
@@ -94,32 +80,15 @@ class _TransactionListState extends State<TransactionList> {
 
         if (filteredTransactions.isEmpty) {
           return Expanded(
-            child: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    'Belum ada transaksi',
-                    style: TextStyle(color: Colors.grey[500]),
-                  ),
-                  const SizedBox(height: 16),
-                  ElevatedButton(
-                    onPressed: () async {
-                      final result = await Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const AddTransactionScreen(),
-                        ),
-                      );
-                      if (result == true) {
-                        await appState.refreshData();
-                      }
-                    },
-                    child: const Text('Tambah transaksi'),
-                  ),
-                ],
-              ),
-            ),
+            child: EmptyStates.noTransactions(() async {
+              final result = await Navigator.push(
+                context,
+                PageTransitions.slideUp(const AddTransactionScreen()),
+              );
+              if (result == true && context.mounted) {
+                await appState.refreshData();
+              }
+            }),
           );
         }
 
@@ -129,6 +98,8 @@ class _TransactionListState extends State<TransactionList> {
             child: ListView.builder(
               padding: const EdgeInsets.all(16),
               itemCount: filteredTransactions.length,
+              // Optimize rendering performance
+              cacheExtent: 100,
               itemBuilder: (context, index) {
                 final transaction = filteredTransactions[index];
                 final transactionMap = {
@@ -144,9 +115,12 @@ class _TransactionListState extends State<TransactionList> {
                   'location': '',
                   'category_color': transaction.categoryColor,
                 };
-                return TransactionCard(
-                  transaction: transactionMap,
-                  onDeleted: () => appState.refreshData(),
+                return StaggeredListAnimation(
+                  index: index,
+                  child: TransactionCard(
+                    transaction: transactionMap,
+                    onDeleted: () => appState.refreshData(forceRefresh: true),
+                  ),
                 );
               },
             ),

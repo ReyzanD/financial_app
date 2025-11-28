@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:financial_app/services/pin_auth_service.dart';
+import 'package:financial_app/services/api_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthService {
   // Use 10.0.2.2 for Android emulator to connect to localhost on the host machine
@@ -11,6 +13,9 @@ class AuthService {
 
   Future<Map<String, dynamic>?> login(String email, String password) async {
     try {
+      // Clear any cached data from previous sessions before login
+      ApiService.clearCache();
+
       final response = await http.post(
         Uri.parse('$baseUrl/login'),
         headers: {'Content-Type': 'application/json'},
@@ -64,9 +69,19 @@ class AuthService {
   Future<void> logout() async {
     // Clear PIN first
     await _pinAuthService.clearPin();
-    // Then clear auth token and other data
+
+    // Clear all API caches (critical to prevent data leakage between users)
+    ApiService.clearCache();
+
+    // Clear auth token and secure storage
     await _storage.delete(key: 'auth_token');
-    await _storage.deleteAll(); // Clear all stored data
+    await _storage.deleteAll();
+
+    // Clear user-specific SharedPreferences data
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('onboarding_completed');
+    await prefs.remove('default_tab_index');
+    // Keep app-level settings like theme, notifications preferences
   }
 
   Future<String?> getToken() async {

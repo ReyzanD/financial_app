@@ -23,7 +23,7 @@ class _AddObligationModalState extends State<AddObligationModal> {
   late TextEditingController _minimumPaymentController;
 
   String _selectedType = 'bill';
-  String _selectedCategory = 'other';
+  String _selectedCategory = 'utility';
   int _dueDayOfMonth = 1;
   String? _subscriptionCycle;
   String? _payoffStrategy;
@@ -47,7 +47,7 @@ class _AddObligationModalState extends State<AddObligationModal> {
       _monthlyAmountController.text =
           (initial['monthly_amount_232143'] as num?)?.toStringAsFixed(0) ?? '';
       _selectedType = initial['type_232143']?.toString() ?? 'bill';
-      _selectedCategory = initial['category_232143']?.toString() ?? 'other';
+      _selectedCategory = initial['category_232143']?.toString() ?? 'utility';
       _dueDayOfMonth =
           int.tryParse(initial['due_date_232143']?.toString() ?? '1') ?? 1;
 
@@ -88,15 +88,20 @@ class _AddObligationModalState extends State<AddObligationModal> {
   }
 
   Future<void> _submit() async {
+    print('🔵 Submit button tapped');
+
     if (!_formKey.currentState!.validate()) {
+      print('❌ Form validation failed');
       return;
     }
 
+    print('✅ Form validation passed');
     setState(() {
       _isLoading = true;
     });
 
     try {
+      print('📦 Preparing obligation data...');
       final data = <String, dynamic>{
         'name': _nameController.text,
         'type': _selectedType,
@@ -126,18 +131,24 @@ class _AddObligationModalState extends State<AddObligationModal> {
       }
 
       if (_isEdit) {
+        print('📝 Updating existing obligation...');
         final id =
             widget.initialObligation?['obligation_id_232143']?.toString();
         if (id == null) {
           throw Exception('ID kewajiban tidak valid');
         }
         await _obligationService.updateObligation(id, data);
+        print('✅ Update successful');
       } else {
-        await _obligationService.createObligation(data);
+        print('➕ Creating new obligation...');
+        print('   Data: $data');
+        final result = await _obligationService.createObligation(data);
+        print('✅ Create successful: $result');
       }
 
       if (!mounted) return;
 
+      print('🎉 Closing modal and showing success message');
       Navigator.pop(context, true);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -150,6 +161,7 @@ class _AddObligationModalState extends State<AddObligationModal> {
         ),
       );
     } catch (e) {
+      print('❌ Error during submission: $e');
       if (!mounted) return;
       setState(() {
         _isLoading = false;
@@ -158,6 +170,7 @@ class _AddObligationModalState extends State<AddObligationModal> {
         SnackBar(
           content: Text('Error: ${e.toString()}'),
           backgroundColor: Colors.red,
+          duration: const Duration(seconds: 5),
         ),
       );
     }
@@ -269,15 +282,30 @@ class _AddObligationModalState extends State<AddObligationModal> {
                   ),
                 ),
                 items: const [
-                  DropdownMenuItem(value: 'utilities', child: Text('Utilitas')),
-                  DropdownMenuItem(value: 'housing', child: Text('Perumahan')),
+                  DropdownMenuItem(value: 'utility', child: Text('Utilitas')),
+                  DropdownMenuItem(value: 'internet', child: Text('Internet')),
+                  DropdownMenuItem(value: 'phone', child: Text('Telepon')),
+                  DropdownMenuItem(value: 'insurance', child: Text('Asuransi')),
                   DropdownMenuItem(
-                    value: 'transportation',
-                    child: Text('Transportasi'),
+                    value: 'credit_card',
+                    child: Text('Kartu Kredit'),
                   ),
                   DropdownMenuItem(
-                    value: 'entertainment',
-                    child: Text('Hiburan'),
+                    value: 'personal_loan',
+                    child: Text('Pinjaman Pribadi'),
+                  ),
+                  DropdownMenuItem(value: 'mortgage', child: Text('KPR')),
+                  DropdownMenuItem(
+                    value: 'car_loan',
+                    child: Text('Kredit Mobil'),
+                  ),
+                  DropdownMenuItem(
+                    value: 'student_loan',
+                    child: Text('Pinjaman Pendidikan'),
+                  ),
+                  DropdownMenuItem(
+                    value: 'subscription',
+                    child: Text('Langganan'),
                   ),
                   DropdownMenuItem(value: 'other', child: Text('Lainnya')),
                 ],

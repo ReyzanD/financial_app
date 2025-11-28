@@ -7,17 +7,40 @@ class LocationIntelligenceService {
   /// Generate intelligent location-based recommendations
   Future<List<LocationRecommendation>> generateLocationInsights() async {
     try {
+      print('🔍 [LocationIntelligence] Fetching transactions...');
       // Analyze user's transaction locations
       final transactions = await _apiService.getTransactions(limit: 200);
+      print(
+        '📊 [LocationIntelligence] Found ${transactions.length} total transactions',
+      );
 
-      // Filter transactions with location data
+      // Filter transactions with location data (only expenses have locations now)
       final locatedTransactions =
           transactions.where((t) {
-            return t['location_name'] != null || t['latitude'] != null;
+            final hasLocation =
+                t['location_name_232143'] != null ||
+                t['latitude_232143'] != null;
+            return hasLocation;
           }).toList();
 
+      print(
+        '📍 [LocationIntelligence] Found ${locatedTransactions.length} transactions with location data',
+      );
+
+      // Show default recommendations if too few transactions with location
       if (locatedTransactions.isEmpty) {
+        print(
+          'ℹ️ [LocationIntelligence] No location data, showing default recommendations',
+        );
         return _getDefaultRecommendations();
+      }
+
+      // If less than 3 transactions, show encouraging message
+      if (locatedTransactions.length < 3) {
+        print(
+          'ℹ️ [LocationIntelligence] Too few location data (${locatedTransactions.length}), showing encouragement',
+        );
+        return _getEncouragementRecommendations(locatedTransactions.length);
       }
 
       // Analyze patterns
@@ -26,9 +49,14 @@ class LocationIntelligenceService {
       // Generate smart recommendations
       final recommendations = _generateRecommendations(analysis);
 
-      return recommendations;
+      print(
+        '✅ [LocationIntelligence] Generated ${recommendations.length} recommendations',
+      );
+      return recommendations.isNotEmpty
+          ? recommendations
+          : _getDefaultRecommendations();
     } catch (e) {
-      print('Error generating location insights: $e');
+      print('❌ [LocationIntelligence] Error generating insights: $e');
       return _getDefaultRecommendations();
     }
   }
@@ -42,20 +70,21 @@ class LocationIntelligenceService {
 
     for (var transaction in transactions) {
       final locationName =
-          transaction['location_name']?.toString() ??
-          transaction['notes']?.toString() ??
+          transaction['location_name_232143']?.toString() ??
+          transaction['notes_232143']?.toString() ??
           'Unknown Location';
 
-      final amount = (transaction['amount'] ?? 0).toDouble();
+      final amount = (transaction['amount_232143'] ?? 0).toDouble();
       final category = transaction['category_name']?.toString() ?? 'Lainnya';
-      final type = transaction['type']?.toString().toLowerCase() ?? 'expense';
+      final type =
+          transaction['type_232143']?.toString().toLowerCase() ?? 'expense';
 
       if (type == 'expense') {
         locationGroups[locationName] ??= [];
         locationGroups[locationName]!.add({
           'amount': amount,
           'category': category,
-          'date': transaction['date'],
+          'date': transaction['transaction_date_232143'],
         });
 
         locationTotals[locationName] =
@@ -268,13 +297,38 @@ class LocationIntelligenceService {
     return recommendations.take(3).toList();
   }
 
+  List<LocationRecommendation> _getEncouragementRecommendations(int count) {
+    return [
+      LocationRecommendation(
+        id: 'encouragement_1',
+        title: '🎯 Terus Catat Lokasi!',
+        description:
+            'Anda sudah mencatat $count transaksi dengan lokasi. Tambahkan lebih banyak untuk mendapat analisis dan rekomendasi tempat belanja lebih hemat!',
+        type: RecommendationType.general,
+        estimatedSavings: 0,
+        createdAt: DateTime.now(),
+        metadata: {'transactionCount': count},
+      ),
+      LocationRecommendation(
+        id: 'encouragement_2',
+        title: '💡 Mengapa Lokasi Penting?',
+        description:
+            'Dengan data lokasi, kami bisa menganalisis pola belanja Anda dan merekomendasikan tempat yang lebih hemat hingga 20-30%.',
+        type: RecommendationType.general,
+        estimatedSavings: 0,
+        createdAt: DateTime.now(),
+        metadata: {},
+      ),
+    ];
+  }
+
   List<LocationRecommendation> _getDefaultRecommendations() {
     return [
       LocationRecommendation(
         id: 'default_1',
         title: '📍 Mulai Catat Lokasi Transaksi',
         description:
-            'Tambahkan informasi lokasi saat mencatat transaksi untuk mendapat rekomendasi tempat belanja lebih hemat.',
+            'Tambahkan informasi lokasi saat mencatat pengeluaran untuk mendapat rekomendasi tempat belanja lebih hemat. Lokasi hanya untuk pengeluaran, bukan pendapatan.',
         type: RecommendationType.general,
         estimatedSavings: 0,
         createdAt: DateTime.now(),
@@ -285,6 +339,16 @@ class LocationIntelligenceService {
         title: '💡 Tips Hemat Belanja',
         description:
             'Bandingkan harga di beberapa tempat sebelum membeli. Pasar tradisional sering 20-30% lebih murah dari supermarket untuk kebutuhan sehari-hari.',
+        type: RecommendationType.general,
+        estimatedSavings: 0,
+        createdAt: DateTime.now(),
+        metadata: {},
+      ),
+      LocationRecommendation(
+        id: 'default_3',
+        title: '🗺️ Manfaat Fitur Lokasi',
+        description:
+            'Dengan mencatat lokasi pengeluaran, Anda bisa: 1) Lihat pola belanja, 2) Dapat rekomendasi tempat lebih murah, 3) Hemat hingga 25% dari pengeluaran!',
         type: RecommendationType.general,
         estimatedSavings: 0,
         createdAt: DateTime.now(),

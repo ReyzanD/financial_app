@@ -6,41 +6,53 @@ import 'package:financial_app/widgets/transactions/transaction_helpers.dart';
 import 'package:financial_app/widgets/transactions/transaction_detail_screen.dart';
 import 'package:financial_app/services/api_service.dart';
 
-class TransactionCard extends StatelessWidget {
+class TransactionCard extends StatefulWidget {
   final Map<String, dynamic> transaction;
   final VoidCallback? onDeleted;
 
   const TransactionCard({super.key, required this.transaction, this.onDeleted});
 
   @override
+  State<TransactionCard> createState() => _TransactionCardState();
+}
+
+class _TransactionCardState extends State<TransactionCard> {
+  bool _isDismissed = false;
+
+  @override
   Widget build(BuildContext context) {
+    // Immediately hide if dismissed
+    if (_isDismissed) {
+      return const SizedBox.shrink();
+    }
     // Debug: Print the entire transaction data
     print('TransactionCard Data:');
-    print('Type: ${transaction['type']}');
-    print('Amount: ${transaction['amount']}');
-    print('Category: ${transaction['category']}');
-    print('Category Color: ${transaction['category_color']}');
-    print('Full Data: ${json.encode(transaction)}');
+    print('Type: ${widget.transaction['type']}');
+    print('Amount: ${widget.transaction['amount']}');
+    print('Category: ${widget.transaction['category']}');
+    print('Category Color: ${widget.transaction['category_color']}');
+    print('Full Data: ${json.encode(widget.transaction)}');
 
-    final isIncome = transaction['type'] == 'income';
+    final isIncome = widget.transaction['type'] == 'income';
     final amount =
-        double.tryParse(transaction['amount']?.toString() ?? '0') ?? 0.0;
-    final category = transaction['category'] as String? ?? 'Uncategorized';
+        double.tryParse(widget.transaction['amount']?.toString() ?? '0') ?? 0.0;
+    final category =
+        widget.transaction['category'] as String? ?? 'Uncategorized';
     final categoryColor =
-        transaction['category_color'] != null
+        widget.transaction['category_color'] != null
             ? Color(
               int.parse(
-                    transaction['category_color'].substring(1, 7),
+                    widget.transaction['category_color'].substring(1, 7),
                     radix: 16,
                   ) +
                   0xFF000000,
             )
             : Colors.grey;
-    final date = transaction['date'] as String? ?? '';
-    final location = transaction['location'] as String? ?? '';
+    final date = widget.transaction['date'] as String? ?? '';
+    final location = widget.transaction['location'] as String? ?? '';
 
     return Dismissible(
-      key: Key(transaction['id']?.toString() ?? ''),
+      key: Key(widget.transaction['id']?.toString() ?? ''),
       direction: DismissDirection.endToStart,
       confirmDismiss: (direction) async {
         return await showDialog(
@@ -77,11 +89,25 @@ class TransactionCard extends StatelessWidget {
         );
       },
       onDismissed: (direction) async {
+        // Immediately hide the widget
+        setState(() {
+          _isDismissed = true;
+        });
+
+        // Perform API call to delete from server
+        final apiService = ApiService();
+        final transactionId = widget.transaction['id']?.toString() ?? '';
+
+        print(' [TransactionCard] Starting deletion for ID: $transactionId');
+
         try {
-          final apiService = ApiService();
-          await apiService.deleteTransaction(
-            transaction['id']?.toString() ?? '',
-          );
+          final result = await apiService.deleteTransaction(transactionId);
+          print(' [TransactionCard] API deletion successful: $result');
+
+          // Only refresh parent data after successful deletion
+          print(' [TransactionCard] Calling onDeleted to refresh data...');
+          widget.onDeleted?.call();
+          print(' [TransactionCard] onDeleted called successfully');
 
           if (context.mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
@@ -91,12 +117,19 @@ class TransactionCard extends StatelessWidget {
                   style: GoogleFonts.poppins(),
                 ),
                 backgroundColor: Colors.green,
+                duration: const Duration(seconds: 2),
               ),
             );
           }
-
-          onDeleted?.call();
         } catch (e) {
+          print(' [TransactionCard] Deletion failed: $e');
+          // If deletion fails, show the widget again
+          if (mounted) {
+            setState(() {
+              _isDismissed = false;
+            });
+          }
+
           if (context.mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
@@ -105,6 +138,7 @@ class TransactionCard extends StatelessWidget {
                   style: GoogleFonts.poppins(),
                 ),
                 backgroundColor: Colors.red,
+                duration: const Duration(seconds: 3),
               ),
             );
           }
@@ -126,8 +160,8 @@ class TransactionCard extends StatelessWidget {
             MaterialPageRoute(
               builder:
                   (context) => TransactionDetailScreen(
-                    transaction: transaction,
-                    onDeleted: onDeleted,
+                    transaction: widget.transaction,
+                    onDeleted: widget.onDeleted,
                   ),
             ),
           );
@@ -165,7 +199,8 @@ class TransactionCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      transaction['description'] as String? ?? 'No description',
+                      widget.transaction['description'] as String? ??
+                          'No description',
                       style: GoogleFonts.poppins(
                         color: Colors.white,
                         fontSize: 16,

@@ -5,6 +5,7 @@ import 'package:financial_app/Screen/financial_obligations_screen.dart';
 import 'package:financial_app/Screen/transaction_history_screen.dart';
 import 'package:financial_app/Screen/recurring_transactions_screen.dart';
 import 'package:financial_app/Screen/backup_screen.dart';
+import 'package:financial_app/Screen/ai_budget_recommendation_screen.dart';
 
 class QuickActions extends StatelessWidget {
   const QuickActions({super.key});
@@ -12,6 +13,18 @@ class QuickActions extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final actions = [
+      {
+        'icon': Iconsax.flash,
+        'label': 'AI Budget',
+        'color': const Color(0xFFFFB74D),
+        'onTap':
+            () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const AIBudgetRecommendationScreen(),
+              ),
+            ),
+      },
       {
         'icon': Iconsax.note_2,
         'label': 'Riwayat',
@@ -78,7 +91,8 @@ class QuickActions extends StatelessWidget {
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 4,
             crossAxisSpacing: 10,
-            mainAxisSpacing: 10,
+            mainAxisSpacing: 12,
+            childAspectRatio: 0.85,
           ),
           itemCount: actions.length,
           itemBuilder: (context, index) {
@@ -106,22 +120,27 @@ class QuickActions extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
           Container(
-            width: 50,
-            height: 50,
+            width: 48,
+            height: 48,
             decoration: BoxDecoration(
               color: color.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(15),
+              borderRadius: BorderRadius.circular(14),
               border: Border.all(color: color.withOpacity(0.3)),
             ),
-            child: Icon(icon, color: color, size: 24),
+            child: Icon(icon, color: color, size: 22),
           ),
-          const SizedBox(height: 8),
-          Text(
-            label,
-            style: GoogleFonts.poppins(color: Colors.white70, fontSize: 10),
-            textAlign: TextAlign.center,
+          const SizedBox(height: 6),
+          Flexible(
+            child: Text(
+              label,
+              style: GoogleFonts.poppins(color: Colors.white70, fontSize: 9),
+              textAlign: TextAlign.center,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
           ),
         ],
       ),

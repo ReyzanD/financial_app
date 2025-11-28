@@ -1,0 +1,181 @@
+===============================================
+   LOCATION RECOMMENDATIONS - DEBUG MODE
+===============================================
+
+🔍 DEBUGGING ENABLED
+
+I've added extensive debugging to find out why location
+recommendations aren't showing even with data available.
+
+═══════════════════════════════════════════════
+WHAT I ADDED:
+═══════════════════════════════════════════════
+
+1. TEST WIDGET (Blue Box)
+   - ALWAYS VISIBLE
+   - Shows refresh counter
+   - Located just above location recommendations
+   - If you DON'T see this, the section isn't rendering
+
+2. EXTENSIVE LOGGING
+   - Every step of FutureBuilder logged
+   - Shows connection state
+   - Shows if data exists
+   - Shows data length
+
+3. KEYED SUBTREE
+   - Forces rebuild on refresh
+   - Linked to refresh counter
+
+═══════════════════════════════════════════════
+HOW TO DEBUG:
+═══════════════════════════════════════════════
+
+STEP 1: Hot Restart the App
+
+STEP 2: Look for BLUE BOX on Home Screen
+   - Should say "Location Section Test: Counter = 0"
+   - Located after Quick Add Widget
+   
+   ✅ Blue box visible?
+      → Section is rendering! Check logs for data issue
+   
+   ❌ Blue box NOT visible?
+      → Layout issue! Section not in view
+      → Try scrolling down
+      → Check if Quick Add Widget is visible
+
+STEP 3: Check Console Logs
+
+Look for these messages:
+
+A) Widget Building:
+   🏗️ [HomeScreen] Building location recommendations widget
+   → Shows widget is being built
+
+B) FutureBuilder State:
+   🔍 [FutureBuilder] State: waiting/done, HasData: true/false, DataLength: X
+   → Shows what data is available
+
+C) Loading State:
+   ⏳ [LocationRecommendations] Loading...
+   → Shows loading in progress
+
+D) Empty State:
+   ℹ️ [LocationRecommendations] No recommendations available
+   → Shows no data returned
+
+E) Success State:
+   ✅ [LocationRecommendations] Showing 3 recommendations
+   → Shows data is there!
+
+F) Error State:
+   ❌ [LocationRecommendations] Error: [error message]
+   ❌ Stack trace: [trace]
+   → Shows what went wrong
+
+═══════════════════════════════════════════════
+WHAT TO CHECK:
+═══════════════════════════════════════════════
+
+□ Can you see the blue test box?
+  YES → Section is rendering, check logs
+  NO → Scroll down or check layout
+
+□ What does the console say?
+  "State: waiting" → Still loading
+  "State: done, HasData: false" → No data returned
+  "State: done, HasData: true, DataLength: 0" → Empty list
+  "State: done, HasData: true, DataLength: 3" → Data exists!
+
+□ If data exists but no UI:
+  - Check if recommendations are after the blue box
+  - Check if they're rendered but hidden (opacity/color issue)
+  - Check if there's a layout overflow
+
+□ If no data:
+  - Check LocationIntelligence logs
+  - Verify transactions have location_name
+  - Verify transactions are expenses (not income)
+
+═══════════════════════════════════════════════
+CONSOLE LOG SEQUENCE (Expected):
+═══════════════════════════════════════════════
+
+On App Start:
+  🔄 [HomeScreen] Loading location recommendations...
+  🏗️ [HomeScreen] Building location recommendations widget
+  🔍 [FutureBuilder] State: waiting, HasData: false, DataLength: 0
+  ⏳ [LocationRecommendations] Loading...
+  🔍 [LocationIntelligence] Fetching transactions...
+  📊 [LocationIntelligence] Found 9 total transactions
+  📍 [LocationIntelligence] Found 3 transactions with location data
+  ✅ [LocationIntelligence] Generated 3 recommendations
+  🏗️ [HomeScreen] Building location recommendations widget
+  🔍 [FutureBuilder] State: done, HasData: true, DataLength: 3
+  ✅ [LocationRecommendations] Showing 3 recommendations
+
+On Refresh:
+  🔄 [HomeScreen] Refreshing dashboard...
+  🔄 [HomeScreen] Reloading location recommendations...
+  🏗️ [HomeScreen] Building location recommendations widget
+  🔍 [FutureBuilder] State: waiting, HasData: false, DataLength: 0
+  (repeat above sequence)
+
+═══════════════════════════════════════════════
+COMMON ISSUES & SOLUTIONS:
+═══════════════════════════════════════════════
+
+ISSUE: Blue box not visible
+SOLUTION: Scroll down on home screen
+
+ISSUE: "State: done, HasData: false"
+SOLUTION: Future returned null, check error logs
+
+ISSUE: "State: done, DataLength: 0"
+SOLUTION: Empty list returned, need more location data
+
+ISSUE: "DataLength: 3" but no UI cards
+SOLUTION: Widget rendering issue, check _buildLocationRecommendationCard
+
+ISSUE: Error in logs
+SOLUTION: Check stack trace, fix the error
+
+═══════════════════════════════════════════════
+NEXT STEPS:
+═══════════════════════════════════════════════
+
+1. Hot Restart App
+2. Open Home Screen
+3. Look for blue test box
+4. Check console logs
+5. Report back what you see:
+   - Is blue box visible?
+   - What do console logs say?
+   - What's the FutureBuilder state?
+
+With this info, I can pinpoint the exact issue!
+
+═══════════════════════════════════════════════
+TEMPORARY TEST WIDGET:
+═══════════════════════════════════════════════
+
+The blue box will be removed after we find the issue.
+It's just for debugging purposes.
+
+Location on screen:
+  Financial Summary Card
+  ↓
+  Quick Actions
+  ↓
+  Quick Add Widget
+  ↓
+  [BLUE TEST BOX] ← Look for this!
+  ↓
+  Location Recommendations ← Should be here
+  ↓
+  Budget Progress
+  ↓
+  Recent Transactions
+
+🔍 DEBUGGING MODE ACTIVE - PLEASE REPORT FINDINGS! 🔍

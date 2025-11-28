@@ -125,22 +125,29 @@ class ObligationService {
         data['days_until_due'] as int? ??
         (dueDate != null ? dueDate.difference(DateTime.now()).inDays : 0);
 
+    // Helper function to safely parse decimal values
+    double? parseDecimal(dynamic value) {
+      if (value == null) return null;
+      if (value is num) return value.toDouble();
+      return double.tryParse(value.toString());
+    }
+
     return FinancialObligation(
       id: data['obligation_id_232143']?.toString() ?? '',
       name: data['name_232143']?.toString() ?? '',
-      monthlyAmount: (data['monthly_amount_232143'] as num?)?.toDouble() ?? 0.0,
+      monthlyAmount: parseDecimal(data['monthly_amount_232143']) ?? 0.0,
       dueDate: dueDate ?? DateTime.now(),
       type: type,
       daysUntilDue: daysUntilDue,
       category: data['category_232143']?.toString(),
-      originalAmount: (data['original_amount_232143'] as num?)?.toDouble(),
-      currentBalance: (data['current_balance_232143'] as num?)?.toDouble(),
-      interestRate: (data['interest_rate_232143'] as num?)?.toDouble(),
+      originalAmount: parseDecimal(data['original_amount_232143']),
+      currentBalance: parseDecimal(data['current_balance_232143']),
+      interestRate: parseDecimal(data['interest_rate_232143']),
       isSubscription:
           data['is_subscription_232143'] == 1 ||
           data['is_subscription_232143'] == true,
       subscriptionCycle: data['subscription_cycle_232143']?.toString(),
-      minimumPayment: (data['minimum_payment_232143'] as num?)?.toDouble(),
+      minimumPayment: parseDecimal(data['minimum_payment_232143']),
       payoffStrategy: data['payoff_strategy_232143']?.toString(),
     );
   }

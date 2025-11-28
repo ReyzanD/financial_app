@@ -45,6 +45,14 @@ def get_transactions():
         # Transform the data to match frontend expectations
         formatted_transactions = []
         for t in transactions:
+            # Debug: Print first transaction to see structure
+            if len(formatted_transactions) == 0:
+                print(f" Sample transaction from DB:")
+                print(f"   location_name: {t.get('location_name')}")
+                print(f"   latitude: {t.get('latitude')}")
+                print(f"   longitude: {t.get('longitude')}")
+                print(f"   location_data_232143: {t.get('location_data_232143')}")
+
             # Parse location data if it exists (return full object for map display)
             location_obj = None
             if t['location_data_232143']:
@@ -70,7 +78,15 @@ def get_transactions():
                 'payment_method': t['payment_method_232143'],
                 'date': t['transaction_date_232143'].isoformat() if t['transaction_date_232143'] else None,
                 'created_at': t['created_at_232143'].isoformat() if t['created_at_232143'] else None,
-                'location': location_obj
+                'location': location_obj,
+                # Include individual location fields for location intelligence
+                'location_name_232143': t.get('location_name'),
+                'latitude_232143': float(t['latitude']) if t.get('latitude') else None,
+                'longitude_232143': float(t['longitude']) if t.get('longitude') else None,
+                'amount_232143': float(t['amount_232143']),
+                'type_232143': t['type_232143'],
+                'notes_232143': t.get('description_232143'),
+                'transaction_date_232143': t['transaction_date_232143'].isoformat() if t['transaction_date_232143'] else None
             }
             formatted_transactions.append(formatted_transaction)
         

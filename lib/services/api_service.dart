@@ -6,6 +6,11 @@ class ApiService {
   static const String baseUrl = 'http://10.0.2.2:5000/api/v1';
   final FlutterSecureStorage _storage = const FlutterSecureStorage();
 
+  // Cache layer for frequently accessed data
+  static final Map<String, dynamic> _cache = {};
+  static final Map<String, DateTime> _cacheTimestamps = {};
+  static const Duration _cacheDuration = Duration(minutes: 2);
+
   Future<Map<String, String>> _getHeaders() async {
     final token = await _storage.read(key: 'auth_token');
     return {
@@ -23,8 +28,60 @@ class ApiService {
     return _handleResponse(response);
   }
 
-  // Generic GET request
-  Future<dynamic> get(String endpoint) async {
+  // Check if cached data is still valid
+  bool _isCacheValid(String key) {
+    if (!_cache.containsKey(key)) return false;
+    final timestamp = _cacheTimestamps[key];
+    if (timestamp == null) return false;
+    return DateTime.now().difference(timestamp) < _cacheDuration;
+  }
+
+  // Get cached data or null
+  dynamic _getCached(String key) {
+    if (_isCacheValid(key)) {
+      print('📦 Cache HIT: $key');
+      return _cache[key];
+    }
+    return null;
+  }
+
+  // Store data in cache
+  void _setCache(String key, dynamic data) {
+    _cache[key] = data;
+    _cacheTimestamps[key] = DateTime.now();
+  }
+
+  // Clear specific cache or all
+  static void clearCache([String? key]) {
+    if (key != null) {
+      _cache.remove(key);
+      _cacheTimestamps.remove(key);
+    } else {
+      _cache.clear();
+      _cacheTimestamps.clear();
+
+      // Clear all static caches (critical for logout to prevent data leakage)
+      _cachedCategories = null;
+      _categoriesCacheTime = null;
+    }
+  }
+
+  // Clear instance-level caches (for when this service is reused)
+  void clearInstanceCache() {
+    _cachedSummary = null;
+    _lastSummaryFetch = null;
+    _cachedSummaryYear = null;
+    _cachedSummaryMonth = null;
+  }
+
+  // Generic GET request with caching
+  Future<dynamic> get(String endpoint, {bool useCache = true}) async {
+    // Check cache first for GET requests
+    if (useCache) {
+      final cached = _getCached(endpoint);
+      if (cached != null) return cached;
+    }
+
     print('🔼 GET: $baseUrl/$endpoint');
     try {
       final response = await http.get(
@@ -33,7 +90,14 @@ class ApiService {
       );
 
       print('✅ Response: ${response.statusCode}');
-      return _handleResponse(response);
+      final data = _handleResponse(response);
+
+      // Cache the response
+      if (useCache) {
+        _setCache(endpoint, data);
+      }
+
+      return data;
     } catch (e) {
       throw Exception('Network error: $e');
     }
@@ -47,6 +111,9 @@ class ApiService {
         headers: await _getHeaders(),
         body: json.encode(data),
       );
+
+      // Clear cache on mutations
+      clearCache();
 
       return _handleResponse(response);
     } catch (e) {
@@ -63,6 +130,9 @@ class ApiService {
         body: json.encode(data),
       );
 
+      // Clear cache on mutations
+      clearCache();
+
       return _handleResponse(response);
     } catch (e) {
       throw Exception('Network error: $e');
@@ -76,6 +146,9 @@ class ApiService {
         Uri.parse('$baseUrl/$endpoint'),
         headers: await _getHeaders(),
       );
+
+      // Clear cache on mutations
+      clearCache();
 
       return _handleResponse(response);
     } catch (e) {
@@ -345,7 +418,11 @@ class ApiService {
   Future<Map<String, dynamic>> addTransaction(
     Map<String, dynamic> transactionData,
   ) async {
-    return await post('transactions_232143', transactionData);
+    final result = await post('transactions_232143', transactionData);
+    // Clear caches after adding transaction
+    print('🧹 Clearing transaction caches after add...');
+    _clearTransactionCaches();
+    return result;
   }
 
   // Update Transaction
@@ -362,7 +439,13 @@ class ApiService {
         body: json.encode(transactionData),
       );
       print('✅ Update response: ${response.statusCode}');
-      return _handleResponse(response);
+      final result = _handleResponse(response);
+
+      // Clear caches after updating transaction
+      print('🧹 Clearing transaction caches after update...');
+      _clearTransactionCaches();
+
+      return result;
     } catch (e) {
       print('❌ Update error: $e');
       throw Exception('Network error: $e');
@@ -378,11 +461,40 @@ class ApiService {
         headers: await _getHeaders(),
       );
       print('✅ Delete response: ${response.statusCode}');
+
+      // Clear all transaction-related caches after deletion
+      print('🧹 Clearing transaction caches...');
+      _clearTransactionCaches();
+
       return _handleResponse(response);
     } catch (e) {
       print('❌ Delete error: $e');
       throw Exception('Network error: $e');
     }
+  }
+
+  // Clear all transaction-related caches
+  void _clearTransactionCaches() {
+    // Clear all caches that contain transaction data
+    final keysToRemove =
+        _cache.keys
+            .where(
+              (key) =>
+                  key.contains('transactions_232143') ||
+                  key.contains('summary') ||
+                  key.contains('analytics'),
+            )
+            .toList();
+
+    for (var key in keysToRemove) {
+      _cache.remove(key);
+      _cacheTimestamps.remove(key);
+      print('   🗑️ Cleared cache: $key');
+    }
+
+    // Also clear the old summary cache variables
+    _cachedSummary = null;
+    _lastSummaryFetch = null;
   }
 
   // Goals
@@ -508,13 +620,21 @@ class ApiService {
     double totalDebt = 0.0;
 
     for (var obligation in obligations) {
+      // Handle both num and String types from database
+      final monthlyAmountRaw = obligation['monthly_amount_232143'];
       final monthlyAmount =
-          (obligation['monthly_amount_232143'] as num?)?.toDouble() ?? 0.0;
+          monthlyAmountRaw is num
+              ? monthlyAmountRaw.toDouble()
+              : (double.tryParse(monthlyAmountRaw?.toString() ?? '0') ?? 0.0);
       monthlyTotal += monthlyAmount;
 
       if (obligation['type_232143'] == 'debt') {
+        final currentBalanceRaw = obligation['current_balance_232143'];
         final currentBalance =
-            (obligation['current_balance_232143'] as num?)?.toDouble() ?? 0.0;
+            currentBalanceRaw is num
+                ? currentBalanceRaw.toDouble()
+                : (double.tryParse(currentBalanceRaw?.toString() ?? '0') ??
+                    0.0);
         totalDebt += currentBalance;
       }
     }

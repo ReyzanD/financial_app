@@ -14,14 +14,25 @@ class TransactionModel:
             INSERT INTO transactions_232143 (
                 transaction_id_232143, user_id_232143, amount_232143, 
                 type_232143, category_id_232143, description_232143,
+                location_name_232143, latitude_232143, longitude_232143,
                 location_data_232143, payment_method_232143, 
                 transaction_date_232143, created_at_232143
-            ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+            ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
             """
             
+            # Extract location fields from transaction data
             location_data = None
+            location_name = None
+            latitude = None
+            longitude = None
+            
             if transaction_data.get('location_data'):
-                location_data = json.dumps(transaction_data['location_data'])
+                loc_data = transaction_data['location_data']
+                location_data = json.dumps(loc_data)
+                # Extract individual fields from location_data for querying
+                location_name = loc_data.get('place_name') or loc_data.get('address')
+                latitude = loc_data.get('latitude')
+                longitude = loc_data.get('longitude')
             
             cursor.execute(sql, (
                 transaction_id,
@@ -30,6 +41,9 @@ class TransactionModel:
                 transaction_data['type'],
                 transaction_data.get('category_id'),
                 transaction_data['description'],
+                location_name,
+                latitude,
+                longitude,
                 location_data,
                 transaction_data.get('payment_method', 'cash'),
                 transaction_data.get('transaction_date', datetime.now().date()),
@@ -46,6 +60,9 @@ class TransactionModel:
             sql = """
             SELECT 
                 t.*,
+                t.location_name_232143 as location_name,
+                t.latitude_232143 as latitude,
+                t.longitude_232143 as longitude,
                 COALESCE(c.name_232143, 'Uncategorized') as category_name,
                 COALESCE(c.color_232143, '#808080') as category_color
             FROM transactions_232143 t
@@ -192,6 +209,9 @@ class TransactionModel:
             sql = """
             SELECT 
                 t.*,
+                t.location_name_232143 as location_name,
+                t.latitude_232143 as latitude,
+                t.longitude_232143 as longitude,
                 COALESCE(c.name_232143, 'Uncategorized') as category_name,
                 COALESCE(c.color_232143, '#808080') as category_color
             FROM transactions_232143 t
