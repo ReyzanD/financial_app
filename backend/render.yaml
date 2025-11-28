@@ -1,0 +1,31 @@
+services:
+  # Flask Backend
+  - type: web
+    name: financial-app-backend
+    env: python
+    region: singapore
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.0
+      - key: DATABASE_URL
+        fromDatabase:
+          name: financial-db
+          property: connectionString
+      - key: JWT_SECRET_KEY
+        generateValue: true
+      - key: DEBUG
+        value: False
+  
+  # PostgreSQL Database  
+  - type: pserv
+    name: financial-db
+    env: docker
+    region: singapore
+    plan: free
+    disk:
+      name: financial-db-data
+      mountPath: /var/lib/postgresql/data
+      sizeGB: 1
