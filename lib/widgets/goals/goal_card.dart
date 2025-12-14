@@ -3,6 +3,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:financial_app/widgets/goals/goals_helpers.dart';
 import 'package:financial_app/services/api_service.dart';
+import 'package:financial_app/services/error_handler_service.dart';
+import 'package:financial_app/services/logger_service.dart';
 import 'package:financial_app/widgets/goals/add_goal_modal.dart';
 import 'package:financial_app/widgets/goals/contribute_modal.dart';
 
@@ -233,134 +235,6 @@ class GoalCard extends StatelessWidget {
     }
   }
 
-  void _showContributeDialogOLD(BuildContext context) {
-    final amountController = TextEditingController();
-    final apiService = ApiService();
-
-    showDialog(
-      context: context,
-      builder: (BuildContext dialogContext) {
-        return AlertDialog(
-          backgroundColor: const Color(0xFF1A1A1A),
-          title: Text(
-            'Tambah Dana',
-            style: GoogleFonts.poppins(color: Colors.white),
-          ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                goal['name'],
-                style: GoogleFonts.poppins(
-                  color: const Color(0xFF8B5FBF),
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              const SizedBox(height: 16),
-              TextField(
-                controller: amountController,
-                keyboardType: TextInputType.number,
-                style: GoogleFonts.poppins(color: Colors.white),
-                decoration: InputDecoration(
-                  labelText: 'Jumlah',
-                  labelStyle: GoogleFonts.poppins(color: Colors.grey),
-                  prefix: Text(
-                    'Rp ',
-                    style: GoogleFonts.poppins(color: Colors.white),
-                  ),
-                  filled: true,
-                  fillColor: const Color(0xFF2A2A2A),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide: BorderSide.none,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 12),
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: Colors.blue.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.blue.withOpacity(0.3)),
-                ),
-                child: Row(
-                  children: [
-                    Icon(Icons.info_outline, color: Colors.blue, size: 16),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        'Saldo Anda akan berkurang sesuai jumlah kontribusi',
-                        style: GoogleFonts.poppins(
-                          color: Colors.blue,
-                          fontSize: 11,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(dialogContext).pop(),
-              child: Text(
-                'Batal',
-                style: GoogleFonts.poppins(color: Colors.grey),
-              ),
-            ),
-            ElevatedButton(
-              onPressed: () async {
-                final amount = double.tryParse(amountController.text);
-                if (amount != null && amount > 0) {
-                  try {
-                    final result = await apiService.addGoalContribution(
-                      goal['id'],
-                      amount,
-                    );
-                    if (dialogContext.mounted) {
-                      Navigator.of(dialogContext).pop();
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                            result['is_completed'] == true
-                                ? '🎉 Goal tercapai! Saldo berkurang Rp ${amount.toInt()}'
-                                : '✅ Dana ditambahkan! Saldo berkurang Rp ${amount.toInt()}',
-                            style: GoogleFonts.poppins(),
-                          ),
-                          backgroundColor: Colors.green,
-                          duration: const Duration(seconds: 4),
-                        ),
-                      );
-                      onUpdated?.call();
-                    }
-                  } catch (e) {
-                    if (dialogContext.mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                            'Gagal: $e',
-                            style: GoogleFonts.poppins(),
-                          ),
-                          backgroundColor: Colors.red,
-                        ),
-                      );
-                    }
-                  }
-                }
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF8B5FBF),
-              ),
-              child: Text('Tambah', style: GoogleFonts.poppins()),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
   void _showEditDialog(BuildContext context) {
     showModalBottomSheet(
       context: context,
@@ -408,28 +282,23 @@ class GoalCard extends StatelessWidget {
                   await apiService.deleteGoal(goal['id']);
                   if (dialogContext.mounted) {
                     Navigator.of(dialogContext).pop();
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                          'Goal berhasil dihapus',
-                          style: GoogleFonts.poppins(),
-                        ),
-                        backgroundColor: Colors.green,
-                      ),
-                    );
+                    if (context.mounted) {
+                      ErrorHandlerService.showSuccessSnackbar(
+                        context,
+                        'Goal berhasil dihapus',
+                      );
+                    }
                     onUpdated?.call();
                   }
                 } catch (e) {
+                  LoggerService.error('Error deleting goal', error: e);
                   if (dialogContext.mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                          'Gagal: $e',
-                          style: GoogleFonts.poppins(),
-                        ),
-                        backgroundColor: Colors.red,
-                      ),
-                    );
+                    if (context.mounted) {
+                      ErrorHandlerService.showErrorSnackbar(
+                        context,
+                        ErrorHandlerService.getUserFriendlyMessage(e),
+                      );
+                    }
                   }
                 }
               },

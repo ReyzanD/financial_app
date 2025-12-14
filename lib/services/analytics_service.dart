@@ -1,4 +1,5 @@
 import 'package:financial_app/services/api_service.dart';
+import 'package:financial_app/services/logger_service.dart';
 
 class AnalyticsService {
   final ApiService _apiService = ApiService();
@@ -18,7 +19,7 @@ class AnalyticsService {
       // Calculate analytics
       return _calculateAnalytics(filteredTransactions, period, now);
     } catch (e) {
-      print('Error getting analytics: $e');
+      LoggerService.error('Error getting analytics', error: e);
       rethrow;
     }
   }

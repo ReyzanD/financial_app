@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:financial_app/services/api_service.dart';
+import 'package:financial_app/services/error_handler_service.dart';
+import 'package:financial_app/services/logger_service.dart';
 import 'package:intl/intl.dart';
 
 class AddBudgetModal extends StatefulWidget {
@@ -35,10 +37,9 @@ class _AddBudgetModalState extends State<AddBudgetModal> {
   @override
   void initState() {
     super.initState();
-    print(
-      '🔍 AddBudgetModal - Received ${widget.categories.length} categories',
+    LoggerService.debug(
+      'AddBudgetModal - Received ${widget.categories.length} categories',
     );
-    print('📝 Categories: ${widget.categories}');
     _amountController = TextEditingController();
     final initial = widget.initialBudget;
     if (initial != null) {
@@ -148,27 +149,27 @@ class _AddBudgetModalState extends State<AddBudgetModal> {
       if (!mounted) return;
 
       Navigator.pop(context, true);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            _isEdit
-                ? 'Budget berhasil diperbarui.'
-                : 'Budget berhasil ditambahkan.',
-          ),
-          backgroundColor: const Color(0xFF8B5FBF),
-        ),
-      );
+      if (context.mounted) {
+        ErrorHandlerService.showSuccessSnackbar(
+          context,
+          _isEdit
+              ? 'Budget berhasil diperbarui.'
+              : 'Budget berhasil ditambahkan.',
+        );
+      }
     } catch (e) {
+      LoggerService.error('Error saving budget', error: e);
       if (!mounted) return;
       setState(() {
         _isLoading = false;
       });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Error: ${e.toString()}'),
-          backgroundColor: Colors.red,
-        ),
-      );
+      if (context.mounted) {
+        ErrorHandlerService.showErrorSnackbar(
+          context,
+          ErrorHandlerService.getUserFriendlyMessage(e),
+          onRetry: _submit,
+        );
+      }
     }
   }
 

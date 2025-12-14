@@ -2,6 +2,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:permission_handler/permission_handler.dart';
+import 'package:financial_app/services/logger_service.dart';
 
 class NotificationService {
   static final NotificationService _instance = NotificationService._internal();
@@ -49,7 +50,7 @@ class NotificationService {
   /// Handle notification tap
   void _onNotificationTapped(NotificationResponse response) {
     // Handle notification tap - navigate to relevant screen
-    print('Notification tapped: ${response.payload}');
+    LoggerService.debug('Notification tapped: ${response.payload}');
   }
 
   /// Request notification permissions

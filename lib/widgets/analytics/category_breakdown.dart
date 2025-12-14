@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:financial_app/services/logger_service.dart';
 
 class CategoryBreakdown extends StatelessWidget {
   final List<dynamic> transactions;
@@ -9,8 +10,8 @@ class CategoryBreakdown extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print(
-      '🧩 CategoryBreakdown: Processing ${transactions.length} transactions',
+    LoggerService.debug(
+      'CategoryBreakdown: Processing ${transactions.length} transactions',
     );
 
     // Calculate category data from all transactions
@@ -58,11 +59,11 @@ class CategoryBreakdown extends StatelessWidget {
           totalAmount > 0 ? (amount / totalAmount * 100).toInt() : 0;
     }
 
-    print(
-      '📊 Found ${categories.length} categories, total amount: $totalAmount',
+    LoggerService.debug(
+      'Found ${categories.length} categories, total amount: $totalAmount',
     );
     if (categories.isNotEmpty) {
-      print('🏆 Top category: ${categories.first}');
+      LoggerService.debug('Top category: ${categories.first['name']}');
     }
 
     if (categories.isEmpty) {

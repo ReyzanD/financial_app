@@ -1,4 +1,5 @@
 import 'package:financial_app/services/api_service.dart';
+import 'package:financial_app/services/logger_service.dart';
 
 class AIService {
   final ApiService _apiService = ApiService();
@@ -25,7 +26,10 @@ class AIService {
         return backendRecs;
       }
     } catch (e) {
-      print('Backend AI not available, using local intelligence: $e');
+      LoggerService.warning(
+        'Backend AI not available, using local intelligence',
+        error: e,
+      );
     }
 
     // Fallback: Generate smart recommendations locally
@@ -52,7 +56,7 @@ class AIService {
 
       return recommendation;
     } catch (e) {
-      print('Error generating local recommendations: $e');
+      LoggerService.error('Error generating local recommendations', error: e);
       return _getDefaultRecommendation();
     }
   }
@@ -262,7 +266,7 @@ class AIService {
 
       return _analyzeSpendingPatterns(periodTransactions);
     } catch (e) {
-      print('Error getting spending insights: $e');
+      LoggerService.error('Error getting spending insights', error: e);
       return {};
     }
   }

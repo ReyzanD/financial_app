@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:financial_app/widgets/goals/goal_card.dart';
 import 'package:financial_app/services/api_service.dart';
+import 'package:financial_app/services/error_handler_service.dart';
+import 'package:financial_app/services/logger_service.dart';
 import 'package:financial_app/widgets/common/shimmer_loading.dart';
 import 'package:financial_app/widgets/common/empty_state.dart';
 import 'package:financial_app/utils/page_transitions.dart';
@@ -49,12 +51,19 @@ class _GoalsListState extends State<GoalsList> {
         });
       }
     } catch (e) {
+      LoggerService.error('Error loading goals', error: e);
       if (mounted) {
         setState(() {
           _isLoading = false;
         });
+        if (context.mounted) {
+          ErrorHandlerService.showErrorSnackbar(
+            context,
+            ErrorHandlerService.getUserFriendlyMessage(e),
+            onRetry: _loadGoals,
+          );
+        }
       }
-      // Show error or keep empty state
     }
   }
 

@@ -16,6 +16,8 @@ import 'package:financial_app/widgets/home/quick_add_widget.dart';
 import 'package:financial_app/widgets/home/bottom_nav_bar.dart';
 import 'package:financial_app/widgets/home/floating_action_button.dart';
 import 'package:financial_app/widgets/home/tab_placeholders.dart';
+import 'package:financial_app/widgets/common/offline_indicator.dart';
+import 'package:financial_app/services/logger_service.dart';
 import 'package:financial_app/utils/app_refresh.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -51,18 +53,18 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _loadInitialData() async {
-    print('🎬 [HomeScreen] Triggering initial data load...');
+    LoggerService.info('[HomeScreen] Triggering initial data load...');
     try {
       final appState = Provider.of<AppState>(context, listen: false);
       await appState.loadInitialData();
-      print('✅ [HomeScreen] Initial data load completed');
+      LoggerService.success('[HomeScreen] Initial data load completed');
     } catch (e) {
-      print('❌ [HomeScreen] Error loading initial data: $e');
+      LoggerService.error('[HomeScreen] Error loading initial data', error: e);
     }
   }
 
   void _onGlobalRefresh() {
-    print('🔔 [HomeScreen] Received global refresh notification');
+    LoggerService.info('[HomeScreen] Received global refresh notification');
     _refreshDashboard();
   }
 
@@ -74,7 +76,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void _loadLocationRecommendations() {
     setState(() {
-      print('🔄 [HomeScreen] Loading location recommendations...');
+      LoggerService.info('[HomeScreen] Loading location recommendations...');
       _locationRecommendationsFuture =
           LocationIntelligenceService().generateLocationInsights();
     });
@@ -94,31 +96,38 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
-      body: SafeArea(
-        child: Column(
-          children: [
-            // Header
-            const HomeHeader(),
-
-            // Main Content
-            Expanded(
-              child: PageView(
-                controller: _pageController,
-                onPageChanged: (index) {
-                  setState(() {
-                    _currentIndex = index;
-                  });
-                },
+      body: Column(
+        children: [
+          const OfflineIndicator(),
+          Expanded(
+            child: SafeArea(
+              child: Column(
                 children: [
-                  _buildDashboardTab(),
-                  TabPlaceholders.buildTransactionsTab(),
-                  TabPlaceholders.buildGoalsTab(),
-                  TabPlaceholders.buildAnalyticsTab(),
+                  // Header
+                  const HomeHeader(),
+
+                  // Main Content
+                  Expanded(
+                    child: PageView(
+                      controller: _pageController,
+                      onPageChanged: (index) {
+                        setState(() {
+                          _currentIndex = index;
+                        });
+                      },
+                      children: [
+                        _buildDashboardTab(),
+                        TabPlaceholders.buildTransactionsTab(),
+                        TabPlaceholders.buildGoalsTab(),
+                        TabPlaceholders.buildAnalyticsTab(),
+                      ],
+                    ),
+                  ),
                 ],
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
       bottomNavigationBar: HomeBottomNavBar(
         currentIndex: _currentIndex,
@@ -185,33 +194,33 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _refreshDashboard() async {
-    print('🔄 [HomeScreen] Refreshing dashboard...');
+    LoggerService.info('[HomeScreen] Refreshing dashboard...');
     // Trigger refresh for all dashboard widgets
     setState(() {
       _refreshCounter++; // Increment to force widget rebuilds
       // Reload location recommendations on manual refresh
-      print('🔄 [HomeScreen] Reloading location recommendations...');
+      LoggerService.info('[HomeScreen] Reloading location recommendations...');
       _locationRecommendationsFuture =
           LocationIntelligenceService().generateLocationInsights();
     });
     // Add a small delay for better UX
     await Future.delayed(const Duration(milliseconds: 500));
-    print('✅ [HomeScreen] Dashboard refreshed (counter: $_refreshCounter)');
+    LoggerService.success('[HomeScreen] Dashboard refreshed (counter: $_refreshCounter)');
   }
 
   // Location Recommendations Section
   Widget _buildLocationRecommendations() {
-    print('🏗️ [HomeScreen] Building location recommendations widget');
+    LoggerService.debug('[HomeScreen] Building location recommendations widget');
     return FutureBuilder<List<LocationRecommendation>>(
       future: _locationRecommendationsFuture,
       builder: (context, snapshot) {
-        print(
-          '🔍 [FutureBuilder] State: ${snapshot.connectionState}, HasData: ${snapshot.hasData}, DataLength: ${snapshot.data?.length ?? 0}',
+        LoggerService.debug(
+          '[FutureBuilder] State: ${snapshot.connectionState}, HasData: ${snapshot.hasData}, DataLength: ${snapshot.data?.length ?? 0}',
         );
 
         // Show loading state
         if (snapshot.connectionState == ConnectionState.waiting) {
-          print('⏳ [LocationRecommendations] Loading...');
+          LoggerService.debug('[LocationRecommendations] Loading...');
           return Container(
             padding: const EdgeInsets.all(16),
             child: Center(
@@ -225,15 +234,18 @@ class _HomeScreenState extends State<HomeScreen> {
 
         // Show error state (with debug info)
         if (snapshot.hasError) {
-          print('❌ [LocationRecommendations] Error: ${snapshot.error}');
-          print('❌ Stack trace: ${snapshot.stackTrace}');
+          LoggerService.error(
+            '[LocationRecommendations] Error',
+            error: snapshot.error,
+            stackTrace: snapshot.stackTrace,
+          );
           return Container(); // Hide on error
         }
 
         // Handle empty data - SHOW the section with helpful message
         if (!snapshot.hasData || snapshot.data!.isEmpty) {
-          print(
-            'ℹ️ [LocationRecommendations] No recommendations available (hasData: ${snapshot.hasData}, isEmpty: ${snapshot.data?.isEmpty})',
+          LoggerService.info(
+            '[LocationRecommendations] No recommendations available (hasData: ${snapshot.hasData}, isEmpty: ${snapshot.data?.isEmpty})',
           );
           // Still show the section header and a helpful message
           return Column(
@@ -298,8 +310,8 @@ class _HomeScreenState extends State<HomeScreen> {
         }
 
         final recommendations = snapshot.data!;
-        print(
-          '✅ [LocationRecommendations] Showing ${recommendations.length} recommendations',
+        LoggerService.success(
+          '[LocationRecommendations] Showing ${recommendations.length} recommendations',
         );
 
         return Column(

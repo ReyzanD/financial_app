@@ -1,5 +1,6 @@
 import 'package:financial_app/models/financial_obligation.dart';
 import 'package:financial_app/services/api_service.dart';
+import 'package:financial_app/services/logger_service.dart';
 
 class ObligationService {
   final ApiService _apiService = ApiService();
@@ -8,7 +9,7 @@ class ObligationService {
     try {
       return await _apiService.getObligationsSummary();
     } catch (e) {
-      print('Error fetching obligations summary: $e');
+      LoggerService.error('Error fetching obligations summary', error: e);
       return {'monthlyTotal': 0.0, 'totalDebt': 0.0, 'obligationsCount': 0};
     }
   }
@@ -20,7 +21,7 @@ class ObligationService {
       final obligations = await _apiService.getUpcomingObligations(days: days);
       return obligations.map((data) => _parseObligation(data)).toList();
     } catch (e) {
-      print('Error fetching upcoming obligations: $e');
+      LoggerService.error('Error fetching upcoming obligations', error: e);
       return [];
     }
   }
@@ -30,7 +31,7 @@ class ObligationService {
       final obligations = await _apiService.getObligations(type: type);
       return obligations.map((data) => _parseObligation(data)).toList();
     } catch (e) {
-      print('Error fetching obligations: $e');
+      LoggerService.error('Error fetching obligations', error: e);
       return [];
     }
   }
@@ -54,7 +55,7 @@ class ObligationService {
         monthlyPayments: monthlyPayments,
       );
     } catch (e) {
-      print('Error fetching debt summary: $e');
+      LoggerService.error('Error fetching debt summary', error: e);
       return DebtSummary(debts: [], totalDebt: 0.0, monthlyPayments: 0.0);
     }
   }
@@ -66,7 +67,7 @@ class ObligationService {
       );
       return obligations.map((data) => _parseObligation(data)).toList();
     } catch (e) {
-      print('Error fetching subscriptions: $e');
+      LoggerService.error('Error fetching subscriptions', error: e);
       return [];
     }
   }
@@ -117,7 +118,7 @@ class ObligationService {
           dueDate = DateTime(now.year, now.month + 1, dayOfMonth);
         }
       } catch (e) {
-        print('Error parsing due date: $e');
+        LoggerService.warning('Error parsing due date', error: e);
       }
     }
 

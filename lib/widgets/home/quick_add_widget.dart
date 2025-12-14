@@ -490,8 +490,11 @@ class _QuickAddModalState extends State<QuickAddModal> {
       final currentBalance = income - expense;
       final newBalance = currentBalance - expenseAmount;
 
-      // If balance would be negative, block the transaction
-      if (newBalance < 0) {
+      // Minimum balance requirement: 25000
+      const double minimumBalance = 25000.0;
+
+      // If balance would go below the minimum, block the transaction
+      if (newBalance < minimumBalance) {
         await showDialog(
           context: context,
           builder:
@@ -545,6 +548,12 @@ class _QuickAddModalState extends State<QuickAddModal> {
                           ),
                           const SizedBox(height: 8),
                           _buildBalanceRow(
+                            'Saldo Minimum',
+                            minimumBalance,
+                            Colors.orange[300]!,
+                          ),
+                          const SizedBox(height: 8),
+                          _buildBalanceRow(
                             'Pengeluaran',
                             expenseAmount,
                             Colors.red[300]!,
@@ -552,7 +561,7 @@ class _QuickAddModalState extends State<QuickAddModal> {
                           const Divider(color: Colors.grey, height: 20),
                           _buildBalanceRow(
                             'Kekurangan',
-                            newBalance.abs(),
+                            (minimumBalance - newBalance).abs(),
                             Colors.red[400]!,
                             isBold: true,
                           ),

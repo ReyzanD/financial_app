@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:financial_app/services/obligation_service.dart';
+import 'package:financial_app/services/error_handler_service.dart';
+import 'package:financial_app/services/logger_service.dart';
 
 class AddObligationModal extends StatefulWidget {
   final Map<String, dynamic>? initialObligation;
@@ -88,20 +90,20 @@ class _AddObligationModalState extends State<AddObligationModal> {
   }
 
   Future<void> _submit() async {
-    print('🔵 Submit button tapped');
+    LoggerService.debug('Submit button tapped');
 
     if (!_formKey.currentState!.validate()) {
-      print('❌ Form validation failed');
+      LoggerService.warning('Form validation failed');
       return;
     }
 
-    print('✅ Form validation passed');
+    LoggerService.debug('Form validation passed');
     setState(() {
       _isLoading = true;
     });
 
     try {
-      print('📦 Preparing obligation data...');
+      LoggerService.debug('Preparing obligation data...');
       final data = <String, dynamic>{
         'name': _nameController.text,
         'type': _selectedType,
@@ -131,48 +133,45 @@ class _AddObligationModalState extends State<AddObligationModal> {
       }
 
       if (_isEdit) {
-        print('📝 Updating existing obligation...');
+        LoggerService.info('Updating existing obligation...');
         final id =
             widget.initialObligation?['obligation_id_232143']?.toString();
         if (id == null) {
           throw Exception('ID kewajiban tidak valid');
         }
         await _obligationService.updateObligation(id, data);
-        print('✅ Update successful');
+        LoggerService.success('Update successful');
       } else {
-        print('➕ Creating new obligation...');
-        print('   Data: $data');
-        final result = await _obligationService.createObligation(data);
-        print('✅ Create successful: $result');
+        LoggerService.info('Creating new obligation...');
+        LoggerService.debug('Obligation data', error: data);
+        await _obligationService.createObligation(data);
+        LoggerService.success('Create successful');
       }
 
       if (!mounted) return;
 
-      print('🎉 Closing modal and showing success message');
       Navigator.pop(context, true);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            _isEdit
-                ? 'Kewajiban berhasil diperbarui.'
-                : 'Kewajiban berhasil ditambahkan.',
-          ),
-          backgroundColor: const Color(0xFF8B5FBF),
-        ),
-      );
+      if (context.mounted) {
+        ErrorHandlerService.showSuccessSnackbar(
+          context,
+          _isEdit
+              ? 'Kewajiban berhasil diperbarui.'
+              : 'Kewajiban berhasil ditambahkan.',
+        );
+      }
     } catch (e) {
-      print('❌ Error during submission: $e');
+      LoggerService.error('Error during obligation submission', error: e);
       if (!mounted) return;
       setState(() {
         _isLoading = false;
       });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Error: ${e.toString()}'),
-          backgroundColor: Colors.red,
-          duration: const Duration(seconds: 5),
-        ),
-      );
+      if (context.mounted) {
+        ErrorHandlerService.showErrorSnackbar(
+          context,
+          ErrorHandlerService.getUserFriendlyMessage(e),
+          onRetry: _submit,
+        );
+      }
     }
   }
 

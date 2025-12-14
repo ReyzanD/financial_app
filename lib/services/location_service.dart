@@ -1,5 +1,6 @@
 import 'package:geolocator/geolocator.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:financial_app/services/logger_service.dart';
 
 class LocationService {
   static Future<bool> requestLocationPermission() async {
@@ -18,7 +19,7 @@ class LocationService {
         desiredAccuracy: LocationAccuracy.high,
       );
     } catch (e) {
-      print('Error getting current position: $e');
+      LoggerService.error('Error getting current position', error: e);
       return null;
     }
   }

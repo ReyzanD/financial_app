@@ -1,3 +1,5 @@
+import sys
+import io
 from flask import Flask, jsonify
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager
@@ -11,6 +13,14 @@ from routes.goal_routes import goal_bp
 from routes.budget_routes import budget_bp
 from routes.data_routes import data_bp
 
+# Fix encoding issues on Windows
+if sys.platform == 'win32':
+    # Set UTF-8 encoding for stdout and stderr
+    if sys.stdout.encoding != 'utf-8':
+        sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
+    if sys.stderr.encoding != 'utf-8':
+        sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8', errors='replace')
+
 def create_app():
     app = Flask(__name__)
     app.config.from_object(config.Config)
@@ -20,25 +30,43 @@ def create_app():
     jwt = JWTManager(app)
     init_db(app)
     
+    # Helper function for safe printing with encoding handling
+    def safe_print(message):
+        """Safely print messages, handling encoding errors"""
+        try:
+            print(message)
+        except UnicodeEncodeError:
+            # Fallback: encode to ASCII with error handling
+            safe_message = message.encode('ascii', errors='replace').decode('ascii')
+            print(safe_message)
+    
     # JWT Error Handlers
     @jwt.expired_token_loader
     def expired_token_callback(jwt_header, jwt_payload):
-        print("⏰ JWT token has expired")
+        safe_print("JWT token has expired")
         return jsonify({'error': 'Token has expired', 'message': 'Please login again'}), 401
     
     @jwt.invalid_token_loader
     def invalid_token_callback(error):
-        print(f"❌ Invalid JWT token: {error}")
+        try:
+            error_str = str(error)
+        except:
+            error_str = "Unknown error"
+        safe_print(f"Invalid JWT token: {error_str}")
         return jsonify({'error': 'Invalid token', 'message': 'Authentication failed'}), 422
     
     @jwt.unauthorized_loader
     def missing_token_callback(error):
-        print(f"🚫 Missing JWT token: {error}")
+        try:
+            error_str = str(error)
+        except:
+            error_str = "Unknown error"
+        safe_print(f"Missing JWT token: {error_str}")
         return jsonify({'error': 'Authorization required', 'message': 'Please login'}), 401
     
     @jwt.revoked_token_loader
     def revoked_token_callback(jwt_header, jwt_payload):
-        print("🚫 Token has been revoked")
+        safe_print("Token has been revoked")
         return jsonify({'error': 'Token revoked', 'message': 'Please login again'}), 401
     
     # Register blueprints

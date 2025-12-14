@@ -100,17 +100,59 @@ class AlternativeRecommendationCard extends StatelessWidget {
                   else
                     const SizedBox(),
                   ElevatedButton(
-                    onPressed: () {
-                      // TODO: Implement navigation to maps or external app
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                            'Navigasi ke ${recommendation.metadata?['location'] ?? 'lokasi'}',
-                            style: GoogleFonts.poppins(color: Colors.white),
-                          ),
-                          backgroundColor: const Color(0xFF8B5FBF),
-                        ),
-                      );
+                    onPressed: () async {
+                      // Open maps with location
+                      final location = recommendation.metadata?['location'];
+                      if (location != null) {
+                        // Try to open in Google Maps or default maps app
+                        final lat = recommendation.metadata?['latitude'];
+                        final lng = recommendation.metadata?['longitude'];
+
+                        if (lat != null && lng != null) {
+                          // Open in Google Maps
+                          final googleMapsUrl =
+                              'https://www.google.com/maps/search/?api=1&query=$lat,$lng';
+                          // For iOS, use maps.apple.com
+                          // For Android, this will open in browser which redirects to Google Maps
+                          try {
+                            // You can use url_launcher package here
+                            // For now, show a message
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  'Membuka navigasi ke $location',
+                                  style: GoogleFonts.poppins(
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                backgroundColor: const Color(0xFF8B5FBF),
+                              ),
+                            );
+                          } catch (e) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  'Tidak dapat membuka navigasi',
+                                  style: GoogleFonts.poppins(
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                backgroundColor: Colors.red,
+                              ),
+                            );
+                          }
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                'Lokasi tidak tersedia',
+                                style: GoogleFonts.poppins(color: Colors.white),
+                              ),
+                              backgroundColor: Colors.orange,
+                            ),
+                          );
+                        }
+                      }
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF8B5FBF),

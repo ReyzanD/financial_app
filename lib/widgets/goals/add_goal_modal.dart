@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:financial_app/services/api_service.dart';
+import 'package:financial_app/services/error_handler_service.dart';
+import 'package:financial_app/services/logger_service.dart';
 import 'package:intl/intl.dart';
 
 class AddGoalModal extends StatefulWidget {
@@ -130,14 +132,14 @@ class _AddGoalModalState extends State<AddGoalModal> {
   }
 
   Future<void> _submitGoal() async {
-    print('🔹 Submit button pressed');
+    LoggerService.debug('Submit button pressed');
 
     if (!_formKey.currentState!.validate()) {
-      print('❌ Form validation failed');
+      LoggerService.warning('Form validation failed');
       return;
     }
 
-    print('✅ Form validated successfully');
+    LoggerService.debug('Form validated successfully');
 
     setState(() {
       _isLoading = true;
@@ -159,51 +161,54 @@ class _AddGoalModalState extends State<AddGoalModal> {
           throw Exception('ID goal tidak valid');
         }
 
-        print('📤 Updating goal $goalId with data: $goalData');
-        final response = await _apiService.updateGoal(goalId, goalData);
-        print('✅ Goal updated successfully: $response');
+        LoggerService.info('Updating goal $goalId');
+        LoggerService.debug('Goal data', error: goalData);
+        await _apiService.updateGoal(goalId, goalData);
+        LoggerService.success('Goal updated successfully');
 
         if (mounted) {
           Navigator.pop(context, true);
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Target berhasil diperbarui!'),
-              backgroundColor: Color(0xFF8B5FBF),
-            ),
-          );
+          if (context.mounted) {
+            ErrorHandlerService.showSuccessSnackbar(
+              context,
+              'Target berhasil diperbarui!',
+            );
+          }
         }
       } else {
         final createData = {...goalData, 'current_amount': 0};
 
-        print('📤 Sending goal data: $createData');
+        LoggerService.info('Creating new goal');
+        LoggerService.debug('Goal data', error: createData);
 
-        final response = await _apiService.createGoal(createData);
+        await _apiService.createGoal(createData);
 
-        print('✅ Goal created successfully: $response');
+        LoggerService.success('Goal created successfully');
 
         if (mounted) {
-          Navigator.pop(context, true); // Return true to indicate success
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Target berhasil ditambahkan!'),
-              backgroundColor: Color(0xFF8B5FBF),
-            ),
-          );
+          Navigator.pop(context, true);
+          if (context.mounted) {
+            ErrorHandlerService.showSuccessSnackbar(
+              context,
+              'Target berhasil ditambahkan!',
+            );
+          }
         }
       }
     } catch (e) {
-      print('❌ Error creating goal: $e');
+      LoggerService.error('Error creating/updating goal', error: e);
 
       if (mounted) {
         setState(() {
           _isLoading = false;
         });
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error: ${e.toString()}'),
-            backgroundColor: Colors.red,
-          ),
-        );
+        if (context.mounted) {
+          ErrorHandlerService.showErrorSnackbar(
+            context,
+            ErrorHandlerService.getUserFriendlyMessage(e),
+            onRetry: _submitGoal,
+          );
+        }
       }
     }
   }

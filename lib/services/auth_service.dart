@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:financial_app/services/pin_auth_service.dart';
 import 'package:financial_app/services/api_service.dart';
+import 'package:financial_app/services/logger_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthService {
@@ -18,16 +19,20 @@ class AuthService {
 
       final response = await http.post(
         Uri.parse('$baseUrl/login'),
-        headers: {'Content-Type': 'application/json'},
+        headers: {'Content-Type': 'application/json; charset=utf-8'},
         body: json.encode({'email': email, 'password': password}),
       );
 
       if (response.statusCode == 200) {
-        final data = json.decode(response.body);
+        // Ensure response body is properly decoded with UTF-8 encoding
+        final responseBody = utf8.decode(response.bodyBytes);
+        final data = json.decode(responseBody);
         await _storage.write(key: 'auth_token', value: data['access_token']);
         return data;
       } else {
-        final error = json.decode(response.body);
+        // Ensure error response is properly decoded with UTF-8 encoding
+        final responseBody = utf8.decode(response.bodyBytes);
+        final error = json.decode(responseBody);
         throw Exception(error['error'] ?? 'Login failed');
       }
     } catch (e) {
@@ -43,7 +48,7 @@ class AuthService {
     try {
       final response = await http.post(
         Uri.parse('$baseUrl/register'),
-        headers: {'Content-Type': 'application/json'},
+        headers: {'Content-Type': 'application/json; charset=utf-8'},
         body: json.encode({
           'email': email,
           'password': password,
@@ -52,16 +57,18 @@ class AuthService {
       );
 
       if (response.statusCode == 201) {
-        final data = json.decode(response.body);
+        // Ensure response body is properly decoded with UTF-8 encoding
+        final responseBody = utf8.decode(response.bodyBytes);
+        final data = json.decode(responseBody);
         return data;
       } else {
-        final error = json.decode(response.body);
+        // Ensure error response is properly decoded with UTF-8 encoding
+        final responseBody = utf8.decode(response.bodyBytes);
+        final error = json.decode(responseBody);
         throw Exception(error['error'] ?? 'Registration failed');
       }
     } catch (e) {
-      print(
-        'An error occurred during registration: $e',
-      ); // Print the error to the debug console
+      LoggerService.error('Error during registration', error: e);
       throw Exception('Registration error: $e');
     }
   }
@@ -111,7 +118,7 @@ class AuthService {
       final response = await http.delete(
         Uri.parse('$baseUrl/account'),
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json; charset=utf-8',
           'Authorization': 'Bearer $token',
         },
       );
@@ -119,7 +126,9 @@ class AuthService {
       if (response.statusCode == 200) {
         await logout();
       } else {
-        final error = json.decode(response.body);
+        // Ensure error response is properly decoded with UTF-8 encoding
+        final responseBody = utf8.decode(response.bodyBytes);
+        final error = json.decode(responseBody);
         throw Exception(error['error'] ?? 'Failed to delete account');
       }
     } catch (e) {

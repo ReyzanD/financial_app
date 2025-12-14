@@ -3,6 +3,7 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:financial_app/services/location_service.dart';
 import 'package:financial_app/services/api_service.dart';
+import 'package:financial_app/services/map_provider_service.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 
@@ -342,8 +343,7 @@ class _MapScreenState extends State<MapScreen> {
                 ),
                 children: [
                   TileLayer(
-                    urlTemplate:
-                        'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                    urlTemplate: MapProviderService.getTileUrlTemplate(),
                     userAgentPackageName: 'com.example.financial_app',
                   ),
                   MarkerLayer(markers: _markers),

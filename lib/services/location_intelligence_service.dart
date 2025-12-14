@@ -1,4 +1,5 @@
 import 'package:financial_app/services/api_service.dart';
+import 'package:financial_app/services/logger_service.dart';
 import 'package:financial_app/models/location_recommendation.dart';
 
 class LocationIntelligenceService {
@@ -7,11 +8,11 @@ class LocationIntelligenceService {
   /// Generate intelligent location-based recommendations
   Future<List<LocationRecommendation>> generateLocationInsights() async {
     try {
-      print('🔍 [LocationIntelligence] Fetching transactions...');
+      LoggerService.debug('LocationIntelligence: Fetching transactions...');
       // Analyze user's transaction locations
       final transactions = await _apiService.getTransactions(limit: 200);
-      print(
-        '📊 [LocationIntelligence] Found ${transactions.length} total transactions',
+      LoggerService.debug(
+        'LocationIntelligence: Found ${transactions.length} total transactions',
       );
 
       // Filter transactions with location data (only expenses have locations now)
@@ -23,22 +24,22 @@ class LocationIntelligenceService {
             return hasLocation;
           }).toList();
 
-      print(
-        '📍 [LocationIntelligence] Found ${locatedTransactions.length} transactions with location data',
+      LoggerService.debug(
+        'LocationIntelligence: Found ${locatedTransactions.length} transactions with location data',
       );
 
       // Show default recommendations if too few transactions with location
       if (locatedTransactions.isEmpty) {
-        print(
-          'ℹ️ [LocationIntelligence] No location data, showing default recommendations',
+        LoggerService.info(
+          'LocationIntelligence: No location data, showing default recommendations',
         );
         return _getDefaultRecommendations();
       }
 
       // If less than 3 transactions, show encouraging message
       if (locatedTransactions.length < 3) {
-        print(
-          'ℹ️ [LocationIntelligence] Too few location data (${locatedTransactions.length}), showing encouragement',
+        LoggerService.info(
+          'LocationIntelligence: Too few location data (${locatedTransactions.length}), showing encouragement',
         );
         return _getEncouragementRecommendations(locatedTransactions.length);
       }
@@ -49,14 +50,17 @@ class LocationIntelligenceService {
       // Generate smart recommendations
       final recommendations = _generateRecommendations(analysis);
 
-      print(
-        '✅ [LocationIntelligence] Generated ${recommendations.length} recommendations',
+      LoggerService.success(
+        'LocationIntelligence: Generated ${recommendations.length} recommendations',
       );
       return recommendations.isNotEmpty
           ? recommendations
           : _getDefaultRecommendations();
     } catch (e) {
-      print('❌ [LocationIntelligence] Error generating insights: $e');
+      LoggerService.error(
+        'LocationIntelligence: Error generating insights',
+        error: e,
+      );
       return _getDefaultRecommendations();
     }
   }

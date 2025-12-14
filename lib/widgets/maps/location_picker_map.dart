@@ -1,11 +1,11 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
-import 'package:http/http.dart' as http;
 import 'package:financial_app/services/location_service.dart';
+import 'package:financial_app/services/map_provider_service.dart';
+import 'package:financial_app/services/logger_service.dart';
 import 'package:financial_app/models/location_data.dart';
 
 class LocationPickerMap extends StatefulWidget {
@@ -54,93 +54,56 @@ class _LocationPickerMapState extends State<LocationPickerMap> {
     setState(() => _isSearching = true);
 
     try {
-      // Using Nominatim (OpenStreetMap) geocoding API
-      final searchQuery =
-          query.toLowerCase().contains('makassar')
-              ? query
-              : '$query, Makassar, Sulawesi Selatan, Indonesia';
+      LoggerService.debug('🔍 Searching for location: $query');
 
-      print('🔍 Searching for: $searchQuery');
-
-      final encodedQuery = Uri.encodeComponent(searchQuery);
-      final url = Uri.parse(
-        'https://nominatim.openstreetmap.org/search?q=$encodedQuery&format=json&limit=5&countrycodes=id',
+      // Use MapProviderService with automatic fallback
+      final results = await MapProviderService.searchLocation(
+        query,
+        countryCode: 'id',
+        limit: 5,
       );
 
-      print('📡 API URL: $url');
+      if (results.isNotEmpty) {
+        LoggerService.success(
+          '✅ Found ${results.length} results for: $query',
+        );
 
-      // Add required User-Agent header
-      final response = await http.get(
-        url,
-        headers: {
-          'User-Agent': 'FinancialApp/1.0 (financial.app.makassar)',
-          'Accept': 'application/json',
-        },
-      );
+        setState(() {
+          _searchResults = results;
+          _showResults = true;
+        });
 
-      print('📥 Response status: ${response.statusCode}');
-      print('📥 Response body: ${response.body}');
-
-      if (response.statusCode == 200) {
-        final results = json.decode(response.body) as List;
-
-        if (results.isNotEmpty) {
-          print('✅ Found ${results.length} results');
-
-          // Convert to list of maps for easier handling
-          final searchResults =
-              results.map((result) {
-                return {
-                  'lat': double.parse(result['lat']),
-                  'lng': double.parse(result['lon']),
-                  'displayName': result['display_name'] as String,
-                  'type': result['type'] ?? 'place',
-                };
-              }).toList();
-
-          setState(() {
-            _searchResults = searchResults;
-            _showResults = true;
-          });
-
-          if (!mounted) return;
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                '✓ ${searchResults.length} lokasi ditemukan - pilih dari daftar',
-              ),
-              backgroundColor: Colors.green,
-              duration: const Duration(seconds: 2),
-            ),
-          );
-        } else {
-          print('❌ No results found');
-          setState(() {
-            _searchResults = [];
-            _showResults = false;
-          });
-          if (!mounted) return;
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Lokasi "$query" tidak ditemukan'),
-              backgroundColor: Colors.orange,
-              duration: const Duration(seconds: 3),
-            ),
-          );
-        }
-      } else {
-        print('❌ HTTP Error: ${response.statusCode}');
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error: ${response.statusCode}'),
-            backgroundColor: Colors.red,
+            content: Text(
+              '✓ ${results.length} lokasi ditemukan - pilih dari daftar',
+            ),
+            backgroundColor: Colors.green,
+            duration: const Duration(seconds: 2),
+          ),
+        );
+      } else {
+        LoggerService.warning('❌ No results found for: $query');
+        setState(() {
+          _searchResults = [];
+          _showResults = false;
+        });
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Lokasi "$query" tidak ditemukan'),
+            backgroundColor: Colors.orange,
+            duration: const Duration(seconds: 3),
           ),
         );
       }
     } catch (e, stackTrace) {
-      print('❌ Search error: $e');
-      print('Stack trace: $stackTrace');
+      LoggerService.error(
+        '❌ Search error: $e',
+        error: e,
+        stackTrace: stackTrace,
+      );
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -381,8 +344,7 @@ class _LocationPickerMapState extends State<LocationPickerMap> {
                     ),
                     children: [
                       TileLayer(
-                        urlTemplate:
-                            'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                        urlTemplate: MapProviderService.getTileUrlTemplate(),
                         userAgentPackageName: 'com.financial_app',
                       ),
                       MarkerLayer(markers: _buildMarkers()),

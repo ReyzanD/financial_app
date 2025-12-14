@@ -4,6 +4,8 @@ import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:financial_app/models/location_data.dart';
 import 'package:financial_app/services/api_service.dart';
 import 'package:financial_app/services/location_service.dart';
+import 'package:financial_app/services/error_handler_service.dart';
+import 'package:financial_app/services/logger_service.dart';
 import 'package:financial_app/utils/formatters.dart';
 import 'package:financial_app/utils/app_refresh.dart';
 import 'package:financial_app/widgets/maps/location_picker_map.dart';
@@ -87,7 +89,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
         _selectedDate = date;
         _selectedTime = TimeOfDay(hour: date.hour, minute: date.minute);
       } catch (e) {
-        print('Error parsing date: $e');
+        LoggerService.warning('Error parsing date', error: e);
       }
     }
   }
@@ -102,17 +104,17 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
 
   Future<void> _loadCategories() async {
     try {
-      print('🔄 Loading categories from API...');
+      LoggerService.info('Loading categories from API...');
       final categories = await _apiService
           .getCategories(forceRefresh: true)
           .timeout(
             const Duration(seconds: 10),
             onTimeout: () {
-              print('⏱️ Category loading timed out');
+              LoggerService.warning('Category loading timed out');
               return [];
             },
           );
-      print('✅ Categories loaded: ${categories.length}');
+      LoggerService.success('Categories loaded: ${categories.length}');
       if (mounted) {
         setState(() {
           _categories = categories.cast<Map<String, dynamic>>();
@@ -120,19 +122,16 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
         });
       }
     } catch (e) {
-      print('❌ Error loading categories: $e');
+      LoggerService.error('Error loading categories', error: e);
       if (mounted) {
         setState(() {
           _isLoadingCategories = false;
         });
-        // Show error to user
         if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Gagal memuat kategori: ${e.toString()}'),
-              backgroundColor: Colors.red,
-              duration: const Duration(seconds: 3),
-            ),
+          ErrorHandlerService.showErrorSnackbar(
+            context,
+            ErrorHandlerService.getUserFriendlyMessage(e),
+            onRetry: _loadCategories,
           );
         }
       }
@@ -170,14 +169,14 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
   }
 
   Future<void> _getCurrentLocation() async {
-    print('📍 [AddTransaction] Attempting to get current location...');
+    LoggerService.debug('Attempting to get current location...');
     setState(() => _isGettingLocation = true);
 
     try {
       // Simulate location service
       final position = await LocationService.getCurrentLatLng();
       if (position == null) {
-        print('❌ [AddTransaction] Location service returned null');
+        LoggerService.warning('Location service returned null');
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -190,14 +189,14 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
           );
         }
       } else {
-        print(
-          '✅ [AddTransaction] Location received: ${position.latitude}, ${position.longitude}',
+        LoggerService.debug(
+          'Location received: ${position.latitude}, ${position.longitude}',
         );
         final placeName = LocationService.getAddressFromCoordinates(
           position.latitude,
           position.longitude,
         );
-        print('📍 [AddTransaction] Place name: $placeName');
+        LoggerService.debug('Place name: $placeName');
 
         // Mock location data - in real app, use geolocator package
         setState(() {
@@ -210,13 +209,13 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
           );
         });
 
-        print('✅ [AddTransaction] Location set: $_currentLocation');
+        LoggerService.success('Location set successfully');
 
         // Auto-categorize based on location
         _autoCategorizeFromLocation();
       }
     } catch (e) {
-      print('Error getting location: $e');
+      LoggerService.error('Error getting location', error: e);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Gagal mendapatkan lokasi: $e'),
@@ -262,7 +261,10 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
       context: context,
       initialDate: _selectedDate,
       firstDate: DateTime(2020),
-      lastDate: DateTime(2030),
+      lastDate:
+          _selectedType == 'expense'
+              ? DateTime.now()
+              : DateTime.now().add(const Duration(days: 365)),
       builder: (context, child) {
         return Theme(
           data: ThemeData.dark().copyWith(
@@ -280,6 +282,16 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
     );
 
     if (picked != null && picked != _selectedDate) {
+      // Validate: expense cannot have future dates
+      if (_selectedType == 'expense' && picked.isAfter(DateTime.now())) {
+        if (mounted) {
+          ErrorHandlerService.showWarningSnackbar(
+            context,
+            'Tanggal pengeluaran tidak boleh di masa depan',
+          );
+        }
+        return;
+      }
       setState(() => _selectedDate = picked);
     }
   }
@@ -326,8 +338,11 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
       final currentBalance = income - expense;
       final newBalance = currentBalance - expenseAmount;
 
-      // If balance would be negative, block the transaction
-      if (newBalance < 0) {
+      // Minimum balance requirement: 25000
+      const double minimumBalance = 25000.0;
+
+      // If balance would go below the minimum, block the transaction
+      if (newBalance < minimumBalance) {
         await showDialog(
           context: context,
           builder:
@@ -381,6 +396,12 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                           ),
                           const SizedBox(height: 8),
                           _buildBalanceRow(
+                            'Saldo Minimum',
+                            minimumBalance,
+                            Colors.orange[300]!,
+                          ),
+                          const SizedBox(height: 8),
+                          _buildBalanceRow(
                             'Pengeluaran',
                             expenseAmount,
                             Colors.red[300]!,
@@ -388,7 +409,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                           const Divider(color: Colors.grey, height: 20),
                           _buildBalanceRow(
                             'Kekurangan',
-                            newBalance.abs(),
+                            (minimumBalance - newBalance).abs(),
                             Colors.red[400]!,
                             isBold: true,
                           ),
@@ -451,7 +472,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
 
       return true; // Balance is fine, proceed
     } catch (e) {
-      print('Error checking balance: $e');
+      LoggerService.error('Error checking balance', error: e);
       return true; // Allow transaction if check fails
     }
   }
@@ -487,6 +508,15 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
 
   void _submitForm() async {
     if (_formKey.currentState!.validate()) {
+      // Additional validation: expense cannot have future dates
+      if (_selectedType == 'expense' && _selectedDate.isAfter(DateTime.now())) {
+        ErrorHandlerService.showWarningSnackbar(
+          context,
+          'Tanggal pengeluaran tidak boleh di masa depan',
+        );
+        return;
+      }
+
       setState(() => _isSubmitting = true);
 
       try {
@@ -524,13 +554,15 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
           'is_recurring': _isRecurring,
         };
 
-        print('═══════════════════════════════════');
-        print('📤 SENDING Transaction data:');
-        print('   Location Name: ${transactionData['location_name']}');
-        print('   Latitude: ${transactionData['latitude']}');
-        print('   Longitude: ${transactionData['longitude']}');
-        print('   Full data: $transactionData');
-        print('═══════════════════════════════════');
+        LoggerService.debug(
+          'Sending transaction data',
+          error: {
+            'location_name': transactionData['location_name'],
+            'latitude': transactionData['latitude'],
+            'longitude': transactionData['longitude'],
+          },
+        );
+        LoggerService.apiRequest('POST', 'transactions');
 
         // Check balance before adding expense
         if (_selectedType == 'expense') {
@@ -544,29 +576,30 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
         }
 
         // Call API to add transaction
-        final response = await _apiService.addTransaction(transactionData);
-        print('API Response: $response');
+        await _apiService.addTransaction(transactionData);
+        LoggerService.success('Transaction saved successfully');
 
         // Show success message
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Transaksi berhasil disimpan!'),
-            backgroundColor: Colors.green,
-          ),
-        );
+        if (context.mounted) {
+          ErrorHandlerService.showSuccessSnackbar(
+            context,
+            'Transaksi berhasil disimpan!',
+          );
+        }
 
         // Trigger immediate app-wide refresh
         await AppRefresh.refreshAll(context);
 
         Navigator.pop(context, true); // Return true to indicate success
       } catch (e) {
-        print('Error adding transaction: $e');
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Gagal menyimpan transaksi: $e'),
-            backgroundColor: Colors.red,
-          ),
-        );
+        LoggerService.error('Error adding transaction', error: e);
+        if (context.mounted) {
+          ErrorHandlerService.showErrorSnackbar(
+            context,
+            ErrorHandlerService.getUserFriendlyMessage(e),
+            onRetry: () => _submitForm(),
+          );
+        }
       } finally {
         setState(() => _isSubmitting = false);
       }

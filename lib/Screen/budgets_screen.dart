@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:financial_app/services/api_service.dart';
+import 'package:financial_app/services/error_handler_service.dart';
+import 'package:financial_app/services/logger_service.dart';
 import 'package:financial_app/widgets/budgets/add_budget_modal.dart';
 import 'package:financial_app/utils/formatters.dart';
 import 'package:financial_app/widgets/common/shimmer_loading.dart';
@@ -67,8 +68,7 @@ class _BudgetsScreenState extends State<BudgetsScreen> {
 
       if (!mounted) return;
 
-      print('✅ Filtered expense categories: ${categoryMap.length}');
-      print('📋 Categories: ${categoryMap.keys.toList()}');
+      LoggerService.debug('Filtered expense categories: ${categoryMap.length}');
 
       setState(() {
         _categories = categoryMap;
@@ -77,25 +77,19 @@ class _BudgetsScreenState extends State<BudgetsScreen> {
         _isLoading = false;
       });
     } catch (e) {
+      LoggerService.error('Error loading budgets', error: e);
       if (!mounted) return;
       setState(() {
         _isLoading = false;
-        _errorMessage = _getErrorMessage(e);
+        _errorMessage = ErrorHandlerService.getUserFriendlyMessage(e);
       });
-    }
-  }
-
-  String _getErrorMessage(dynamic error) {
-    final errorStr = error.toString().toLowerCase();
-    if (errorStr.contains('timeout')) {
-      return 'Koneksi timeout. Cek koneksi internet Anda.';
-    } else if (errorStr.contains('connection') ||
-        errorStr.contains('network')) {
-      return 'Gagal terhubung ke server. Pastikan backend berjalan.';
-    } else if (errorStr.contains('unauthorized') || errorStr.contains('401')) {
-      return 'Sesi berakhir. Silakan login kembali.';
-    } else {
-      return 'Gagal memuat data budget.';
+      if (context.mounted) {
+        ErrorHandlerService.showErrorSnackbar(
+          context,
+          _errorMessage!,
+          onRetry: _loadData,
+        );
+      }
     }
   }
 
@@ -297,28 +291,61 @@ class _BudgetsScreenState extends State<BudgetsScreen> {
                 Row(
                   children: [
                     Container(
-                      width: 8,
-                      height: 8,
+                      padding: const EdgeInsets.all(6),
                       decoration: BoxDecoration(
+                        color: displayColor.withOpacity(0.15),
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: displayColor.withOpacity(0.3),
+                          width: 1,
+                        ),
+                      ),
+                      child: Icon(
+                        Icons.account_balance_wallet_rounded,
                         color: displayColor,
-                        shape: BoxShape.circle,
+                        size: 16,
                       ),
                     ),
-                    const SizedBox(width: 8),
-                    Text(
-                      category,
-                      style: GoogleFonts.poppins(
-                        color: Colors.white,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Text(
+                        category,
+                        style: GoogleFonts.poppins(
+                          color: Colors.white,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     ),
                     if (isOverBudget) ...[
-                      const SizedBox(width: 6),
-                      const Icon(
-                        Icons.warning_amber_rounded,
-                        color: Colors.red,
-                        size: 16,
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 6,
+                          vertical: 2,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.red.withOpacity(0.2),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(
+                              Icons.warning_rounded,
+                              color: Colors.red,
+                              size: 14,
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              'Over',
+                              style: GoogleFonts.poppins(
+                                color: Colors.red,
+                                fontSize: 10,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ],
                   ],
@@ -499,12 +526,29 @@ class _BudgetsScreenState extends State<BudgetsScreen> {
         );
         await _loadData();
       } catch (e) {
+        LoggerService.error('Error deleting budget', error: e);
         if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error: ${e.toString()}'),
-            backgroundColor: Colors.red,
-          ),
+        ErrorHandlerService.showErrorSnackbar(
+          context,
+          ErrorHandlerService.getUserFriendlyMessage(e),
+          onRetry: () async {
+            try {
+              await _apiService.deleteBudget(id);
+              if (!mounted) return;
+              if (context.mounted) {
+                ErrorHandlerService.showSuccessSnackbar(
+                  context,
+                  'Budget berhasil dihapus.',
+                );
+              }
+              await _loadData();
+            } catch (retryError) {
+              LoggerService.error(
+                'Error retrying delete budget',
+                error: retryError,
+              );
+            }
+          },
         );
       }
     }

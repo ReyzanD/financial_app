@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:financial_app/utils/formatters.dart';
 import 'package:financial_app/services/api_service.dart';
+import 'package:financial_app/services/logger_service.dart';
 import 'package:financial_app/Screen/budgets_screen.dart';
 
 class BudgetProgress extends StatefulWidget {
@@ -45,7 +46,7 @@ class _BudgetProgressState extends State<BudgetProgress>
     super.didUpdateWidget(oldWidget);
     // Reload when widget is rebuilt with new key
     if (widget.key != oldWidget.key) {
-      print('🔄 [BudgetProgress] Widget key changed, reloading data');
+      LoggerService.debug('BudgetProgress widget key changed, reloading data');
       _loadData();
     }
   }
@@ -58,12 +59,13 @@ class _BudgetProgressState extends State<BudgetProgress>
 
   Future<void> _loadData() async {
     try {
-      print('📊 Loading budget data (attempt ${_retryCount + 1})...');
+      LoggerService.debug('Loading budget data (attempt ${_retryCount + 1})');
 
       // Load categories and budgets in parallel for better performance
+      // Only get active budgets for home screen
       final results = await Future.wait([
         _apiService.getCategories(),
-        _apiService.getBudgets(),
+        _apiService.getBudgets(activeOnly: true),
       ]).timeout(
         const Duration(seconds: 10),
         onTimeout: () => throw Exception('Request timeout'),
@@ -72,8 +74,8 @@ class _BudgetProgressState extends State<BudgetProgress>
       final categories = results[0];
       final budgets = results[1];
 
-      print('✅ Categories loaded: ${categories.length}');
-      print('✅ Budgets loaded: ${budgets.length}');
+      LoggerService.debug('Categories loaded: ${categories.length}');
+      LoggerService.debug('Budgets loaded: ${budgets.length}');
 
       // Build category map
       final categoryMap = <String, String>{};
@@ -88,7 +90,19 @@ class _BudgetProgressState extends State<BudgetProgress>
       if (mounted) {
         setState(() {
           _categories = categoryMap;
-          _budgets = budgets.map((b) => b as Map<String, dynamic>).toList();
+          // Limit to top 5 budgets for home screen (sorted by percentage used)
+          final budgetsList =
+              budgets.map((b) => b as Map<String, dynamic>).toList();
+          budgetsList.sort((a, b) {
+            final spentA = (a['spent'] as num?)?.toDouble() ?? 0.0;
+            final amountA = (a['amount'] as num?)?.toDouble() ?? 1.0;
+            final spentB = (b['spent'] as num?)?.toDouble() ?? 0.0;
+            final amountB = (b['amount'] as num?)?.toDouble() ?? 1.0;
+            final percentageA = amountA > 0 ? spentA / amountA : 0.0;
+            final percentageB = amountB > 0 ? spentB / amountB : 0.0;
+            return percentageB.compareTo(percentageA); // Sort descending
+          });
+          _budgets = budgetsList.take(5).toList(); // Show only top 5
           _isLoading = false;
           _errorMessage = null;
           _retryCount = 0;
@@ -96,7 +110,7 @@ class _BudgetProgressState extends State<BudgetProgress>
         _animationController.forward();
       }
     } catch (e) {
-      print('❌ Error loading budgets: $e');
+      LoggerService.error('Error loading budgets', error: e);
 
       if (mounted) {
         setState(() {
@@ -108,7 +122,7 @@ class _BudgetProgressState extends State<BudgetProgress>
         if (_retryCount < 2) {
           _retryCount++;
           final delaySeconds = _retryCount * 2; // 2s, 4s
-          print('🔄 Retrying in $delaySeconds seconds...');
+          LoggerService.debug('Retrying in $delaySeconds seconds...');
 
           await Future.delayed(Duration(seconds: delaySeconds));
           if (mounted) {
@@ -199,7 +213,11 @@ class _BudgetProgressState extends State<BudgetProgress>
               ),
               child: Column(
                 children: [
-                  Icon(Icons.error_outline, color: Colors.red[400], size: 48),
+                  Icon(
+                    Icons.error_outline_rounded,
+                    color: Colors.red[400],
+                    size: 48,
+                  ),
                   const SizedBox(height: 12),
                   Text(
                     'Terjadi Kesalahan',
@@ -252,7 +270,11 @@ class _BudgetProgressState extends State<BudgetProgress>
             ),
             child: Column(
               children: [
-                Icon(Icons.wallet_outlined, color: Colors.grey[600], size: 48),
+                Icon(
+                  Icons.account_balance_wallet_outlined,
+                  color: Colors.grey[600],
+                  size: 48,
+                ),
                 const SizedBox(height: 12),
                 Text(
                   'Belum ada budget',
@@ -294,11 +316,24 @@ class _BudgetProgressState extends State<BudgetProgress>
             : 'All Categories';
 
     final spent = (budget['spent'] as num?)?.toDouble() ?? 0.0;
-    final amount = (budget['amount'] as num?)?.toDouble() ?? 1.0;
+    final amount = (budget['amount'] as num?)?.toDouble() ?? 0.0;
+
+    // Handle edge cases
+    if (amount <= 0) {
+      // If amount is 0 or invalid, don't show this budget
+      return const SizedBox.shrink();
+    }
+
     final remaining = amount - spent;
     final color = _getCategoryColor(category);
 
-    final percentage = amount > 0 ? (spent / amount).clamp(0.0, 1.0) : 0.0;
+    // Calculate percentage
+    final actualPercentage =
+        spent / amount; // Actual percentage (can be > 100%)
+    final percentage = actualPercentage.clamp(
+      0.0,
+      1.0,
+    ); // For progress bar (max 100%)
     final isOverBudget = spent > amount;
     final displayColor = isOverBudget ? Colors.red : color;
 
@@ -325,59 +360,95 @@ class _BudgetProgressState extends State<BudgetProgress>
       ),
       child: Column(
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Row(
-                children: [
-                  Container(
-                    width: 8,
-                    height: 8,
-                    decoration: BoxDecoration(
-                      color: displayColor,
-                      shape: BoxShape.circle,
-                    ),
+          IntrinsicHeight(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: displayColor.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(10),
                   ),
-                  const SizedBox(width: 8),
-                  Text(
-                    category,
-                    style: GoogleFonts.poppins(
-                      color: Colors.white,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                    ),
+                  child: Icon(
+                    Icons.account_balance_wallet_rounded,
+                    color: displayColor,
+                    size: 20,
                   ),
-                  if (isOverBudget) ...[
-                    const SizedBox(width: 6),
-                    Icon(
-                      Icons.warning_amber_rounded,
-                      color: Colors.red,
-                      size: 16,
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        category,
+                        style: GoogleFonts.poppins(
+                          color: Colors.white,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      if (isOverBudget) ...[
+                        const SizedBox(height: 4),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 6,
+                            vertical: 2,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.red.withOpacity(0.2),
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(
+                                Icons.warning_rounded,
+                                color: Colors.red,
+                                size: 12,
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                'Over',
+                                style: GoogleFonts.poppins(
+                                  color: Colors.red,
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Text(
+                      CurrencyFormatter.formatRupiah(spent.toInt()),
+                      style: GoogleFonts.poppins(
+                        color: displayColor,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    Text(
+                      'dari ${CurrencyFormatter.formatRupiah(amount.toInt())}',
+                      style: GoogleFonts.poppins(
+                        color: Colors.grey[500],
+                        fontSize: 10,
+                      ),
                     ),
                   ],
-                ],
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Text(
-                    CurrencyFormatter.formatRupiah(spent.toInt()),
-                    style: GoogleFonts.poppins(
-                      color: displayColor,
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  Text(
-                    'dari ${CurrencyFormatter.formatRupiah(amount.toInt())}',
-                    style: GoogleFonts.poppins(
-                      color: Colors.grey[600],
-                      fontSize: 11,
-                    ),
-                  ),
-                ],
-              ),
-            ],
+                ),
+              ],
+            ),
           ),
           const SizedBox(height: 12),
           ClipRRect(
@@ -387,9 +458,11 @@ class _BudgetProgressState extends State<BudgetProgress>
               curve: Curves.easeOutCubic,
               tween: Tween<double>(begin: 0.0, end: percentage),
               builder: (context, value, child) {
+                // Cap progress bar at 100% even if over budget
+                final displayValue = value > 1.0 ? 1.0 : value;
                 return LinearProgressIndicator(
-                  value: value,
-                  backgroundColor: Colors.grey[850],
+                  value: displayValue,
+                  backgroundColor: Colors.grey[800],
                   valueColor: AlwaysStoppedAnimation(displayColor),
                   minHeight: 8,
                 );
@@ -411,7 +484,9 @@ class _BudgetProgressState extends State<BudgetProgress>
                 ),
               ),
               Text(
-                '${(percentage * 100).toStringAsFixed(0)}%',
+                isOverBudget
+                    ? '${(actualPercentage * 100).toStringAsFixed(0)}%'
+                    : '${(percentage * 100).toStringAsFixed(0)}%',
                 style: GoogleFonts.poppins(
                   color: displayColor,
                   fontSize: 12,

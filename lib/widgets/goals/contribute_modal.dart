@@ -3,6 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:financial_app/services/api_service.dart';
+import 'package:financial_app/services/error_handler_service.dart';
+import 'package:financial_app/services/logger_service.dart';
 import 'package:financial_app/utils/formatters.dart';
 
 class ContributeModal extends StatefulWidget {
@@ -32,22 +34,18 @@ class _ContributeModalState extends State<ContributeModal> {
   Future<void> _contributeToGoal() async {
     final amountText = _amountController.text.replaceAll(RegExp(r'[^0-9]'), '');
     if (amountText.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Masukkan jumlah kontribusi'),
-          backgroundColor: Colors.red,
-        ),
+      ErrorHandlerService.showWarningSnackbar(
+        context,
+        'Masukkan jumlah kontribusi',
       );
       return;
     }
 
     final amount = double.parse(amountText);
     if (amount <= 0) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Jumlah harus lebih dari 0'),
-          backgroundColor: Colors.red,
-        ),
+      ErrorHandlerService.showWarningSnackbar(
+        context,
+        'Jumlah harus lebih dari 0',
       );
       return;
     }
@@ -62,26 +60,26 @@ class _ContributeModalState extends State<ContributeModal> {
 
       if (!mounted) return;
 
-      Navigator.pop(context, true); // Return true to indicate success
+      Navigator.pop(context, true);
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Berhasil menambah ${CurrencyFormatter.formatRupiah(amount)}',
-          ),
-          backgroundColor: Colors.green,
-        ),
-      );
+      if (context.mounted) {
+        ErrorHandlerService.showSuccessSnackbar(
+          context,
+          'Berhasil menambah ${CurrencyFormatter.formatRupiah(amount)}',
+        );
+      }
     } catch (e) {
+      LoggerService.error('Error contributing to goal', error: e);
       setState(() => _isLoading = false);
       if (!mounted) return;
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Gagal: ${e.toString()}'),
-          backgroundColor: Colors.red,
-        ),
-      );
+      if (context.mounted) {
+        ErrorHandlerService.showErrorSnackbar(
+          context,
+          ErrorHandlerService.getUserFriendlyMessage(e),
+          onRetry: _contributeToGoal,
+        );
+      }
     }
   }
 

@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:financial_app/services/api_service.dart';
+import 'package:financial_app/services/error_handler_service.dart';
+import 'package:financial_app/Screen/report_screen.dart';
 
 class TransactionHistoryScreen extends StatefulWidget {
   const TransactionHistoryScreen({super.key});
@@ -52,6 +53,8 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
       final data = await _apiService.getTransactions(limit: 1000);
       final transactions = List<Map<String, dynamic>>.from(data);
 
+      // Transactions loaded successfully
+
       // Sort by date descending (newest first) initially
       transactions.sort((a, b) {
         final dateA = DateTime.parse(
@@ -66,33 +69,44 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
       // Calculate running balance
       _calculateRunningBalance(transactions);
 
+      // Running balance calculated
+
       setState(() {
         _transactions = transactions;
         _filteredTransactions = transactions;
         _isLoading = false;
       });
     } catch (e) {
-      print('Error loading transactions: $e');
       setState(() => _isLoading = false);
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Gagal memuat transaksi: ${e.toString()}'),
-            backgroundColor: Colors.red,
-          ),
+        ErrorHandlerService.showErrorSnackbar(
+          context,
+          ErrorHandlerService.getUserFriendlyMessage(e),
+          onRetry: _loadTransactions,
         );
       }
     }
   }
 
   void _calculateRunningBalance(List<Map<String, dynamic>> transactions) {
-    // Start from oldest transaction
+    if (transactions.isEmpty) {
+      _runningBalance = 0;
+      return;
+    }
+
+    // Start from oldest transaction (reverse the list)
     final reversed = transactions.reversed.toList();
     double balance = 0;
 
     for (var transaction in reversed) {
-      final amount = (transaction['amount'] ?? 0).toDouble();
-      final type = transaction['type']?.toString().toLowerCase() ?? 'expense';
+      final amountRaw = transaction['amount'];
+      final amount =
+          amountRaw is num
+              ? amountRaw.toDouble()
+              : (double.tryParse(amountRaw?.toString() ?? '0') ?? 0.0);
+
+      final typeRaw = transaction['type'];
+      final type = typeRaw?.toString().toLowerCase() ?? 'expense';
 
       if (type == 'income') {
         balance += amount;
@@ -167,20 +181,6 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
   void _applyFilter(String filterType) {
     setState(() {
       _filterType = filterType;
-      _applyAllFilters();
-    });
-  }
-
-  void _applyCategoryFilter(String category) {
-    setState(() {
-      _selectedCategory = category;
-      _applyAllFilters();
-    });
-  }
-
-  void _applyDateRangeFilter(DateTimeRange? range) {
-    setState(() {
-      _dateRange = range;
       _applyAllFilters();
     });
   }
@@ -273,13 +273,13 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
   IconData _getTypeIcon(String type) {
     switch (type.toLowerCase()) {
       case 'income':
-        return Iconsax.arrow_down_1;
+        return Icons.trending_up_rounded;
       case 'expense':
-        return Iconsax.arrow_up_3;
+        return Icons.trending_down_rounded;
       case 'transfer':
-        return Iconsax.repeat;
+        return Icons.swap_horiz_rounded;
       default:
-        return Iconsax.wallet_3;
+        return Icons.account_balance_wallet_rounded;
     }
   }
 
@@ -291,7 +291,7 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
         backgroundColor: Colors.black,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Iconsax.arrow_left, color: Colors.white),
+          icon: const Icon(Icons.arrow_back_rounded, color: Colors.white),
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
@@ -304,7 +304,19 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
         ),
         actions: [
           IconButton(
-            icon: const Icon(Iconsax.refresh, color: Colors.white),
+            icon: const Icon(Icons.description_rounded, color: Colors.white),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const ReportScreen(),
+                ),
+              );
+            },
+            tooltip: 'Buat Laporan',
+          ),
+          IconButton(
+            icon: const Icon(Icons.refresh_rounded, color: Colors.white),
             onPressed: _loadTransactions,
             tooltip: 'Muat Ulang',
           ),
@@ -353,15 +365,15 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
               _buildSummaryItem(
                 'Total Pemasukan',
                 totalIncome,
-                Colors.green,
-                Iconsax.arrow_down_1,
+                const Color(0xFF4CAF50),
+                Icons.trending_up_rounded,
               ),
               Container(width: 1, height: 40, color: Colors.white24),
               _buildSummaryItem(
                 'Total Pengeluaran',
                 totalExpense,
-                Colors.red,
-                Iconsax.arrow_up_3,
+                const Color(0xFFF44336),
+                Icons.trending_down_rounded,
               ),
             ],
           ),
@@ -375,7 +387,7 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(Iconsax.wallet_3, color: Colors.white, size: 20),
+                const Icon(Icons.account_balance_wallet_rounded, color: Colors.white, size: 20),
                 const SizedBox(width: 8),
                 Text(
                   'Saldo Akhir: ',
@@ -444,14 +456,14 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
               hintText: 'Cari transaksi...',
               hintStyle: GoogleFonts.poppins(color: Colors.grey[600]),
               prefixIcon: const Icon(
-                Iconsax.search_normal,
+                Icons.search_rounded,
                 color: Color(0xFF8B5FBF),
               ),
               suffixIcon:
                   _searchQuery.isNotEmpty
                       ? IconButton(
                         icon: const Icon(
-                          Iconsax.close_circle,
+                          Icons.close_rounded,
                           color: Colors.grey,
                         ),
                         onPressed: () {
@@ -510,7 +522,7 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
                   _dateRange != null)
                 IconButton(
                   icon: const Icon(
-                    Iconsax.refresh_2,
+                    Icons.refresh_rounded,
                     color: Color(0xFF8B5FBF),
                     size: 20,
                   ),
@@ -547,9 +559,9 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
                       value: _sortBy,
                       dropdownColor: const Color(0xFF1A1A1A),
                       icon: const Icon(
-                        Iconsax.arrow_down_1,
+                        Icons.keyboard_arrow_down_rounded,
                         color: Colors.white70,
-                        size: 16,
+                        size: 20,
                       ),
                       style: GoogleFonts.poppins(
                         color: Colors.white,
@@ -632,7 +644,7 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Iconsax.empty_wallet, size: 64, color: Colors.grey[600]),
+            Icon(Icons.account_balance_wallet_outlined, size: 64, color: Colors.grey[600]),
             const SizedBox(height: 16),
             Text(
               'Tidak ada transaksi',
@@ -676,13 +688,17 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
         children: [
           // Icon
           Container(
-            width: 48,
-            height: 48,
+            width: 52,
+            height: 52,
             decoration: BoxDecoration(
-              color: typeColor.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(12),
+              color: typeColor.withOpacity(0.15),
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(
+                color: typeColor.withOpacity(0.3),
+                width: 1.5,
+              ),
             ),
-            child: Icon(typeIcon, color: typeColor, size: 24),
+            child: Icon(typeIcon, color: typeColor, size: 26),
           ),
           const SizedBox(width: 12),
           // Details
@@ -744,7 +760,7 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(Iconsax.wallet_3, size: 12, color: Colors.grey[500]),
+                      Icon(Icons.account_balance_wallet_rounded, size: 12, color: Colors.grey[500]),
                       const SizedBox(width: 4),
                       Text(
                         'Saldo: ${_formatCurrency(runningBalance)}',

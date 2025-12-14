@@ -2,6 +2,7 @@ from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity, create_access_token
 from services.auth_service import AuthService
 from models.user_model import UserModel
+from utils.encoding_utils import safe_str
 
 auth_bp = Blueprint('auth', __name__)
 
@@ -29,7 +30,7 @@ def register():
         }), 201
         
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'error': safe_str(e)}), 500
 
 @auth_bp.route('/login', methods=['POST'])
 def login():
@@ -47,7 +48,7 @@ def login():
         return jsonify(result), 200
         
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'error': safe_str(e)}), 500
 
 @auth_bp.route('/profile', methods=['GET'])
 @jwt_required()
@@ -72,7 +73,7 @@ def get_profile():
         return jsonify({'user': user_data}), 200
         
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'error': safe_str(e)}), 500
 
 @auth_bp.route('/profile', methods=['PUT'])
 @jwt_required()
@@ -120,7 +121,7 @@ def update_profile():
         }), 200
         
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'error': safe_str(e)}), 500
 
 @auth_bp.route('/account', methods=['DELETE'])
 @jwt_required()
@@ -141,4 +142,4 @@ def delete_account():
         return jsonify({'message': 'Account and all related data deleted successfully'}), 200
 
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'error': safe_str(e)}), 500

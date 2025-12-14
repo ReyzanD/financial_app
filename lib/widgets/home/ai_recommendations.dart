@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:financial_app/utils/formatters.dart';
 import 'package:financial_app/services/ai_service.dart';
@@ -58,13 +57,13 @@ class _AIRecommendationsState extends State<AIRecommendations> {
   IconData _getPriorityIcon(String? priority) {
     switch (priority) {
       case 'high':
-        return Iconsax.danger;
+        return Icons.priority_high_rounded;
       case 'medium':
-        return Iconsax.info_circle;
+        return Icons.info_outline_rounded;
       case 'low':
-        return Iconsax.medal;
+        return Icons.lightbulb_outline_rounded;
       default:
-        return Iconsax.flash;
+        return Icons.auto_awesome_rounded;
     }
   }
 
@@ -125,12 +124,16 @@ class _AIRecommendationsState extends State<AIRecommendations> {
           Row(
             children: [
               Container(
-                padding: const EdgeInsets.all(8),
+                padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: priorityColor.withOpacity(0.2),
-                  borderRadius: BorderRadius.circular(8),
+                  color: priorityColor.withOpacity(0.15),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: priorityColor.withOpacity(0.3),
+                    width: 1,
+                  ),
                 ),
-                child: Icon(priorityIcon, color: priorityColor, size: 20),
+                child: Icon(priorityIcon, color: priorityColor, size: 22),
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -193,18 +196,21 @@ class _AIRecommendationsState extends State<AIRecommendations> {
           if (savings > 0) ...[
             const SizedBox(height: 12),
             Container(
-              padding: const EdgeInsets.all(12),
+              padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(
-                color: Colors.green.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: Colors.green.withOpacity(0.3)),
+                color: Colors.green.withOpacity(0.12),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: Colors.green.withOpacity(0.4),
+                  width: 1.5,
+                ),
               ),
               child: Row(
                 children: [
                   const Icon(
-                    Iconsax.wallet_money,
+                    Icons.savings_rounded,
                     color: Colors.green,
-                    size: 16,
+                    size: 18,
                   ),
                   const SizedBox(width: 8),
                   Expanded(
@@ -239,7 +245,7 @@ class _AIRecommendationsState extends State<AIRecommendations> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(Iconsax.refresh, color: Colors.grey[600], size: 14),
+                Icon(Icons.refresh_rounded, color: Colors.grey[600], size: 14),
                 const SizedBox(width: 4),
                 Text(
                   'Refresh Rekomendasi',

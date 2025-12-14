@@ -1,6 +1,6 @@
 import 'dart:async';
-import 'package:flutter/widgets.dart';
 import 'package:financial_app/services/api_service.dart';
+import 'package:financial_app/services/logger_service.dart';
 
 class DataService {
   final ApiService _apiService;
@@ -23,7 +23,9 @@ class DataService {
   DataService(this._apiService) {
     // Don't start periodic updates immediately
     // Wait for explicit data load after authentication
-    print('📦 [DataService] Service initialized, waiting for data load');
+    LoggerService.info(
+      '[DataService] Service initialized, waiting for data load',
+    );
   }
 
   void startPeriodicUpdates() {
@@ -38,7 +40,9 @@ class DataService {
       refreshAllData();
     });
 
-    print('⏰ [DataService] Periodic updates started (every 2 minutes)');
+    LoggerService.info(
+      '[DataService] Periodic updates started (every 2 minutes)',
+    );
   }
 
   bool _isRefreshing = false;
@@ -59,8 +63,8 @@ class DataService {
       if (_lastRefresh != null &&
           DateTime.now().difference(_lastRefresh!) <
               const Duration(seconds: 2)) {
-        print(
-          '⏭️ Skipping refresh - throttled (last refresh: ${DateTime.now().difference(_lastRefresh!).inSeconds}s ago)',
+        LoggerService.debug(
+          'Skipping refresh - throttled (last refresh: ${DateTime.now().difference(_lastRefresh!).inSeconds}s ago)',
         );
         return;
       }
@@ -68,7 +72,7 @@ class DataService {
 
     _isRefreshing = true;
     try {
-      print('🔄 Refreshing all data (forced: $forceRefresh)');
+      LoggerService.info('Refreshing all data (forced: $forceRefresh)');
 
       // Clear API cache on force refresh to get fresh data
       if (forceRefresh) {
@@ -83,7 +87,7 @@ class DataService {
       ]);
       _lastRefresh = DateTime.now();
     } catch (e) {
-      print('Error refreshing data: $e');
+      LoggerService.error('Error refreshing data', error: e);
     } finally {
       _isRefreshing = false;
     }
@@ -91,17 +95,20 @@ class DataService {
 
   Future<void> refreshTransactions() async {
     try {
-      print('📥 [DataService] Fetching transactions from API...');
+      LoggerService.info('[DataService] Fetching transactions from API...');
       final transactions = await _apiService.getTransactions();
-      print(
-        '✅ [DataService] Received ${transactions.length} transactions from API',
+      LoggerService.success(
+        '[DataService] Received ${transactions.length} transactions from API',
       );
       if (!_transactionsController.isClosed) {
         _transactionsController.add(transactions);
-        print('📤 [DataService] Transactions pushed to stream');
+        LoggerService.debug('[DataService] Transactions pushed to stream');
       }
     } catch (e) {
-      print('❌ [DataService] Error fetching transactions: $e');
+      LoggerService.error(
+        '[DataService] Error fetching transactions',
+        error: e,
+      );
       if (!_transactionsController.isClosed) {
         _transactionsController.add([]); // Add empty list on error
       }
@@ -115,7 +122,7 @@ class DataService {
         _categoriesController.add(categories);
       }
     } catch (e) {
-      print('Error fetching categories: $e');
+      LoggerService.error('Error fetching categories', error: e);
       if (!_categoriesController.isClosed) {
         _categoriesController.add([]); // Add empty list on error
       }
@@ -129,7 +136,7 @@ class DataService {
         _financialSummaryController.add(summary);
       }
     } catch (e) {
-      print('Error fetching financial summary: $e');
+      LoggerService.error('Error fetching financial summary', error: e);
       if (!_financialSummaryController.isClosed) {
         _financialSummaryController.add({}); // Add empty map on error
       }

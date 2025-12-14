@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:financial_app/services/logger_service.dart';
 
 class ApiService {
   static const String baseUrl = 'http://10.0.2.2:5000/api/v1';
@@ -39,7 +40,7 @@ class ApiService {
   // Get cached data or null
   dynamic _getCached(String key) {
     if (_isCacheValid(key)) {
-      print('📦 Cache HIT: $key');
+      LoggerService.cache('HIT', key);
       return _cache[key];
     }
     return null;
@@ -82,14 +83,19 @@ class ApiService {
       if (cached != null) return cached;
     }
 
-    print('🔼 GET: $baseUrl/$endpoint');
+    LoggerService.apiRequest('GET', endpoint);
     try {
       final response = await http.get(
         Uri.parse('$baseUrl/$endpoint'),
         headers: await _getHeaders(),
+      ).timeout(
+        const Duration(seconds: 30),
+        onTimeout: () {
+          throw Exception('Connection timeout');
+        },
       );
 
-      print('✅ Response: ${response.statusCode}');
+      LoggerService.apiResponse(response.statusCode, endpoint);
       final data = _handleResponse(response);
 
       // Cache the response
@@ -99,71 +105,99 @@ class ApiService {
 
       return data;
     } catch (e) {
-      throw Exception('Network error: $e');
+      LoggerService.error('GET request failed', error: e);
+      rethrow;
     }
   }
 
   // Generic POST request
   Future<dynamic> post(String endpoint, dynamic data) async {
+    LoggerService.apiRequest('POST', endpoint);
     try {
       final response = await http.post(
         Uri.parse('$baseUrl/$endpoint'),
         headers: await _getHeaders(),
         body: json.encode(data),
+      ).timeout(
+        const Duration(seconds: 30),
+        onTimeout: () {
+          throw Exception('Connection timeout');
+        },
       );
 
       // Clear cache on mutations
       clearCache();
 
+      LoggerService.apiResponse(response.statusCode, endpoint);
       return _handleResponse(response);
     } catch (e) {
-      throw Exception('Network error: $e');
+      LoggerService.error('POST request failed', error: e);
+      rethrow;
     }
   }
 
   // Generic PUT request
   Future<dynamic> put(String endpoint, dynamic data) async {
+    LoggerService.apiRequest('PUT', endpoint);
     try {
       final response = await http.put(
         Uri.parse('$baseUrl/$endpoint'),
         headers: await _getHeaders(),
         body: json.encode(data),
+      ).timeout(
+        const Duration(seconds: 30),
+        onTimeout: () {
+          throw Exception('Connection timeout');
+        },
       );
 
       // Clear cache on mutations
       clearCache();
 
+      LoggerService.apiResponse(response.statusCode, endpoint);
       return _handleResponse(response);
     } catch (e) {
-      throw Exception('Network error: $e');
+      LoggerService.error('PUT request failed', error: e);
+      rethrow;
     }
   }
 
   // Generic DELETE request
   Future<dynamic> delete(String endpoint) async {
+    LoggerService.apiRequest('DELETE', endpoint);
     try {
       final response = await http.delete(
         Uri.parse('$baseUrl/$endpoint'),
         headers: await _getHeaders(),
+      ).timeout(
+        const Duration(seconds: 30),
+        onTimeout: () {
+          throw Exception('Connection timeout');
+        },
       );
 
       // Clear cache on mutations
       clearCache();
 
+      LoggerService.apiResponse(response.statusCode, endpoint);
       return _handleResponse(response);
     } catch (e) {
-      throw Exception('Network error: $e');
+      LoggerService.error('DELETE request failed', error: e);
+      rethrow;
     }
   }
 
   dynamic _handleResponse(http.Response response) {
+    // Ensure response body is properly decoded with UTF-8 encoding
+    final responseBody = utf8.decode(response.bodyBytes);
+
     switch (response.statusCode) {
       case 200:
-        return json.decode(response.body);
+        return json.decode(responseBody);
       case 201:
-        return json.decode(response.body);
+        return json.decode(responseBody);
       case 400:
-        final errorBody = json.decode(response.body);
+        final errorBody = json.decode(responseBody);
         throw Exception('Bad request: ${errorBody['error'] ?? 'Invalid data'}');
       case 401:
         throw Exception('Unauthorized - Please login again');
@@ -174,18 +208,22 @@ class ApiService {
       case 422:
         // Unprocessable Entity - Validation failed
         try {
-          final errorBody = json.decode(response.body);
+          final errorBody = json.decode(responseBody);
           final errorMsg =
               errorBody['error'] ?? errorBody['message'] ?? 'Validation failed';
           throw Exception('Validation error: $errorMsg');
         } catch (e) {
-          throw Exception('Validation error: ${response.body}');
+          throw Exception('Validation error: ${responseBody}');
         }
       case 500:
+        LoggerService.error('Server error', error: responseBody);
         throw Exception('Server error - Please try again later');
       default:
-        print('❌ HTTP ${response.statusCode}: ${response.body}');
-        throw Exception('Error ${response.statusCode}: ${response.body}');
+        LoggerService.error(
+          'HTTP ${response.statusCode}',
+          error: responseBody,
+        );
+        throw Exception('Error ${response.statusCode}: ${responseBody}');
     }
   }
 
@@ -285,9 +323,12 @@ class ApiService {
         'transactions_232143/analytics/summary?year=$targetYear&month=$targetMonth',
       );
       final List<dynamic> summaryList = response['summary'] ?? [];
+      print('📊 [ApiService] Summary list from API: $summaryList');
       Map<String, dynamic> summaryMap = {};
       for (var item in summaryList) {
-        summaryMap[item['type_232143']] = {
+        final type = item['type_232143']?.toString() ?? '';
+        print('📊 [ApiService] Processing type: $type, amount: ${item['total_amount_232143']}');
+        summaryMap[type] = {
           'total_amount': double.parse(
             item['total_amount_232143']?.toString() ?? '0',
           ),
@@ -296,6 +337,7 @@ class ApiService {
           ),
         };
       }
+      print('📊 [ApiService] Final summary map: $summaryMap');
 
       final result = {
         'year': targetYear,

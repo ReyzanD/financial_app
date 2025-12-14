@@ -3,6 +3,7 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 from models.transaction_model import TransactionModel
 from services.recommendation_service import RecommendationService
 from datetime import datetime
+from utils.encoding_utils import safe_print, safe_str
 import json
 
 transaction_bp = Blueprint('transactions_232143', __name__)
@@ -47,11 +48,11 @@ def get_transactions():
         for t in transactions:
             # Debug: Print first transaction to see structure
             if len(formatted_transactions) == 0:
-                print(f" Sample transaction from DB:")
-                print(f"   location_name: {t.get('location_name')}")
-                print(f"   latitude: {t.get('latitude')}")
-                print(f"   longitude: {t.get('longitude')}")
-                print(f"   location_data_232143: {t.get('location_data_232143')}")
+                safe_print(f"Sample transaction from DB:")
+                safe_print(f"  location_name: {t.get('location_name')}")
+                safe_print(f"  latitude: {t.get('latitude')}")
+                safe_print(f"  longitude: {t.get('longitude')}")
+                safe_print(f"  location_data_232143: {t.get('location_data_232143')}")
 
             # Parse location data if it exists (return full object for map display)
             location_obj = None
@@ -73,6 +74,7 @@ def get_transactions():
                 'type': t['type_232143'],
                 'description': t['description_232143'],
                 'category': t['category_name'],
+                'category_name': t['category_name'],  # Add category_name for frontend compatibility
                 'category_id': t['category_id_232143'],
                 'category_color': t['category_color'],
                 'payment_method': t['payment_method_232143'],
@@ -105,8 +107,8 @@ def create_transaction():
         user_id = get_jwt_identity()
         data = request.get_json()
         
-        print(f" Creating transaction for user: {user_id}")
-        print(f" Request data: {data}")
+        safe_print(f"Creating transaction for user: {user_id}")
+        safe_print(f"Request data: {data}")
         
         # Validate required fields
         required_fields = ['amount', 'type', 'description']
@@ -125,12 +127,12 @@ def create_transaction():
             'transaction_date': data.get('transaction_date', datetime.now().date().isoformat())
         }
         
-        print(f" Transaction data to save: {transaction_data}")
-        print(f" Category ID: {transaction_data['category_id']}")
+        safe_print(f"Transaction data to save: {transaction_data}")
+        safe_print(f"Category ID: {transaction_data['category_id']}")
         
         transaction_id = TransactionModel.create_transaction(transaction_data)
         
-        print(f" Transaction created with ID: {transaction_id}")
+        safe_print(f"Transaction created with ID: {transaction_id}")
         
         return jsonify({
             'message': 'Transaction created successfully',
@@ -166,6 +168,7 @@ def get_transaction(transaction_id):
             'type': transaction['type_232143'],
             'description': transaction['description_232143'],
             'category': transaction['category_name'],
+            'category_name': transaction['category_name'],  # Add category_name for frontend compatibility
             'category_id': transaction['category_id_232143'],
             'category_color': transaction['category_color'],
             'payment_method': transaction['payment_method_232143'],
@@ -240,17 +243,22 @@ def get_monthly_summary():
         year = request.args.get('year', datetime.now().year, type=int)
         month = request.args.get('month', datetime.now().month, type=int)
         
-        print(f" Fetching summary for user {user_id}, year={year}, month={month}")
+        safe_print(f"Fetching summary for user {user_id}, year={year}, month={month}")
         
         summary = TransactionModel.get_monthly_summary(user_id, year, month)
         
-        print(f" Raw summary from DB: {summary}")
+        safe_print(f"Raw summary from DB: {summary}")
         
         # Transform the summary data to match frontend expectations
         transformed_summary = []
         for item in summary:
+            # Get the type and remove suffix if present
+            transaction_type = item['type_232143']
+            if isinstance(transaction_type, str) and transaction_type.endswith('_232143'):
+                transaction_type = transaction_type.replace('_232143', '')
+            
             transformed_item = {
-                'type_232143': item['type_232143'].replace('_232143', ''),  # Remove suffix
+                'type_232143': transaction_type,  # This will be 'income' or 'expense'
                 'total_amount_232143': str(item['total_amount']),
                 'transaction_count': item['transaction_count']
             }
@@ -262,15 +270,16 @@ def get_monthly_summary():
             'summary': transformed_summary
         }
         
-        print(f" Returning summary: {result}")
+        safe_print(f"Transformed summary: {transformed_summary}")
+        safe_print(f"Returning summary: {result}")
         
         return jsonify(result), 200
         
     except Exception as e:
-        print(f" Error in get_monthly_summary: {str(e)}")
-        import traceback
-        traceback.print_exc()
-        return jsonify({'error': str(e)}), 500
+        safe_print(f"Error in get_monthly_summary: {safe_str(e)}")
+        from utils.encoding_utils import safe_print_exc
+        safe_print_exc()
+        return jsonify({'error': safe_str(e)}), 500
 
 @transaction_bp.route('/analytics/categories', methods=['GET'])
 @jwt_required()
@@ -319,9 +328,9 @@ def get_ai_recommendations():
         return jsonify(recommendations), 200
         
     except Exception as e:
-        print(f'❌ Error in get_ai_recommendations: {str(e)}')
-        import traceback
-        traceback.print_exc()
+        safe_print(f'Error in get_ai_recommendations: {safe_str(e)}')
+        from utils.encoding_utils import safe_print_exc
+        safe_print_exc()
         return jsonify({
             'recommendation': 'Belum ada rekomendasi AI tersedia',
             'potential_savings': 0

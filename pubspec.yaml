@@ -52,10 +52,13 @@ dependencies:
   path_provider: ^2.1.1
   share_plus: ^7.2.1
   crypto: ^3.0.3
+  pdf: ^3.11.1
+  printing: ^5.13.3
   flutter_local_notifications: ^17.0.0 # Push notifications
   timezone: ^0.9.2 # For scheduled notifications
   shimmer: ^3.0.0 # Loading shimmer effects
   vibration: ^3.1.4 # Haptic feedback
+  csv: ^6.0.0 # CSV export functionality
 
 dev_dependencies:
   flutter_test:

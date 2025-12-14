@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:financial_app/services/api_service.dart';
+import 'package:financial_app/services/error_handler_service.dart';
+import 'package:financial_app/services/logger_service.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -125,29 +127,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
         _isSaving = false;
       });
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Profil berhasil diperbarui.',
-            style: GoogleFonts.poppins(),
-          ),
-          backgroundColor: const Color(0xFF8B5FBF),
-        ),
-      );
+      if (context.mounted) {
+        ErrorHandlerService.showSuccessSnackbar(
+          context,
+          'Profil berhasil diperbarui.',
+        );
+      }
     } catch (e) {
+      LoggerService.error('Error saving profile', error: e);
       if (!mounted) return;
       setState(() {
         _isSaving = false;
       });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Gagal menyimpan profil: $e',
-            style: GoogleFonts.poppins(),
-          ),
-          backgroundColor: Colors.red,
-        ),
-      );
+      if (context.mounted) {
+        ErrorHandlerService.showErrorSnackbar(
+          context,
+          ErrorHandlerService.getUserFriendlyMessage(e),
+          onRetry: _saveProfile,
+        );
+      }
     }
   }
 

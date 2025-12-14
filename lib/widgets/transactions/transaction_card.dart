@@ -5,6 +5,7 @@ import 'package:financial_app/utils/formatters.dart';
 import 'package:financial_app/widgets/transactions/transaction_helpers.dart';
 import 'package:financial_app/widgets/transactions/transaction_detail_screen.dart';
 import 'package:financial_app/services/api_service.dart';
+import 'package:financial_app/services/logger_service.dart';
 
 class TransactionCard extends StatefulWidget {
   final Map<String, dynamic> transaction;
@@ -25,13 +26,16 @@ class _TransactionCardState extends State<TransactionCard> {
     if (_isDismissed) {
       return const SizedBox.shrink();
     }
-    // Debug: Print the entire transaction data
-    print('TransactionCard Data:');
-    print('Type: ${widget.transaction['type']}');
-    print('Amount: ${widget.transaction['amount']}');
-    print('Category: ${widget.transaction['category']}');
-    print('Category Color: ${widget.transaction['category_color']}');
-    print('Full Data: ${json.encode(widget.transaction)}');
+    // Log transaction data for debugging
+    LoggerService.debug(
+      'TransactionCard Data',
+      error: {
+        'type': widget.transaction['type'],
+        'amount': widget.transaction['amount'],
+        'category': widget.transaction['category'],
+        'category_color': widget.transaction['category_color'],
+      },
+    );
 
     final isIncome = widget.transaction['type'] == 'income';
     final amount =
@@ -102,12 +106,12 @@ class _TransactionCardState extends State<TransactionCard> {
 
         try {
           final result = await apiService.deleteTransaction(transactionId);
-          print(' [TransactionCard] API deletion successful: $result');
+          LoggerService.success('Transaction deleted successfully');
 
           // Only refresh parent data after successful deletion
-          print(' [TransactionCard] Calling onDeleted to refresh data...');
+          LoggerService.debug('Calling onDeleted callback to refresh data');
           widget.onDeleted?.call();
-          print(' [TransactionCard] onDeleted called successfully');
+          LoggerService.debug('onDeleted callback executed successfully');
 
           if (context.mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
@@ -172,22 +176,39 @@ class _TransactionCardState extends State<TransactionCard> {
           decoration: BoxDecoration(
             color: const Color(0xFF1A1A1A),
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: Colors.grey[800]!),
+            border: Border.all(
+              color:
+                  isIncome
+                      ? Colors.green.withOpacity(0.2)
+                      : Colors.red.withOpacity(0.2),
+              width: 1,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.3),
+                blurRadius: 8,
+                offset: const Offset(0, 2),
+              ),
+            ],
           ),
           child: Row(
             children: [
               // Category Icon
               Container(
-                width: 48,
-                height: 48,
+                width: 52,
+                height: 52,
                 decoration: BoxDecoration(
-                  color: categoryColor.withOpacity(0.2),
-                  borderRadius: BorderRadius.circular(12),
+                  color: categoryColor.withOpacity(0.15),
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(
+                    color: categoryColor.withOpacity(0.3),
+                    width: 1.5,
+                  ),
                 ),
                 child: Icon(
                   getCategoryIcon(category),
                   color: categoryColor,
-                  size: 24,
+                  size: 26,
                 ),
               ),
 
@@ -248,17 +269,37 @@ class _TransactionCardState extends State<TransactionCard> {
                     decoration: BoxDecoration(
                       color:
                           isIncome
-                              ? Colors.green.withOpacity(0.2)
-                              : Colors.red.withOpacity(0.2),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Text(
-                      isIncome ? 'MASUK' : 'KELUAR',
-                      style: GoogleFonts.poppins(
-                        color: isIncome ? Colors.green : Colors.red,
-                        fontSize: 10,
-                        fontWeight: FontWeight.w500,
+                              ? Colors.green.withOpacity(0.15)
+                              : Colors.red.withOpacity(0.15),
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(
+                        color:
+                            isIncome
+                                ? Colors.green.withOpacity(0.4)
+                                : Colors.red.withOpacity(0.4),
+                        width: 1,
                       ),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          isIncome
+                              ? Icons.arrow_downward_rounded
+                              : Icons.arrow_upward_rounded,
+                          size: 12,
+                          color: isIncome ? Colors.green : Colors.red,
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          isIncome ? 'MASUK' : 'KELUAR',
+                          style: GoogleFonts.poppins(
+                            color: isIncome ? Colors.green : Colors.red,
+                            fontSize: 10,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ],

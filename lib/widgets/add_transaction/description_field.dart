@@ -31,9 +31,27 @@ class DescriptionField extends StatelessWidget {
         filled: true,
         fillColor: const Color(0xFF1A1A1A),
       ),
+      maxLength: 200,
+      buildCounter: (
+        context, {
+        required currentLength,
+        required isFocused,
+        maxLength,
+      }) {
+        return Padding(
+          padding: const EdgeInsets.only(top: 8.0),
+          child: Text(
+            '$currentLength / $maxLength',
+            style: GoogleFonts.poppins(color: Colors.grey[500], fontSize: 12),
+          ),
+        );
+      },
       validator: (value) {
         if (value == null || value.isEmpty) {
           return 'Masukkan deskripsi transaksi';
+        }
+        if (value.length > 200) {
+          return 'Deskripsi maksimal 200 karakter';
         }
         return null;
       },

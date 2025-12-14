@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:financial_app/services/auth_service.dart';
+import 'package:financial_app/services/logger_service.dart';
 
 /// Base API client with common functionality
 class BaseApiClient {
@@ -15,7 +16,7 @@ class BaseApiClient {
   static void clearCache() {
     _cache.clear();
     _cacheTimestamps.clear();
-    print('🗑️ API cache cleared');
+    LoggerService.cache('CLEARED', 'all');
   }
 
   /// Get from cache if available and fresh
@@ -24,7 +25,7 @@ class BaseApiClient {
       final timestamp = _cacheTimestamps[key];
       if (timestamp != null &&
           DateTime.now().difference(timestamp) < cacheDuration) {
-        print('📦 Cache HIT: $key');
+        LoggerService.cache('HIT', key);
         return _cache[key];
       }
     }
@@ -57,17 +58,24 @@ class BaseApiClient {
       if (cached != null) return cached;
     }
 
-    print('🔼 GET: $baseUrl/$endpoint');
+    LoggerService.apiRequest('GET', endpoint);
     final headers = await getHeaders();
     final response = await http.get(
       Uri.parse('$baseUrl/$endpoint'),
       headers: headers,
+    ).timeout(
+      const Duration(seconds: 30),
+      onTimeout: () {
+        throw Exception('Connection timeout');
+      },
     );
 
-    print('✅ Response: ${response.statusCode}');
+    LoggerService.apiResponse(response.statusCode, endpoint);
 
     if (response.statusCode == 200) {
-      final data = json.decode(response.body);
+      // Ensure response body is properly decoded with UTF-8 encoding
+      final responseBody = utf8.decode(response.bodyBytes);
+      final data = json.decode(responseBody);
       if (useCache) {
         saveToCache(cacheKey, data);
       }
@@ -75,7 +83,9 @@ class BaseApiClient {
     } else if (response.statusCode == 401) {
       throw Exception('Unauthorized - Please login again');
     } else {
-      throw Exception('Server error - Please try again later');
+      // Ensure error response is properly decoded with UTF-8 encoding
+      final responseBody = utf8.decode(response.bodyBytes);
+      throw Exception('Server error - Please try again later: $responseBody');
     }
   }
 
@@ -84,37 +94,51 @@ class BaseApiClient {
     String endpoint,
     Map<String, dynamic> data,
   ) async {
-    print('🔽 POST: $baseUrl/$endpoint');
+    LoggerService.apiRequest('POST', endpoint);
     final headers = await getHeaders();
     final response = await http.post(
       Uri.parse('$baseUrl/$endpoint'),
       headers: headers,
       body: json.encode(data),
+    ).timeout(
+      const Duration(seconds: 30),
+      onTimeout: () {
+        throw Exception('Connection timeout');
+      },
     );
 
-    print('✅ Response: ${response.statusCode}');
+    LoggerService.apiResponse(response.statusCode, endpoint);
 
     if (response.statusCode == 200 || response.statusCode == 201) {
-      return json.decode(response.body);
+      // Ensure response body is properly decoded with UTF-8 encoding
+      final responseBody = utf8.decode(response.bodyBytes);
+      return json.decode(responseBody);
     } else if (response.statusCode == 401) {
       throw Exception('Unauthorized - Please login again');
     } else {
-      final errorBody = json.decode(response.body);
-      throw Exception(errorBody['error'] ?? 'Server error');
+      // Ensure error response is properly decoded with UTF-8 encoding
+      final responseBody = utf8.decode(response.bodyBytes);
+      final errorBody = json.decode(responseBody);
+      throw Exception(errorBody['error'] ?? 'Server error: $responseBody');
     }
   }
 
   /// Make PUT request
   static Future<dynamic> put(String endpoint, Map<String, dynamic> data) async {
-    print('🔄 PUT: $baseUrl/$endpoint');
+    LoggerService.apiRequest('PUT', endpoint);
     final headers = await getHeaders();
     final response = await http.put(
       Uri.parse('$baseUrl/$endpoint'),
       headers: headers,
       body: json.encode(data),
+    ).timeout(
+      const Duration(seconds: 30),
+      onTimeout: () {
+        throw Exception('Connection timeout');
+      },
     );
 
-    print('✅ Response: ${response.statusCode}');
+    LoggerService.apiResponse(response.statusCode, endpoint);
 
     if (response.statusCode == 200) {
       return json.decode(response.body);
@@ -127,14 +151,19 @@ class BaseApiClient {
 
   /// Make DELETE request
   static Future<dynamic> delete(String endpoint) async {
-    print('🗑️ DELETE: $baseUrl/$endpoint');
+    LoggerService.apiRequest('DELETE', endpoint);
     final headers = await getHeaders();
     final response = await http.delete(
       Uri.parse('$baseUrl/$endpoint'),
       headers: headers,
+    ).timeout(
+      const Duration(seconds: 30),
+      onTimeout: () {
+        throw Exception('Connection timeout');
+      },
     );
 
-    print('✅ Response: ${response.statusCode}');
+    LoggerService.apiResponse(response.statusCode, endpoint);
 
     if (response.statusCode == 200) {
       return json.decode(response.body);

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:financial_app/utils/formatters.dart';
 import 'package:financial_app/services/api_service.dart';
+import 'package:financial_app/services/logger_service.dart';
 import 'package:financial_app/utils/app_refresh.dart';
 
 class FinancialSummaryCard extends StatefulWidget {
@@ -129,7 +129,9 @@ class _FinancialSummaryCardState extends State<FinancialSummaryCard>
   Widget build(BuildContext context) {
     return NotificationListener<DataRefreshNotification>(
       onNotification: (notification) {
-        print('📩 [FinancialSummaryCard] Received refresh notification');
+        LoggerService.debug(
+          'FinancialSummaryCard received refresh notification',
+        );
         _loadFinancialSummary();
         return true;
       },
@@ -214,8 +216,14 @@ class _FinancialSummaryCardState extends State<FinancialSummaryCard>
     final balance = actualBalance < 0 ? 0.0 : actualBalance; // Clamp to 0
     final isNegative = actualBalance < 0;
 
-    print(
-      '💰 Income: $income | Expense: $expense | Balance: $balance (Actual: $actualBalance)',
+    LoggerService.debug(
+      'Financial summary calculated',
+      error: {
+        'income': income,
+        'expense': expense,
+        'balance': balance,
+        'actualBalance': actualBalance,
+      },
     );
 
     return FadeTransition(
@@ -275,9 +283,9 @@ class _FinancialSummaryCardState extends State<FinancialSummaryCard>
                         ),
                         const SizedBox(width: 4),
                         const Icon(
-                          Icons.arrow_drop_down,
+                          Icons.calendar_today_rounded,
                           color: Colors.white,
-                          size: 20,
+                          size: 16,
                         ),
                       ],
                     ),
@@ -310,7 +318,7 @@ class _FinancialSummaryCardState extends State<FinancialSummaryCard>
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     const Icon(
-                      Icons.warning_amber_rounded,
+                      Icons.warning_rounded,
                       color: Colors.red,
                       size: 16,
                     ),
@@ -331,19 +339,19 @@ class _FinancialSummaryCardState extends State<FinancialSummaryCard>
 
             // Income vs Expense
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 _buildFinanceItem(
                   title: 'Pemasukan',
                   amount: CurrencyFormatter.formatRupiah(income),
-                  color: Colors.green[400]!,
-                  icon: Iconsax.arrow_up,
+                  color: const Color(0xFF4CAF50),
+                  icon: Icons.trending_up_rounded,
                 ),
+                const SizedBox(width: 12),
                 _buildFinanceItem(
                   title: 'Pengeluaran',
                   amount: CurrencyFormatter.formatRupiah(expense),
-                  color: Colors.red[400]!,
-                  icon: Iconsax.arrow_down,
+                  color: const Color(0xFFF44336),
+                  icon: Icons.trending_down_rounded,
                 ),
               ],
             ),
@@ -377,31 +385,48 @@ class _FinancialSummaryCardState extends State<FinancialSummaryCard>
     required Color color,
     required IconData icon,
   }) {
-    return Column(
-      children: [
-        Container(
-          padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: color.withOpacity(0.2),
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: Icon(icon, color: color, size: 20),
+    return Expanded(
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(0.08),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: color.withOpacity(0.3), width: 1),
         ),
-        const SizedBox(height: 8),
-        Text(
-          title,
-          style: GoogleFonts.poppins(color: Colors.white70, fontSize: 12),
+        child: Column(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: color.withOpacity(0.15),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(icon, color: color, size: 22),
+            ),
+            const SizedBox(height: 10),
+            Text(
+              title,
+              style: GoogleFonts.poppins(
+                color: Colors.white70,
+                fontSize: 11,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              amount,
+              style: GoogleFonts.poppins(
+                color: Colors.white,
+                fontSize: 13,
+                fontWeight: FontWeight.bold,
+              ),
+              textAlign: TextAlign.center,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ],
         ),
-        const SizedBox(height: 4),
-        Text(
-          amount,
-          style: GoogleFonts.poppins(
-            color: Colors.white,
-            fontSize: 14,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-      ],
+      ),
     );
   }
 }

@@ -4,7 +4,7 @@ from flask_jwt_extended import create_access_token, get_jwt_identity
 from models.user_model import UserModel
 from models.database import get_db
 from datetime import datetime
-import traceback
+from utils.encoding_utils import safe_print, safe_print_exc, safe_str
 
 class AuthService:
     @staticmethod
@@ -49,21 +49,21 @@ class AuthService:
         cursor = db.cursor()
         try:
             # Step 1: Create the user (MySQL will generate the ID)
-            print(f'🔵 Creating user: {email}')
+            safe_print(f'Creating user: {email}')
             UserModel.create_user(cursor, email, password, full_name, phone_number)
             
             # Step 2: Get the user we just created to retrieve their new ID
             newly_created_user = UserModel.get_user_by_email(email)
             user_id = newly_created_user['user_id_232143']
-            print(f'✅ User created with ID: {user_id}')
+            safe_print(f'User created with ID: {user_id}')
             
             # Create default categories for the user
-            print(f'🔵 Creating default categories for user {user_id}')
+            safe_print(f'Creating default categories for user {user_id}')
             AuthService._create_default_categories(cursor, user_id)
-            print(f'✅ Default categories created!')
+            safe_print('Default categories created!')
             
             db.commit()
-            print(f'✅ Registration completed for {email}')
+            safe_print(f'Registration completed for {email}')
             
             return {
                 'user_id': user_id,
@@ -72,8 +72,8 @@ class AuthService:
             }, None
         except Exception as e:
             db.rollback()
-            traceback.print_exc()  # This will print the full traceback to the server console
-            return None, str(e)
+            safe_print_exc()  # This will print the full traceback to the server console
+            return None, safe_str(e)
         finally:
             cursor.close()
 

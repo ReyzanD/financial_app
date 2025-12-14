@@ -7,6 +7,8 @@ import '../widgets/analytics/category_breakdown.dart';
 import '../widgets/analytics/monthly_comparison.dart';
 import '../widgets/analytics/spending_insights.dart';
 import '../services/api_service.dart';
+import '../services/error_handler_service.dart';
+import '../services/logger_service.dart';
 
 class AnalyticsScreen extends StatefulWidget {
   const AnalyticsScreen({super.key});
@@ -62,11 +64,8 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
         month: now.month,
       );
 
-      print('✅ Loaded ${transactions.length} transactions');
-      print('✅ Summary: $summary');
-      if (transactions.isNotEmpty) {
-        print('📝 Sample transaction: ${transactions.first}');
-      }
+      LoggerService.success('Loaded ${transactions.length} transactions');
+      LoggerService.debug('Summary loaded', error: summary);
 
       if (mounted) {
         setState(() {
@@ -76,27 +75,20 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
         });
       }
     } catch (e) {
-      print('❌ Error loading analytics: $e');
+      LoggerService.error('Error loading analytics', error: e);
       if (mounted) {
         setState(() {
           _isLoading = false;
-          _errorMessage = _getErrorMessage(e);
+          _errorMessage = ErrorHandlerService.getUserFriendlyMessage(e);
         });
+        if (context.mounted) {
+          ErrorHandlerService.showErrorSnackbar(
+            context,
+            _errorMessage!,
+            onRetry: _loadData,
+          );
+        }
       }
-    }
-  }
-
-  String _getErrorMessage(dynamic error) {
-    final errorStr = error.toString().toLowerCase();
-    if (errorStr.contains('timeout')) {
-      return 'Koneksi timeout. Cek koneksi internet Anda.';
-    } else if (errorStr.contains('connection') ||
-        errorStr.contains('network')) {
-      return 'Gagal terhubung ke server. Pastikan backend berjalan.';
-    } else if (errorStr.contains('unauthorized') || errorStr.contains('401')) {
-      return 'Sesi berakhir. Silakan login kembali.';
-    } else {
-      return 'Gagal memuat data analitik.';
     }
   }
 
