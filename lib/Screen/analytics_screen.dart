@@ -9,6 +9,7 @@ import '../widgets/analytics/spending_insights.dart';
 import '../services/api_service.dart';
 import '../services/error_handler_service.dart';
 import '../services/logger_service.dart';
+import '../utils/responsive_helper.dart';
 
 class AnalyticsScreen extends StatefulWidget {
   const AnalyticsScreen({super.key});
@@ -37,7 +38,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
       _errorMessage = null;
     });
     try {
-      print('📊 Loading analytics data...');
+      LoggerService.debug('Loading analytics data...');
 
       final now = DateTime.now();
       DateTime? startDate;
@@ -54,7 +55,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
         startDate = DateTime(now.year, 1, 1);
       }
 
-      final transactions = await _apiService.getTransactions(
+      final transactionsData = await _apiService.getTransactions(
         limit: 100,
         startDate: startDate,
         endDate: endDate,
@@ -62,6 +63,10 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
       final summary = await _apiService.getFinancialSummary(
         year: now.year,
         month: now.month,
+      );
+
+      final transactions = List<dynamic>.from(
+        transactionsData['transactions'] ?? [],
       );
 
       LoggerService.success('Loaded ${transactions.length} transactions');
@@ -100,34 +105,40 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
     if (_errorMessage != null) {
       return ListView(
         physics: const AlwaysScrollableScrollPhysics(),
-        padding: const EdgeInsets.all(16),
+        padding: ResponsiveHelper.padding(context),
         children: [
           Container(
-            padding: const EdgeInsets.all(24),
+            padding: ResponsiveHelper.padding(context, multiplier: 1.5),
             decoration: BoxDecoration(
               color: const Color(0xFF1A1A1A),
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(
+                ResponsiveHelper.borderRadius(context, 16),
+              ),
               border: Border.all(color: Colors.red.withOpacity(0.3)),
             ),
             child: Column(
               children: [
-                Icon(Icons.error_outline, color: Colors.red[400], size: 40),
-                const SizedBox(height: 12),
+                Icon(
+                  Icons.error_outline,
+                  color: Colors.red[400],
+                  size: ResponsiveHelper.iconSize(context, 40),
+                ),
+                SizedBox(height: ResponsiveHelper.verticalSpacing(context, 12)),
                 Text(
                   'Gagal memuat analitik',
                   style: GoogleFonts.poppins(
                     color: Colors.grey[300],
-                    fontSize: 16,
+                    fontSize: ResponsiveHelper.fontSize(context, 16),
                     fontWeight: FontWeight.w600,
                   ),
                 ),
-                const SizedBox(height: 8),
+                SizedBox(height: ResponsiveHelper.verticalSpacing(context, 8)),
                 Text(
                   _errorMessage!,
                   textAlign: TextAlign.center,
                   style: GoogleFonts.poppins(
                     color: Colors.grey[500],
-                    fontSize: 12,
+                    fontSize: ResponsiveHelper.fontSize(context, 12),
                   ),
                 ),
               ],
@@ -142,34 +153,40 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
     if (filtered.isEmpty) {
       return ListView(
         physics: const AlwaysScrollableScrollPhysics(),
-        padding: const EdgeInsets.all(16),
+        padding: ResponsiveHelper.padding(context),
         children: [
           Container(
-            padding: const EdgeInsets.all(32),
+            padding: ResponsiveHelper.padding(context, multiplier: 2.0),
             decoration: BoxDecoration(
               color: const Color(0xFF1A1A1A),
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(
+                ResponsiveHelper.borderRadius(context, 16),
+              ),
               border: Border.all(color: Colors.grey[800]!),
             ),
             child: Column(
               children: [
-                Icon(Icons.insights, color: Colors.grey[600], size: 48),
-                const SizedBox(height: 12),
+                Icon(
+                  Icons.insights,
+                  color: Colors.grey[600],
+                  size: ResponsiveHelper.iconSize(context, 48),
+                ),
+                SizedBox(height: ResponsiveHelper.verticalSpacing(context, 12)),
                 Text(
                   'Belum ada data untuk periode ini',
                   style: GoogleFonts.poppins(
                     color: Colors.grey[400],
-                    fontSize: 16,
+                    fontSize: ResponsiveHelper.fontSize(context, 16),
                     fontWeight: FontWeight.w600,
                   ),
                 ),
-                const SizedBox(height: 4),
+                SizedBox(height: ResponsiveHelper.verticalSpacing(context, 4)),
                 Text(
                   'Tambahkan transaksi untuk melihat analitik keuangan Anda.',
                   textAlign: TextAlign.center,
                   style: GoogleFonts.poppins(
                     color: Colors.grey[600],
-                    fontSize: 12,
+                    fontSize: ResponsiveHelper.fontSize(context, 12),
                   ),
                 ),
               ],
@@ -181,15 +198,15 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
 
     return SingleChildScrollView(
       physics: const AlwaysScrollableScrollPhysics(),
-      padding: const EdgeInsets.all(16),
+      padding: ResponsiveHelper.padding(context),
       child: Column(
         children: [
           SpendingChart(transactions: filtered),
-          const SizedBox(height: 16),
+          SizedBox(height: ResponsiveHelper.verticalSpacing(context, 16)),
           CategoryBreakdown(transactions: filtered),
-          const SizedBox(height: 16),
+          SizedBox(height: ResponsiveHelper.verticalSpacing(context, 16)),
           MonthlyComparison(transactions: filtered),
-          const SizedBox(height: 16),
+          SizedBox(height: ResponsiveHelper.verticalSpacing(context, 16)),
           SpendingInsights(transactions: filtered, summary: _summary),
         ],
       ),

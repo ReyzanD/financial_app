@@ -1,3 +1,36 @@
+/// Add/Edit Transaction Screen
+///
+/// A comprehensive screen for adding new transactions or editing existing ones.
+/// Supports both income and expense transactions with full validation.
+///
+/// Features:
+/// - Form validation using FormValidators
+/// - Location picker integration
+/// - Auto-categorization based on location
+/// - Date/time selection with future date prevention for expenses
+/// - Payment method selection
+/// - Notes and additional options
+///
+/// Usage:
+/// ```dart
+/// // Add new transaction
+/// Navigator.push(
+///   context,
+///   MaterialPageRoute(builder: (context) => AddTransactionScreen()),
+/// );
+///
+/// // Edit existing transaction
+/// Navigator.push(
+///   context,
+///   MaterialPageRoute(
+///     builder: (context) => AddTransactionScreen(transaction: transactionData),
+///   ),
+/// );
+/// ```
+///
+/// Author: Financial App Team
+/// Last Updated: 2024
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
@@ -8,6 +41,7 @@ import 'package:financial_app/services/error_handler_service.dart';
 import 'package:financial_app/services/logger_service.dart';
 import 'package:financial_app/utils/formatters.dart';
 import 'package:financial_app/utils/app_refresh.dart';
+import 'package:financial_app/utils/responsive_helper.dart';
 import 'package:financial_app/widgets/maps/location_picker_map.dart';
 import 'package:financial_app/widgets/add_transaction/amount_field.dart';
 import 'package:financial_app/widgets/add_transaction/type_selector.dart';
@@ -19,6 +53,7 @@ import 'package:financial_app/widgets/add_transaction/payment_method_section.dar
 import 'package:financial_app/widgets/add_transaction/submit_button.dart';
 import 'package:financial_app/widgets/add_transaction/additional_options.dart';
 import 'package:financial_app/widgets/add_transaction/notes_field.dart';
+import 'package:financial_app/utils/form_validators.dart';
 
 class AddTransactionScreen extends StatefulWidget {
   final Map<String, dynamic>? transaction; // Optional for edit mode
@@ -159,12 +194,9 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
     setState(() {
       _currentLocation = null;
     });
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Lokasi dihapus'),
-        backgroundColor: Color(0xFF8B5FBF),
-        duration: Duration(seconds: 2),
-      ),
+    ErrorHandlerService.showInfoSnackbar(
+      context,
+      'Lokasi dihapus',
     );
   }
 
@@ -178,14 +210,9 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
       if (position == null) {
         LoggerService.warning('Location service returned null');
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                'Gagal mendapatkan lokasi. Pastikan izin lokasi aktif.',
-                style: GoogleFonts.poppins(),
-              ),
-              backgroundColor: Colors.red,
-            ),
+          ErrorHandlerService.showWarningSnackbar(
+            context,
+            'Gagal mendapatkan lokasi. Pastikan izin lokasi aktif.',
           );
         }
       } else {
@@ -216,12 +243,12 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
       }
     } catch (e) {
       LoggerService.error('Error getting location', error: e);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Gagal mendapatkan lokasi: $e'),
-          backgroundColor: Colors.red,
-        ),
-      );
+      if (mounted) {
+        ErrorHandlerService.showErrorSnackbar(
+          context,
+          ErrorHandlerService.getUserFriendlyMessage(e),
+        );
+      }
     } finally {
       setState(() => _isGettingLocation = false);
     }
@@ -509,12 +536,67 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
   void _submitForm() async {
     if (_formKey.currentState!.validate()) {
       // Additional validation: expense cannot have future dates
-      if (_selectedType == 'expense' && _selectedDate.isAfter(DateTime.now())) {
-        ErrorHandlerService.showWarningSnackbar(
-          context,
-          'Tanggal pengeluaran tidak boleh di masa depan',
-        );
+      final dateError = FormValidators.validateDate(
+        _selectedDate,
+        allowFuture: _selectedType == 'income',
+      );
+      if (dateError != null) {
+        ErrorHandlerService.showWarningSnackbar(context, dateError);
         return;
+      }
+
+      // Check for duplicate transactions
+      try {
+        final recentTransactionsData = await _apiService.getTransactions(limit: 20);
+        final recentTransactions = List<Map<String, dynamic>>.from(
+          recentTransactionsData['transactions'] ?? [],
+        );
+        final amount = double.parse(
+          _amountController.text.replaceAll(RegExp(r'[^0-9.]'), ''),
+        );
+        final isDuplicate = FormValidators.isDuplicateTransaction(
+          amount: amount,
+          description: _descriptionController.text.trim(),
+          date: _selectedDate,
+          recentTransactions: recentTransactions,
+        );
+
+        if (isDuplicate) {
+          final shouldContinue = await showDialog<bool>(
+            context: context,
+            builder: (context) => AlertDialog(
+              backgroundColor: const Color(0xFF1A1A1A),
+              title: const Text(
+                'Transaksi Duplikat?',
+                style: TextStyle(color: Colors.white),
+              ),
+              content: const Text(
+                'Transaksi serupa baru saja ditambahkan. Apakah Anda yakin ingin melanjutkan?',
+                style: TextStyle(color: Colors.white70),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context, false),
+                  child: const Text('Batal'),
+                ),
+                ElevatedButton(
+                  onPressed: () => Navigator.pop(context, true),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF8B5FBF),
+                  ),
+                  child: const Text('Lanjutkan'),
+                ),
+              ],
+            ),
+          );
+
+          if (shouldContinue != true) {
+            return;
+          }
+        }
+      } catch (e) {
+        LoggerService.warning('Error checking duplicates', error: e);
+        // Continue if duplicate check fails
       }
 
       setState(() => _isSubmitting = true);
@@ -636,12 +718,12 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
       body: Form(
         key: _formKey,
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
+          padding: ResponsiveHelper.padding(context),
           child: Column(
             children: [
               // Amount Input
               AmountField(controller: _amountController),
-              const SizedBox(height: 20),
+              SizedBox(height: ResponsiveHelper.verticalSpacing(context, 20)),
 
               // Transaction Type Selector
               TypeSelector(
@@ -661,7 +743,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                   });
                 },
               ),
-              const SizedBox(height: 20),
+              SizedBox(height: ResponsiveHelper.verticalSpacing(context, 20)),
 
               // Category Selection
               CategorySection(
@@ -673,11 +755,11 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                   setState(() => _selectedCategory = categoryId);
                 },
               ),
-              const SizedBox(height: 20),
+              SizedBox(height: ResponsiveHelper.verticalSpacing(context, 20)),
 
               // Description
               DescriptionField(controller: _descriptionController),
-              const SizedBox(height: 20),
+              SizedBox(height: ResponsiveHelper.verticalSpacing(context, 20)),
 
               // Location Section (only for expenses, not for income)
               if (_selectedType == 'expense') ...[
@@ -688,7 +770,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                   onPickFromMap: _pickLocationFromMap,
                   onClearLocation: _clearLocation,
                 ),
-                const SizedBox(height: 20),
+                SizedBox(height: ResponsiveHelper.verticalSpacing(context, 20)),
               ],
 
               // Date & Time
@@ -698,7 +780,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                 onSelectDate: _selectDate,
                 onSelectTime: _selectTime,
               ),
-              const SizedBox(height: 20),
+              SizedBox(height: ResponsiveHelper.verticalSpacing(context, 20)),
 
               // Payment Method
               PaymentMethodSection(
@@ -707,18 +789,18 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                   setState(() => _selectedPaymentMethod = method);
                 },
               ),
-              const SizedBox(height: 20),
+              SizedBox(height: ResponsiveHelper.verticalSpacing(context, 20)),
 
               // Additional Options
               AdditionalOptions(
                 isRecurring: _isRecurring,
                 onChanged: (value) => setState(() => _isRecurring = value),
               ),
-              const SizedBox(height: 20),
+              SizedBox(height: ResponsiveHelper.verticalSpacing(context, 20)),
 
               // Notes
               NotesField(controller: _notesController),
-              const SizedBox(height: 30),
+              SizedBox(height: ResponsiveHelper.verticalSpacing(context, 30)),
 
               // Save Button
               SubmitButton(onPressed: _submitForm, isLoading: _isSubmitting),

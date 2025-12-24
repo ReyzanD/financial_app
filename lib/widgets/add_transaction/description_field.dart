@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:financial_app/utils/form_validators.dart';
 
 class DescriptionField extends StatelessWidget {
   final TextEditingController controller;
@@ -31,7 +32,7 @@ class DescriptionField extends StatelessWidget {
         filled: true,
         fillColor: const Color(0xFF1A1A1A),
       ),
-      maxLength: 200,
+      maxLength: FormValidators.maxDescriptionLength,
       buildCounter: (
         context, {
         required currentLength,
@@ -46,15 +47,7 @@ class DescriptionField extends StatelessWidget {
           ),
         );
       },
-      validator: (value) {
-        if (value == null || value.isEmpty) {
-          return 'Masukkan deskripsi transaksi';
-        }
-        if (value.length > 200) {
-          return 'Deskripsi maksimal 200 karakter';
-        }
-        return null;
-      },
+      validator: (value) => FormValidators.validateDescription(value),
     );
   }
 }

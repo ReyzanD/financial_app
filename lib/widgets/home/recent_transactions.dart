@@ -6,41 +6,48 @@ import 'package:provider/provider.dart';
 import 'package:financial_app/state/app_state.dart';
 import 'package:financial_app/models/transaction_model.dart';
 import 'package:financial_app/Screen/transaction_screen.dart';
+import 'package:financial_app/utils/responsive_helper.dart';
 
 class RecentTransactions extends StatelessWidget {
   const RecentTransactions({super.key});
 
-  Widget _buildTransactionItem(TransactionModel transaction) {
+  Widget _buildTransactionItem(TransactionModel transaction, BuildContext context) {
     final isIncome = transaction.type == 'income';
 
     return Container(
-      margin: const EdgeInsets.only(bottom: 8),
-      padding: const EdgeInsets.all(12),
+      margin: EdgeInsets.only(
+        bottom: ResponsiveHelper.verticalSpacing(context, 8),
+      ),
+      padding: ResponsiveHelper.padding(context, multiplier: 0.75),
       decoration: BoxDecoration(
         color: const Color(0xFF1A1A1A),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(
+          ResponsiveHelper.borderRadius(context, 12),
+        ),
         border: Border.all(color: Colors.grey[800]!),
       ),
       child: Row(
         children: [
           Container(
-            width: 40,
-            height: 40,
+            width: ResponsiveHelper.iconSize(context, 40),
+            height: ResponsiveHelper.iconSize(context, 40),
             decoration: BoxDecoration(
               color: Color(
                 int.parse(transaction.categoryColor.replaceAll('#', '0xFF')),
               ).withOpacity(0.2),
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(
+                ResponsiveHelper.borderRadius(context, 10),
+              ),
             ),
             child: Icon(
               isIncome ? Iconsax.arrow_down : Iconsax.arrow_up,
               color: Color(
                 int.parse(transaction.categoryColor.replaceAll('#', '0xFF')),
               ),
-              size: 20,
+              size: ResponsiveHelper.iconSize(context, 20),
             ),
           ),
-          const SizedBox(width: 12),
+          SizedBox(width: ResponsiveHelper.horizontalSpacing(context, 12)),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -49,7 +56,7 @@ class RecentTransactions extends StatelessWidget {
                   transaction.description,
                   style: GoogleFonts.poppins(
                     color: Colors.white,
-                    fontSize: 14,
+                    fontSize: ResponsiveHelper.fontSize(context, 14),
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -57,7 +64,7 @@ class RecentTransactions extends StatelessWidget {
                   transaction.categoryName,
                   style: GoogleFonts.poppins(
                     color: Colors.grey[500],
-                    fontSize: 12,
+                    fontSize: ResponsiveHelper.fontSize(context, 12),
                   ),
                 ),
               ],
@@ -72,7 +79,7 @@ class RecentTransactions extends StatelessWidget {
                 ),
                 style: GoogleFonts.poppins(
                   color: isIncome ? Colors.green : Colors.white,
-                  fontSize: 14,
+                  fontSize: ResponsiveHelper.fontSize(context, 14),
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -80,7 +87,7 @@ class RecentTransactions extends StatelessWidget {
                 '${transaction.transactionDate.hour.toString().padLeft(2, '0')}:${transaction.transactionDate.minute.toString().padLeft(2, '0')}',
                 style: GoogleFonts.poppins(
                   color: Colors.grey[500],
-                  fontSize: 10,
+                  fontSize: ResponsiveHelper.fontSize(context, 10),
                 ),
               ),
             ],
@@ -100,7 +107,7 @@ class RecentTransactions extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
+              padding: ResponsiveHelper.horizontalPadding(context),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -108,7 +115,7 @@ class RecentTransactions extends StatelessWidget {
                     'Recent Transactions',
                     style: GoogleFonts.poppins(
                       color: Colors.white,
-                      fontSize: 18,
+                      fontSize: ResponsiveHelper.fontSize(context, 18),
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -125,17 +132,17 @@ class RecentTransactions extends StatelessWidget {
                       'View All',
                       style: GoogleFonts.poppins(
                         color: Color(0xFF8B5FBF),
-                        fontSize: 12,
+                        fontSize: ResponsiveHelper.fontSize(context, 12),
                       ),
                     ),
                   ),
                 ],
               ),
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: ResponsiveHelper.verticalSpacing(context, 12)),
             if (appState.isLoading)
               Padding(
-                padding: const EdgeInsets.all(32.0),
+                padding: ResponsiveHelper.padding(context, multiplier: 2.0),
                 child: Center(
                   child: CircularProgressIndicator(
                     color: Color(0xFF8B5FBF),
@@ -145,12 +152,14 @@ class RecentTransactions extends StatelessWidget {
               )
             else if (recentTransactions.isEmpty)
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
+                padding: ResponsiveHelper.horizontalPadding(context),
                 child: Container(
-                  padding: const EdgeInsets.all(24),
+                  padding: ResponsiveHelper.padding(context, multiplier: 1.5),
                   decoration: BoxDecoration(
                     color: const Color(0xFF1A1A1A),
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(
+                      ResponsiveHelper.borderRadius(context, 12),
+                    ),
                     border: Border.all(color: Colors.grey[800]!),
                   ),
                   child: Column(
@@ -158,23 +167,27 @@ class RecentTransactions extends StatelessWidget {
                       Icon(
                         Icons.receipt_long_outlined,
                         color: Colors.grey[600],
-                        size: 48,
+                        size: ResponsiveHelper.iconSize(context, 48),
                       ),
-                      SizedBox(height: 12),
+                      SizedBox(
+                        height: ResponsiveHelper.verticalSpacing(context, 12),
+                      ),
                       Text(
                         'No transactions yet',
                         style: GoogleFonts.poppins(
                           color: Colors.grey[400],
-                          fontSize: 14,
+                          fontSize: ResponsiveHelper.fontSize(context, 14),
                           fontWeight: FontWeight.w500,
                         ),
                       ),
-                      SizedBox(height: 4),
+                      SizedBox(
+                        height: ResponsiveHelper.verticalSpacing(context, 4),
+                      ),
                       Text(
                         'Start by adding your first transaction',
                         style: GoogleFonts.poppins(
                           color: Colors.grey[600],
-                          fontSize: 11,
+                          fontSize: ResponsiveHelper.fontSize(context, 11),
                         ),
                       ),
                     ],
@@ -183,12 +196,12 @@ class RecentTransactions extends StatelessWidget {
               )
             else
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
+                padding: ResponsiveHelper.horizontalPadding(context),
                 child: Column(
                   children:
                       recentTransactions
                           .map(
-                            (transaction) => _buildTransactionItem(transaction),
+                            (transaction) => _buildTransactionItem(transaction, context),
                           )
                           .toList(),
                 ),

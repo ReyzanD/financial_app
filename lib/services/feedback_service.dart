@@ -247,7 +247,7 @@ class FeedbackService {
 
   /// Haptic feedback
   static Future<void> _showHapticFeedback(HapticType type) async {
-    if (await Vibration.hasVibrator() ?? false) {
+    if (await Vibration.hasVibrator()) {
       switch (type) {
         case HapticType.light:
           Vibration.vibrate(duration: 10);

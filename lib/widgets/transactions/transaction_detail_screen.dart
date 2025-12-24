@@ -7,6 +7,7 @@ import 'package:financial_app/widgets/transactions/transaction_helpers.dart';
 import 'package:financial_app/widgets/transactions/alternative_recommendation_card.dart';
 import 'package:financial_app/widgets/transactions/location_insight_card.dart';
 import 'package:financial_app/models/location_recommendation.dart';
+import 'package:financial_app/services/logger_service.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:financial_app/Screen/add_transaction_screen.dart';
 
@@ -61,7 +62,7 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
 
       setState(() => _alternativeRecommendations = recommendations);
     } catch (e) {
-      print('Error loading alternative recommendations: $e');
+      LoggerService.error('Error loading alternative recommendations', error: e);
     } finally {
       setState(() => _isLoadingRecommendations = false);
     }
@@ -71,8 +72,8 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // Debug: Print the entire transaction data
-    print('TransactionDetailScreen Data: ${json.encode(widget.transaction)}');
+    // Debug: Log the entire transaction data
+    LoggerService.debug('TransactionDetailScreen Data: ${json.encode(widget.transaction)}');
 
     final isIncome = widget.transaction['type'] == 'income';
     final amount =

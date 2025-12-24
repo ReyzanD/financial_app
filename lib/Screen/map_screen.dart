@@ -4,6 +4,7 @@ import 'package:latlong2/latlong.dart';
 import 'package:financial_app/services/location_service.dart';
 import 'package:financial_app/services/api_service.dart';
 import 'package:financial_app/services/map_provider_service.dart';
+import 'package:financial_app/services/logger_service.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 
@@ -74,7 +75,10 @@ class _MapScreenState extends State<MapScreen> {
 
   Future<void> _loadTransactionMarkers() async {
     try {
-      final transactions = await _apiService.getTransactions(limit: 100);
+      final transactionsData = await _apiService.getTransactions(limit: 100);
+      final transactions = List<dynamic>.from(
+        transactionsData['transactions'] ?? [],
+      );
 
       for (var transaction in transactions) {
         final location = transaction['location'];
@@ -117,7 +121,7 @@ class _MapScreenState extends State<MapScreen> {
         );
       }
     } catch (e) {
-      print('Error loading transaction markers: $e');
+      LoggerService.error('Error loading transaction markers', error: e);
     }
   }
 

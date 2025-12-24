@@ -7,6 +7,7 @@ import 'package:financial_app/services/api_service.dart';
 import 'package:financial_app/services/error_handler_service.dart';
 import 'package:financial_app/services/logger_service.dart';
 import 'package:financial_app/Screen/profile_screen.dart';
+import 'package:financial_app/utils/biometric_helper.dart';
 import 'dart:convert';
 
 class SettingsScreen extends StatefulWidget {
@@ -556,6 +557,23 @@ class _SettingsScreenState extends State<SettingsScreen> {
               TextButton(
                 onPressed: () async {
                   Navigator.of(context).pop();
+                  
+                  // Request biometric authentication before delete account
+                  final authenticated = await BiometricHelper.requestBiometricAuth(
+                    context: context,
+                    reason: 'Autentikasi diperlukan untuk menghapus akun',
+                  );
+
+                  if (!authenticated) {
+                    if (mounted) {
+                      ErrorHandlerService.showWarningSnackbar(
+                        context,
+                        'Autentikasi dibatalkan',
+                      );
+                    }
+                    return;
+                  }
+
                   try {
                     await _authService.deleteAccount();
                     if (!mounted) return;
@@ -563,10 +581,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       context,
                     ).pushNamedAndRemoveUntil('/login', (route) => false);
                   } catch (e) {
+                    LoggerService.error('Error deleting account', error: e);
                     if (!mounted) return;
-                    ScaffoldMessenger.of(
+                    ErrorHandlerService.showErrorSnackbar(
                       context,
-                    ).showSnackBar(SnackBar(content: Text(e.toString())));
+                      ErrorHandlerService.getUserFriendlyMessage(e),
+                    );
                   }
                 },
                 child: Text(
@@ -580,12 +600,26 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Future<void> _exportData() async {
+    // Request biometric authentication before export
+    final authenticated = await BiometricHelper.requestBiometricAuth(
+      context: context,
+      reason: 'Autentikasi diperlukan untuk mengekspor data',
+    );
+
+    if (!authenticated) {
+      if (mounted) {
+        ErrorHandlerService.showWarningSnackbar(
+          context,
+          'Autentikasi dibatalkan',
+        );
+      }
+      return;
+    }
+
     try {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Mengekspor data...'),
-          duration: Duration(seconds: 2),
-        ),
+      ErrorHandlerService.showInfoSnackbar(
+        context,
+        'Mengekspor data...',
       );
 
       final response = await _apiService.get('data/export');
@@ -683,14 +717,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
       // In a real app, you would save this to a file
       // For now, just copy to clipboard (requires clipboard package)
-      print('Export data: ${json.encode(response)}');
+      LoggerService.debug('Export data: ${json.encode(response)}');
     } catch (e) {
+      LoggerService.error('Error exporting data', error: e);
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Gagal mengekspor data: $e'),
-          backgroundColor: Colors.red,
-        ),
+      ErrorHandlerService.showErrorSnackbar(
+        context,
+        ErrorHandlerService.getUserFriendlyMessage(e),
+        onRetry: _exportData,
       );
     }
   }
@@ -899,10 +933,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                   setDialogState(() => isChanging = true);
                                   try {
                                     // Note: API endpoint for password change needs to be implemented
-                                    // For now, show success message
-                                    await Future.delayed(
-                                      const Duration(seconds: 1),
-                                    );
+                                    // For now, show success message immediately
 
                                     if (context.mounted) {
                                       oldPasswordController.dispose();

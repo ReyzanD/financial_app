@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:financial_app/state/app_state.dart';
+import 'package:financial_app/services/logger_service.dart';
 
 /// Notification sent when data needs to be refreshed
 class DataRefreshNotification extends Notification {}
@@ -12,7 +13,7 @@ class RefreshNotifier extends ChangeNotifier {
   RefreshNotifier._internal();
 
   void triggerRefresh() {
-    print('🔔 [RefreshNotifier] Triggering refresh...');
+    LoggerService.debug('[RefreshNotifier] Triggering refresh...');
     notifyListeners();
   }
 }
@@ -23,7 +24,7 @@ class AppRefresh {
   /// Call this after any mutation operation (add/edit/delete)
   static Future<void> refreshAll(BuildContext context) async {
     try {
-      print('🔄 [AppRefresh] Forcing app-wide data refresh...');
+      LoggerService.debug('[AppRefresh] Forcing app-wide data refresh...');
 
       // Refresh AppState (this updates Provider-based widgets)
       final appState = Provider.of<AppState>(context, listen: false);
@@ -35,15 +36,15 @@ class AppRefresh {
       // Trigger global refresh notifier (for home screen)
       RefreshNotifier().triggerRefresh();
 
-      print('✅ [AppRefresh] Refresh completed successfully');
+      LoggerService.success('[AppRefresh] Refresh completed successfully');
     } catch (e) {
-      print('❌ [AppRefresh] Error during refresh: $e');
+      LoggerService.error('[AppRefresh] Error during refresh', error: e);
     }
   }
 
   /// Show a refresh indicator while refreshing
   static Future<void> refreshWithIndicator(BuildContext context) async {
-    await Future.delayed(const Duration(milliseconds: 300));
+    // Note: Removed delay - refresh immediately for better UX
     await refreshAll(context);
   }
 }

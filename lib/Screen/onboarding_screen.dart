@@ -2,8 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:financial_app/services/location_service.dart';
+import 'package:financial_app/services/notification_service.dart';
+import 'package:financial_app/widgets/onboarding/onboarding_flow_manager.dart';
+import 'package:financial_app/widgets/onboarding/permission_request_card.dart';
+import 'package:financial_app/utils/responsive_helper.dart';
+import 'package:financial_app/utils/design_tokens.dart';
+import 'package:financial_app/utils/accessibility_helper.dart';
+import 'package:financial_app/services/logger_service.dart';
 
+/// Enhanced Onboarding Screen dengan interactive tutorial, feature highlights,
+/// permission requests dengan explanations, skip option, dan progress tracking
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
 
@@ -11,9 +21,14 @@ class OnboardingScreen extends StatefulWidget {
   State<OnboardingScreen> createState() => _OnboardingScreenState();
 }
 
-class _OnboardingScreenState extends State<OnboardingScreen> {
+class _OnboardingScreenState extends State<OnboardingScreen>
+    with TickerProviderStateMixin {
   final PageController _pageController = PageController();
   int _currentPage = 0;
+  late AnimationController _iconAnimationController;
+  late AnimationController _fadeAnimationController;
+  late Animation<double> _iconScaleAnimation;
+  late Animation<double> _fadeAnimation;
 
   final List<OnboardingItem> _onboardingItems = [
     OnboardingItem(
@@ -23,6 +38,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           'Aplikasi ini akan membantu Anda melacak pengeluaran, mengatur anggaran, dan mencapai tujuan keuangan Anda.',
       icon: Iconsax.wallet,
       color: const Color(0xFF8B5FBF),
+      features: [
+        'Lacak semua transaksi',
+        'Atur anggaran per kategori',
+        'Capai tujuan keuangan',
+      ],
     ),
     OnboardingItem(
       title: 'Catat Transaksi',
@@ -31,6 +51,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           'Catat semua transaksi Anda dengan mudah. Kami akan mengkategorikannya secara otomatis dan memberikan wawasan berharga.',
       icon: Iconsax.receipt,
       color: const Color(0xFF4ECDC4),
+      features: [
+        'Voice input untuk cepat',
+        'Scan struk otomatis',
+        'Smart category suggestions',
+      ],
     ),
     OnboardingItem(
       title: 'Atur Anggaran',
@@ -39,14 +64,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           'Tetapkan batas anggaran untuk setiap kategori dan dapatkan notifikasi ketika Anda mendekati batas.',
       icon: Iconsax.chart_square,
       color: const Color(0xFFFF6B6B),
-    ),
-    OnboardingItem(
-      title: 'Kelola Utang',
-      subtitle: 'Bayar utang Anda secara strategis',
-      description:
-          'Lacak semua utang dan langganan Anda. Kami akan membantu Anda membuat strategi pembayaran yang efektif.',
-      icon: Iconsax.money_send,
-      color: const Color(0xFFFFEAA7),
+      features: [
+        'Budget forecasting',
+        'Real-time alerts',
+        'Spending insights',
+      ],
     ),
     OnboardingItem(
       title: 'Capai Tujuan',
@@ -55,30 +77,89 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           'Tetapkan tujuan keuangan dan lacak progress Anda. Mulai dari dana darurat hingga liburan impian.',
       icon: Iconsax.flag,
       color: const Color(0xFF45B7D1),
+      features: [
+        'Visual progress tracking',
+        'Savings recommendations',
+        'Goal milestones',
+      ],
     ),
   ];
 
   @override
+  void initState() {
+    super.initState();
+    _setupAnimations();
+    _trackProgress();
+  }
+
+  void _setupAnimations() {
+    _iconAnimationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 800),
+    );
+    _fadeAnimationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 500),
+    );
+
+    _iconScaleAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _iconAnimationController,
+        curve: Curves.elasticOut,
+      ),
+    );
+
+    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _fadeAnimationController,
+        curve: Curves.easeIn,
+      ),
+    );
+
+    _iconAnimationController.forward();
+    _fadeAnimationController.forward();
+  }
+
+  @override
+  void dispose() {
+    _iconAnimationController.dispose();
+    _fadeAnimationController.dispose();
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _trackProgress() async {
+    await OnboardingFlowManager.saveProgress(
+      _currentPage,
+      _onboardingItems.length + 1, // +1 for permissions page
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final totalPages = _onboardingItems.length + 1; // +1 for permissions page
+
     return Scaffold(
       backgroundColor: Colors.black,
       body: SafeArea(
         child: Column(
           children: [
+            // Progress Bar
+            _buildProgressBar(totalPages),
+
             // Skip Button
             Align(
               alignment: Alignment.topRight,
               child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: TextButton(
-                  onPressed: () => _completeOnboarding(),
-                  child: Text(
-                    'Lewati',
-                    style: GoogleFonts.poppins(
-                      color: Colors.grey[400],
-                      fontSize: 16,
-                    ),
-                  ),
+                padding: ResponsiveHelper.padding(context, multiplier: 1.0),
+                child: AccessibilityHelper.createAccessibleButton(
+                  context: context,
+                  label: 'Lewati',
+                  onPressed: () => _skipOnboarding(),
+                  backgroundColor: Colors.transparent,
+                  foregroundColor: Colors.grey[400]!,
+                  minWidth: 0,
+                  minHeight: 0,
                 ),
               ),
             ),
@@ -90,143 +171,334 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 onPageChanged: (index) {
                   setState(() {
                     _currentPage = index;
+                    _iconAnimationController.reset();
+                    _iconAnimationController.forward();
                   });
+                  _trackProgress();
                 },
-                itemCount: _onboardingItems.length,
+                itemCount: totalPages,
                 itemBuilder: (context, index) {
-                  return _buildOnboardingPage(_onboardingItems[index]);
+                  if (index < _onboardingItems.length) {
+                    return _buildOnboardingPage(_onboardingItems[index]);
+                  } else {
+                    return _buildPermissionsPage();
+                  }
                 },
               ),
             ),
 
             // Bottom Section
-            Padding(
-              padding: const EdgeInsets.all(24.0),
-              child: Column(
-                children: [
-                  // Page Indicators
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: List.generate(
-                      _onboardingItems.length,
-                      (index) => _buildPageIndicator(index),
-                    ),
-                  ),
-                  const SizedBox(height: 32),
-
-                  // Navigation Buttons
-                  Row(
-                    children: [
-                      if (_currentPage > 0)
-                        Expanded(
-                          child: OutlinedButton(
-                            onPressed: _previousPage,
-                            style: OutlinedButton.styleFrom(
-                              side: const BorderSide(color: Color(0xFF8B5FBF)),
-                              padding: const EdgeInsets.symmetric(vertical: 16),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                            ),
-                            child: Text(
-                              'Kembali',
-                              style: GoogleFonts.poppins(
-                                color: const Color(0xFF8B5FBF),
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ),
-                        ),
-                      if (_currentPage > 0) const SizedBox(width: 16),
-
-                      Expanded(
-                        child: ElevatedButton(
-                          onPressed:
-                              _currentPage == _onboardingItems.length - 1
-                                  ? _completeOnboarding
-                                  : _nextPage,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF8B5FBF),
-                            padding: const EdgeInsets.symmetric(vertical: 16),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                          ),
-                          child: Text(
-                            _currentPage == _onboardingItems.length - 1
-                                ? 'Mulai Sekarang'
-                                : 'Selanjutnya',
-                            style: GoogleFonts.poppins(
-                              color: Colors.white,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
+            _buildBottomSection(totalPages),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildOnboardingPage(OnboardingItem item) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24.0),
+  Widget _buildProgressBar(int totalPages) {
+    final progress = (_currentPage + 1) / totalPages;
+
+    return Container(
+      margin: ResponsiveHelper.padding(context, multiplier: 1.0),
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          // Icon
-          Container(
-            width: 120,
-            height: 120,
-            decoration: BoxDecoration(
-              color: item.color.withOpacity(0.1),
-              shape: BoxShape.circle,
-            ),
-            child: Icon(item.icon, size: 60, color: item.color),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Langkah ${_currentPage + 1} dari $totalPages',
+                style: GoogleFonts.poppins(
+                  color: Colors.grey[400],
+                  fontSize: ResponsiveHelper.fontSize(
+                    context,
+                    DesignTokens.fontSizeLabelSmall,
+                  ),
+                ),
+              ),
+              Text(
+                '${(progress * 100).toStringAsFixed(0)}%',
+                style: GoogleFonts.poppins(
+                  color: Colors.grey[400],
+                  fontSize: ResponsiveHelper.fontSize(
+                    context,
+                    DesignTokens.fontSizeLabelSmall,
+                  ),
+                ),
+              ),
+            ],
           ),
-          const SizedBox(height: 40),
-
-          // Title
-          Text(
-            item.title,
-            style: GoogleFonts.poppins(
-              color: Colors.white,
-              fontSize: 28,
-              fontWeight: FontWeight.bold,
+          SizedBox(height: ResponsiveHelper.verticalSpacing(context, 8)),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(
+              ResponsiveHelper.borderRadius(context, DesignTokens.radiusRound),
             ),
-            textAlign: TextAlign.center,
+            child: LinearProgressIndicator(
+              value: progress,
+              backgroundColor: Colors.grey[800],
+              valueColor: AlwaysStoppedAnimation<Color>(
+                DesignTokens.primaryColor,
+              ),
+              minHeight: 4,
+            ),
           ),
-          const SizedBox(height: 16),
+        ],
+      ),
+    );
+  }
 
-          // Subtitle
-          Text(
-            item.subtitle,
-            style: GoogleFonts.poppins(
-              color: item.color,
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
+  Widget _buildOnboardingPage(OnboardingItem item) {
+    return FadeTransition(
+      opacity: _fadeAnimation,
+      child: Padding(
+        padding: ResponsiveHelper.padding(context, multiplier: 1.5),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            // Animated Icon
+            ScaleTransition(
+              scale: _iconScaleAnimation,
+              child: Container(
+                width: ResponsiveHelper.screenWidth(context) * 0.3,
+                height: ResponsiveHelper.screenWidth(context) * 0.3,
+                decoration: BoxDecoration(
+                  color: item.color.withOpacity(0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  item.icon,
+                  size: ResponsiveHelper.iconSize(context, 60),
+                  color: item.color,
+                ),
+              ),
             ),
-            textAlign: TextAlign.center,
+            SizedBox(height: ResponsiveHelper.verticalSpacing(context, 32)),
+
+            // Title
+            AccessibilityHelper.createAccessibleText(
+              context: context,
+              text: item.title,
+              isHeader: true,
+              style: GoogleFonts.poppins(
+                color: Colors.white,
+                fontSize: ResponsiveHelper.fontSize(
+                  context,
+                  DesignTokens.fontSizeHeadlineMedium,
+                ),
+                fontWeight: DesignTokens.weightBold,
+              ),
+            ),
+            SizedBox(height: ResponsiveHelper.verticalSpacing(context, 12)),
+
+            // Subtitle
+            Text(
+              item.subtitle,
+              style: GoogleFonts.poppins(
+                color: item.color,
+                fontSize: ResponsiveHelper.fontSize(
+                  context,
+                  DesignTokens.fontSizeTitleLarge,
+                ),
+                fontWeight: DesignTokens.weightSemiBold,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(height: ResponsiveHelper.verticalSpacing(context, 24)),
+
+            // Description
+            AccessibilityHelper.createAccessibleText(
+              context: context,
+              text: item.description,
+              style: GoogleFonts.poppins(
+                color: Colors.grey[400],
+                fontSize: ResponsiveHelper.fontSize(
+                  context,
+                  DesignTokens.fontSizeBodyLarge,
+                ),
+                height: 1.6,
+              ),
+            ),
+
+            // Feature Highlights
+            if (item.features.isNotEmpty) ...[
+              SizedBox(height: ResponsiveHelper.verticalSpacing(context, 24)),
+              ...item.features.map((feature) => Padding(
+                    padding: EdgeInsets.only(
+                      bottom: ResponsiveHelper.verticalSpacing(context, 8),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(
+                          Iconsax.tick_circle,
+                          size: ResponsiveHelper.iconSize(context, 20),
+                          color: item.color,
+                        ),
+                        SizedBox(
+                          width: ResponsiveHelper.horizontalSpacing(context, 12),
+                        ),
+                        Expanded(
+                          child: Text(
+                            feature,
+                            style: GoogleFonts.poppins(
+                              color: Colors.grey[300],
+                              fontSize: ResponsiveHelper.fontSize(
+                                context,
+                                DesignTokens.fontSizeBodyMedium,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  )),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPermissionsPage() {
+    return SingleChildScrollView(
+      padding: ResponsiveHelper.padding(context, multiplier: 1.5),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Header
+          Center(
+            child: Column(
+              children: [
+                Container(
+                  padding: ResponsiveHelper.padding(context, multiplier: 2.0),
+                  decoration: BoxDecoration(
+                    color: DesignTokens.primaryColor.withOpacity(0.1),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    Iconsax.shield_tick,
+                    size: ResponsiveHelper.iconSize(context, 60),
+                    color: DesignTokens.primaryColor,
+                  ),
+                ),
+                SizedBox(height: ResponsiveHelper.verticalSpacing(context, 24)),
+                AccessibilityHelper.createAccessibleText(
+                  context: context,
+                  text: 'Izinkan Akses',
+                  isHeader: true,
+                  style: GoogleFonts.poppins(
+                    color: Colors.white,
+                    fontSize: ResponsiveHelper.fontSize(
+                      context,
+                      DesignTokens.fontSizeHeadlineMedium,
+                    ),
+                    fontWeight: DesignTokens.weightBold,
+                  ),
+                ),
+                SizedBox(height: ResponsiveHelper.verticalSpacing(context, 12)),
+                Text(
+                  'Aktifkan fitur untuk pengalaman terbaik',
+                  style: GoogleFonts.poppins(
+                    color: Colors.grey[400],
+                    fontSize: ResponsiveHelper.fontSize(
+                      context,
+                      DesignTokens.fontSizeBodyMedium,
+                    ),
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ],
+            ),
           ),
-          const SizedBox(height: 24),
+          SizedBox(height: ResponsiveHelper.verticalSpacing(context, 32)),
 
-          // Description
-          Text(
-            item.description,
-            style: GoogleFonts.poppins(
-              color: Colors.grey[400],
-              fontSize: 16,
-              height: 1.6,
+          // Permission Cards
+          PermissionRequestCard(
+            permission: Permission.location,
+            title: 'Lokasi',
+            description:
+                'Gunakan lokasi untuk memberikan rekomendasi tempat hemat dan tracking pengeluaran berdasarkan lokasi',
+            benefit: 'Dapatkan rekomendasi tempat hemat di sekitar Anda',
+            icon: Iconsax.location,
+            iconColor: const Color(0xFF4ECDC4),
+            onPermissionGranted: () {
+              LoggerService.success('Location permission granted');
+            },
+          ),
+          PermissionRequestCard(
+            permission: Permission.notification,
+            title: 'Notifikasi',
+            description:
+                'Terima notifikasi untuk budget alerts, pengingat tagihan, dan rekomendasi keuangan',
+            benefit: 'Jangan lewatkan pengingat penting tentang keuangan Anda',
+            icon: Iconsax.notification,
+            iconColor: const Color(0xFFFF6B6B),
+            onPermissionGranted: () {
+              LoggerService.success('Notification permission granted');
+            },
+          ),
+          PermissionRequestCard(
+            permission: Permission.camera,
+            title: 'Kamera',
+            description:
+                'Gunakan kamera untuk scan struk dan extract informasi transaksi secara otomatis',
+            benefit: 'Scan struk dengan mudah untuk input transaksi cepat',
+            icon: Iconsax.camera,
+            iconColor: const Color(0xFFFFEAA7),
+            onPermissionGranted: () {
+              LoggerService.success('Camera permission granted');
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBottomSection(int totalPages) {
+    return Padding(
+      padding: ResponsiveHelper.padding(context, multiplier: 1.5),
+      child: Column(
+        children: [
+          // Page Indicators
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: List.generate(
+              totalPages,
+              (index) => _buildPageIndicator(index),
             ),
-            textAlign: TextAlign.center,
+          ),
+          SizedBox(height: ResponsiveHelper.verticalSpacing(context, 24)),
+
+          // Navigation Buttons
+          Row(
+            children: [
+              if (_currentPage > 0)
+                Expanded(
+                  child: AccessibilityHelper.createAccessibleButton(
+                    context: context,
+                    label: 'Kembali',
+                    onPressed: _previousPage,
+                    backgroundColor: Colors.transparent,
+                    foregroundColor: DesignTokens.primaryColor,
+                    minWidth: 0,
+                  ),
+                ),
+              if (_currentPage > 0)
+                SizedBox(width: ResponsiveHelper.horizontalSpacing(context, 12)),
+              Expanded(
+                child: AccessibilityHelper.createAccessibleButton(
+                  context: context,
+                  label: _currentPage == totalPages - 1
+                      ? 'Mulai Sekarang'
+                      : 'Selanjutnya',
+                  onPressed: _currentPage == totalPages - 1
+                      ? _completeOnboarding
+                      : _nextPage,
+                  backgroundColor: DesignTokens.primaryColor,
+                  icon: _currentPage == totalPages - 1
+                      ? Iconsax.arrow_right_3
+                      : Iconsax.arrow_right_1,
+                ),
+              ),
+            ],
           ),
         ],
       ),
@@ -234,23 +506,32 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   }
 
   Widget _buildPageIndicator(int index) {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 4),
-      width: _currentPage == index ? 24 : 8,
+    final isActive = _currentPage == index;
+    return AnimatedContainer(
+      duration: DesignTokens.durationMedium,
+      margin: EdgeInsets.symmetric(
+        horizontal: ResponsiveHelper.horizontalSpacing(context, 4),
+      ),
+      width: isActive
+          ? ResponsiveHelper.horizontalSpacing(context, 24)
+          : ResponsiveHelper.horizontalSpacing(context, 8),
       height: 8,
       decoration: BoxDecoration(
-        color:
-            _currentPage == index ? const Color(0xFF8B5FBF) : Colors.grey[600],
-        borderRadius: BorderRadius.circular(4),
+        color: isActive
+            ? DesignTokens.primaryColor
+            : Colors.grey[600]!.withOpacity(0.5),
+        borderRadius: BorderRadius.circular(
+          ResponsiveHelper.borderRadius(context, DesignTokens.radiusRound),
+        ),
       ),
     );
   }
 
   void _nextPage() {
-    if (_currentPage < _onboardingItems.length - 1) {
+    if (_currentPage < _onboardingItems.length) {
       _pageController.nextPage(
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeInOut,
+        duration: DesignTokens.durationMedium,
+        curve: DesignTokens.curveStandard,
       );
     }
   }
@@ -258,26 +539,46 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   void _previousPage() {
     if (_currentPage > 0) {
       _pageController.previousPage(
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeInOut,
+        duration: DesignTokens.durationMedium,
+        curve: DesignTokens.curveStandard,
       );
+    }
+  }
+
+  Future<void> _skipOnboarding() async {
+    await OnboardingFlowManager.skipOnboarding();
+    if (mounted) {
+      Navigator.pushReplacementNamed(context, '/home');
     }
   }
 
   Future<void> _completeOnboarding() async {
     try {
+      await OnboardingFlowManager.completeOnboarding();
+      await OnboardingFlowManager.markPermissionsRequested();
+
       final prefs = await SharedPreferences.getInstance();
 
       // Set user defaults for new users
-      await prefs.setBool('onboarding_completed', true);
-      await prefs.setInt('default_tab_index', 2); // Goals tab (index 2)
+      await prefs.setInt('default_tab_index', 0); // Home tab
       await prefs.setBool('ai_recommendations_enabled', true);
 
-      // Fetch and store user location
-      final position = await LocationService.getCurrentPosition();
-      if (position != null) {
-        await prefs.setDouble('user_latitude', position.latitude);
-        await prefs.setDouble('user_longitude', position.longitude);
+      // Fetch and store user location if permission granted
+      try {
+        final position = await LocationService.getCurrentPosition();
+        if (position != null) {
+          await prefs.setDouble('user_latitude', position.latitude);
+          await prefs.setDouble('user_longitude', position.longitude);
+        }
+      } catch (e) {
+        LoggerService.debug('Location not available: $e');
+      }
+
+      // Request notification permission if not already granted
+      try {
+        await NotificationService().requestPermissions();
+      } catch (e) {
+        LoggerService.debug('Notification permission not available: $e');
       }
 
       // Navigate to home
@@ -285,12 +586,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         Navigator.pushReplacementNamed(context, '/home');
       }
     } catch (e) {
-      // If there's an error, still complete onboarding but without location
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setBool('onboarding_completed', true);
-      await prefs.setInt('default_tab_index', 2);
-      await prefs.setBool('ai_recommendations_enabled', true);
-
+      LoggerService.error('Error completing onboarding', error: e);
+      // Still navigate to home even if there's an error
       if (mounted) {
         Navigator.pushReplacementNamed(context, '/home');
       }
@@ -304,6 +601,7 @@ class OnboardingItem {
   final String description;
   final IconData icon;
   final Color color;
+  final List<String> features;
 
   OnboardingItem({
     required this.title,
@@ -311,5 +609,6 @@ class OnboardingItem {
     required this.description,
     required this.icon,
     required this.color,
+    this.features = const [],
   });
 }

@@ -7,6 +7,7 @@ import 'package:financial_app/services/error_handler_service.dart';
 import 'package:financial_app/services/logger_service.dart';
 import 'package:financial_app/widgets/goals/add_goal_modal.dart';
 import 'package:financial_app/widgets/goals/contribute_modal.dart';
+import 'package:financial_app/utils/responsive_helper.dart';
 
 class GoalCard extends StatelessWidget {
   final Map<String, dynamic> goal;
@@ -30,11 +31,16 @@ class GoalCard extends StatelessWidget {
             : (priorityValue is String ? int.tryParse(priorityValue) ?? 3 : 3);
 
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
+      width: double.infinity,
+      margin: EdgeInsets.only(
+        bottom: ResponsiveHelper.verticalSpacing(context, 12),
+      ),
+      padding: ResponsiveHelper.padding(context),
       decoration: BoxDecoration(
         color: const Color(0xFF1A1A1A),
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(
+          ResponsiveHelper.borderRadius(context, 16),
+        ),
         border: Border.all(color: Colors.grey[800]!),
       ),
       child: Column(
@@ -43,19 +49,23 @@ class GoalCard extends StatelessWidget {
           Row(
             children: [
               Container(
-                width: 40,
-                height: 40,
+                width: ResponsiveHelper.iconSize(context, 40),
+                height: ResponsiveHelper.iconSize(context, 40),
                 decoration: BoxDecoration(
                   color: getGoalTypeColor(type).withOpacity(0.2),
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(
+                    ResponsiveHelper.borderRadius(context, 10),
+                  ),
                 ),
                 child: Icon(
                   getGoalTypeIcon(type),
                   color: getGoalTypeColor(type),
-                  size: 20,
+                  size: ResponsiveHelper.iconSize(context, 20),
                 ),
               ),
-              const SizedBox(width: 12),
+              SizedBox(
+                width: ResponsiveHelper.horizontalSpacing(context, 12),
+              ),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -64,7 +74,7 @@ class GoalCard extends StatelessWidget {
                       goal['name'] as String,
                       style: GoogleFonts.poppins(
                         color: Colors.white,
-                        fontSize: 16,
+                        fontSize: ResponsiveHelper.fontSize(context, 16),
                         fontWeight: FontWeight.w500,
                       ),
                     ),
@@ -72,27 +82,30 @@ class GoalCard extends StatelessWidget {
                       'Target: Rp ${target.toStringAsFixed(0)}',
                       style: GoogleFonts.poppins(
                         color: Colors.grey[500],
-                        fontSize: 12,
+                        fontSize: ResponsiveHelper.fontSize(context, 12),
                       ),
                     ),
                   ],
                 ),
               ),
-              _buildPriorityBadge(priority),
+              _buildPriorityBadge(context, priority),
             ],
           ),
 
-          const SizedBox(height: 16),
+          SizedBox(height: ResponsiveHelper.verticalSpacing(context, 16)),
 
           // Progress Bar
           LinearProgressIndicator(
             value: progress,
             backgroundColor: Colors.grey[800],
             color: getGoalTypeColor(type),
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(
+              ResponsiveHelper.borderRadius(context, 10),
+            ),
+            minHeight: ResponsiveHelper.verticalSpacing(context, 8),
           ),
 
-          const SizedBox(height: 8),
+          SizedBox(height: ResponsiveHelper.verticalSpacing(context, 8)),
 
           // Progress Info
           Row(
@@ -102,7 +115,7 @@ class GoalCard extends StatelessWidget {
                 'Rp ${saved.toStringAsFixed(0)}',
                 style: GoogleFonts.poppins(
                   color: Colors.white,
-                  fontSize: 14,
+                  fontSize: ResponsiveHelper.fontSize(context, 14),
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -110,7 +123,7 @@ class GoalCard extends StatelessWidget {
                 '${(progress * 100).toStringAsFixed(0)}%',
                 style: GoogleFonts.poppins(
                   color: Colors.grey[400],
-                  fontSize: 12,
+                  fontSize: ResponsiveHelper.fontSize(context, 12),
                 ),
               ),
               if (deadline != null)
@@ -118,13 +131,13 @@ class GoalCard extends StatelessWidget {
                   formatDeadline(deadline),
                   style: GoogleFonts.poppins(
                     color: Colors.grey[400],
-                    fontSize: 12,
+                    fontSize: ResponsiveHelper.fontSize(context, 12),
                   ),
                 ),
             ],
           ),
 
-          const SizedBox(height: 12),
+          SizedBox(height: ResponsiveHelper.verticalSpacing(context, 12)),
 
           // Action Buttons
           Row(
@@ -138,14 +151,18 @@ class GoalCard extends StatelessWidget {
                   onTap: () => _showContributeDialog(context),
                 ),
               ),
-              const SizedBox(width: 8),
+              SizedBox(
+                width: ResponsiveHelper.horizontalSpacing(context, 8),
+              ),
               _buildIconButton(
                 context,
                 icon: Iconsax.edit,
                 color: Colors.blue,
                 onTap: () => _showEditDialog(context),
               ),
-              const SizedBox(width: 8),
+              SizedBox(
+                width: ResponsiveHelper.horizontalSpacing(context, 8),
+              ),
               _buildIconButton(
                 context,
                 icon: Iconsax.trash,
@@ -168,24 +185,34 @@ class GoalCard extends StatelessWidget {
   }) {
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(8),
+      borderRadius: BorderRadius.circular(
+        ResponsiveHelper.borderRadius(context, 8),
+      ),
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 8),
+        padding: ResponsiveHelper.verticalPadding(context, multiplier: 0.5),
         decoration: BoxDecoration(
           color: color.withOpacity(0.1),
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(
+            ResponsiveHelper.borderRadius(context, 8),
+          ),
           border: Border.all(color: color.withOpacity(0.3)),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, color: color, size: 16),
-            const SizedBox(width: 6),
+            Icon(
+              icon,
+              color: color,
+              size: ResponsiveHelper.iconSize(context, 16),
+            ),
+            SizedBox(
+              width: ResponsiveHelper.horizontalSpacing(context, 6),
+            ),
             Text(
               label,
               style: GoogleFonts.poppins(
                 color: color,
-                fontSize: 12,
+                fontSize: ResponsiveHelper.fontSize(context, 12),
                 fontWeight: FontWeight.w500,
               ),
             ),
@@ -203,15 +230,23 @@ class GoalCard extends StatelessWidget {
   }) {
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(8),
+      borderRadius: BorderRadius.circular(
+        ResponsiveHelper.borderRadius(context, 8),
+      ),
       child: Container(
-        padding: const EdgeInsets.all(8),
+        padding: ResponsiveHelper.padding(context, multiplier: 0.5),
         decoration: BoxDecoration(
           color: color.withOpacity(0.1),
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(
+            ResponsiveHelper.borderRadius(context, 8),
+          ),
           border: Border.all(color: color.withOpacity(0.3)),
         ),
-        child: Icon(icon, color: color, size: 16),
+        child: Icon(
+          icon,
+          color: color,
+          size: ResponsiveHelper.iconSize(context, 16),
+        ),
       ),
     );
   }
@@ -313,7 +348,7 @@ class GoalCard extends StatelessWidget {
     );
   }
 
-  Widget _buildPriorityBadge(int priority) {
+  Widget _buildPriorityBadge(BuildContext context, int priority) {
     Color color;
     String text;
 
@@ -345,17 +380,23 @@ class GoalCard extends StatelessWidget {
     }
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      padding: ResponsiveHelper.symmetricPadding(
+        context,
+        horizontal: 8,
+        vertical: 4,
+      ),
       decoration: BoxDecoration(
         color: color.withOpacity(0.2),
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(
+          ResponsiveHelper.borderRadius(context, 8),
+        ),
         border: Border.all(color: color.withOpacity(0.5)),
       ),
       child: Text(
         text,
         style: GoogleFonts.poppins(
           color: color,
-          fontSize: 10,
+          fontSize: ResponsiveHelper.fontSize(context, 10),
           fontWeight: FontWeight.w500,
         ),
       ),

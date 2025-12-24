@@ -1,0 +1,695 @@
+{
+  "componentSet": {
+    "name": "Financial App Components",
+    "children": [
+      {
+        "name": "Button",
+        "type": "COMPONENT",
+        "children": [
+          {
+            "name": "Text",
+            "type": "TEXT",
+            "layoutAlign": "INHERIT",
+            "characters": "Button",
+            "fontSize": 14,
+            "fontFamily": "Roboto",
+            "fontWeight": 500,
+            "textAlignHorizontal": "CENTER",
+            "fills": [{"type": "SOLID", "color": {"r": 1, "g": 1, "b": 1}}],
+            "layoutGrow": 1
+          }
+        ],
+        "layoutMode": "HORIZONTAL",
+        "paddingLeft": 16,
+        "paddingRight": 16,
+        "paddingTop": 12,
+        "paddingBottom": 12,
+        "itemSpacing": 8,
+        "cornerRadius": 8,
+        "fills": [{"type": "SOLID", "color": {"r": 0.129, "g": 0.588, "b": 0.957}}],
+        "layoutGrow": 0,
+        "itemReverseZIndex": false,
+        "stickyNotes": [],
+        "componentPropertyDefinitions": {
+          "text": {
+            "name": "Text",
+            "type": "TEXT",
+            "defaultValue": "Button"
+          }
+        }
+      },
+      {
+        "name": "Card",
+        "type": "COMPONENT",
+        "children": [
+          {
+            "name": "Content",
+            "type": "FRAME",
+            "layoutMode": "VERTICAL",
+            "itemSpacing": 8,
+            "paddingLeft": 16,
+            "paddingRight": 16,
+            "paddingTop": 16,
+            "paddingBottom": 16,
+            "layoutGrow": 1,
+            "clipsContent": false
+          }
+        ],
+        "cornerRadius": 12,
+        "fills": [{"type": "SOLID", "color": {"r": 1, "g": 1, "b": 1}}],
+        "strokes": [{"type": "SOLID", "color": {"r": 0.878, "g": 0.878, "b": 0.878}}],
+        "strokeWeight": 1,
+        "effects": [
+          {
+            "type": "DROP_SHADOW",
+            "color": {"r": 0, "g": 0, "b": 0, "a": 0.1},
+            "offset": {"x": 0, "y": 2},
+            "radius": 4,
+            "spread": 0
+          }
+        ],
+        "layoutGrow": 0,
+        "itemReverseZIndex": false,
+        "stickyNotes": []
+      },
+      {
+        "name": "InputField",
+        "type": "COMPONENT",
+        "children": [
+          {
+            "name": "Placeholder",
+            "type": "TEXT",
+            "layoutAlign": "INHERIT",
+            "characters": "Placeholder text",
+            "fontSize": 16,
+            "fontFamily": "Roboto",
+            "textAlignHorizontal": "LEFT",
+            "fills": [{"type": "SOLID", "color": {"r": 0.616, "g": 0.616, "b": 0.616}}],
+            "layoutGrow": 1
+          }
+        ],
+        "cornerRadius": 8,
+        "fills": [{"type": "SOLID", "color": {"r": 1, "g": 1, "b": 1}}],
+        "strokes": [{"type": "SOLID", "color": {"r": 0.784, "g": 0.784, "b": 0.784}}],
+        "strokeWeight": 1,
+        "paddingLeft": 16,
+        "paddingRight": 16,
+        "paddingTop": 12,
+        "paddingBottom": 12,
+        "itemSpacing": 8,
+        "layoutMode": "HORIZONTAL",
+        "layoutGrow": 0,
+        "itemReverseZIndex": false,
+        "stickyNotes": []
+      }
+    ]
+  },
+  "instances": [
+    {
+      "name": "HomeScreen",
+      "type": "FRAME",
+      "children": [
+        {
+          "name": "Header",
+          "type": "FRAME",
+          "children": [
+            {
+              "name": "Title",
+              "type": "TEXT",
+              "characters": "Financial App",
+              "fontSize": 24,
+              "fontFamily": "Roboto",
+              "fontWeight": 700,
+              "textAlignHorizontal": "LEFT",
+              "fills": [{"type": "SOLID", "color": {"r": 0.129, "g": 0.588, "b": 0.957}}]
+            }
+          ],
+          "layoutMode": "HORIZONTAL",
+          "itemSpacing": 8,
+          "paddingLeft": 16,
+          "paddingRight": 16,
+          "paddingTop": 16,
+          "paddingBottom": 16,
+          "layoutAlign": "STRETCH"
+        },
+        {
+          "name": "BalanceCard",
+          "type": "INSTANCE",
+          "componentId": "card",
+          "children": [
+            {
+              "name": "BalanceTitle",
+              "type": "TEXT",
+              "characters": "Current Balance",
+              "fontSize": 16,
+              "fontFamily": "Roboto",
+              "fontWeight": 500,
+              "textAlignHorizontal": "LEFT",
+              "fills": [{"type": "SOLID", "color": {"r": 0.451, "g": 0.451, "b": 0.451}}]
+            },
+            {
+              "name": "BalanceAmount",
+              "type": "TEXT",
+              "characters": "Rp 12,500,000",
+              "fontSize": 32,
+              "fontFamily": "Roboto",
+              "fontWeight": 700,
+              "textAlignHorizontal": "LEFT",
+              "fills": [{"type": "SOLID", "color": {"r": 0.129, "g": 0.588, "b": 0.957}}]
+            }
+          ]
+        },
+        {
+          "name": "QuickActions",
+          "type": "FRAME",
+          "children": [
+            {
+              "name": "AddExpense",
+              "type": "INSTANCE",
+              "componentId": "button",
+              "properties": {
+                "text": "Add Expense"
+              }
+            },
+            {
+              "name": "ViewAnalytics",
+              "type": "INSTANCE",
+              "componentId": "button",
+              "properties": {
+                "text": "Analytics"
+              }
+            }
+          ],
+          "layoutMode": "HORIZONTAL",
+          "itemSpacing": 8,
+          "paddingLeft": 16,
+          "paddingRight": 16,
+          "layoutAlign": "STRETCH"
+        },
+        {
+          "name": "RecentTransactions",
+          "type": "FRAME",
+          "children": [
+            {
+              "name": "Transaction1",
+              "type": "FRAME",
+              "children": [
+                {
+                  "name": "Category",
+                  "type": "TEXT",
+                  "characters": "Food & Dining",
+                  "fontSize": 14,
+                  "fontFamily": "Roboto",
+                  "textAlignHorizontal": "LEFT",
+                  "fills": [{"type": "SOLID", "color": {"r": 0.451, "g": 0.451, "b": 0.451}}]
+                },
+                {
+                  "name": "Amount",
+                  "type": "TEXT",
+                  "characters": "-Rp 125,000",
+                  "fontSize": 14,
+                  "fontFamily": "Roboto",
+                  "fontWeight": 700,
+                  "textAlignHorizontal": "RIGHT",
+                  "fills": [{"type": "SOLID", "color": {"r": 0.957, "g": 0.263, "b": 0.212}}]
+                }
+              ],
+              "layoutMode": "HORIZONTAL",
+              "itemSpacing": 8,
+              "paddingLeft": 16,
+              "paddingRight": 16,
+              "paddingTop": 12,
+              "paddingBottom": 12,
+              "layoutAlign": "STRETCH"
+            },
+            {
+              "name": "Transaction2",
+              "type": "FRAME",
+              "children": [
+                {
+                  "name": "Category",
+                  "type": "TEXT",
+                  "characters": "Transportation",
+                  "fontSize": 14,
+                  "fontFamily": "Roboto",
+                  "textAlignHorizontal": "LEFT",
+                  "fills": [{"type": "SOLID", "color": {"r": 0.451, "g": 0.451, "b": 0.451}}]
+                },
+                {
+                  "name": "Amount",
+                  "type": "TEXT",
+                  "characters": "-Rp 75,000",
+                  "fontSize": 14,
+                  "fontFamily": "Roboto",
+                  "fontWeight": 700,
+                  "textAlignHorizontal": "RIGHT",
+                  "fills": [{"type": "SOLID", "color": {"r": 0.957, "g": 0.263, "b": 0.212}}]
+                }
+              ],
+              "layoutMode": "HORIZONTAL",
+              "itemSpacing": 8,
+              "paddingLeft": 16,
+              "paddingRight": 16,
+              "paddingTop": 12,
+              "paddingBottom": 12,
+              "layoutAlign": "STRETCH"
+            }
+          ],
+          "layoutMode": "VERTICAL",
+          "itemSpacing": 0,
+          "layoutAlign": "STRETCH"
+        }
+      ],
+      "layoutMode": "VERTICAL",
+      "itemSpacing": 16,
+      "paddingLeft": 0,
+      "paddingRight": 0,
+      "paddingTop": 0,
+      "paddingBottom": 80,
+      "backgrounds": [{"type": "SOLID", "color": {"r": 0.961, "g": 0.961, "b": 0.961}}],
+      "itemReverseZIndex": false,
+      "stickyNotes": []
+    },
+    {
+      "name": "TransactionScreen",
+      "type": "FRAME",
+      "children": [
+        {
+          "name": "Header",
+          "type": "FRAME",
+          "children": [
+            {
+              "name": "BackButton",
+              "type": "FRAME",
+              "children": [
+                {
+                  "name": "Icon",
+                  "type": "VECTOR",
+                  "vectorNetwork": {
+                    "vertices": [{"x": 0, "y": 0}, {"x": 10, "y": 5}, {"x": 0, "y": 10}],
+                    "segments": [{"start": 0, "end": 1}, {"start": 1, "end": 2}],
+                    "regions": []
+                  }
+                }
+              ],
+              "width": 40,
+              "height": 40
+            },
+            {
+              "name": "Title",
+              "type": "TEXT",
+              "characters": "Add Transaction",
+              "fontSize": 20,
+              "fontFamily": "Roboto",
+              "fontWeight": 700,
+              "textAlignHorizontal": "CENTER",
+              "layoutGrow": 1
+            },
+            {
+              "name": "EmptySpace",
+              "type": "FRAME",
+              "width": 40,
+              "height": 40
+            }
+          ],
+          "layoutMode": "HORIZONTAL",
+          "itemSpacing": 8,
+          "paddingLeft": 16,
+          "paddingRight": 16,
+          "paddingTop": 16,
+          "paddingBottom": 16,
+          "layoutAlign": "STRETCH"
+        },
+        {
+          "name": "Form",
+          "type": "FRAME",
+          "children": [
+            {
+              "name": "AmountInput",
+              "type": "INSTANCE",
+              "componentId": "inputfield",
+              "properties": {
+                "placeholder": "Enter amount"
+              }
+            },
+            {
+              "name": "CategoryInput",
+              "type": "INSTANCE",
+              "componentId": "inputfield",
+              "properties": {
+                "placeholder": "Select category"
+              }
+            },
+            {
+              "name": "DescriptionInput",
+              "type": "INSTANCE",
+              "componentId": "inputfield",
+              "properties": {
+                "placeholder": "Add description (optional)"
+              }
+            },
+            {
+              "name": "SaveButton",
+              "type": "INSTANCE",
+              "componentId": "button",
+              "properties": {
+                "text": "Save Transaction"
+              }
+            }
+          ],
+          "layoutMode": "VERTICAL",
+          "itemSpacing": 16,
+          "paddingLeft": 16,
+          "paddingRight": 16,
+          "layoutAlign": "STRETCH"
+        }
+      ],
+      "layoutMode": "VERTICAL",
+      "itemSpacing": 0,
+      "backgrounds": [{"type": "SOLID", "color": {"r": 1, "g": 1, "b": 1}}],
+      "itemReverseZIndex": false,
+      "stickyNotes": []
+    },
+    {
+      "name": "AnalyticsScreen",
+      "type": "FRAME",
+      "children": [
+        {
+          "name": "Header",
+          "type": "FRAME",
+          "children": [
+            {
+              "name": "Title",
+              "type": "TEXT",
+              "characters": "Analytics",
+              "fontSize": 24,
+              "fontFamily": "Roboto",
+              "fontWeight": 700,
+              "textAlignHorizontal": "LEFT",
+              "fills": [{"type": "SOLID", "color": {"r": 0.129, "g": 0.588, "b": 0.957}}]
+            }
+          ],
+          "layoutMode": "HORIZONTAL",
+          "itemSpacing": 8,
+          "paddingLeft": 16,
+          "paddingRight": 16,
+          "paddingTop": 16,
+          "paddingBottom": 16,
+          "layoutAlign": "STRETCH"
+        },
+        {
+          "name": "SummaryCards",
+          "type": "FRAME",
+          "children": [
+            {
+              "name": "SpentCard",
+              "type": "INSTANCE",
+              "componentId": "card",
+              "children": [
+                {
+                  "name": "SpentTitle",
+                  "type": "TEXT",
+                  "characters": "Spent",
+                  "fontSize": 14,
+                  "fontFamily": "Roboto",
+                  "textAlignHorizontal": "CENTER",
+                  "layoutAlign": "STRETCH"
+                },
+                {
+                  "name": "SpentAmount",
+                  "type": "TEXT",
+                  "characters": "Rp 3,200,000",
+                  "fontSize": 18,
+                  "fontFamily": "Roboto",
+                  "fontWeight": 700,
+                  "textAlignHorizontal": "CENTER",
+                  "layoutAlign": "STRETCH"
+                }
+              ],
+              "layoutMode": "VERTICAL",
+              "itemSpacing": 8,
+              "layoutAlign": "STRETCH"
+            },
+            {
+              "name": "IncomeCard",
+              "type": "INSTANCE",
+              "componentId": "card",
+              "children": [
+                {
+                  "name": "IncomeTitle",
+                  "type": "TEXT",
+                  "characters": "Income",
+                  "fontSize": 14,
+                  "fontFamily": "Roboto",
+                  "textAlignHorizontal": "CENTER",
+                  "layoutAlign": "STRETCH"
+                },
+                {
+                  "name": "IncomeAmount",
+                  "type": "TEXT",
+                  "characters": "Rp 8,500,000",
+                  "fontSize": 18,
+                  "fontFamily": "Roboto",
+                  "fontWeight": 700,
+                  "textAlignHorizontal": "CENTER",
+                  "layoutAlign": "STRETCH"
+                }
+              ],
+              "layoutMode": "VERTICAL",
+              "itemSpacing": 8,
+              "layoutAlign": "STRETCH"
+            }
+          ],
+          "layoutMode": "HORIZONTAL",
+          "itemSpacing": 12,
+          "paddingLeft": 16,
+          "paddingRight": 16,
+          "layoutAlign": "STRETCH"
+        },
+        {
+          "name": "ChartArea",
+          "type": "INSTANCE",
+              "componentId": "card",
+          "children": [
+            {
+              "name": "ChartTitle",
+              "type": "TEXT",
+              "characters": "Spending by Category",
+              "fontSize": 16,
+              "fontFamily": "Roboto",
+              "fontWeight": 700,
+              "textAlignHorizontal": "LEFT",
+              "paddingLeft": 16,
+              "paddingRight": 16,
+              "paddingTop": 16,
+              "paddingBottom": 8
+            },
+            {
+              "name": "ChartPlaceholder",
+              "type": "FRAME",
+              "height": 200,
+              "fills": [{"type": "SOLID", "color": {"r": 0.961, "g": 0.961, "b": 0.961}}],
+              "cornerRadius": 8,
+              "paddingLeft": 16,
+              "paddingRight": 16,
+              "paddingTop": 16,
+              "paddingBottom": 16,
+              "layoutAlign": "STRETCH"
+            }
+          ],
+          "layoutMode": "VERTICAL",
+          "itemSpacing": 0,
+          "layoutAlign": "STRETCH"
+        }
+      ],
+      "layoutMode": "VERTICAL",
+      "itemSpacing": 16,
+      "paddingBottom": 80,
+      "backgrounds": [{"type": "SOLID", "color": {"r": 0.961, "g": 0.961, "b": 0.961}}],
+      "itemReverseZIndex": false,
+      "stickyNotes": []
+    },
+    {
+      "name": "BottomNavBar",
+      "type": "FRAME",
+      "children": [
+        {
+          "name": "HomeTab",
+          "type": "FRAME",
+          "children": [
+            {
+              "name": "HomeIcon",
+              "type": "VECTOR",
+              "vectorNetwork": {
+                "vertices": [{"x": 0, "y": 0}, {"x": 10, "y": 0}, {"x": 10, "y": 10}, {"x": 0, "y": 10}, {"x": 0, "y": 0}],
+                "segments": [{"start": 0, "end": 1}, {"start": 1, "end": 2}, {"start": 2, "end": 3}, {"start": 3, "end": 4}],
+                "regions": [{"windingRule": "EVENODD", "loops": [[0, 1, 2, 3]]}]
+              }
+            },
+            {
+              "name": "HomeLabel",
+              "type": "TEXT",
+              "characters": "Home",
+              "fontSize": 10,
+              "fontFamily": "Roboto",
+              "textAlignHorizontal": "CENTER",
+              "fills": [{"type": "SOLID", "color": {"r": 0.129, "g": 0.588, "b": 0.957}}]
+            }
+          ],
+          "layoutMode": "VERTICAL",
+          "itemSpacing": 4,
+          "layoutAlign": "STRETCH",
+          "paddingTop": 8,
+          "paddingBottom": 8
+        },
+        {
+          "name": "TransactionsTab",
+          "type": "FRAME",
+          "children": [
+            {
+              "name": "TransactionsIcon",
+              "type": "VECTOR",
+              "vectorNetwork": {
+                "vertices": [{"x": 0, "y": 0}, {"x": 10, "y": 0}, {"x": 10, "y": 10}, {"x": 0, "y": 10}, {"x": 0, "y": 0}],
+                "segments": [{"start": 0, "end": 1}, {"start": 1, "end": 2}, {"start": 2, "end": 3}, {"start": 3, "end": 4}],
+                "regions": [{"windingRule": "EVENODD", "loops": [[0, 1, 2, 3]]}]
+              }
+            },
+            {
+              "name": "TransactionsLabel",
+              "type": "TEXT",
+              "characters": "Transactions",
+              "fontSize": 10,
+              "fontFamily": "Roboto",
+              "textAlignHorizontal": "CENTER",
+              "fills": [{"type": "SOLID", "color": {"r": 0.451, "g": 0.451, "b": 0.451}}]
+            }
+          ],
+          "layoutMode": "VERTICAL",
+          "itemSpacing": 4,
+          "layoutAlign": "STRETCH",
+          "paddingTop": 8,
+          "paddingBottom": 8
+        },
+        {
+          "name": "AnalyticsTab",
+          "type": "FRAME",
+          "children": [
+            {
+              "name": "AnalyticsIcon",
+              "type": "VECTOR",
+              "vectorNetwork": {
+                "vertices": [{"x": 0, "y": 0}, {"x": 10, "y": 0}, {"x": 10, "y": 10}, {"x": 0, "y": 10}, {"x": 0, "y": 0}],
+                "segments": [{"start": 0, "end": 1}, {"start": 1, "end": 2}, {"start": 2, "end": 3}, {"start": 3, "end": 4}],
+                "regions": [{"windingRule": "EVENODD", "loops": [[0, 1, 2, 3]]}]
+              }
+            },
+            {
+              "name": "AnalyticsLabel",
+              "type": "TEXT",
+              "characters": "Analytics",
+              "fontSize": 10,
+              "fontFamily": "Roboto",
+              "textAlignHorizontal": "CENTER",
+              "fills": [{"type": "SOLID", "color": {"r": 0.451, "g": 0.451, "b": 0.451}}]
+            }
+          ],
+          "layoutMode": "VERTICAL",
+          "itemSpacing": 4,
+          "layoutAlign": "STRETCH",
+          "paddingTop": 8,
+          "paddingBottom": 8
+        },
+        {
+          "name": "GoalsTab",
+          "type": "FRAME",
+          "children": [
+            {
+              "name": "GoalsIcon",
+              "type": "VECTOR",
+              "vectorNetwork": {
+                "vertices": [{"x": 0, "y": 0}, {"x": 10, "y": 0}, {"x": 10, "y": 10}, {"x": 0, "y": 10}, {"x": 0, "y": 0}],
+                "segments": [{"start": 0, "end": 1}, {"start": 1, "end": 2}, {"start": 2, "end": 3}, {"start": 3, "end": 4}],
+                "regions": [{"windingRule": "EVENODD", "loops": [[0, 1, 2, 3]]}]
+              }
+            },
+            {
+              "name": "GoalsLabel",
+              "type": "TEXT",
+              "characters": "Goals",
+              "fontSize": 10,
+              "fontFamily": "Roboto",
+              "textAlignHorizontal": "CENTER",
+              "fills": [{"type": "SOLID", "color": {"r": 0.451, "g": 0.451, "b": 0.451}}]
+            }
+          ],
+          "layoutMode": "VERTICAL",
+          "itemSpacing": 4,
+          "layoutAlign": "STRETCH",
+          "paddingTop": 8,
+          "paddingBottom": 8
+        },
+        {
+          "name": "ProfileTab",
+          "type": "FRAME",
+          "children": [
+            {
+              "name": "ProfileIcon",
+              "type": "VECTOR",
+              "vectorNetwork": {
+                "vertices": [{"x": 0, "y": 0}, {"x": 10, "y": 0}, {"x": 10, "y": 10}, {"x": 0, "y": 10}, {"x": 0, "y": 0}],
+                "segments": [{"start": 0, "end": 1}, {"start": 1, "end": 2}, {"start": 2, "end": 3}, {"start": 3, "end": 4}],
+                "regions": [{"windingRule": "EVENODD", "loops": [[0, 1, 2, 3]]}]
+              }
+            },
+            {
+              "name": "ProfileLabel",
+              "type": "TEXT",
+              "characters": "Profile",
+              "fontSize": 10,
+              "fontFamily": "Roboto",
+              "textAlignHorizontal": "CENTER",
+              "fills": [{"type": "SOLID", "color": {"r": 0.451, "g": 0.451, "b": 0.451}}]
+            }
+          ],
+          "layoutMode": "VERTICAL",
+          "itemSpacing": 4,
+          "layoutAlign": "STRETCH",
+          "paddingTop": 8,
+          "paddingBottom": 8
+        }
+      ],
+      "layoutMode": "HORIZONTAL",
+      "itemSpacing": 0,
+      "paddingLeft": 16,
+      "paddingRight": 16,
+      "paddingTop": 12,
+      "paddingBottom": 34,
+      "fills": [{"type": "SOLID", "color": {"r": 1, "g": 1, "b": 1}}],
+      "strokes": [{"type": "SOLID", "color": {"r": 0.878, "g": 0.878, "b": 0.878}}],
+      "strokeWeight": 1,
+      "itemReverseZIndex": false,
+      "stickyNotes": []
+    }
+  ],
+  "styles": {
+    "color": {
+      "PrimaryBlue": {"r": 0.129, "g": 0.588, "b": 0.957},
+      "SecondaryOrange": {"r": 1, "g": 0.596, "b": 0},
+      "ErrorRed": {"r": 0.957, "g": 0.263, "b": 0.212},
+      "SuccessGreen": {"r": 0.298, "g": 0.686, "b": 0.314},
+      "BackgroundGray": {"r": 0.961, "g": 0.961, "b": 0.961},
+      "SurfaceWhite": {"r": 1, "g": 1, "b": 1},
+      "TextPrimary": {"r": 0.129, "g": 0.129, "b": 0.129},
+      "TextSecondary": {"r": 0.451, "g": 0.451, "b": 0.451}
+    },
+    "text": {
+      "HeadingLarge": {"fontSize": 32, "fontFamily": "Roboto", "fontWeight": 700},
+      "HeadingMedium": {"fontSize": 24, "fontFamily": "Roboto", "fontWeight": 700},
+      "HeadingSmall": {"fontSize": 20, "fontFamily": "Roboto", "fontWeight": 700},
+      "BodyLarge": {"fontSize": 16, "fontFamily": "Roboto", "fontWeight": 400},
+      "BodyMedium": {"fontSize": 14, "fontFamily": "Roboto", "fontWeight": 400},
+      "BodySmall": {"fontSize": 12, "fontFamily": "Roboto", "fontWeight": 400}
+    }
+  }
+}

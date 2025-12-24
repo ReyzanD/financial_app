@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:financial_app/utils/formatters.dart';
@@ -6,6 +5,8 @@ import 'package:financial_app/widgets/transactions/transaction_helpers.dart';
 import 'package:financial_app/widgets/transactions/transaction_detail_screen.dart';
 import 'package:financial_app/services/api_service.dart';
 import 'package:financial_app/services/logger_service.dart';
+import 'package:financial_app/utils/responsive_helper.dart';
+import 'package:financial_app/utils/biometric_helper.dart';
 
 class TransactionCard extends StatefulWidget {
   final Map<String, dynamic> transaction;
@@ -93,6 +94,31 @@ class _TransactionCardState extends State<TransactionCard> {
         );
       },
       onDismissed: (direction) async {
+        // Request biometric authentication before deletion
+        final authenticated = await BiometricHelper.requestBiometricAuth(
+          context: context,
+          reason: 'Autentikasi diperlukan untuk menghapus transaksi',
+        );
+
+        if (!authenticated) {
+          // User cancelled or failed authentication, restore the card
+          setState(() {
+            _isDismissed = false;
+          });
+          if (context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  'Autentikasi dibatalkan',
+                  style: GoogleFonts.poppins(),
+                ),
+                backgroundColor: Colors.orange,
+              ),
+            );
+          }
+          return;
+        }
+
         // Immediately hide the widget
         setState(() {
           _isDismissed = true;
@@ -102,10 +128,10 @@ class _TransactionCardState extends State<TransactionCard> {
         final apiService = ApiService();
         final transactionId = widget.transaction['id']?.toString() ?? '';
 
-        print(' [TransactionCard] Starting deletion for ID: $transactionId');
+        LoggerService.debug('[TransactionCard] Starting deletion for ID: $transactionId');
 
         try {
-          final result = await apiService.deleteTransaction(transactionId);
+          await apiService.deleteTransaction(transactionId);
           LoggerService.success('Transaction deleted successfully');
 
           // Only refresh parent data after successful deletion
@@ -126,7 +152,7 @@ class _TransactionCardState extends State<TransactionCard> {
             );
           }
         } catch (e) {
-          print(' [TransactionCard] Deletion failed: $e');
+          LoggerService.error('[TransactionCard] Deletion failed', error: e);
           // If deletion fails, show the widget again
           if (mounted) {
             setState(() {
@@ -171,11 +197,15 @@ class _TransactionCardState extends State<TransactionCard> {
           );
         },
         child: Container(
-          margin: const EdgeInsets.only(bottom: 12),
-          padding: const EdgeInsets.all(16),
+          margin: EdgeInsets.only(
+            bottom: ResponsiveHelper.verticalSpacing(context, 12),
+          ),
+          padding: ResponsiveHelper.padding(context),
           decoration: BoxDecoration(
             color: const Color(0xFF1A1A1A),
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(
+              ResponsiveHelper.borderRadius(context, 16),
+            ),
             border: Border.all(
               color:
                   isIncome
@@ -195,11 +225,13 @@ class _TransactionCardState extends State<TransactionCard> {
             children: [
               // Category Icon
               Container(
-                width: 52,
-                height: 52,
+                width: ResponsiveHelper.iconSize(context, 52),
+                height: ResponsiveHelper.iconSize(context, 52),
                 decoration: BoxDecoration(
                   color: categoryColor.withOpacity(0.15),
-                  borderRadius: BorderRadius.circular(14),
+                  borderRadius: BorderRadius.circular(
+                    ResponsiveHelper.borderRadius(context, 14),
+                  ),
                   border: Border.all(
                     color: categoryColor.withOpacity(0.3),
                     width: 1.5,
@@ -208,11 +240,11 @@ class _TransactionCardState extends State<TransactionCard> {
                 child: Icon(
                   getCategoryIcon(category),
                   color: categoryColor,
-                  size: 26,
+                  size: ResponsiveHelper.iconSize(context, 26),
                 ),
               ),
 
-              const SizedBox(width: 12),
+              SizedBox(width: ResponsiveHelper.horizontalSpacing(context, 12)),
 
               // Transaction Details
               Expanded(
@@ -224,24 +256,28 @@ class _TransactionCardState extends State<TransactionCard> {
                           'No description',
                       style: GoogleFonts.poppins(
                         color: Colors.white,
-                        fontSize: 16,
+                        fontSize: ResponsiveHelper.fontSize(context, 16),
                         fontWeight: FontWeight.w500,
                       ),
                     ),
-                    const SizedBox(height: 4),
+                    SizedBox(
+                      height: ResponsiveHelper.verticalSpacing(context, 4),
+                    ),
                     Text(
                       '$category • $location',
                       style: GoogleFonts.poppins(
                         color: Colors.grey[500],
-                        fontSize: 12,
+                        fontSize: ResponsiveHelper.fontSize(context, 12),
                       ),
                     ),
-                    const SizedBox(height: 4),
+                    SizedBox(
+                      height: ResponsiveHelper.verticalSpacing(context, 4),
+                    ),
                     Text(
                       formatDate(date),
                       style: GoogleFonts.poppins(
                         color: Colors.grey[600],
-                        fontSize: 10,
+                        fontSize: ResponsiveHelper.fontSize(context, 10),
                       ),
                     ),
                   ],
@@ -256,13 +292,16 @@ class _TransactionCardState extends State<TransactionCard> {
                     CurrencyFormatter.formatRupiah(amount.abs()),
                     style: GoogleFonts.poppins(
                       color: isIncome ? Colors.green : Colors.white,
-                      fontSize: 16,
+                      fontSize: ResponsiveHelper.fontSize(context, 16),
                       fontWeight: FontWeight.w600,
                     ),
                   ),
-                  const SizedBox(height: 4),
+                  SizedBox(
+                    height: ResponsiveHelper.verticalSpacing(context, 4),
+                  ),
                   Container(
-                    padding: const EdgeInsets.symmetric(
+                    padding: ResponsiveHelper.symmetricPadding(
+                      context,
                       horizontal: 8,
                       vertical: 2,
                     ),
@@ -311,3 +350,4 @@ class _TransactionCardState extends State<TransactionCard> {
     );
   }
 }
+

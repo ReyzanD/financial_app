@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:financial_app/widgets/goals/goal_card.dart';
 import 'package:financial_app/services/api_service.dart';
 import 'package:financial_app/services/error_handler_service.dart';

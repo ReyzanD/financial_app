@@ -2,22 +2,32 @@ import 'base_api.dart';
 
 /// API client for transaction-related endpoints
 class TransactionApi {
-  /// Get transactions with optional filters
-  static Future<List<dynamic>> getTransactions({
+  /// Get transactions with optional filters and pagination
+  static Future<Map<String, dynamic>> getTransactions({
     int limit = 10,
+    int offset = 0,
     String? type,
     String? categoryId,
     String? startDate,
     String? endDate,
+    String? search,
   }) async {
-    String endpoint = 'transactions_232143?limit=$limit';
+    String endpoint = 'transactions_232143?limit=$limit&offset=$offset';
     if (type != null) endpoint += '&type=$type';
     if (categoryId != null) endpoint += '&category_id=$categoryId';
     if (startDate != null) endpoint += '&start_date=$startDate';
     if (endDate != null) endpoint += '&end_date=$endDate';
+    if (search != null && search.isNotEmpty) endpoint += '&search=$search';
 
     final response = await BaseApiClient.get(endpoint);
-    return response['transactions'] ?? [];
+    return {
+      'transactions': response['transactions'] ?? [],
+      'total': response['total'] ?? 0,
+      'count': response['count'] ?? 0,
+      'has_more': response['has_more'] ?? false,
+      'limit': response['limit'] ?? limit,
+      'offset': response['offset'] ?? offset,
+    };
   }
 
   /// Get single transaction by ID

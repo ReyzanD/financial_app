@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:financial_app/services/pin_auth_service.dart';
+import 'package:financial_app/services/error_handler_service.dart';
+import 'package:financial_app/services/logger_service.dart';
 import 'package:financial_app/widgets/auth/pin_pad.dart';
 
 class PinSetupScreen extends StatefulWidget {
@@ -42,7 +44,10 @@ class _PinSetupScreenState extends State<PinSetupScreen> {
         await _savePin();
       } else {
         // PINs don't match
-        _showError('PIN tidak cocok. Silakan coba lagi.');
+        ErrorHandlerService.showWarningSnackbar(
+          context,
+          'PIN tidak cocok. Silakan coba lagi.',
+        );
         setState(() {
           _pin = '';
           _confirmPin = '';
@@ -60,34 +65,28 @@ class _PinSetupScreenState extends State<PinSetupScreen> {
 
       if (mounted) {
         // Show success message
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              '✅ PIN berhasil dibuat!',
-              style: GoogleFonts.poppins(),
-            ),
-            backgroundColor: Colors.green,
-          ),
+        ErrorHandlerService.showSuccessSnackbar(
+          context,
+          'PIN berhasil dibuat!',
         );
 
         // Navigate to home screen
         Navigator.of(context).pushReplacementNamed('/home');
       }
     } catch (e) {
+      LoggerService.error('Error creating PIN', error: e);
       if (mounted) {
-        _showError('Gagal membuat PIN: ${e.toString()}');
+        ErrorHandlerService.showErrorSnackbar(
+          context,
+          ErrorHandlerService.getUserFriendlyMessage(e),
+          onRetry: _savePin,
+        );
       }
     } finally {
       if (mounted) {
         setState(() => _isLoading = false);
       }
     }
-  }
-
-  void _showError(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message), backgroundColor: Colors.red),
-    );
   }
 
   void _onBack() {

@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:financial_app/services/api_service.dart';
 import 'package:financial_app/services/error_handler_service.dart';
 import 'package:financial_app/services/logger_service.dart';
+import 'package:financial_app/utils/form_validators.dart';
 import 'package:intl/intl.dart';
 
 class AddBudgetModal extends StatefulWidget {
@@ -260,18 +261,7 @@ class _AddBudgetModalState extends State<AddBudgetModal> {
                     borderSide: BorderSide.none,
                   ),
                 ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Jumlah budget harus diisi';
-                  }
-                  if (double.tryParse(value) == null) {
-                    return 'Masukkan angka yang valid';
-                  }
-                  if (double.parse(value) <= 0) {
-                    return 'Jumlah harus lebih dari 0';
-                  }
-                  return null;
-                },
+                validator: (value) => FormValidators.validateAmount(value),
               ),
               const SizedBox(height: 16),
               DropdownButtonFormField<String>(

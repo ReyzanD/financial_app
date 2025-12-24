@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../services/auth_service.dart';
 import '../services/pin_auth_service.dart';
+import '../services/error_handler_service.dart';
+import '../services/logger_service.dart';
 import '../widgets/login/login_header.dart';
 import '../widgets/login/login_form.dart';
 import '../widgets/login/social_login.dart';
@@ -75,8 +77,9 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<void> _handleLogin() async {
     if (_emailController.text.isEmpty || _passwordController.text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please fill in all fields')),
+      ErrorHandlerService.showWarningSnackbar(
+        context,
+        'Silakan isi semua field',
       );
       return;
     }
@@ -117,9 +120,14 @@ class _LoginScreenState extends State<LoginScreen> {
         }
       }
     } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(e.toString())));
+      LoggerService.error('Error during login', error: e);
+      if (mounted) {
+        ErrorHandlerService.showErrorSnackbar(
+          context,
+          ErrorHandlerService.getUserFriendlyMessage(e),
+          onRetry: _handleLogin,
+        );
+      }
     } finally {
       setState(() => _isLoading = false);
     }
@@ -129,8 +137,9 @@ class _LoginScreenState extends State<LoginScreen> {
     if (_nameController.text.isEmpty ||
         _emailController.text.isEmpty ||
         _passwordController.text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please fill in all fields')),
+      ErrorHandlerService.showWarningSnackbar(
+        context,
+        'Silakan isi semua field',
       );
       return;
     }
@@ -145,10 +154,9 @@ class _LoginScreenState extends State<LoginScreen> {
       );
 
       if (result != null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Registration successful! Please login.'),
-          ),
+        ErrorHandlerService.showSuccessSnackbar(
+          context,
+          'Registrasi berhasil! Silakan login.',
         );
         _nameController.clear();
         _emailController.clear();
@@ -158,9 +166,14 @@ class _LoginScreenState extends State<LoginScreen> {
         });
       }
     } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(e.toString())));
+      LoggerService.error('Error during registration', error: e);
+      if (mounted) {
+        ErrorHandlerService.showErrorSnackbar(
+          context,
+          ErrorHandlerService.getUserFriendlyMessage(e),
+          onRetry: _handleRegister,
+        );
+      }
     } finally {
       setState(() => _isLoading = false);
     }

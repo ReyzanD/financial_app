@@ -37,9 +37,14 @@ class RecommendationService:
             savings_recs = RecommendationService._analyze_savings(user_id)
             recommendations.extend(savings_recs)
             
-            # 5. Detect anomalies
-            anomaly_recs = RecommendationService._detect_anomalies(user_id)
+            # 5. Detect anomalies (using ML-based anomaly detection)
+            from services.anomaly_detector import AnomalyDetector
+            anomaly_recs = AnomalyDetector.flag_anomalies_in_recommendations(user_id)
             recommendations.extend(anomaly_recs)
+            
+            # 6. Legacy anomaly detection (fallback)
+            legacy_anomaly_recs = RecommendationService._detect_anomalies(user_id)
+            recommendations.extend(legacy_anomaly_recs)
             
             # Sort by priority and return top recommendations
             recommendations.sort(key=lambda x: x['priority'], reverse=True)
@@ -162,45 +167,118 @@ class RecommendationService:
     
     @staticmethod
     def _analyze_trends(user_id):
-        """Analyze spending trends month-over-month"""
+        """Analyze spending trends using Prophet ML for better trend detection"""
         recommendations = []
         try:
-            # Compare this month vs last month
-            now = datetime.now()
-            this_month_start = now.replace(day=1)
-            last_month_start = (this_month_start - timedelta(days=1)).replace(day=1)
-            
-            this_month_summary = TransactionModel.get_monthly_summary(user_id, now.year, now.month)
-            last_month_summary = TransactionModel.get_monthly_summary(
-                user_id, 
-                last_month_start.year, 
-                last_month_start.month
-            )
-            
-            this_expenses = sum(float(s.get('total_amount', 0)) for s in this_month_summary if s.get('type_232143') == 'expense')
-            last_expenses = sum(float(s.get('total_amount', 0)) for s in last_month_summary if s.get('type_232143') == 'expense')
-            
-            if last_expenses > 0:
-                change_percent = ((this_expenses - last_expenses) / last_expenses) * 100
+            # Try to use Prophet for trend analysis
+            try:
+                from prophet import Prophet
+                import pandas as pd
+                import numpy as np
                 
-                if change_percent > 20:
-                    recommendations.append({
-                        'type': 'warning',
-                        'title': 'Pengeluaran Meningkat',
-                        'message': f'Pengeluaran bulan ini naik {change_percent:.0f}% dibanding bulan lalu. Periksa kategori pengeluaran Anda.',
-                        'priority': 8,
-                        'potential_savings': this_expenses - last_expenses
-                    })
-                elif change_percent < -10:
-                    recommendations.append({
-                        'type': 'success',
-                        'title': 'Penghematan Berhasil',
-                        'message': f'Hebat! Pengeluaran turun {abs(change_percent):.0f}% bulan ini. Pertahankan!',
-                        'priority': 4,
-                        'potential_savings': 0
-                    })
+                # Get last 90 days of transactions
+                transactions = TransactionModel.get_recent_transactions(user_id, 90)
+                
+                if len(transactions) >= 14:  # Need at least 2 weeks of data
+                    # Prepare data
+                    expense_data = []
+                    for t in transactions:
+                        if t.get('type_232143') == 'expense':
+                            date = t.get('transaction_date_232143')
+                            if date:
+                                expense_data.append({
+                                    'ds': date,
+                                    'y': float(t.get('amount_232143', 0))
+                                })
+                    
+                    if len(expense_data) >= 14:
+                        df = pd.DataFrame(expense_data)
+                        df['ds'] = pd.to_datetime(df['ds'])
+                        df = df.sort_values('ds')
+                        
+                        # Group by day
+                        df_daily = df.groupby('ds')['y'].sum().reset_index()
+                        df_daily.columns = ['ds', 'y']
+                        
+                        # Fit Prophet model
+                        m = Prophet(
+                            daily_seasonality=True,
+                            weekly_seasonality=True,
+                            changepoint_prior_scale=0.05
+                        )
+                        m.fit(df_daily)
+                        
+                        # Predict next 7 days
+                        future = m.make_future_dataframe(periods=7)
+                        forecast = m.predict(future)
+                        
+                        # Get trend direction
+                        recent_actual = df_daily['y'].tail(7).mean()
+                        predicted = forecast['yhat'].tail(7).mean()
+                        
+                        trend_change = ((predicted - recent_actual) / recent_actual) * 100 if recent_actual > 0 else 0
+                        
+                        if trend_change > 15:
+                            recommendations.append({
+                                'type': 'warning',
+                                'title': 'Prediksi: Pengeluaran Akan Meningkat',
+                                'message': f'Berdasarkan pola pengeluaran, diprediksi akan naik {trend_change:.0f}% dalam 7 hari ke depan. Perhatikan pengeluaran Anda.',
+                                'priority': 8,
+                                'potential_savings': predicted - recent_actual if predicted > recent_actual else 0,
+                                'ml_confidence': 'high'
+                            })
+                        elif trend_change < -10:
+                            recommendations.append({
+                                'type': 'success',
+                                'title': 'Prediksi: Tren Penghematan Positif',
+                                'message': f'Berdasarkan analisis ML, pengeluaran diprediksi turun {abs(trend_change):.0f}% dalam 7 hari ke depan. Pertahankan!',
+                                'priority': 4,
+                                'potential_savings': 0,
+                                'ml_confidence': 'high'
+                            })
+            except ImportError:
+                # Fallback to simple month-over-month comparison
+                pass
+            
+            # Fallback: Compare this month vs last month (if Prophet not used)
+            if not recommendations:
+                now = datetime.now()
+                this_month_start = now.replace(day=1)
+                last_month_start = (this_month_start - timedelta(days=1)).replace(day=1)
+                
+                this_month_summary = TransactionModel.get_monthly_summary(user_id, now.year, now.month)
+                last_month_summary = TransactionModel.get_monthly_summary(
+                    user_id, 
+                    last_month_start.year, 
+                    last_month_start.month
+                )
+                
+                this_expenses = sum(float(s.get('total_amount', 0)) for s in this_month_summary if s.get('type_232143') == 'expense')
+                last_expenses = sum(float(s.get('total_amount', 0)) for s in last_month_summary if s.get('type_232143') == 'expense')
+                
+                if last_expenses > 0:
+                    change_percent = ((this_expenses - last_expenses) / last_expenses) * 100
+                    
+                    if change_percent > 20:
+                        recommendations.append({
+                            'type': 'warning',
+                            'title': 'Pengeluaran Meningkat',
+                            'message': f'Pengeluaran bulan ini naik {change_percent:.0f}% dibanding bulan lalu. Periksa kategori pengeluaran Anda.',
+                            'priority': 8,
+                            'potential_savings': this_expenses - last_expenses
+                        })
+                    elif change_percent < -10:
+                        recommendations.append({
+                            'type': 'success',
+                            'title': 'Penghematan Berhasil',
+                            'message': f'Hebat! Pengeluaran turun {abs(change_percent):.0f}% bulan ini. Pertahankan!',
+                            'priority': 4,
+                            'potential_savings': 0
+                        })
         except Exception as e:
             print(f'Error analyzing trends: {e}')
+            import traceback
+            traceback.print_exc()
         
         return recommendations
     

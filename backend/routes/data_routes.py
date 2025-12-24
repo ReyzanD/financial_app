@@ -291,4 +291,121 @@ def _import_obligations(user_id, obligations, replace_mode):
             count += 1
         except Exception as e:
             print(f'Error importing obligation {obl.get("name")}: {e}')
-    return count
+        return count
+
+
+@data_bp.route('/forecast', methods=['POST'])
+@jwt_required()
+def forecast_expenses():
+    """
+    Forecast expenses for next 30 days using Prophet ML model
+    
+    Request body should contain transactions array with:
+        - date: ISO date string
+        - amount: transaction amount
+        - type: 'expense' or 'income'
+    
+    Returns:
+        JSON with forecast data including predictions and confidence intervals
+    """
+    try:
+        user_id = get_jwt_identity()
+        data = request.get_json()
+        
+        if not data or 'transactions' not in data:
+            # If no transactions provided, fetch user's recent transactions
+            from models.transaction_model import TransactionModel
+            transactions = TransactionModel.get_recent_transactions(user_id, 90)
+            
+            # Format for Prophet
+            transactions_data = []
+            for t in transactions:
+                if t.get('type_232143') == 'expense':
+                    transactions_data.append({
+                        'ds': t.get('transaction_date_232143').isoformat() if t.get('transaction_date_232143') else None,
+                        'y': float(t.get('amount_232143', 0))
+                    })
+        else:
+            transactions_data = data['transactions']
+        
+        if len(transactions_data) < 7:
+            return jsonify({
+                'error': 'Insufficient data',
+                'message': 'Need at least 7 days of transaction data for forecasting',
+                'forecast': None
+            }), 400
+        
+        # Try to use Prophet, fallback to simple average if unavailable
+        try:
+            from prophet import Prophet
+            import pandas as pd
+            
+            # Prepare data for Prophet
+            df = pd.DataFrame(transactions_data)
+            df['ds'] = pd.to_datetime(df['ds'])
+            df = df.sort_values('ds')
+            
+            # Group by day (sum amounts per day)
+            df_daily = df.groupby('ds')['y'].sum().reset_index()
+            df_daily.columns = ['ds', 'y']
+            
+            # Fit Prophet model
+            m = Prophet(
+                daily_seasonality=True,
+                weekly_seasonality=True,
+                yearly_seasonality=False,
+                changepoint_prior_scale=0.05
+            )
+            m.fit(df_daily)
+            
+            # Create future dataframe (next 30 days)
+            future = m.make_future_dataframe(periods=30)
+            forecast = m.predict(future)
+            
+            # Get forecast for next 30 days only
+            forecast_30d = forecast.tail(30)
+            
+            # Calculate summary statistics
+            forecast_mean = float(forecast_30d['yhat'].mean())
+            forecast_lower = float(forecast_30d['yhat_lower'].mean())
+            forecast_upper = float(forecast_30d['yhat_upper'].mean())
+            
+            return jsonify({
+                'forecast': {
+                    'mean': forecast_mean,
+                    'lower': forecast_lower,
+                    'upper': forecast_upper,
+                    'daily': forecast_30d[['ds', 'yhat', 'yhat_lower', 'yhat_upper']].to_dict('records')
+                },
+                'method': 'prophet',
+                'confidence': 'high'
+            }), 200
+            
+        except ImportError:
+            # Fallback to simple moving average if Prophet not available
+            import numpy as np
+            
+            amounts = [t['y'] for t in transactions_data if 'y' in t]
+            if amounts:
+                # Simple 7-day moving average
+                recent_amounts = amounts[-7:] if len(amounts) >= 7 else amounts
+                avg_daily = np.mean(recent_amounts)
+                
+                return jsonify({
+                    'forecast': {
+                        'mean': float(avg_daily * 30),
+                        'lower': float(avg_daily * 30 * 0.8),
+                        'upper': float(avg_daily * 30 * 1.2),
+                        'daily': None
+                    },
+                    'method': 'moving_average',
+                    'confidence': 'medium'
+                }), 200
+            else:
+                return jsonify({'error': 'No valid transaction data'}), 400
+                
+    except Exception as e:
+        print(f'❌ Error forecasting expenses: {str(e)}')
+        import traceback
+        traceback.print_exc()
+        return jsonify({'error': f'Failed to forecast: {str(e)}'}), 500

@@ -7,6 +7,8 @@ import 'package:pdf/pdf.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:financial_app/services/report_service.dart';
 import 'package:financial_app/services/api/transaction_api.dart';
+import 'package:financial_app/services/logger_service.dart';
+import 'package:financial_app/services/error_handler_service.dart';
 import 'package:financial_app/models/transaction_model.dart';
 import 'dart:io';
 
@@ -49,7 +51,10 @@ class _ReportScreenState extends State<ReportScreen> {
 
   Future<void> _generateReport() async {
     if (_selectedMonth == null && _selectedYear == null) {
-      _showError('Silakan pilih periode terlebih dahulu');
+      ErrorHandlerService.showWarningSnackbar(
+        context,
+        'Silakan pilih periode terlebih dahulu',
+      );
       return;
     }
 
@@ -62,7 +67,10 @@ class _ReportScreenState extends State<ReportScreen> {
       if (_selectedPeriodType == 'monthly') {
         if (_selectedMonth == null) {
           setState(() => _isGenerating = false);
-          _showError('Silakan pilih bulan');
+          ErrorHandlerService.showWarningSnackbar(
+            context,
+            'Silakan pilih bulan',
+          );
           return;
         }
         startDate = DateTime(_selectedMonth!.year, _selectedMonth!.month, 1);
@@ -77,7 +85,10 @@ class _ReportScreenState extends State<ReportScreen> {
       } else {
         if (_selectedYear == null) {
           setState(() => _isGenerating = false);
-          _showError('Silakan pilih tahun');
+          ErrorHandlerService.showWarningSnackbar(
+            context,
+            'Silakan pilih tahun',
+          );
           return;
         }
         startDate = DateTime(_selectedYear!, 1, 1);
@@ -92,14 +103,19 @@ class _ReportScreenState extends State<ReportScreen> {
         endDate: DateFormat('yyyy-MM-dd').format(endDate),
       );
 
-      final transactions =
-          transactionsData
-              .map((json) => TransactionModel.fromJson(json))
-              .toList();
+      final transactionsList = List<dynamic>.from(
+        transactionsData['transactions'] ?? [],
+      );
+      final transactions = transactionsList
+          .map((json) => TransactionModel.fromJson(json as Map<String, dynamic>))
+          .toList();
 
       if (transactions.isEmpty) {
         setState(() => _isGenerating = false);
-        _showError('Tidak ada transaksi untuk periode yang dipilih');
+        ErrorHandlerService.showWarningSnackbar(
+          context,
+          'Tidak ada transaksi untuk periode yang dipilih',
+        );
         return;
       }
 
@@ -131,20 +147,20 @@ class _ReportScreenState extends State<ReportScreen> {
       }
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'Report berhasil dibuat!',
-              style: GoogleFonts.poppins(),
-            ),
-            backgroundColor: Colors.green,
-            duration: const Duration(seconds: 2),
-          ),
+        ErrorHandlerService.showSuccessSnackbar(
+          context,
+          'Report berhasil dibuat!',
         );
       }
     } catch (e) {
-      print('Error generating report: $e');
-      _showError('Gagal membuat report: $e');
+      LoggerService.error('Error generating report', error: e);
+      if (mounted) {
+        ErrorHandlerService.showErrorSnackbar(
+          context,
+          ErrorHandlerService.getUserFriendlyMessage(e),
+          onRetry: _generateReport,
+        );
+      }
     } finally {
       if (mounted) {
         setState(() => _isGenerating = false);
@@ -212,8 +228,13 @@ class _ReportScreenState extends State<ReportScreen> {
                 : 'Export Transaksi - ${_getPeriodLabel()}',
       );
     } catch (e) {
-      print('Error sharing file: $e');
-      _showError('Gagal membagikan file: $e');
+      LoggerService.error('Error sharing file', error: e);
+      if (mounted) {
+        ErrorHandlerService.showErrorSnackbar(
+          context,
+          ErrorHandlerService.getUserFriendlyMessage(e),
+        );
+      }
     }
   }
 
@@ -226,17 +247,6 @@ class _ReportScreenState extends State<ReportScreen> {
     return 'Periode';
   }
 
-  void _showError(String message) {
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(message, style: GoogleFonts.poppins()),
-          backgroundColor: Colors.red,
-          duration: const Duration(seconds: 3),
-        ),
-      );
-    }
-  }
 
   Future<void> _selectMonth() async {
     final now = DateTime.now();

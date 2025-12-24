@@ -4,7 +4,11 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:financial_app/services/pin_auth_service.dart';
 import 'package:financial_app/services/auth_service.dart';
+import 'package:financial_app/services/biometric_service.dart';
+import 'package:financial_app/services/error_handler_service.dart';
+import 'package:financial_app/services/logger_service.dart';
 import 'package:financial_app/widgets/auth/pin_pad.dart';
+import 'package:local_auth/local_auth.dart';
 
 class PinUnlockScreen extends StatefulWidget {
   const PinUnlockScreen({super.key});
@@ -16,6 +20,7 @@ class PinUnlockScreen extends StatefulWidget {
 class _PinUnlockScreenState extends State<PinUnlockScreen> {
   final PinAuthService _pinAuthService = PinAuthService();
   final AuthService _authService = AuthService();
+  final BiometricService _biometricService = BiometricService();
 
   String _pin = '';
   int _pinLength = 6;
@@ -24,6 +29,8 @@ class _PinUnlockScreenState extends State<PinUnlockScreen> {
   int _remainingAttempts = 5;
   Duration? _lockDuration;
   Timer? _lockTimer;
+  bool _biometricAvailable = false;
+  bool _biometricEnabled = false;
 
   @override
   void initState() {
@@ -42,19 +49,53 @@ class _PinUnlockScreenState extends State<PinUnlockScreen> {
       final pinLength = await _pinAuthService.getPinLength();
       final remaining = await _pinAuthService.getRemainingAttempts();
       final lockTime = await _pinAuthService.getLockRemainingTime();
+      
+      // Check biometric availability
+      final biometricAvailable = await _biometricService.isAvailable();
+      final biometricEnabled = await _biometricService.isBiometricEnabled();
 
       setState(() {
         _pinLength = pinLength;
         _remainingAttempts = remaining;
         _lockDuration = lockTime;
+        _biometricAvailable = biometricAvailable;
+        _biometricEnabled = biometricEnabled;
         _isLoading = false;
       });
 
       if (_lockDuration != null) {
         _startLockTimer();
+      } else if (_biometricAvailable && _biometricEnabled) {
+        // Try biometric authentication automatically
+        _tryBiometricAuth();
       }
     } catch (e) {
       setState(() => _isLoading = false);
+    }
+  }
+  
+  Future<void> _tryBiometricAuth() async {
+    if (_lockDuration != null || _isVerifying) return;
+    
+    setState(() => _isVerifying = true);
+    
+    try {
+      final authenticated = await _biometricService.authenticate(
+        reason: 'Autentikasi diperlukan untuk membuka aplikasi',
+        useErrorDialogs: true,
+        stickyAuth: true,
+      );
+      
+      if (authenticated && mounted) {
+        // Biometric authentication successful, navigate to home
+        Navigator.of(context).pushReplacementNamed('/home');
+      }
+    } catch (e) {
+      // Biometric failed, user can use PIN instead
+    } finally {
+      if (mounted) {
+        setState(() => _isVerifying = false);
+      }
     }
   }
 
@@ -107,34 +148,32 @@ class _PinUnlockScreenState extends State<PinUnlockScreen> {
 
           if (lockTime != null) {
             _startLockTimer();
-            _showError(
+            ErrorHandlerService.showWarningSnackbar(
+              context,
               'Terlalu banyak percobaan gagal. Tunggu ${_formatDuration(lockTime)}',
             );
           } else {
-            _showError('PIN salah. $remaining percobaan tersisa.');
+            ErrorHandlerService.showWarningSnackbar(
+              context,
+              'PIN salah. $remaining percobaan tersisa.',
+            );
           }
         }
       }
     } catch (e) {
+      LoggerService.error('Error verifying PIN', error: e);
       if (mounted) {
         setState(() => _pin = '');
-        _showError(e.toString());
+        ErrorHandlerService.showErrorSnackbar(
+          context,
+          ErrorHandlerService.getUserFriendlyMessage(e),
+        );
       }
     } finally {
       if (mounted) {
         setState(() => _isVerifying = false);
       }
     }
-  }
-
-  void _showError(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: Colors.red,
-        duration: const Duration(seconds: 3),
-      ),
-    );
   }
 
   String _formatDuration(Duration duration) {
@@ -252,6 +291,57 @@ class _PinUnlockScreenState extends State<PinUnlockScreen> {
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 40),
+              
+              // Biometric Authentication Button
+              if (_biometricAvailable && _biometricEnabled && _lockDuration == null)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 24),
+                  child: FutureBuilder<List<BiometricType>>(
+                    future: _biometricService.getAvailableBiometrics(),
+                    builder: (context, snapshot) {
+                      if (!snapshot.hasData) return const SizedBox.shrink();
+                      
+                      final biometrics = snapshot.data!;
+                      final hasFingerprint = biometrics.contains(BiometricType.fingerprint);
+                      final hasFace = biometrics.contains(BiometricType.face);
+                      final hasIris = biometrics.contains(BiometricType.iris);
+                      
+                      IconData icon;
+                      String label;
+                      
+                      if (hasFace) {
+                        icon = Iconsax.scan_barcode;
+                        label = 'Gunakan Face ID';
+                      } else if (hasFingerprint) {
+                        icon = Iconsax.finger_scan;
+                        label = 'Gunakan Fingerprint';
+                      } else if (hasIris) {
+                        icon = Iconsax.scan;
+                        label = 'Gunakan Iris';
+                      } else {
+                        icon = Iconsax.scan_barcode;
+                        label = 'Gunakan Biometric';
+                      }
+                      
+                      return ElevatedButton.icon(
+                        onPressed: _isVerifying ? null : _tryBiometricAuth,
+                        icon: Icon(icon, size: 20),
+                        label: Text(label),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF8B5FBF),
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 24,
+                            vertical: 16,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
 
               // PIN Pad (disabled if locked)
               IgnorePointer(

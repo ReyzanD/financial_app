@@ -51,9 +51,13 @@ class DataService {
   Future<void> refreshAllData({bool forceRefresh = false}) async {
     // If forced, allow immediate refresh
     if (forceRefresh) {
-      // Wait for ongoing refresh to complete if any
+      // Note: Removed delay - if refresh is ongoing, we should wait properly
+      // or cancel the previous one, not just delay
       if (_isRefreshing) {
-        await Future.delayed(const Duration(milliseconds: 100));
+        // Wait for current refresh to complete
+        while (_isRefreshing) {
+          await Future.delayed(const Duration(milliseconds: 50));
+        }
       }
     } else {
       // Prevent multiple simultaneous refreshes
@@ -96,7 +100,10 @@ class DataService {
   Future<void> refreshTransactions() async {
     try {
       LoggerService.info('[DataService] Fetching transactions from API...');
-      final transactions = await _apiService.getTransactions();
+      final transactionsData = await _apiService.getTransactions();
+      final transactions = List<dynamic>.from(
+        transactionsData['transactions'] ?? [],
+      );
       LoggerService.success(
         '[DataService] Received ${transactions.length} transactions from API',
       );

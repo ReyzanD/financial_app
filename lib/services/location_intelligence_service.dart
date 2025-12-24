@@ -10,7 +10,10 @@ class LocationIntelligenceService {
     try {
       LoggerService.debug('LocationIntelligence: Fetching transactions...');
       // Analyze user's transaction locations
-      final transactions = await _apiService.getTransactions(limit: 200);
+      final transactionsData = await _apiService.getTransactions(limit: 200);
+      final transactions = List<dynamic>.from(
+        transactionsData['transactions'] ?? [],
+      );
       LoggerService.debug(
         'LocationIntelligence: Found ${transactions.length} total transactions',
       );
@@ -375,7 +378,10 @@ class LocationIntelligenceService {
     String category,
   ) async {
     try {
-      final transactions = await _apiService.getTransactions(limit: 100);
+      final transactionsData = await _apiService.getTransactions(limit: 100);
+      final transactions = List<dynamic>.from(
+        transactionsData['transactions'] ?? [],
+      );
 
       // Filter by category
       final categoryTransactions =
@@ -392,7 +398,7 @@ class LocationIntelligenceService {
       final analysis = _analyzeLocationPatterns(categoryTransactions);
       return _generateRecommendations(analysis);
     } catch (e) {
-      print('Error getting category location advice: $e');
+      LoggerService.error('Error getting category location advice', error: e);
       return [];
     }
   }

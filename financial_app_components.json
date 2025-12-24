@@ -1,0 +1,147 @@
+{
+  "components": {
+    "ColorPalette": {
+      "Primary": { "color": { "r": 0.129, "g": 0.588, "b": 0.957 } },
+      "Secondary": { "color": { "r": 1, "g": 0.596, "b": 0 } },
+      "Success": { "color": { "r": 0.298, "g": 0.686, "b": 0.314 } },
+      "Error": { "color": { "r": 0.957, "g": 0.263, "b": 0.212 } },
+      "Background": { "color": { "r": 1, "g": 1, "b": 1 } },
+      "Surface": { "color": { "r": 0.961, "g": 0.961, "b": 0.961 } }
+    },
+    "Typography": {
+      "HeadingLarge": {
+        "fontSize": 32,
+        "fontWeight": 700,
+        "fontFamily": "Google Sans"
+      },
+      "HeadingMedium": {
+        "fontSize": 24,
+        "fontWeight": 700,
+        "fontFamily": "Google Sans"
+      },
+      "HeadingSmall": {
+        "fontSize": 20,
+        "fontWeight": 700,
+        "fontFamily": "Google Sans"
+      },
+      "BodyLarge": {
+        "fontSize": 16,
+        "fontWeight": 400,
+        "fontFamily": "Roboto"
+      },
+      "BodyMedium": {
+        "fontSize": 14,
+        "fontWeight": 400,
+        "fontFamily": "Roboto"
+      },
+      "BodySmall": {
+        "fontSize": 12,
+        "fontWeight": 400,
+        "fontFamily": "Roboto"
+      }
+    },
+    "Buttons": {
+      "Primary": {
+        "text": "Button",
+        "fontSize": 14,
+        "fontWeight": 500,
+        "textAlign": "CENTER",
+        "backgroundColor": { "r": 0.129, "g": 0.588, "b": 0.957 },
+        "textColor": { "r": 1, "g": 1, "b": 1 },
+        "padding": { "left": 16, "right": 16, "top": 12, "bottom": 12 },
+        "cornerRadius": 8
+      },
+      "Secondary": {
+        "text": "Button",
+        "fontSize": 14,
+        "fontWeight": 500,
+        "textAlign": "CENTER",
+        "backgroundColor": { "r": 1, "g": 1, "b": 1 },
+        "borderColor": { "r": 0.129, "g": 0.588, "b": 0.957 },
+        "textColor": { "r": 0.129, "g": 0.588, "b": 0.957 },
+        "padding": { "left": 16, "right": 16, "top": 12, "bottom": 12 },
+        "cornerRadius": 8
+      },
+      "IconButton": {
+        "text": "Icon",
+        "fontSize": 14,
+        "fontWeight": 500,
+        "textAlign": "CENTER",
+        "backgroundColor": { "r": 0.129, "g": 0.588, "b": 0.957 },
+        "cornerRadius": 9999,
+        "padding": { "left": 12, "right": 12, "top": 12, "bottom": 12 }
+      }
+    },
+    "Cards": {
+      "StandardCard": {
+        "backgroundColor": { "r": 1, "g": 1, "b": 1 },
+        "borderColor": { "r": 0.878, "g": 0.878, "b": 0.878 },
+        "borderWidth": 1,
+        "cornerRadius": 12,
+        "padding": { "left": 16, "right": 16, "top": 16, "bottom": 16 },
+        "shadow": {
+          "offset": { "x": 0, "y": 2 },
+          "radius": 4,
+          "color": { "r": 0, "g": 0, "b": 0, "a": 0.1 }
+        }
+      },
+      "BalanceCard": {
+        "backgroundColor": { "r": 0.129, "g": 0.588, "b": 0.957 },
+        "cornerRadius": 16,
+        "padding": { "left": 20, "right": 20, "top": 20, "bottom": 20 },
+        "shadow": {
+          "offset": { "x": 0, "y": 4 },
+          "radius": 8,
+          "color": { "r": 0, "g": 0, "b": 0, "a": 0.15 }
+        }
+      }
+    },
+    "InputFields": {
+      "TextInput": {
+        "backgroundColor": { "r": 1, "g": 1, "b": 1 },
+        "borderColor": { "r": 0.784, "g": 0.784, "b": 0.784 },
+        "borderWidth": 1,
+        "cornerRadius": 8,
+        "padding": { "left": 16, "right": 16, "top": 12, "bottom": 12 }
+      },
+      "AmountInput": {
+        "backgroundColor": { "r": 1, "g": 1, "b": 1 },
+        "borderColor": { "r": 0.784, "g": 0.784, "b": 0.784 },
+        "borderWidth": 1,
+        "cornerRadius": 8,
+        "padding": { "left": 16, "right": 16, "top": 12, "bottom": 12 },
+        "prefixIcon": "amount-icon",
+        "placeholderText": "Enter amount"
+      }
+    }
+  },
+  "instances": {
+    "HomeScreen": {
+      "headerTitle": "Financial App",
+      "balanceCard": {
+        "balanceTitle": "Current Balance",
+        "balanceAmount": "Rp 12,500,000"
+      },
+      "quickActions": [{ "text": "Add Expense" }, { "text": "Analytics" }],
+      "recentTransactions": [
+        { "category": "Food & Dining", "amount": "-Rp 125,000" },
+        { "category": "Transportation", "amount": "-Rp 75,000" }
+      ]
+    },
+    "TransactionScreen": {
+      "headerTitle": "Add Transaction",
+      "form": {
+        "amountPlaceholder": "Enter amount",
+        "categoryPlaceholder": "Select category",
+        "descriptionPlaceholder": "Add description (optional)",
+        "saveButtonText": "Save Transaction"
+      }
+    },
+    "AnalyticsScreen": {
+      "headerTitle": "Analytics",
+      "spentCard": { "title": "Spent", "amount": "Rp 3,200,000" },
+      "incomeCard": { "title": "Income", "amount": "Rp 8,500,000" },
+      "chartTitle": "Spending by Category"
+    }
+  }
+}

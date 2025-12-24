@@ -41,7 +41,16 @@ def get_transactions():
         if request.args.get('search'):
             filters['search'] = request.args.get('search')
         
+        # Pagination support
+        if request.args.get('limit'):
+            filters['limit'] = request.args.get('limit', type=int)
+        if request.args.get('offset'):
+            filters['offset'] = request.args.get('offset', type=int)
+        
         transactions = TransactionModel.get_user_transactions(user_id, filters)
+        
+        # Get total count for pagination metadata (without limit/offset)
+        total_count = len(TransactionModel.get_user_transactions(user_id, {k: v for k, v in filters.items() if k not in ['limit', 'offset']}))
         
         # Transform the data to match frontend expectations
         formatted_transactions = []
@@ -94,7 +103,11 @@ def get_transactions():
         
         return jsonify({
             'transactions': formatted_transactions,
-            'count': len(formatted_transactions)
+            'count': len(formatted_transactions),
+            'total': total_count,
+            'limit': filters.get('limit'),
+            'offset': filters.get('offset', 0),
+            'has_more': (filters.get('offset', 0) + len(formatted_transactions)) < total_count
         }), 200
         
     except Exception as e:

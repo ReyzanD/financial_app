@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:financial_app/utils/responsive_helper.dart';
+import 'package:financial_app/utils/design_tokens.dart';
 
 /// Reusable shimmer loading widgets
 class ShimmerLoading extends StatelessWidget {
@@ -7,13 +9,16 @@ class ShimmerLoading extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Shimmer.fromColors(
-      baseColor: const Color(0xFF1A1A1A),
-      highlightColor: const Color(0xFF2A2A2A),
+      baseColor: isDark ? DesignTokens.surfaceDark : Colors.grey[300]!,
+      highlightColor: isDark ? DesignTokens.borderDark : Colors.grey[100]!,
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(12),
+          color: DesignTokens.getSurfaceColor(context),
+          borderRadius: BorderRadius.circular(
+            ResponsiveHelper.borderRadius(context, DesignTokens.radiusMedium),
+          ),
         ),
       ),
     );
@@ -26,20 +31,25 @@ class TransactionShimmer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return ListView.builder(
       itemCount: 10,
-      padding: const EdgeInsets.all(16),
+      padding: ResponsiveHelper.padding(context),
       itemBuilder: (context, index) {
         return Padding(
-          padding: const EdgeInsets.only(bottom: 12),
+          padding: EdgeInsets.only(
+            bottom: ResponsiveHelper.verticalSpacing(context, 12),
+          ),
           child: Shimmer.fromColors(
-            baseColor: const Color(0xFF1A1A1A),
-            highlightColor: const Color(0xFF2A2A2A),
+            baseColor: isDark ? DesignTokens.surfaceDark : Colors.grey[300]!,
+            highlightColor: isDark ? DesignTokens.borderDark : Colors.grey[100]!,
             child: Container(
-              height: 80,
+              height: ResponsiveHelper.cardHeight(context, 80),
               decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(12),
+                color: DesignTokens.getSurfaceColor(context),
+                borderRadius: BorderRadius.circular(
+                  ResponsiveHelper.borderRadius(context, DesignTokens.radiusMedium),
+                ),
               ),
             ),
           ),
@@ -57,16 +67,23 @@ class CardShimmer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      padding: ResponsiveHelper.symmetricPadding(
+        context,
+        horizontal: 16,
+        vertical: 8,
+      ),
       child: Shimmer.fromColors(
-        baseColor: const Color(0xFF1A1A1A),
-        highlightColor: const Color(0xFF2A2A2A),
+        baseColor: isDark ? DesignTokens.surfaceDark : Colors.grey[300]!,
+        highlightColor: isDark ? DesignTokens.borderDark : Colors.grey[100]!,
         child: Container(
-          height: height,
+          height: ResponsiveHelper.cardHeight(context, height),
           decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(16),
+            color: DesignTokens.getSurfaceColor(context),
+            borderRadius: BorderRadius.circular(
+              ResponsiveHelper.borderRadius(context, DesignTokens.radiusLarge),
+            ),
           ),
         ),
       ),
@@ -98,33 +115,40 @@ class SummaryCardShimmer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Padding(
-      padding: const EdgeInsets.all(16),
+      padding: ResponsiveHelper.padding(context),
       child: Row(
         children: [
           Expanded(
             child: Shimmer.fromColors(
-              baseColor: const Color(0xFF1A1A1A),
-              highlightColor: const Color(0xFF2A2A2A),
+              baseColor: isDark ? DesignTokens.surfaceDark : Colors.grey[300]!,
+              highlightColor: isDark ? DesignTokens.borderDark : Colors.grey[100]!,
               child: Container(
-                height: 100,
+                height: ResponsiveHelper.cardHeight(context, 100),
                 decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(16),
+                  color: DesignTokens.getSurfaceColor(context),
+                  borderRadius: BorderRadius.circular(
+                    ResponsiveHelper.borderRadius(context, DesignTokens.radiusLarge),
+                  ),
                 ),
               ),
             ),
           ),
-          const SizedBox(width: 12),
+          SizedBox(
+            width: ResponsiveHelper.horizontalSpacing(context, 12),
+          ),
           Expanded(
             child: Shimmer.fromColors(
-              baseColor: const Color(0xFF1A1A1A),
-              highlightColor: const Color(0xFF2A2A2A),
+              baseColor: isDark ? DesignTokens.surfaceDark : Colors.grey[300]!,
+              highlightColor: isDark ? DesignTokens.borderDark : Colors.grey[100]!,
               child: Container(
-                height: 100,
+                height: ResponsiveHelper.cardHeight(context, 100),
                 decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(16),
+                  color: DesignTokens.getSurfaceColor(context),
+                  borderRadius: BorderRadius.circular(
+                    ResponsiveHelper.borderRadius(context, DesignTokens.radiusLarge),
+                  ),
                 ),
               ),
             ),
@@ -150,15 +174,19 @@ class ShimmerBox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Shimmer.fromColors(
-      baseColor: const Color(0xFF1A1A1A),
-      highlightColor: const Color(0xFF2A2A2A),
+      baseColor: isDark ? DesignTokens.surfaceDark : Colors.grey[300]!,
+      highlightColor: isDark ? DesignTokens.borderDark : Colors.grey[100]!,
       child: Container(
         width: width,
         height: height,
         decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: borderRadius ?? BorderRadius.circular(8),
+          color: DesignTokens.getSurfaceColor(context),
+          borderRadius: borderRadius ??
+              BorderRadius.circular(
+                ResponsiveHelper.borderRadius(context, DesignTokens.radiusSmall),
+              ),
         ),
       ),
     );

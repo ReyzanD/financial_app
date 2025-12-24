@@ -1,0 +1,1411 @@
+{
+  "name": "Financial App - Android",
+  "description": "Complete financial management application with budget tracking, expense analytics, goal setting, and location-based insights",
+  "version": "1.0.0",
+  "screens": [
+    {
+      "id": "home_screen",
+      "name": "Home Dashboard",
+      "type": "dashboard",
+      "components": [
+        {
+          "id": "header",
+          "type": "header",
+          "elements": [
+            {
+              "id": "user_avatar",
+              "type": "avatar",
+              "size": "small",
+              "shape": "circle"
+            },
+            {
+              "id": "date_display",
+              "type": "text",
+              "text": "Monday, December 16",
+              "style": "heading-medium"
+            },
+            {
+              "id": "notifications_icon",
+              "type": "icon_button",
+              "icon": "bell",
+              "action": "open_notification_center"
+            }
+          ]
+        },
+        {
+          "id": "balance_card",
+          "type": "card",
+          "title": "Current Balance",
+          "content": [
+            {
+              "id": "current_balance",
+              "type": "amount_display",
+              "amount": "Rp 12.500.000",
+              "style": "large-bold"
+            },
+            {
+              "id": "balance_change",
+              "type": "amount_display",
+              "amount": "+5.2% from last month",
+              "style": "small-success"
+            }
+          ]
+        },
+        {
+          "id": "quick_actions",
+          "type": "horizontal_scroll",
+          "items": [
+            {
+              "id": "add_expense",
+              "type": "quick_action",
+              "icon": "plus",
+              "label": "Add Expense",
+              "action": "navigate_add_transaction"
+            },
+            {
+              "id": "transfer_money",
+              "type": "quick_action",
+              "icon": "swap",
+              "label": "Transfer",
+              "action": "navigate_transfer"
+            },
+            {
+              "id": "set_budget",
+              "type": "quick_action",
+              "icon": "wallet",
+              "label": "Budget",
+              "action": "navigate_budgets"
+            },
+            {
+              "id": "analytics",
+              "type": "quick_action",
+              "icon": "chart",
+              "label": "Analytics",
+              "action": "navigate_analytics"
+            }
+          ]
+        },
+        {
+          "id": "recent_transactions",
+          "type": "section",
+          "title": "Recent Transactions",
+          "content": [
+            {
+              "id": "transactions_list",
+              "type": "list_view",
+              "item_component": "transaction_item"
+            },
+            {
+              "id": "view_all_transactions",
+              "type": "button",
+              "label": "View All",
+              "variant": "outlined",
+              "action": "navigate_transaction_history"
+            }
+          ]
+        },
+        {
+          "id": "location_insights",
+          "type": "section",
+          "title": "Nearby Insights",
+          "content": [
+            {
+              "id": "insights_list",
+              "type": "vertical_list",
+              "items": [
+                {
+                  "id": "recommendation_1",
+                  "type": "recommendation_card",
+                  "title": "Budget-Friendly Restaurant",
+                  "subtitle": "Found near your location",
+                  "distance": "0.5 km",
+                  "action": "navigate_details"
+                },
+                {
+                  "id": "recommendation_2",
+                  "type": "recommendation_card",
+                  "title": "Discount Store",
+                  "subtitle": "Save 15% today",
+                  "distance": "1.2 km",
+                  "action": "navigate_details"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "navigation_bar",
+          "type": "bottom_navigation",
+          "items": [
+            {
+              "id": "nav_home",
+              "type": "nav_item",
+              "icon": "home",
+              "label": "Home",
+              "active": true
+            },
+            {
+              "id": "nav_transactions",
+              "type": "nav_item",
+              "icon": "list",
+              "label": "Transactions"
+            },
+            {
+              "id": "nav_analytics",
+              "type": "nav_item",
+              "icon": "pie_chart",
+              "label": "Analytics"
+            },
+            {
+              "id": "nav_goals",
+              "type": "nav_item",
+              "icon": "flag",
+              "label": "Goals"
+            },
+            {
+              "id": "nav_profile",
+              "type": "nav_item",
+              "icon": "person",
+              "label": "Profile"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "transaction_history",
+      "name": "Transaction History",
+      "type": "list_screen",
+      "components": [
+        {
+          "id": "header",
+          "type": "header",
+          "elements": [
+            {
+              "id": "back_button",
+              "type": "icon_button",
+              "icon": "arrow_back",
+              "action": "go_back"
+            },
+            {
+              "id": "screen_title",
+              "type": "text",
+              "text": "Transactions",
+              "style": "heading-large"
+            },
+            {
+              "id": "search_icon",
+              "type": "icon_button",
+              "icon": "search",
+              "action": "open_search"
+            }
+          ]
+        },
+        {
+          "id": "filter_controls",
+          "type": "filter_bar",
+          "filters": [
+            {
+              "id": "time_range",
+              "type": "dropdown",
+              "options": [
+                "This Week",
+                "This Month", 
+                "Last 3 Months",
+                "Custom"
+              ]
+            },
+            {
+              "id": "category_filter",
+              "type": "dropdown",
+              "options": [
+                "All Categories",
+                "Food & Dining",
+                "Transportation",
+                "Shopping",
+                "Healthcare",
+                "Entertainment",
+                "Utilities",
+                "Other"
+              ]
+            },
+            {
+              "id": "type_filter",
+              "type": "toggle_group",
+              "options": [
+                "All",
+                "Income",
+                "Expense"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "transactions_list",
+          "type": "grouped_list",
+          "groups": [
+            {
+              "id": "today",
+              "type": "date_group",
+              "title": "Today",
+              "items": []
+            },
+            {
+              "id": "yesterday",
+              "type": "date_group", 
+              "title": "Yesterday",
+              "items": []
+            },
+            {
+              "id": "this_week",
+              "type": "date_group",
+              "title": "Previous 5 days",
+              "items": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "add_transaction",
+      "name": "Add Transaction",
+      "type": "form_screen",
+      "components": [
+        {
+          "id": "header",
+          "type": "header",
+          "elements": [
+            {
+              "id": "cancel_button",
+              "type": "text_button",
+              "text": "Cancel",
+              "action": "go_back"
+            },
+            {
+              "id": "screen_title",
+              "type": "text",
+              "text": "Add Transaction",
+              "style": "heading-medium"
+            },
+            {
+              "id": "save_button",
+              "type": "text_button",
+              "text": "Save",
+              "action": "save_transaction",
+              "disabled": true
+            }
+          ]
+        },
+        {
+          "id": "amount_input",
+          "type": "input_field",
+          "label": "Amount",
+          "placeholder": "Enter amount",
+          "keyboard_type": "number_pad",
+          "prefix_icon": "currency_rupiah"
+        },
+        {
+          "id": "transaction_type",
+          "type": "radio_group",
+          "options": [
+            {
+              "id": "expense",
+              "type": "radio_option",
+              "label": "Expense",
+              "icon": "expense",
+              "color": "#FF4757"
+            },
+            {
+              "id": "income", 
+              "type": "radio_option",
+              "label": "Income",
+              "icon": "income",
+              "color": "#2ED573"
+            }
+          ]
+        },
+        {
+          "id": "category_selection",
+          "type": "dropdown",
+          "label": "Category",
+          "options": [
+            "Food & Dining",
+            "Transportation", 
+            "Shopping",
+            "Healthcare",
+            "Entertainment",
+            "Utilities",
+            "Salary",
+            "Investment",
+            "Gift",
+            "Other"
+          ]
+        },
+        {
+          "id": "date_time_picker",
+          "type": "datetime_picker",
+          "label": "Date & Time",
+          "value": "Today, Now"
+        },
+        {
+          "id": "description_input",
+          "type": "textarea",
+          "label": "Description",
+          "placeholder": "Add a note (optional)"
+        },
+        {
+          "id": "location_toggle",
+          "type": "switch",
+          "label": "Include Location",
+          "description": "Add current location to this transaction"
+        },
+        {
+          "id": "recurring_toggle",
+          "type": "switch",
+          "label": "Recurring Transaction",
+          "description": "Set up recurring payments"
+        }
+      ]
+    },
+    {
+      "id": "analytics",
+      "name": "Analytics Dashboard",
+      "type": "dashboard",
+      "components": [
+        {
+          "id": "header",
+          "type": "header",
+          "elements": [
+            {
+              "id": "back_button",
+              "type": "icon_button",
+              "icon": "arrow_back",
+              "action": "go_back"
+            },
+            {
+              "id": "screen_title",
+              "type": "text",
+              "text": "Analytics",
+              "style": "heading-large"
+            },
+            {
+              "id": "filter_icon",
+              "type": "icon_button",
+              "icon": "filter_list",
+              "action": "open_filters"
+            }
+          ]
+        },
+        {
+          "id": "summary_cards",
+          "type": "horizontal_scroll",
+          "items": [
+            {
+              "id": "total_spent",
+              "type": "stats_card",
+              "title": "Spent",
+              "amount": "Rp 3.200.000",
+              "change": "-5.2%",
+              "change_type": "decrease"
+            },
+            {
+              "id": "total_income", 
+              "type": "stats_card",
+              "title": "Income",
+              "amount": "Rp 8.500.000",
+              "change": "+12.1%",
+              "change_type": "increase"
+            },
+            {
+              "id": "net_flow",
+              "type": "stats_card",
+              "title": "Net Flow",
+              "amount": "Rp 5.300.000",
+              "change": "+3.4%",
+              "change_type": "increase"
+            }
+          ]
+        },
+        {
+          "id": "spending_chart",
+          "type": "chart",
+          "type_name": "pie_chart",
+          "title": "Spending by Category",
+          "data_source": "category_breakdown",
+          "legend_position": "bottom"
+        },
+        {
+          "id": "trend_chart", 
+          "type": "chart",
+          "type_name": "line_chart",
+          "title": "Spending Trend",
+          "data_source": "monthly_trends",
+          "time_period": "last_6_months"
+        },
+        {
+          "id": "top_categories",
+          "type": "section",
+          "title": "Top Spending Categories",
+          "content": [
+            {
+              "id": "category_list",
+              "type": "vertical_list",
+              "items": [
+                {
+                  "id": "category_1",
+                  "type": "progress_item",
+                  "title": "Food & Dining",
+                  "amount": "Rp 1.200.000",
+                  "budget": "Rp 1.500.000",
+                  "progress": 80
+                },
+                {
+                  "id": "category_2",
+                  "type": "progress_item",
+                  "title": "Transportation",
+                  "amount": "Rp 650.000",
+                  "budget": "Rp 800.000",
+                  "progress": 81
+                },
+                {
+                  "id": "category_3",
+                  "type": "progress_item",
+                  "title": "Shopping",
+                  "amount": "Rp 850.000",
+                  "budget": "Rp 1.000.000",
+                  "progress": 85
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "budgets",
+      "name": "Budget Management",
+      "type": "list_screen",
+      "components": [
+        {
+          "id": "header",
+          "type": "header",
+          "elements": [
+            {
+              "id": "back_button",
+              "type": "icon_button",
+              "icon": "arrow_back",
+              "action": "go_back"
+            },
+            {
+              "id": "screen_title",
+              "type": "text",
+              "text": "Budgets",
+              "style": "heading-large"
+            },
+            {
+              "id": "add_budget",
+              "type": "icon_button",
+              "icon": "add",
+              "action": "create_budget"
+            }
+          ]
+        },
+        {
+          "id": "budget_summary",
+          "type": "card",
+          "title": "Monthly Overview",
+          "content": [
+            {
+              "id": "total_budget",
+              "type": "amount_display",
+              "amount": "Rp 6.000.000",
+              "label": "Total Budget"
+            },
+            {
+              "id": "spent_amount",
+              "type": "amount_display", 
+              "amount": "Rp 3.200.000",
+              "label": "Spent"
+            },
+            {
+              "id": "remaining_amount",
+              "type": "amount_display",
+              "amount": "Rp 2.800.000",
+              "label": "Remaining"
+            }
+          ]
+        },
+        {
+          "id": "budget_list",
+          "type": "vertical_list",
+          "items": [
+            {
+              "id": "budget_1",
+              "type": "budget_card",
+              "category": "Food & Dining",
+              "amount": "Rp 1.500.000",
+              "spent": "Rp 1.200.000",
+              "progress": 80,
+              "period": "monthly",
+              "action": "edit_budget"
+            },
+            {
+              "id": "budget_2",
+              "type": "budget_card",
+              "category": "Transportation",
+              "amount": "Rp 800.000",
+              "spent": "Rp 650.000", 
+              "progress": 81,
+              "period": "monthly",
+              "action": "edit_budget"
+            },
+            {
+              "id": "budget_3",
+              "type": "budget_card",
+              "category": "Shopping",
+              "amount": "Rp 1.000.000",
+              "spent": "Rp 850.000",
+              "progress": 85,
+              "period": "monthly",
+              "action": "edit_budget"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "goals",
+      "name": "Financial Goals",
+      "type": "list_screen",
+      "components": [
+        {
+          "id": "header",
+          "type": "header",
+          "elements": [
+            {
+              "id": "back_button",
+              "type": "icon_button",
+              "icon": "arrow_back",
+              "action": "go_back"
+            },
+            {
+              "id": "screen_title",
+              "type": "text",
+              "text": "Goals",
+              "style": "heading-large"
+            },
+            {
+              "id": "add_goal",
+              "type": "icon_button",
+              "icon": "add",
+              "action": "create_goal"
+            }
+          ]
+        },
+        {
+          "id": "add_goal_button",
+          "type": "floating_action_button",
+          "icon": "add",
+          "action": "create_new_goal"
+        },
+        {
+          "id": "goals_list",
+          "type": "vertical_list",
+          "items": [
+            {
+              "id": "goal_1",
+              "type": "goal_card",
+              "title": "Emergency Fund",
+              "target": "Rp 10.000.000",
+              "current": "Rp 4.500.000",
+              "progress": 45,
+              "deadline": "Dec 31, 2025",
+              "status": "in_progress",
+              "action": "view_goal_details"
+            },
+            {
+              "id": "goal_2",
+              "type": "goal_card",
+              "title": "Dream Vacation",
+              "target": "Rp 15.000.000",
+              "current": "Rp 2.300.000",
+              "progress": 15,
+              "deadline": "Jun 15, 2026",
+              "status": "in_progress",
+              "action": "view_goal_details"
+            },
+            {
+              "id": "goal_3",
+              "type": "goal_card",
+              "title": "New Car Down Payment",
+              "target": "Rp 25.000.000",
+              "current": "Rp 12.000.000",
+              "progress": 48,
+              "deadline": "Oct 10, 2026",
+              "status": "in_progress",
+              "action": "view_goal_details"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "profile",
+      "name": "User Profile",
+      "type": "settings_screen",
+      "components": [
+        {
+          "id": "header",
+          "type": "header",
+          "elements": [
+            {
+              "id": "back_button",
+              "type": "icon_button",
+              "icon": "arrow_back",
+              "action": "go_back"
+            },
+            {
+              "id": "screen_title",
+              "type": "text",
+              "text": "Profile",
+              "style": "heading-large"
+            },
+            {
+              "id": "edit_profile",
+              "type": "icon_button",
+              "icon": "edit",
+              "action": "edit_profile"
+            }
+          ]
+        },
+        {
+          "id": "profile_header",
+          "type": "card",
+          "content": [
+            {
+              "id": "avatar",
+              "type": "avatar",
+              "size": "large",
+              "shape": "circle"
+            },
+            {
+              "id": "user_info",
+              "type": "text_block",
+              "content": [
+                {
+                  "id": "name",
+                  "type": "text",
+                  "text": "John Doe",
+                  "style": "heading-medium"
+                },
+                {
+                  "id": "email",
+                  "type": "text",
+                  "text": "johndoe@example.com",
+                  "style": "body-small"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "account_section",
+          "type": "section",
+          "title": "Account",
+          "items": [
+            {
+              "id": "personal_info",
+              "type": "list_item",
+              "title": "Personal Information",
+              "icon": "person",
+              "action": "edit_personal_info"
+            },
+            {
+              "id": "security",
+              "type": "list_item",
+              "title": "Security",
+              "icon": "lock",
+              "action": "manage_security"
+            },
+            {
+              "id": "subscription",
+              "type": "list_item",
+              "title": "Subscription",
+              "icon": "credit_card",
+              "action": "manage_subscription"
+            }
+          ]
+        },
+        {
+          "id": "preferences_section",
+          "type": "section",
+          "title": "Preferences",
+          "items": [
+            {
+              "id": "language",
+              "type": "list_item",
+              "title": "Language",
+              "subtitle": "English",
+              "icon": "language",
+              "action": "change_language"
+            },
+            {
+              "id": "currency",
+              "type": "list_item",
+              "title": "Currency",
+              "subtitle": "IDR (Rp)",
+              "icon": "attach_money",
+              "action": "change_currency"
+            },
+            {
+              "id": "notifications",
+              "type": "list_item",
+              "title": "Notifications",
+              "icon": "notifications",
+              "action": "manage_notifications"
+            }
+          ]
+        },
+        {
+          "id": "support_section",
+          "type": "section",
+          "title": "Support",
+          "items": [
+            {
+              "id": "help_center",
+              "type": "list_item",
+              "title": "Help Center",
+              "icon": "help",
+              "action": "open_help_center"
+            },
+            {
+              "id": "feedback",
+              "type": "list_item",
+              "title": "Send Feedback",
+              "icon": "feedback",
+              "action": "send_feedback"
+            },
+            {
+              "id": "about",
+              "type": "list_item",
+              "title": "About",
+              "icon": "info",
+              "action": "view_about"
+            }
+          ]
+        },
+        {
+          "id": "logout_button",
+          "type": "danger_button",
+          "label": "Logout",
+          "action": "logout_user"
+        }
+      ]
+    },
+    {
+      "id": "login",
+      "name": "Login Screen",
+      "type": "authentication",
+      "components": [
+        {
+          "id": "logo",
+          "type": "image",
+          "source": "app_logo",
+          "alignment": "center"
+        },
+        {
+          "id": "welcome_text",
+          "type": "text_block",
+          "content": [
+            {
+              "id": "title",
+              "type": "text",
+              "text": "Welcome Back!",
+              "style": "heading-large"
+            },
+            {
+              "id": "subtitle",
+              "type": "text",
+              "text": "Please sign in to continue",
+              "style": "body-medium"
+            }
+          ],
+          "alignment": "center"
+        },
+        {
+          "id": "email_input",
+          "type": "input_field",
+          "label": "Email",
+          "placeholder": "Enter your email",
+          "keyboard_type": "email_address",
+          "icon": "email"
+        },
+        {
+          "id": "password_input",
+          "type": "password_field",
+          "label": "Password",
+          "placeholder": "Enter your password",
+          "icon": "lock"
+        },
+        {
+          "id": "remember_me",
+          "type": "checkbox",
+          "label": "Remember me"
+        },
+        {
+          "id": "forgot_password",
+          "type": "text_link",
+          "text": "Forgot Password?",
+          "action": "reset_password"
+        },
+        {
+          "id": "login_button",
+          "type": "primary_button",
+          "label": "Sign In",
+          "action": "perform_login"
+        },
+        {
+          "id": "divider",
+          "type": "divider_with_text",
+          "text": "or continue with"
+        },
+        {
+          "id": "social_login",
+          "type": "horizontal_buttons",
+          "buttons": [
+            {
+              "id": "google_login",
+              "type": "social_button",
+              "provider": "google",
+              "action": "login_with_google"
+            },
+            {
+              "id": "facebook_login",
+              "type": "social_button",
+              "provider": "facebook",
+              "action": "login_with_facebook"
+            }
+          ]
+        },
+        {
+          "id": "signup_prompt",
+          "type": "text_block",
+          "content": [
+            {
+              "id": "signup_text",
+              "type": "text",
+              "text": "Don't have an account?",
+              "style": "body-medium"
+            },
+            {
+              "id": "signup_link",
+              "type": "text_link",
+              "text": "Sign Up",
+              "action": "navigate_signup"
+            }
+          ],
+          "alignment": "center"
+        }
+      ]
+    },
+    {
+      "id": "settings",
+      "name": "Settings",
+      "type": "settings_screen",
+      "components": [
+        {
+          "id": "header",
+          "type": "header",
+          "elements": [
+            {
+              "id": "back_button",
+              "type": "icon_button",
+              "icon": "arrow_back",
+              "action": "go_back"
+            },
+            {
+              "id": "screen_title",
+              "type": "text",
+              "text": "Settings",
+              "style": "heading-large"
+            }
+          ]
+        },
+        {
+          "id": "account_settings",
+          "type": "section",
+          "title": "Account Settings",
+          "items": [
+            {
+              "id": "sync_settings",
+              "type": "list_item",
+              "title": "Sync Settings",
+              "icon": "sync",
+              "action": "manage_sync"
+            },
+            {
+              "id": "backup_restore",
+              "type": "list_item",
+              "title": "Backup & Restore",
+              "icon": "backup",
+              "action": "backup_restore_data"
+            },
+            {
+              "id": "export_data",
+              "type": "list_item",
+              "title": "Export Data",
+              "icon": "download",
+              "action": "export_financial_data"
+            }
+          ]
+        },
+        {
+          "id": "privacy_security",
+          "type": "section",
+          "title": "Privacy & Security",
+          "items": [
+            {
+              "id": "biometric_auth",
+              "type": "toggle_item",
+              "title": "Biometric Authentication",
+              "subtitle": "Use fingerprint or face unlock",
+              "enabled": true
+            },
+            {
+              "id": "auto_lock",
+              "type": "list_item",
+              "title": "Auto Lock",
+              "subtitle": "Lock after 5 minutes",
+              "icon": "lock_clock",
+              "action": "configure_auto_lock"
+            },
+            {
+              "id": "clear_data",
+              "type": "list_item",
+              "title": "Clear Local Data",
+              "icon": "delete",
+              "action": "clear_local_data"
+            }
+          ]
+        },
+        {
+          "id": "app_preferences",
+          "type": "section",
+          "title": "App Preferences",
+          "items": [
+            {
+              "id": "theme",
+              "type": "list_item",
+              "title": "Theme",
+              "subtitle": "System default",
+              "icon": "palette",
+              "action": "select_theme"
+            },
+            {
+              "id": "currency_format",
+              "type": "list_item",
+              "title": "Currency Format",
+              "subtitle": "IDR (Rp)",
+              "icon": "monetization_on",
+              "action": "change_currency_format"
+            },
+            {
+              "id": "date_format",
+              "type": "list_item",
+              "title": "Date Format",
+              "subtitle": "DD/MM/YYYY",
+              "icon": "date_range",
+              "action": "change_date_format"
+            }
+          ]
+        },
+        {
+          "id": "notifications",
+          "type": "section",
+          "title": "Notification Settings",
+          "items": [
+            {
+              "id": "budget_alerts",
+              "type": "toggle_item",
+              "title": "Budget Alerts",
+              "subtitle": "Notify when approaching limits",
+              "enabled": true
+            },
+            {
+              "id": "spending_summary",
+              "type": "toggle_item",
+              "title": "Daily/Weekly Spending Summary",
+              "enabled": true
+            },
+            {
+              "id": "recurrence_reminders",
+              "type": "toggle_item",
+              "title": "Recurring Transaction Reminders",
+              "enabled": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "map_screen",
+      "name": "Location Insights Map",
+      "type": "map_screen",
+      "components": [
+        {
+          "id": "map_header",
+          "type": "header",
+          "elements": [
+            {
+              "id": "back_button",
+              "type": "icon_button",
+              "icon": "arrow_back",
+              "action": "go_back"
+            },
+            {
+              "id": "location_search",
+              "type": "search_bar",
+              "placeholder": "Search for places...",
+              "icon": "search"
+            },
+            {
+              "id": "location_button",
+              "type": "icon_button",
+              "icon": "my_location",
+              "action": "locate_current_position"
+            }
+          ]
+        },
+        {
+          "id": "map_container",
+          "type": "map_view",
+          "features": [
+            "current_location_marker",
+            "budget_friendly_markers",
+            "discount_locations",
+            "expense_insights"
+          ]
+        },
+        {
+          "id": "location_filters",
+          "type": "collapsible_panel",
+          "title": "Filters",
+          "content": [
+            {
+              "id": "distance_slider",
+              "type": "slider",
+              "label": "Max Distance",
+              "min": 1,
+              "max": 20,
+              "unit": "km"
+            },
+            {
+              "id": "category_filters",
+              "type": "multi_select",
+              "label": "Categories",
+              "options": [
+                "Restaurants",
+                "Shops",
+                "ATMs",
+                "Bank Branches"
+              ]
+            },
+            {
+              "id": "price_range",
+              "type": "range_selector",
+              "label": "Price Range",
+              "options": [
+                "Budget",
+                "Mid-range",
+                "Premium"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "location_insights",
+          "type": "bottom_sheet",
+          "content": [
+            {
+              "id": "selected_location",
+              "type": "location_card",
+              "title": "Selected Location",
+              "address": "Jl. Example Street No.123",
+              "distance": "0.8 km away",
+              "rating": 4.5,
+              "category": "Restaurant",
+              "average_cost": "Rp 50.000 - 100.000"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "components": {
+    "common": [
+      {
+        "id": "offline_indicator",
+        "name": "Offline Indicator",
+        "type": "banner",
+        "visibility": "shown_when_offline",
+        "content": "You are offline. Some features may be limited.",
+        "color": "orange",
+        "position": "top"
+      },
+      {
+        "id": "loading_spinner",
+        "name": "Loading Spinner",
+        "type": "overlay",
+        "visibility": "shown_during_loading",
+        "size": "medium"
+      },
+      {
+        "id": "snackbar",
+        "name": "Snackbar",
+        "type": "toast",
+        "positions": [
+          "top",
+          "center",
+          "bottom"
+        ],
+        "variations": [
+          "success",
+          "error",
+          "warning",
+          "info"
+        ]
+      }
+    ],
+    "financial": [
+      {
+        "id": "category_picker",
+        "name": "Category Picker",
+        "type": "modal_bottom_sheet",
+        "categories": [
+          "Food & Dining",
+          "Transportation",
+          "Shopping",
+          "Healthcare",
+          "Entertainment",
+          "Utilities",
+          "Salary",
+          "Investment",
+          "Gift",
+          "Other"
+        ]
+      },
+      {
+        "id": "amount_display",
+        "name": "Amount Display",
+        "type": "text_component",
+        "formats": [
+          "currency",
+          "percentage",
+          "simple_number"
+        ],
+        "localization": "indonesian_currency_system"
+      },
+      {
+        "id": "progress_bar",
+        "name": "Budget Progress Bar",
+        "type": "progress_indicator",
+        "variations": [
+          "success",
+          "warning",
+          "danger"
+        ],
+        "thresholds": [
+          {
+            "percentage": 80,
+            "status": "warning"
+          },
+          {
+            "percentage": 100,
+            "status": "danger"
+          }
+        ]
+      }
+    ]
+  },
+  "navigation": {
+    "type": "bottom_tabs",
+    "tabs": [
+      {
+        "id": "home",
+        "name": "Home",
+        "icon": "home",
+        "route": "home_screen"
+      },
+      {
+        "id": "transactions",
+        "name": "Transactions",
+        "icon": "list",
+        "route": "transaction_history"
+      },
+      {
+        "id": "analytics",
+        "name": "Analytics",
+        "icon": "pie_chart",
+        "route": "analytics"
+      },
+      {
+        "id": "goals",
+        "name": "Goals",
+        "icon": "flag",
+        "route": "goals"
+      },
+      {
+        "id": "profile",
+        "name": "Profile",
+        "icon": "person",
+        "route": "profile"
+      }
+    ]
+  },
+  "functionality": [
+    {
+      "feature": "Transaction Management",
+      "description": "Add, edit, categorize, and track income and expenses",
+      "screens": [
+        "add_transaction",
+        "transaction_history"
+      ]
+    },
+    {
+      "feature": "Budget Planning",
+      "description": "Set monthly budgets, track spending, and receive alerts",
+      "screens": [
+        "budgets"
+      ]
+    },
+    {
+      "feature": "Financial Analytics",
+      "description": "Visualize spending patterns, trends, and category breakdowns",
+      "screens": [
+        "analytics"
+      ]
+    },
+    {
+      "feature": "Goal Setting",
+      "description": "Create and track progress toward financial goals",
+      "screens": [
+        "goals"
+      ]
+    },
+    {
+      "feature": "Location Intelligence",
+      "description": "Discover budget-friendly places nearby and location-based financial insights",
+      "screens": [
+        "map_screen"
+      ]
+    },
+    {
+      "feature": "AI Recommendations",
+      "description": "Personalized budget and saving suggestions based on spending patterns",
+      "screens": [
+        "home_screen",
+        "ai_budget_recommendation_screen"
+      ]
+    },
+    {
+      "feature": "Security & Authentication",
+      "description": "Secure login, biometric authentication, PIN protection",
+      "screens": [
+        "login",
+        "pin_setup",
+        "pin_unlock"
+      ]
+    },
+    {
+      "feature": "Data Backup & Sync",
+      "description": "Secure cloud backup and synchronization across devices",
+      "screens": [
+        "backup_screen",
+        "settings"
+      ]
+    },
+    {
+      "feature": "Notifications",
+      "description": "Budget alerts, spending summaries, and payment reminders",
+      "screens": [
+        "notification_center",
+        "settings"
+      ]
+    }
+  ],
+  "design_tokens": {
+    "colors": {
+      "primary": "#2196F3",
+      "primary_variant": "#1976D2",
+      "secondary": "#FF9800",
+      "background": "#FFFFFF",
+      "surface": "#F5F5F5",
+      "error": "#F44336",
+      "success": "#4CAF50",
+      "warning": "#FF9800",
+      "info": "#2196F3",
+      "text_primary": "#212121",
+      "text_secondary": "#757575",
+      "text_hint": "#9E9E9E",
+      "divider": "#E0E0E0"
+    },
+    "typography": {
+      "heading_large": {
+        "font_family": "Google Sans",
+        "font_size": 32,
+        "font_weight": "bold",
+        "line_height": 40
+      },
+      "heading_medium": {
+        "font_family": "Google Sans",
+        "font_size": 24,
+        "font_weight": "bold",
+        "line_height": 32
+      },
+      "heading_small": {
+        "font_family": "Google Sans",
+        "font_size": 20,
+        "font_weight": "bold",
+        "line_height": 28
+      },
+      "body_large": {
+        "font_family": "Roboto",
+        "font_size": 16,
+        "font_weight": "regular",
+        "line_height": 24
+      },
+      "body_medium": {
+        "font_family": "Roboto",
+        "font_size": 14,
+        "font_weight": "regular",
+        "line_height": 20
+      },
+      "body_small": {
+        "font_family": "Roboto",
+        "font_size": 12,
+        "font_weight": "regular",
+        "line_height": 16
+      }
+    },
+    "spacing": {
+      "tiny": 4,
+      "small": 8,
+      "medium": 16,
+      "large": 24,
+      "extra_large": 32
+    },
+    "radius": {
+      "small": 4,
+      "medium": 8,
+      "large": 12,
+      "x_large": 16,
+      "full": 9999
+    }
+  },
+  "accessibility": {
+    "screen_reader_support": true,
+    "high_contrast_mode": true,
+    "font_scaling": true,
+    "touch_target_size": 48
+  }
+}

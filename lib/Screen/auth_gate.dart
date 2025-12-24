@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:financial_app/services/auth_service.dart';
 import 'package:financial_app/services/pin_auth_service.dart';
+import 'package:financial_app/services/biometric_service.dart';
 import 'package:financial_app/Screen/login_screen.dart';
 import 'package:financial_app/Screen/pin_setup_screen.dart';
 import 'package:financial_app/Screen/pin_unlock_screen.dart';
@@ -23,6 +24,7 @@ class AuthGate extends StatefulWidget {
 class _AuthGateState extends State<AuthGate> {
   final AuthService _authService = AuthService();
   final PinAuthService _pinAuthService = PinAuthService();
+  final BiometricService _biometricService = BiometricService();
 
   bool _isLoading = true;
   Widget? _targetScreen;
@@ -61,9 +63,12 @@ class _AuthGateState extends State<AuthGate> {
 
       // Has token and PIN → Check if should auto-lock
       final shouldLock = await _pinAuthService.shouldAutoLock();
+      
+      // Also check biometric auto-lock
+      final biometricShouldLock = await _biometricService.shouldLock();
 
-      if (shouldLock) {
-        // Needs to unlock with PIN
+      if (shouldLock || biometricShouldLock) {
+        // Needs to unlock with PIN or biometric
         setState(() {
           _targetScreen = const PinUnlockScreen();
           _isLoading = false;

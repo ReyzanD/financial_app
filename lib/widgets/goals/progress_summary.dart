@@ -130,16 +130,18 @@ class _ProgressSummaryState extends State<ProgressSummary> {
                   Iconsax.tick_circle,
                 ),
                 const SizedBox(height: 8),
-                _buildStatItem(
-                  'Dalam Progress',
-                  '$inProgress',
-                  Iconsax.clock,
-                ),
+                _buildStatItem('Dalam Progress', '$inProgress', Iconsax.clock),
                 const SizedBox(height: 8),
                 _buildStatItem(
                   'Total Target',
                   CurrencyFormatter.formatRupiah(totalTarget),
                   Iconsax.d_cube_scan,
+                ),
+                const SizedBox(height: 8),
+                _buildStatItem(
+                  'Total Tersimpan',
+                  CurrencyFormatter.formatRupiah(totalSaved),
+                  Iconsax.wallet,
                 ),
               ],
             ),

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:financial_app/Screen/add_transaction_screen.dart';
-import 'package:financial_app/Screen/home_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:financial_app/services/data_service.dart';
 

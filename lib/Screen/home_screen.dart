@@ -8,17 +8,18 @@ import 'package:financial_app/services/location_intelligence_service.dart';
 import 'package:financial_app/state/app_state.dart';
 import 'package:financial_app/widgets/home/home_header.dart';
 import 'package:financial_app/widgets/home/financial_summary_card.dart';
-import 'package:financial_app/widgets/home/quick_actions.dart';
+import 'package:financial_app/widgets/home/quick_actions_enhanced.dart';
 import 'package:financial_app/widgets/home/budget_progress.dart';
-import 'package:financial_app/widgets/home/recent_transactions.dart';
+import 'package:financial_app/widgets/home/recent_transactions_enhanced.dart';
 import 'package:financial_app/widgets/home/ai_recommendations.dart';
-import 'package:financial_app/widgets/home/quick_add_widget.dart';
+import 'package:financial_app/widgets/home/quick_add_widget_enhanced.dart';
 import 'package:financial_app/widgets/home/bottom_nav_bar.dart';
 import 'package:financial_app/widgets/home/floating_action_button.dart';
 import 'package:financial_app/widgets/home/tab_placeholders.dart';
 import 'package:financial_app/widgets/common/offline_indicator.dart';
 import 'package:financial_app/services/logger_service.dart';
 import 'package:financial_app/utils/app_refresh.dart';
+import 'package:financial_app/utils/responsive_helper.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -152,38 +153,38 @@ class _HomeScreenState extends State<HomeScreen> {
       backgroundColor: const Color(0xFF1A1A1A),
       child: SingleChildScrollView(
         physics: const AlwaysScrollableScrollPhysics(),
-        padding: const EdgeInsets.all(16),
+        padding: ResponsiveHelper.padding(context),
         child: Column(
           children: [
             // Financial Summary Card (forced refresh with key)
             FinancialSummaryCard(key: ValueKey('summary_$_refreshCounter')),
-            const SizedBox(height: 20),
+            SizedBox(height: ResponsiveHelper.verticalSpacing(context, 20)),
 
-            // Quick Actions
-            const QuickActions(),
-            const SizedBox(height: 20),
+            // Quick Actions (Enhanced)
+            const QuickActionsEnhanced(),
+            SizedBox(height: ResponsiveHelper.verticalSpacing(context, 20)),
 
-            // Quick Add Widget
-            QuickAddWidget(
+            // Quick Add Widget (Enhanced)
+            QuickAddWidgetEnhanced(
               key: ValueKey('quick_add_$_refreshCounter'),
               onTransactionAdded: _refreshDashboard,
             ),
-            const SizedBox(height: 20),
+            SizedBox(height: ResponsiveHelper.verticalSpacing(context, 20)),
 
             // Location-Based Recommendations (rebuild with counter)
             KeyedSubtree(
               key: ValueKey('location_recs_$_refreshCounter'),
               child: _buildLocationRecommendations(),
             ),
-            const SizedBox(height: 20),
+            SizedBox(height: ResponsiveHelper.verticalSpacing(context, 20)),
 
             // Budget Progress (forced refresh with key)
             BudgetProgress(key: ValueKey('budget_$_refreshCounter')),
-            const SizedBox(height: 20),
+            SizedBox(height: ResponsiveHelper.verticalSpacing(context, 20)),
 
-            // Recent Transactions (forced refresh with key)
-            RecentTransactions(key: ValueKey('transactions_$_refreshCounter')),
-            const SizedBox(height: 20),
+            // Recent Transactions (Enhanced - forced refresh with key)
+            RecentTransactionsEnhanced(key: ValueKey('transactions_$_refreshCounter')),
+            SizedBox(height: ResponsiveHelper.verticalSpacing(context, 20)),
 
             // AI Recommendations
             const AIRecommendations(),
@@ -203,8 +204,7 @@ class _HomeScreenState extends State<HomeScreen> {
       _locationRecommendationsFuture =
           LocationIntelligenceService().generateLocationInsights();
     });
-    // Add a small delay for better UX
-    await Future.delayed(const Duration(milliseconds: 500));
+    // Note: Removed delay - refresh immediately for better performance
     LoggerService.success('[HomeScreen] Dashboard refreshed (counter: $_refreshCounter)');
   }
 
@@ -222,8 +222,8 @@ class _HomeScreenState extends State<HomeScreen> {
         if (snapshot.connectionState == ConnectionState.waiting) {
           LoggerService.debug('[LocationRecommendations] Loading...');
           return Container(
-            padding: const EdgeInsets.all(16),
-            child: Center(
+            padding: ResponsiveHelper.padding(context),
+            child: const Center(
               child: CircularProgressIndicator(
                 color: Color(0xFF8B5FBF),
                 strokeWidth: 2,
@@ -256,25 +256,27 @@ class _HomeScreenState extends State<HomeScreen> {
                   Icon(
                     Iconsax.location,
                     color: const Color(0xFF8B5FBF),
-                    size: 20,
+                    size: ResponsiveHelper.iconSize(context, 20),
                   ),
-                  const SizedBox(width: 8),
+                  SizedBox(width: ResponsiveHelper.horizontalSpacing(context, 8)),
                   Text(
                     'Rekomendasi Lokal',
                     style: GoogleFonts.poppins(
                       color: Colors.white,
-                      fontSize: 18,
+                      fontSize: ResponsiveHelper.fontSize(context, 18),
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                 ],
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: ResponsiveHelper.verticalSpacing(context, 12)),
               Container(
-                padding: const EdgeInsets.all(16),
+                padding: ResponsiveHelper.padding(context),
                 decoration: BoxDecoration(
                   color: const Color(0xFF1A1A1A),
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(
+                    ResponsiveHelper.borderRadius(context, 16),
+                  ),
                   border: Border.all(color: Colors.grey[800]!),
                 ),
                 child: Column(
@@ -282,24 +284,24 @@ class _HomeScreenState extends State<HomeScreen> {
                     Icon(
                       Iconsax.location_tick,
                       color: Colors.grey[600],
-                      size: 40,
+                      size: ResponsiveHelper.iconSize(context, 40),
                     ),
-                    const SizedBox(height: 12),
+                    SizedBox(height: ResponsiveHelper.verticalSpacing(context, 12)),
                     Text(
                       'Belum Ada Rekomendasi',
                       style: GoogleFonts.poppins(
                         color: Colors.grey[400],
-                        fontSize: 14,
+                        fontSize: ResponsiveHelper.fontSize(context, 14),
                         fontWeight: FontWeight.w600,
                       ),
                     ),
-                    const SizedBox(height: 6),
+                    SizedBox(height: ResponsiveHelper.verticalSpacing(context, 6)),
                     Text(
                       'Tambahkan lokasi saat mencatat pengeluaran untuk mendapat rekomendasi hemat',
                       textAlign: TextAlign.center,
                       style: GoogleFonts.poppins(
                         color: Colors.grey[600],
-                        fontSize: 11,
+                        fontSize: ResponsiveHelper.fontSize(context, 11),
                       ),
                     ),
                   ],
@@ -322,20 +324,20 @@ class _HomeScreenState extends State<HomeScreen> {
                 Icon(
                   Iconsax.location,
                   color: const Color(0xFF8B5FBF),
-                  size: 20,
+                  size: ResponsiveHelper.iconSize(context, 20),
                 ),
-                const SizedBox(width: 8),
+                SizedBox(width: ResponsiveHelper.horizontalSpacing(context, 8)),
                 Text(
                   'Rekomendasi Lokal',
                   style: GoogleFonts.poppins(
                     color: Colors.white,
-                    fontSize: 18,
+                    fontSize: ResponsiveHelper.fontSize(context, 18),
                     fontWeight: FontWeight.bold,
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: ResponsiveHelper.verticalSpacing(context, 12)),
 
             // Show maximum 2 recommendations
             ...recommendations
@@ -354,11 +356,15 @@ class _HomeScreenState extends State<HomeScreen> {
     LocationRecommendation recommendation,
   ) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
+      margin: EdgeInsets.only(
+        bottom: ResponsiveHelper.verticalSpacing(context, 12),
+      ),
+      padding: ResponsiveHelper.padding(context),
       decoration: BoxDecoration(
         color: const Color(0xFF1A1A1A),
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(
+          ResponsiveHelper.borderRadius(context, 16),
+        ),
         border: Border.all(
           color: Color.lerp(Colors.black, Colors.transparent, 0.3)!,
           width: 0.3,
@@ -371,31 +377,34 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               // Icon based on recommendation type
               _getRecommendationIcon(recommendation.type),
-              const SizedBox(width: 8),
+              SizedBox(width: ResponsiveHelper.horizontalSpacing(context, 8)),
               Expanded(
                 child: Text(
                   recommendation.title,
                   style: GoogleFonts.poppins(
                     color: Colors.white,
-                    fontSize: 14,
+                    fontSize: ResponsiveHelper.fontSize(context, 14),
                     fontWeight: FontWeight.w600,
                   ),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: ResponsiveHelper.verticalSpacing(context, 8)),
           Text(
             recommendation.description,
-            style: GoogleFonts.poppins(color: Colors.grey[400], fontSize: 12),
+            style: GoogleFonts.poppins(
+              color: Colors.grey[400],
+              fontSize: ResponsiveHelper.fontSize(context, 12),
+            ),
           ),
           if (recommendation.estimatedSavings > 0) ...[
-            const SizedBox(height: 8),
+            SizedBox(height: ResponsiveHelper.verticalSpacing(context, 8)),
             Text(
               'Perkiraan penghematan: Rp ${recommendation.estimatedSavings.toStringAsFixed(0)}',
               style: GoogleFonts.poppins(
                 color: const Color(0xFF8B5FBF),
-                fontSize: 12,
+                fontSize: ResponsiveHelper.fontSize(context, 12),
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -406,18 +415,19 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Icon _getRecommendationIcon(RecommendationType type) {
+    final iconSize = ResponsiveHelper.iconSize(context, 20);
     switch (type) {
       case RecommendationType.price_alert:
-        return Icon(Iconsax.warning_2, color: Colors.orange, size: 20);
+        return Icon(Iconsax.warning_2, color: Colors.orange, size: iconSize);
       case RecommendationType.alternative_location:
-        return Icon(Iconsax.location, color: Colors.blue, size: 20);
+        return Icon(Iconsax.location, color: Colors.blue, size: iconSize);
       case RecommendationType.spending_pattern:
-        return Icon(Iconsax.chart, color: Colors.green, size: 20);
+        return Icon(Iconsax.chart, color: Colors.green, size: iconSize);
       default:
         return Icon(
           Iconsax.info_circle,
           color: const Color(0xFF8B5FBF),
-          size: 20,
+          size: iconSize,
         );
     }
   }

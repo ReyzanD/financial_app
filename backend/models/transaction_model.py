@@ -104,6 +104,13 @@ class TransactionModel:
             
             sql += " ORDER BY t.transaction_date_232143 DESC, t.created_at_232143 DESC"
             
+            # Add pagination support
+            if filters and filters.get('limit') is not None:
+                limit = int(filters.get('limit', 10))
+                offset = int(filters.get('offset', 0))
+                sql += " LIMIT %s OFFSET %s"
+                params.extend([limit, offset])
+            
             cursor.execute(sql, params)
             return cursor.fetchall()
 

@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:financial_app/services/obligation_service.dart';
 import 'package:financial_app/services/error_handler_service.dart';
 import 'package:financial_app/services/logger_service.dart';
+import 'package:financial_app/utils/form_validators.dart';
 
 class AddObligationModal extends StatefulWidget {
   final Map<String, dynamic>? initialObligation;
@@ -223,12 +224,7 @@ class _AddObligationModalState extends State<AddObligationModal> {
                     borderSide: BorderSide.none,
                   ),
                 ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Nama harus diisi';
-                  }
-                  return null;
-                },
+                validator: (value) => FormValidators.validateName(value, fieldName: 'Nama'),
               ),
               const SizedBox(height: 16),
 
@@ -333,16 +329,7 @@ class _AddObligationModalState extends State<AddObligationModal> {
                     borderSide: BorderSide.none,
                   ),
                 ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Jumlah harus diisi';
-                  }
-                  if (double.tryParse(value) == null ||
-                      double.parse(value) <= 0) {
-                    return 'Masukkan angka yang valid';
-                  }
-                  return null;
-                },
+                validator: (value) => FormValidators.validateAmount(value),
               ),
               const SizedBox(height: 16),
 

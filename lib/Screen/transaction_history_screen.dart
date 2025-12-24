@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:financial_app/services/api_service.dart';
 import 'package:financial_app/services/error_handler_service.dart';
+import 'package:financial_app/services/logger_service.dart';
 import 'package:financial_app/Screen/report_screen.dart';
 
 class TransactionHistoryScreen extends StatefulWidget {
@@ -16,9 +17,14 @@ class TransactionHistoryScreen extends StatefulWidget {
 class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
   final ApiService _apiService = ApiService();
   final TextEditingController _searchController = TextEditingController();
+  final ScrollController _scrollController = ScrollController();
   List<Map<String, dynamic>> _transactions = [];
   List<Map<String, dynamic>> _filteredTransactions = [];
   bool _isLoading = true;
+  bool _isLoadingMore = false;
+  bool _hasMore = true;
+  int _currentOffset = 0;
+  static const int _pageSize = 50;
   String _filterType = 'all'; // all, income, expense
   String _sortBy = 'date_desc'; // date_desc, date_asc, amount_desc, amount_asc
   String _searchQuery = '';
@@ -31,12 +37,23 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
     super.initState();
     _loadTransactions();
     _searchController.addListener(_onSearchChanged);
+    _scrollController.addListener(_onScroll);
   }
 
   @override
   void dispose() {
     _searchController.dispose();
+    _scrollController.dispose();
     super.dispose();
+  }
+
+  void _onScroll() {
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent * 0.8) {
+      if (!_isLoadingMore && _hasMore) {
+        _loadMoreTransactions();
+      }
+    }
   }
 
   void _onSearchChanged() {
@@ -46,14 +63,24 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
     });
   }
 
-  Future<void> _loadTransactions() async {
-    setState(() => _isLoading = true);
+  Future<void> _loadTransactions({bool reset = true}) async {
+    if (reset) {
+      setState(() {
+        _isLoading = true;
+        _currentOffset = 0;
+        _transactions = [];
+        _hasMore = true;
+      });
+    }
 
     try {
-      final data = await _apiService.getTransactions(limit: 1000);
-      final transactions = List<Map<String, dynamic>>.from(data);
-
-      // Transactions loaded successfully
+      final data = await _apiService.getTransactions(
+        limit: _pageSize,
+        offset: _currentOffset,
+      );
+      final transactions = List<Map<String, dynamic>>.from(
+        data['transactions'] ?? [],
+      );
 
       // Sort by date descending (newest first) initially
       transactions.sort((a, b) {
@@ -66,26 +93,42 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
         return dateB.compareTo(dateA);
       });
 
-      // Calculate running balance
-      _calculateRunningBalance(transactions);
-
-      // Running balance calculated
-
       setState(() {
-        _transactions = transactions;
-        _filteredTransactions = transactions;
+        if (reset) {
+          _transactions = transactions;
+        } else {
+          _transactions.addAll(transactions);
+        }
+        _currentOffset += transactions.length;
+        _hasMore = transactions.length == _pageSize;
         _isLoading = false;
+        _isLoadingMore = false;
       });
+
+      // Calculate running balance after loading
+      _calculateRunningBalance(_transactions);
+      _applyAllFilters();
     } catch (e) {
-      setState(() => _isLoading = false);
+      LoggerService.error('Error loading transactions', error: e);
+      setState(() {
+        _isLoading = false;
+        _isLoadingMore = false;
+      });
       if (mounted) {
         ErrorHandlerService.showErrorSnackbar(
           context,
           ErrorHandlerService.getUserFriendlyMessage(e),
-          onRetry: _loadTransactions,
+          onRetry: () => _loadTransactions(reset: true),
         );
       }
     }
+  }
+
+  Future<void> _loadMoreTransactions() async {
+    if (_isLoadingMore || !_hasMore) return;
+
+    setState(() => _isLoadingMore = true);
+    await _loadTransactions(reset: false);
   }
 
   void _calculateRunningBalance(List<Map<String, dynamic>> transactions) {
@@ -317,7 +360,7 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
           ),
           IconButton(
             icon: const Icon(Icons.refresh_rounded, color: Colors.white),
-            onPressed: _loadTransactions,
+            onPressed: () => _loadTransactions(reset: true),
             tooltip: 'Muat Ulang',
           ),
         ],
@@ -639,6 +682,12 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
   }
 
   Widget _buildTransactionsList() {
+    if (_isLoading && _transactions.isEmpty) {
+      return const Center(
+        child: CircularProgressIndicator(color: Color(0xFF8B5FBF)),
+      );
+    }
+
     if (_filteredTransactions.isEmpty) {
       return Center(
         child: Column(
@@ -656,9 +705,18 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
     }
 
     return ListView.builder(
+      controller: _scrollController,
       padding: const EdgeInsets.all(16),
-      itemCount: _filteredTransactions.length,
+      itemCount: _filteredTransactions.length + (_isLoadingMore ? 1 : 0),
       itemBuilder: (context, index) {
+        if (index == _filteredTransactions.length) {
+          return const Center(
+            child: Padding(
+              padding: EdgeInsets.all(16.0),
+              child: CircularProgressIndicator(color: Color(0xFF8B5FBF)),
+            ),
+          );
+        }
         final transaction = _filteredTransactions[index];
         return _buildTransactionItem(transaction);
       },

@@ -84,7 +84,8 @@ class LocationRecommendationService {
         ),
       ];
     } catch (e) {
-      print('Error in getDailyLocationInsights: $e');
+      // Note: This is a model class, so we can't use LoggerService here
+      // The error will be handled by the calling service
       return [];
     }
   }
@@ -96,7 +97,7 @@ class LocationRecommendationService {
   ) async {
     // In real implementation, this would call a backend API
     // with user's current location to get nearby recommendations
-    await Future.delayed(const Duration(seconds: 1));
+    // Note: Removed artificial delay for better performance
 
     return [
       LocationRecommendation(
@@ -121,9 +122,7 @@ class LocationRecommendationService {
     String category,
     Map<String, dynamic>? locationData,
   ) async {
-    // Simulate API call delay
-    await Future.delayed(const Duration(seconds: 1));
-
+    // Note: Removed artificial delay for better performance
     // Mock recommendations based on category
     switch (category.toLowerCase()) {
       case 'belanja':

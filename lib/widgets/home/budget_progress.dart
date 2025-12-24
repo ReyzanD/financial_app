@@ -4,6 +4,7 @@ import 'package:financial_app/utils/formatters.dart';
 import 'package:financial_app/services/api_service.dart';
 import 'package:financial_app/services/logger_service.dart';
 import 'package:financial_app/Screen/budgets_screen.dart';
+import 'package:financial_app/utils/responsive_helper.dart';
 
 class BudgetProgress extends StatefulWidget {
   const BudgetProgress({super.key});
@@ -163,7 +164,7 @@ class _BudgetProgressState extends State<BudgetProgress>
               'Budget Progress',
               style: GoogleFonts.poppins(
                 color: Colors.white,
-                fontSize: 18,
+                fontSize: ResponsiveHelper.fontSize(context, 18),
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -180,18 +181,18 @@ class _BudgetProgressState extends State<BudgetProgress>
                 'Lihat Semua',
                 style: GoogleFonts.poppins(
                   color: Color(0xFF8B5FBF),
-                  fontSize: 12,
+                  fontSize: ResponsiveHelper.fontSize(context, 12),
                 ),
               ),
             ),
           ],
         ),
-        const SizedBox(height: 12),
+        SizedBox(height: ResponsiveHelper.verticalSpacing(context, 12)),
         if (_isLoading)
-          const Center(
+          Center(
             child: Padding(
-              padding: EdgeInsets.all(20),
-              child: CircularProgressIndicator(color: Color(0xFF8B5FBF)),
+              padding: ResponsiveHelper.padding(context, multiplier: 1.25),
+              child: const CircularProgressIndicator(color: Color(0xFF8B5FBF)),
             ),
           )
         else if (_errorMessage != null)
@@ -205,10 +206,12 @@ class _BudgetProgressState extends State<BudgetProgress>
               _loadData();
             },
             child: Container(
-              padding: const EdgeInsets.all(32),
+              padding: ResponsiveHelper.padding(context, multiplier: 2.0),
               decoration: BoxDecoration(
                 color: const Color(0xFF1A1A1A),
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(
+                  ResponsiveHelper.borderRadius(context, 16),
+                ),
                 border: Border.all(color: Colors.red.withOpacity(0.3)),
               ),
               child: Column(
@@ -216,42 +219,45 @@ class _BudgetProgressState extends State<BudgetProgress>
                   Icon(
                     Icons.error_outline_rounded,
                     color: Colors.red[400],
-                    size: 48,
+                    size: ResponsiveHelper.iconSize(context, 48),
                   ),
-                  const SizedBox(height: 12),
+                  SizedBox(height: ResponsiveHelper.verticalSpacing(context, 12)),
                   Text(
                     'Terjadi Kesalahan',
                     style: GoogleFonts.poppins(
                       color: Colors.grey[400],
-                      fontSize: 16,
+                      fontSize: ResponsiveHelper.fontSize(context, 16),
                       fontWeight: FontWeight.w600,
                     ),
                   ),
-                  const SizedBox(height: 4),
+                  SizedBox(height: ResponsiveHelper.verticalSpacing(context, 4)),
                   Text(
                     _errorMessage!,
                     textAlign: TextAlign.center,
                     style: GoogleFonts.poppins(
                       color: Colors.grey[600],
-                      fontSize: 12,
+                      fontSize: ResponsiveHelper.fontSize(context, 12),
                     ),
                   ),
-                  const SizedBox(height: 12),
+                  SizedBox(height: ResponsiveHelper.verticalSpacing(context, 12)),
                   Container(
-                    padding: const EdgeInsets.symmetric(
+                    padding: ResponsiveHelper.symmetricPadding(
+                      context,
                       horizontal: 16,
                       vertical: 8,
                     ),
                     decoration: BoxDecoration(
                       color: const Color(0xFF8B5FBF).withOpacity(0.2),
-                      borderRadius: BorderRadius.circular(20),
+                      borderRadius: BorderRadius.circular(
+                        ResponsiveHelper.borderRadius(context, 20),
+                      ),
                       border: Border.all(color: const Color(0xFF8B5FBF)),
                     ),
                     child: Text(
                       'Tap untuk mencoba lagi',
                       style: GoogleFonts.poppins(
                         color: const Color(0xFF8B5FBF),
-                        fontSize: 12,
+                        fontSize: ResponsiveHelper.fontSize(context, 12),
                         fontWeight: FontWeight.w500,
                       ),
                     ),
@@ -262,10 +268,12 @@ class _BudgetProgressState extends State<BudgetProgress>
           )
         else if (_budgets.isEmpty)
           Container(
-            padding: const EdgeInsets.all(32),
+            padding: ResponsiveHelper.padding(context, multiplier: 2.0),
             decoration: BoxDecoration(
               color: const Color(0xFF1A1A1A),
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(
+                ResponsiveHelper.borderRadius(context, 16),
+              ),
               border: Border.all(color: Colors.grey[800]!),
             ),
             child: Column(
@@ -273,24 +281,24 @@ class _BudgetProgressState extends State<BudgetProgress>
                 Icon(
                   Icons.account_balance_wallet_outlined,
                   color: Colors.grey[600],
-                  size: 48,
+                  size: ResponsiveHelper.iconSize(context, 48),
                 ),
-                const SizedBox(height: 12),
+                SizedBox(height: ResponsiveHelper.verticalSpacing(context, 12)),
                 Text(
                   'Belum ada budget',
                   style: GoogleFonts.poppins(
                     color: Colors.grey[400],
-                    fontSize: 16,
+                    fontSize: ResponsiveHelper.fontSize(context, 16),
                     fontWeight: FontWeight.w600,
                   ),
                 ),
-                const SizedBox(height: 4),
+                SizedBox(height: ResponsiveHelper.verticalSpacing(context, 4)),
                 Text(
                   'Buat budget untuk kelola keuangan lebih baik',
                   textAlign: TextAlign.center,
                   style: GoogleFonts.poppins(
                     color: Colors.grey[600],
-                    fontSize: 12,
+                    fontSize: ResponsiveHelper.fontSize(context, 12),
                   ),
                 ),
               ],
@@ -338,11 +346,16 @@ class _BudgetProgressState extends State<BudgetProgress>
     final displayColor = isOverBudget ? Colors.red : color;
 
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
+      width: double.infinity,
+      margin: EdgeInsets.only(
+        bottom: ResponsiveHelper.verticalSpacing(context, 12),
+      ),
+      padding: ResponsiveHelper.padding(context),
       decoration: BoxDecoration(
         color: const Color(0xFF1A1A1A),
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(
+          ResponsiveHelper.borderRadius(context, 16),
+        ),
         border: Border.all(
           color: isOverBudget ? Colors.red.withOpacity(0.3) : Colors.grey[800]!,
           width: isOverBudget ? 1.5 : 1,
@@ -365,19 +378,23 @@ class _BudgetProgressState extends State<BudgetProgress>
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Container(
-                  width: 40,
-                  height: 40,
+                  width: ResponsiveHelper.iconSize(context, 40),
+                  height: ResponsiveHelper.iconSize(context, 40),
                   decoration: BoxDecoration(
                     color: displayColor.withOpacity(0.2),
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(
+                      ResponsiveHelper.borderRadius(context, 10),
+                    ),
                   ),
                   child: Icon(
                     Icons.account_balance_wallet_rounded,
                     color: displayColor,
-                    size: 20,
+                    size: ResponsiveHelper.iconSize(context, 20),
                   ),
                 ),
-                const SizedBox(width: 12),
+                SizedBox(
+                  width: ResponsiveHelper.horizontalSpacing(context, 12),
+                ),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -387,35 +404,42 @@ class _BudgetProgressState extends State<BudgetProgress>
                         category,
                         style: GoogleFonts.poppins(
                           color: Colors.white,
-                          fontSize: 14,
+                          fontSize: ResponsiveHelper.fontSize(context, 14),
                           fontWeight: FontWeight.w500,
                         ),
                       ),
                       if (isOverBudget) ...[
-                        const SizedBox(height: 4),
+                        SizedBox(
+                          height: ResponsiveHelper.verticalSpacing(context, 4),
+                        ),
                         Container(
-                          padding: const EdgeInsets.symmetric(
+                          padding: ResponsiveHelper.symmetricPadding(
+                            context,
                             horizontal: 6,
                             vertical: 2,
                           ),
                           decoration: BoxDecoration(
                             color: Colors.red.withOpacity(0.2),
-                            borderRadius: BorderRadius.circular(6),
+                            borderRadius: BorderRadius.circular(
+                              ResponsiveHelper.borderRadius(context, 6),
+                            ),
                           ),
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              const Icon(
+                              Icon(
                                 Icons.warning_rounded,
                                 color: Colors.red,
-                                size: 12,
+                                size: ResponsiveHelper.iconSize(context, 12),
                               ),
-                              const SizedBox(width: 4),
+                              SizedBox(
+                                width: ResponsiveHelper.horizontalSpacing(context, 4),
+                              ),
                               Text(
                                 'Over',
                                 style: GoogleFonts.poppins(
                                   color: Colors.red,
-                                  fontSize: 10,
+                                  fontSize: ResponsiveHelper.fontSize(context, 10),
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
@@ -429,12 +453,13 @@ class _BudgetProgressState extends State<BudgetProgress>
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   mainAxisAlignment: MainAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
                       CurrencyFormatter.formatRupiah(spent.toInt()),
                       style: GoogleFonts.poppins(
                         color: displayColor,
-                        fontSize: 14,
+                        fontSize: ResponsiveHelper.fontSize(context, 14),
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -442,7 +467,7 @@ class _BudgetProgressState extends State<BudgetProgress>
                       'dari ${CurrencyFormatter.formatRupiah(amount.toInt())}',
                       style: GoogleFonts.poppins(
                         color: Colors.grey[500],
-                        fontSize: 10,
+                        fontSize: ResponsiveHelper.fontSize(context, 10),
                       ),
                     ),
                   ],
@@ -450,9 +475,11 @@ class _BudgetProgressState extends State<BudgetProgress>
               ],
             ),
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: ResponsiveHelper.verticalSpacing(context, 12)),
           ClipRRect(
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(
+              ResponsiveHelper.borderRadius(context, 10),
+            ),
             child: TweenAnimationBuilder<double>(
               duration: const Duration(milliseconds: 1000),
               curve: Curves.easeOutCubic,
@@ -464,12 +491,12 @@ class _BudgetProgressState extends State<BudgetProgress>
                   value: displayValue,
                   backgroundColor: Colors.grey[800],
                   valueColor: AlwaysStoppedAnimation(displayColor),
-                  minHeight: 8,
+                  minHeight: ResponsiveHelper.verticalSpacing(context, 8),
                 );
               },
             ),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: ResponsiveHelper.verticalSpacing(context, 8)),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -479,7 +506,7 @@ class _BudgetProgressState extends State<BudgetProgress>
                     : 'Sisa ${CurrencyFormatter.formatRupiah(remaining.toInt())}',
                 style: GoogleFonts.poppins(
                   color: isOverBudget ? Colors.red[300] : Colors.green[300],
-                  fontSize: 11,
+                  fontSize: ResponsiveHelper.fontSize(context, 11),
                   fontWeight: FontWeight.w500,
                 ),
               ),
@@ -489,7 +516,7 @@ class _BudgetProgressState extends State<BudgetProgress>
                     : '${(percentage * 100).toStringAsFixed(0)}%',
                 style: GoogleFonts.poppins(
                   color: displayColor,
-                  fontSize: 12,
+                  fontSize: ResponsiveHelper.fontSize(context, 12),
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -513,3 +540,4 @@ class _BudgetProgressState extends State<BudgetProgress>
     }
   }
 }
+

@@ -14,7 +14,11 @@ class AnalyticsService {
 
       // Filter by period
       final now = DateTime.now();
-      final filteredTransactions = _filterByPeriod(transactions, period, now);
+      final filteredTransactions = _filterByPeriod(
+        transactions as List<dynamic>,
+        period,
+        now,
+      );
 
       // Calculate analytics
       return _calculateAnalytics(filteredTransactions, period, now);

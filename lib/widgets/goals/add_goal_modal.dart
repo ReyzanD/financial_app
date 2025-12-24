@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:financial_app/services/api_service.dart';
 import 'package:financial_app/services/error_handler_service.dart';
 import 'package:financial_app/services/logger_service.dart';
+import 'package:financial_app/utils/form_validators.dart';
 import 'package:intl/intl.dart';
 
 class AddGoalModal extends StatefulWidget {
@@ -261,12 +262,7 @@ class _AddGoalModalState extends State<AddGoalModal> {
                     borderSide: BorderSide.none,
                   ),
                 ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Nama target harus diisi';
-                  }
-                  return null;
-                },
+                validator: (value) => FormValidators.validateName(value, fieldName: 'Nama target'),
               ),
               const SizedBox(height: 16),
 
@@ -325,15 +321,7 @@ class _AddGoalModalState extends State<AddGoalModal> {
                     borderSide: BorderSide.none,
                   ),
                 ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Jumlah target harus diisi';
-                  }
-                  if (double.tryParse(value) == null) {
-                    return 'Masukkan angka yang valid';
-                  }
-                  return null;
-                },
+                validator: (value) => FormValidators.validateAmount(value),
               ),
               const SizedBox(height: 16),
 

@@ -6,6 +6,7 @@ import 'package:financial_app/Screen/transaction_history_screen.dart';
 import 'package:financial_app/Screen/recurring_transactions_screen.dart';
 import 'package:financial_app/Screen/backup_screen.dart';
 import 'package:financial_app/Screen/ai_budget_recommendation_screen.dart';
+import 'package:financial_app/utils/responsive_helper.dart';
 
 class QuickActions extends StatelessWidget {
   const QuickActions({super.key});
@@ -80,19 +81,23 @@ class QuickActions extends StatelessWidget {
           'More Actions',
           style: GoogleFonts.poppins(
             color: Colors.white,
-            fontSize: 18,
+            fontSize: ResponsiveHelper.fontSize(context, 18),
             fontWeight: FontWeight.bold,
           ),
         ),
-        const SizedBox(height: 12),
+        SizedBox(height: ResponsiveHelper.verticalSpacing(context, 12)),
         GridView.builder(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 4,
-            crossAxisSpacing: 10,
-            mainAxisSpacing: 12,
-            childAspectRatio: 0.85,
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: ResponsiveHelper.gridCrossAxisCount(
+              context,
+              phone: 4,
+              tablet: 5,
+            ),
+            crossAxisSpacing: ResponsiveHelper.horizontalSpacing(context, 10),
+            mainAxisSpacing: ResponsiveHelper.verticalSpacing(context, 12),
+            childAspectRatio: ResponsiveHelper.isTablet(context) ? 0.9 : 0.85,
           ),
           itemCount: actions.length,
           itemBuilder: (context, index) {
@@ -117,26 +122,36 @@ class QuickActions extends StatelessWidget {
     required Color color,
     required VoidCallback onTap,
   }) {
+    final iconSize = ResponsiveHelper.iconSize(context, 48);
     return GestureDetector(
       onTap: onTap,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           Container(
-            width: 48,
-            height: 48,
+            width: iconSize,
+            height: iconSize,
             decoration: BoxDecoration(
               color: color.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(14),
+              borderRadius: BorderRadius.circular(
+                ResponsiveHelper.borderRadius(context, 14),
+              ),
               border: Border.all(color: color.withOpacity(0.3)),
             ),
-            child: Icon(icon, color: color, size: 22),
+            child: Icon(
+              icon,
+              color: color,
+              size: ResponsiveHelper.iconSize(context, 22),
+            ),
           ),
-          const SizedBox(height: 6),
+          SizedBox(height: ResponsiveHelper.verticalSpacing(context, 6)),
           Flexible(
             child: Text(
               label,
-              style: GoogleFonts.poppins(color: Colors.white70, fontSize: 9),
+              style: GoogleFonts.poppins(
+                color: Colors.white70,
+                fontSize: ResponsiveHelper.fontSize(context, 9),
+              ),
               textAlign: TextAlign.center,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,

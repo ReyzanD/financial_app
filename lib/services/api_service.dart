@@ -1,7 +1,34 @@
+/// API Service - Main facade for all API operations
+///
+/// This service provides a unified interface for all backend API calls.
+/// It delegates to specific API clients (TransactionApi, BudgetApi, etc.)
+/// and handles caching, error handling, and authentication.
+///
+/// Features:
+/// - Automatic token management
+/// - Response caching (2-minute TTL)
+/// - Error handling and logging
+/// - Request/response transformation
+///
+/// Usage:
+/// ```dart
+/// final apiService = ApiService();
+/// final transactions = await apiService.getTransactions(limit: 50);
+/// ```
+///
+/// Author: Financial App Team
+/// Last Updated: 2024
+
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:financial_app/services/logger_service.dart';
+import 'package:financial_app/services/api/transaction_api.dart';
+import 'package:financial_app/services/api/budget_api.dart';
+import 'package:financial_app/services/api/category_api.dart';
+import 'package:financial_app/services/api/goal_api.dart';
+import 'package:financial_app/services/api/obligation_api.dart';
+import 'package:financial_app/services/api/base_api.dart';
 
 class ApiService {
   static const String baseUrl = 'http://10.0.2.2:5000/api/v1';
@@ -248,11 +275,13 @@ class ApiService {
     }
   }
 
-  // Transactions - Delegated to TransactionApiService
-  // Use: TransactionApiService().getTransactions()
-  Future<List<dynamic>> getTransactions({
+  // Transactions - Delegated to TransactionApi
+  /// Get transactions with pagination support
+  /// Returns a map with 'transactions' list and pagination metadata
+  Future<Map<String, dynamic>> getTransactions({
     String? type,
     int limit = 10,
+    int offset = 0,
     DateTime? startDate,
     DateTime? endDate,
     String? categoryId,
@@ -260,36 +289,17 @@ class ApiService {
     double? maxAmount,
     String? search,
   }) async {
-    String endpoint = 'transactions_232143';
-    List<String> params = [];
-
-    if (type != null) params.add('type=$type');
-    if (startDate != null) {
-      params.add('start_date=${_formatDate(startDate)}');
-    }
-    if (endDate != null) {
-      params.add('end_date=${_formatDate(endDate)}');
-    }
-    if (categoryId != null) params.add('category_id=$categoryId');
-    if (minAmount != null) params.add('min_amount=$minAmount');
-    if (maxAmount != null) params.add('max_amount=$maxAmount');
-    if (search != null && search.isNotEmpty) params.add('search=$search');
-    if (limit > 0) params.add('limit=$limit');
-
-    if (params.isNotEmpty) {
-      endpoint += '?' + params.join('&');
-    }
-
-    final response = await get(endpoint);
-    return response['transactions'] ?? [];
+    return await TransactionApi.getTransactions(
+      limit: limit,
+      offset: offset,
+      type: type,
+      categoryId: categoryId,
+      startDate: startDate?.toIso8601String().split('T')[0],
+      endDate: endDate?.toIso8601String().split('T')[0],
+      search: search,
+    );
   }
 
-  String _formatDate(DateTime date) {
-    final y = date.year.toString().padLeft(4, '0');
-    final m = date.month.toString().padLeft(2, '0');
-    final d = date.day.toString().padLeft(2, '0');
-    return '$y-$m-$d';
-  }
 
   // Cache for financial summary
   Map<String, dynamic>? _cachedSummary;
@@ -298,8 +308,7 @@ class ApiService {
   int? _cachedSummaryMonth;
   static const _summaryTtl = Duration(minutes: 5);
 
-  // Financial Summary - Delegated to TransactionApiService
-  // Use: TransactionApiService().getFinancialSummary()
+  // Financial Summary - Delegated to TransactionApi
   Future<Map<String, dynamic>> getFinancialSummary({
     int? year,
     int? month,
@@ -319,15 +328,16 @@ class ApiService {
     }
 
     try {
-      final response = await get(
-        'transactions_232143/analytics/summary?year=$targetYear&month=$targetMonth',
+      final response = await TransactionApi.getFinancialSummary(
+        year: targetYear,
+        month: targetMonth,
       );
       final List<dynamic> summaryList = response['summary'] ?? [];
-      print('📊 [ApiService] Summary list from API: $summaryList');
+      LoggerService.debug('[ApiService] Summary list from API: $summaryList');
       Map<String, dynamic> summaryMap = {};
       for (var item in summaryList) {
         final type = item['type_232143']?.toString() ?? '';
-        print('📊 [ApiService] Processing type: $type, amount: ${item['total_amount_232143']}');
+        LoggerService.debug('[ApiService] Processing type: $type, amount: ${item['total_amount_232143']}');
         summaryMap[type] = {
           'total_amount': double.parse(
             item['total_amount_232143']?.toString() ?? '0',
@@ -337,7 +347,7 @@ class ApiService {
           ),
         };
       }
-      print('📊 [ApiService] Final summary map: $summaryMap');
+      LoggerService.debug('[ApiService] Final summary map: $summaryMap');
 
       final result = {
         'year': targetYear,
@@ -359,57 +369,34 @@ class ApiService {
     }
   }
 
-  // Budgets
+  // Budgets - Delegated to BudgetApi
   Future<List<dynamic>> getBudgets({bool activeOnly = true}) async {
-    String endpoint = 'budgets';
-    if (!activeOnly) {
-      endpoint += '?active_only=false';
-    }
-    final response = await get(endpoint);
-    return response['budgets'] ?? [];
+    return await BudgetApi.getBudgets();
   }
 
   Future<Map<String, dynamic>> getBudget(String budgetId) async {
-    final response = await get('budgets/$budgetId');
-    return response['budget'] ?? {};
+    return await BudgetApi.getBudget(budgetId);
   }
 
   Future<Map<String, dynamic>> createBudget(
     Map<String, dynamic> budgetData,
   ) async {
-    return await post('budgets', budgetData);
+    return await BudgetApi.createBudget(budgetData);
   }
 
   Future<Map<String, dynamic>> updateBudget(
     String budgetId,
     Map<String, dynamic> budgetData,
   ) async {
-    try {
-      final response = await http.put(
-        Uri.parse('$baseUrl/budgets/$budgetId'),
-        headers: await _getHeaders(),
-        body: json.encode(budgetData),
-      );
-      return _handleResponse(response);
-    } catch (e) {
-      throw Exception('Network error: $e');
-    }
+    return await BudgetApi.updateBudget(budgetId, budgetData);
   }
 
   Future<Map<String, dynamic>> deleteBudget(String budgetId) async {
-    try {
-      final response = await http.delete(
-        Uri.parse('$baseUrl/budgets/$budgetId'),
-        headers: await _getHeaders(),
-      );
-      return _handleResponse(response);
-    } catch (e) {
-      throw Exception('Network error: $e');
-    }
+    return await BudgetApi.deleteBudget(budgetId);
   }
 
   Future<Map<String, dynamic>> getBudgetsSummary() async {
-    return await get('budgets/summary');
+    return await BudgetApi.getBudgetAnalytics();
   }
 
   // AI Recommendations
@@ -430,88 +417,76 @@ class ApiService {
         _categoriesCacheTime != null &&
         DateTime.now().difference(_categoriesCacheTime!) <
             _categoriesCacheDuration) {
-      print('📦 Using cached categories (${_cachedCategories!.length} items)');
+      LoggerService.cache('HIT', 'categories_232143');
+      LoggerService.debug('Using cached categories (${_cachedCategories!.length} items)');
       return _cachedCategories!;
     }
 
     try {
-      print('🔄 Fetching fresh categories from API...');
-      final response = await get('categories_232143');
-      final categories = response['categories'] ?? [];
+      LoggerService.debug('Fetching fresh categories from API...');
+      final categories = await CategoryApi.getCategories();
 
       // Update cache
       _cachedCategories = categories;
       _categoriesCacheTime = DateTime.now();
-      print('✅ Categories cached: ${categories.length} items');
+      LoggerService.success('Categories cached: ${categories.length} items');
 
       return categories;
     } catch (e) {
-      print('⚠️ Failed to fetch categories: $e');
+      LoggerService.warning('Failed to fetch categories', error: e);
       // Return cached data if available, even if expired
       if (_cachedCategories != null) {
-        print('📦 Returning stale cache as fallback');
+        LoggerService.debug('Returning stale cache as fallback');
         return _cachedCategories!;
       }
       rethrow;
     }
   }
 
-  // Add Transaction
+  // Add Transaction - Delegated to TransactionApi with cache clearing
   Future<Map<String, dynamic>> addTransaction(
     Map<String, dynamic> transactionData,
   ) async {
-    final result = await post('transactions_232143', transactionData);
+    final result = await TransactionApi.addTransaction(transactionData);
     // Clear caches after adding transaction
-    print('🧹 Clearing transaction caches after add...');
+    LoggerService.debug('Clearing transaction caches after add...');
     _clearTransactionCaches();
+    BaseApiClient.clearCache(); // Also clear base API cache
     return result;
   }
 
-  // Update Transaction
+  // Update Transaction - Delegated to TransactionApi with cache clearing
   Future<Map<String, dynamic>> updateTransaction(
     String transactionId,
     Map<String, dynamic> transactionData,
   ) async {
     try {
-      print('✏️ Updating transaction: $transactionId');
-      print('📝 Update data: $transactionData');
-      final response = await http.put(
-        Uri.parse('$baseUrl/transactions_232143/$transactionId'),
-        headers: await _getHeaders(),
-        body: json.encode(transactionData),
-      );
-      print('✅ Update response: ${response.statusCode}');
-      final result = _handleResponse(response);
-
+      LoggerService.debug('Updating transaction: $transactionId');
+      final result = await TransactionApi.updateTransaction(transactionId, transactionData);
       // Clear caches after updating transaction
-      print('🧹 Clearing transaction caches after update...');
+      LoggerService.debug('Clearing transaction caches after update...');
       _clearTransactionCaches();
-
+      BaseApiClient.clearCache();
       return result;
     } catch (e) {
-      print('❌ Update error: $e');
-      throw Exception('Network error: $e');
+      LoggerService.error('Update error', error: e);
+      rethrow;
     }
   }
 
-  // Delete Transaction
+  // Delete Transaction - Delegated to TransactionApi with cache clearing
   Future<Map<String, dynamic>> deleteTransaction(String transactionId) async {
     try {
-      print('🗑️ Deleting transaction: $transactionId');
-      final response = await http.delete(
-        Uri.parse('$baseUrl/transactions_232143/$transactionId'),
-        headers: await _getHeaders(),
-      );
-      print('✅ Delete response: ${response.statusCode}');
-
+      LoggerService.debug('Deleting transaction: $transactionId');
+      final result = await TransactionApi.deleteTransaction(transactionId);
       // Clear all transaction-related caches after deletion
-      print('🧹 Clearing transaction caches...');
+      LoggerService.debug('Clearing transaction caches...');
       _clearTransactionCaches();
-
-      return _handleResponse(response);
+      BaseApiClient.clearCache();
+      return result;
     } catch (e) {
-      print('❌ Delete error: $e');
-      throw Exception('Network error: $e');
+      LoggerService.error('Delete error', error: e);
+      rethrow;
     }
   }
 
@@ -531,7 +506,7 @@ class ApiService {
     for (var key in keysToRemove) {
       _cache.remove(key);
       _cacheTimestamps.remove(key);
-      print('   🗑️ Cleared cache: $key');
+      LoggerService.debug('Cleared cache: $key');
     }
 
     // Also clear the old summary cache variables
@@ -539,51 +514,28 @@ class ApiService {
     _lastSummaryFetch = null;
   }
 
-  // Goals
+  // Goals - Delegated to GoalApi
   Future<List<dynamic>> getGoals({bool includeCompleted = false}) async {
-    String endpoint = 'goals';
-    if (includeCompleted) {
-      endpoint += '?include_completed=true';
-    }
-    final response = await get(endpoint);
-    return response['goals'] ?? [];
+    return await GoalApi.getGoals();
   }
 
   Future<Map<String, dynamic>> getGoal(String goalId) async {
-    final response = await get('goals/$goalId');
-    return response['goal'] ?? {};
+    return await GoalApi.getGoal(goalId);
   }
 
   Future<Map<String, dynamic>> createGoal(Map<String, dynamic> goalData) async {
-    return await post('goals', goalData);
+    return await GoalApi.createGoal(goalData);
   }
 
   Future<Map<String, dynamic>> updateGoal(
     String goalId,
     Map<String, dynamic> goalData,
   ) async {
-    try {
-      final response = await http.put(
-        Uri.parse('$baseUrl/goals/$goalId'),
-        headers: await _getHeaders(),
-        body: json.encode(goalData),
-      );
-      return _handleResponse(response);
-    } catch (e) {
-      throw Exception('Network error: $e');
-    }
+    return await GoalApi.updateGoal(goalId, goalData);
   }
 
   Future<Map<String, dynamic>> deleteGoal(String goalId) async {
-    try {
-      final response = await http.delete(
-        Uri.parse('$baseUrl/goals/$goalId'),
-        headers: await _getHeaders(),
-      );
-      return _handleResponse(response);
-    } catch (e) {
-      throw Exception('Network error: $e');
-    }
+    return await GoalApi.deleteGoal(goalId);
   }
 
   /// Add money to a goal (contribution)
@@ -591,101 +543,50 @@ class ApiService {
     String goalId,
     double amount,
   ) async {
-    return await post('goals/$goalId/contribute', {'amount': amount});
+    return await GoalApi.addContribution(goalId, {'amount': amount});
   }
 
   Future<Map<String, dynamic>> getGoalsSummary() async {
+    // Note: GoalApi doesn't have getGoalsSummary, so we'll keep the original implementation
     return await get('goals/summary');
   }
 
-  // Obligations
+  // Obligations - Delegated to ObligationApi
   Future<List<dynamic>> getObligations({String? type}) async {
-    String endpoint = 'obligations';
-    if (type != null && type.isNotEmpty) {
-      endpoint += '?type=$type';
-    }
-    final response = await get(endpoint);
-    return response['obligations'] ?? [];
+    return await ObligationApi.getObligations(type: type);
   }
 
   Future<List<dynamic>> getUpcomingObligations({int days = 7}) async {
-    final response = await get('obligations/upcoming?days=$days');
-    return response['obligations'] ?? [];
+    return await ObligationApi.getUpcomingObligations(days: days);
   }
 
   Future<Map<String, dynamic>> createObligation(
     Map<String, dynamic> obligationData,
   ) async {
-    return await post('obligations', obligationData);
+    return await ObligationApi.createObligation(obligationData);
   }
 
   Future<Map<String, dynamic>> updateObligation(
     String obligationId,
     Map<String, dynamic> obligationData,
   ) async {
-    try {
-      final response = await http.put(
-        Uri.parse('$baseUrl/obligations/$obligationId'),
-        headers: await _getHeaders(),
-        body: json.encode(obligationData),
-      );
-      return _handleResponse(response);
-    } catch (e) {
-      throw Exception('Network error: $e');
-    }
+    return await ObligationApi.updateObligation(obligationId, obligationData);
   }
 
   Future<Map<String, dynamic>> deleteObligation(String obligationId) async {
-    try {
-      final response = await http.delete(
-        Uri.parse('$baseUrl/obligations/$obligationId'),
-        headers: await _getHeaders(),
-      );
-      return _handleResponse(response);
-    } catch (e) {
-      throw Exception('Network error: $e');
-    }
+    return await ObligationApi.deleteObligation(obligationId);
   }
 
   Future<Map<String, dynamic>> recordObligationPayment(
     String obligationId,
     Map<String, dynamic> paymentData,
   ) async {
-    return await post('obligations/$obligationId/payments', paymentData);
+    return await ObligationApi.recordObligationPayment(obligationId, paymentData);
   }
 
   /// Calculate obligations summary from obligations list
   Future<Map<String, dynamic>> getObligationsSummary() async {
-    final obligations = await getObligations();
-
-    double monthlyTotal = 0.0;
-    double totalDebt = 0.0;
-
-    for (var obligation in obligations) {
-      // Handle both num and String types from database
-      final monthlyAmountRaw = obligation['monthly_amount_232143'];
-      final monthlyAmount =
-          monthlyAmountRaw is num
-              ? monthlyAmountRaw.toDouble()
-              : (double.tryParse(monthlyAmountRaw?.toString() ?? '0') ?? 0.0);
-      monthlyTotal += monthlyAmount;
-
-      if (obligation['type_232143'] == 'debt') {
-        final currentBalanceRaw = obligation['current_balance_232143'];
-        final currentBalance =
-            currentBalanceRaw is num
-                ? currentBalanceRaw.toDouble()
-                : (double.tryParse(currentBalanceRaw?.toString() ?? '0') ??
-                    0.0);
-        totalDebt += currentBalance;
-      }
-    }
-
-    return {
-      'monthlyTotal': monthlyTotal,
-      'totalDebt': totalDebt,
-      'obligationsCount': obligations.length,
-    };
+    return await ObligationApi.getObligationsSummary();
   }
 
   // Recurring Transactions

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:financial_app/services/pin_auth_service.dart';
+import 'package:financial_app/services/error_handler_service.dart';
+import 'package:financial_app/services/logger_service.dart';
 import 'package:financial_app/widgets/auth/pin_pad.dart';
 
 class PinChangeScreen extends StatefulWidget {
@@ -78,13 +80,22 @@ class _PinChangeScreenState extends State<PinChangeScreen> {
           _currentStep = 1;
         });
       } else {
-        _showError('PIN lama salah');
+        ErrorHandlerService.showWarningSnackbar(
+          context,
+          'PIN lama salah',
+        );
         setState(() {
           _oldPin = '';
         });
       }
     } catch (e) {
-      _showError(e.toString());
+      LoggerService.error('Error verifying old PIN', error: e);
+      if (mounted) {
+        ErrorHandlerService.showErrorSnackbar(
+          context,
+          ErrorHandlerService.getUserFriendlyMessage(e),
+        );
+      }
       setState(() {
         _oldPin = '';
       });
@@ -95,7 +106,10 @@ class _PinChangeScreenState extends State<PinChangeScreen> {
 
   Future<void> _saveNewPin() async {
     if (_newPin != _confirmPin) {
-      _showError('PIN baru tidak cocok');
+      ErrorHandlerService.showWarningSnackbar(
+        context,
+        'PIN baru tidak cocok',
+      );
       setState(() {
         _newPin = '';
         _confirmPin = '';
@@ -110,29 +124,25 @@ class _PinChangeScreenState extends State<PinChangeScreen> {
       await _pinAuthService.createPin(_newPin);
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              '✅ PIN berhasil diubah!',
-              style: GoogleFonts.poppins(),
-            ),
-            backgroundColor: Colors.green,
-          ),
+        ErrorHandlerService.showSuccessSnackbar(
+          context,
+          'PIN berhasil diubah!',
         );
 
         Navigator.pop(context);
       }
     } catch (e) {
-      _showError('Gagal mengubah PIN: ${e.toString()}');
+      LoggerService.error('Error changing PIN', error: e);
+      if (mounted) {
+        ErrorHandlerService.showErrorSnackbar(
+          context,
+          ErrorHandlerService.getUserFriendlyMessage(e),
+          onRetry: _saveNewPin,
+        );
+      }
     } finally {
       setState(() => _isLoading = false);
     }
-  }
-
-  void _showError(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message), backgroundColor: Colors.red),
-    );
   }
 
   void _onBack() {

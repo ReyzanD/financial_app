@@ -59,6 +59,16 @@ dependencies:
   shimmer: ^3.0.0 # Loading shimmer effects
   vibration: ^3.1.4 # Haptic feedback
   csv: ^6.0.0 # CSV export functionality
+  local_auth: ^2.3.0 # Biometric authentication
+  encrypt: ^5.0.3 # AES-256 encryption
+  get_it: ^7.7.0 # Dependency injection
+  flutter_localizations:
+    sdk: flutter
+  speech_to_text: ^7.0.0 # Voice input
+  image_picker: ^1.1.2 # Receipt scanning
+  google_mlkit_text_recognition: ^0.12.0 # OCR for receipt scanning
+  camera: ^0.11.0+2 # Camera for receipt scanning
+  money2: ^6.0.9 # Precise currency calculations
 
 dev_dependencies:
   flutter_test:

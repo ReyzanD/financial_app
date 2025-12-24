@@ -1,0 +1,795 @@
+{
+  "document": {
+    "id": "document",
+    "name": "Financial App",
+    "type": "DOCUMENT",
+    "children": [
+      {
+        "id": "7ed44f0e7f99d5c75e5f9b42e49e0522",
+        "name": "Financial App Components",
+        "type": "CANVAS",
+        "children": [
+          {
+            "id": "687b61e076e496560b50940f71321234",
+            "name": "Button/Primary",
+            "type": "COMPONENT",
+            "componentId": "883b61e076e496560b50940f71321636",
+            "children": [
+              {
+                "id": "137b61e076e496560b50940f71321235",
+                "name": "Label",
+                "type": "TEXT",
+                "characters": "Button",
+                "style": {
+                  "fontSize": 14,
+                  "textDecoration": "NONE",
+                  "fontFamily": "Roboto",
+                  "fontWeight": 500,
+                  "textAlignHorizontal": "CENTER",
+                  "letterSpacing": 0
+                },
+                "fills": [
+                  {
+                    "type": "SOLID",
+                    "color": {
+                      "r": 1,
+                      "g": 1,
+                      "b": 1
+                    }
+                  }
+                ]
+              }
+            ],
+            "fills": [
+              {
+                "type": "SOLID",
+                "color": {
+                  "r": 0.129,
+                  "g": 0.588,
+                  "b": 0.957
+                }
+              }
+            ],
+            "cornerRadius": 8,
+            "paddingLeft": 16,
+            "paddingRight": 16,
+            "paddingTop": 12,
+            "paddingBottom": 12,
+            "layoutMode": "HORIZONTAL",
+            "primaryAxisAlignItems": "CENTER",
+            "counterAxisAlignItems": "CENTER"
+          },
+          {
+            "id": "687b61e076e496560b50940f71321236",
+            "name": "Card/Default",
+            "type": "COMPONENT",
+            "componentId": "883b61e076e496560b50940f71321637",
+            "children": [
+              {
+                "id": "687b61e076e496560b50940f71321237",
+                "name": "Content",
+                "type": "FRAME",
+                "children": [],
+                "layoutMode": "VERTICAL",
+                "paddingLeft": 16,
+                "paddingRight": 16,
+                "paddingTop": 16,
+                "paddingBottom": 16,
+                "itemSpacing": 8
+              }
+            ],
+            "fills": [
+              {
+                "type": "SOLID",
+                "color": {
+                  "r": 1,
+                  "g": 1,
+                  "b": 1
+                }
+              }
+            ],
+            "cornerRadius": 12,
+            "strokes": [
+              {
+                "type": "SOLID",
+                "color": {
+                  "r": 0.878,
+                  "g": 0.878,
+                  "b": 0.878
+                }
+              }
+            ],
+            "strokeWeight": 1,
+            "effects": [
+              {
+                "type": "DROP_SHADOW",
+                "color": {
+                  "r": 0,
+                  "g": 0,
+                  "b": 0,
+                  "a": 0.1
+                },
+                "offset": {
+                  "x": 0,
+                  "y": 2
+                },
+                "radius": 4,
+                "spread": 0
+              }
+            ]
+          },
+          {
+            "id": "687b61e076e496560b50940f71321238",
+            "name": "Input/Default",
+            "type": "COMPONENT",
+            "componentId": "883b61e076e496560b50940f71321638",
+            "children": [
+              {
+                "id": "687b61e076e496560b50940f71321239",
+                "name": "Placeholder",
+                "type": "TEXT",
+                "characters": "Placeholder text",
+                "style": {
+                  "fontSize": 16,
+                  "textDecoration": "NONE",
+                  "fontFamily": "Roboto",
+                  "fontWeight": 400,
+                  "letterSpacing": 0
+                },
+                "fills": [
+                  {
+                    "type": "SOLID",
+                    "color": {
+                      "r": 0.616,
+                      "g": 0.616,
+                      "b": 0.616
+                    }
+                  }
+                ]
+              }
+            ],
+            "fills": [
+              {
+                "type": "SOLID",
+                "color": {
+                  "r": 1,
+                  "g": 1,
+                  "b": 1
+                }
+              }
+            ],
+            "cornerRadius": 8,
+            "strokes": [
+              {
+                "type": "SOLID",
+                "color": {
+                  "r": 0.784,
+                  "g": 0.784,
+                  "b": 0.784
+                }
+              }
+            ],
+            "strokeWeight": 1,
+            "paddingLeft": 16,
+            "paddingRight": 16,
+            "paddingTop": 12,
+            "paddingBottom": 12
+          },
+          {
+            "id": "787b61e076e496560b50940f71321240",
+            "name": "Screen/Home",
+            "type": "FRAME",
+            "children": [
+              {
+                "id": "887b61e076e496560b50940f71321241",
+                "name": "Header",
+                "type": "FRAME",
+                "children": [
+                  {
+                    "id": "987b61e076e496560b50940f71321242",
+                    "name": "Title",
+                    "type": "TEXT",
+                    "characters": "Financial App",
+                    "style": {
+                      "fontSize": 24,
+                      "textDecoration": "NONE",
+                      "fontFamily": "Roboto",
+                      "fontWeight": 700,
+                      "letterSpacing": 0
+                    },
+                    "fills": [
+                      {
+                        "type": "SOLID",
+                        "color": {
+                          "r": 0.129,
+                          "g": 0.588,
+                          "b": 0.957
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "layoutMode": "HORIZONTAL",
+                "paddingLeft": 16,
+                "paddingRight": 16,
+                "paddingTop": 16,
+                "paddingBottom": 16,
+                "layoutAlign": "STRETCH"
+              },
+              {
+                "id": "887b61e076e496560b50940f71321243",
+                "name": "BalanceCard",
+                "type": "INSTANCE",
+                "componentId": "883b61e076e496560b50940f71321637",
+                "children": [
+                  {
+                    "id": "987b61e076e496560b50940f71321244",
+                    "name": "BalanceTitle",
+                    "type": "TEXT",
+                    "characters": "Current Balance",
+                    "style": {
+                      "fontSize": 16,
+                      "textDecoration": "NONE",
+                      "fontFamily": "Roboto",
+                      "fontWeight": 500,
+                      "letterSpacing": 0
+                    },
+                    "fills": [
+                      {
+                        "type": "SOLID",
+                        "color": {
+                          "r": 0.451,
+                          "g": 0.451,
+                          "b": 0.451
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "id": "987b61e076e496560b50940f71321245",
+                    "name": "BalanceAmount",
+                    "type": "TEXT",
+                    "characters": "Rp 12,500,000",
+                    "style": {
+                      "fontSize": 32,
+                      "textDecoration": "NONE",
+                      "fontFamily": "Roboto",
+                      "fontWeight": 700,
+                      "letterSpacing": 0
+                    },
+                    "fills": [
+                      {
+                        "type": "SOLID",
+                        "color": {
+                          "r": 0.129,
+                          "g": 0.588,
+                          "b": 0.957
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "layoutMode": "VERTICAL",
+                "paddingLeft": 16,
+                "paddingRight": 16,
+                "paddingTop": 16,
+                "paddingBottom": 16,
+                "itemSpacing": 8
+              },
+              {
+                "id": "887b61e076e496560b50940f71321246",
+                "name": "QuickActions",
+                "type": "FRAME",
+                "children": [
+                  {
+                    "id": "987b61e076e496560b50940f71321247",
+                    "name": "AddExpenseButton",
+                    "type": "INSTANCE",
+                    "componentId": "883b61e076e496560b50940f71321636",
+                    "characters": "Add Expense"
+                  },
+                  {
+                    "id": "987b61e076e496560b50940f71321248",
+                    "name": "AnalyticsButton",
+                    "type": "INSTANCE",
+                    "componentId": "883b61e076e496560b50940f71321636",
+                    "characters": "Analytics"
+                  }
+                ],
+                "layoutMode": "HORIZONTAL",
+                "itemSpacing": 12,
+                "paddingLeft": 16,
+                "paddingRight": 16,
+                "layoutAlign": "STRETCH"
+              },
+              {
+                "id": "887b61e076e496560b50940f71321249",
+                "name": "RecentTransactions",
+                "type": "FRAME",
+                "children": [
+                  {
+                    "id": "987b61e076e496560b50940f71321250",
+                    "name": "Transaction1",
+                    "type": "FRAME",
+                    "children": [
+                      {
+                        "id": "087b61e076e496560b50940f71321251",
+                        "name": "Category",
+                        "type": "TEXT",
+                        "characters": "Food & Dining",
+                        "style": {
+                          "fontSize": 14,
+                          "textDecoration": "NONE",
+                          "fontFamily": "Roboto",
+                          "fontWeight": 400,
+                          "letterSpacing": 0
+                        },
+                        "fills": [
+                          {
+                            "type": "SOLID",
+                            "color": {
+                              "r": 0.451,
+                              "g": 0.451,
+                              "b": 0.451
+                            }
+                          }
+                        ]
+                      },
+                      {
+                        "id": "087b61e076e496560b50940f71321252",
+                        "name": "Amount",
+                        "type": "TEXT",
+                        "characters": "-Rp 125,000",
+                        "style": {
+                          "fontSize": 14,
+                          "textDecoration": "NONE",
+                          "fontFamily": "Roboto",
+                          "fontWeight": 700,
+                          "letterSpacing": 0
+                        },
+                        "fills": [
+                          {
+                            "type": "SOLID",
+                            "color": {
+                              "r": 0.957,
+                              "g": 0.263,
+                              "b": 0.212
+                            }
+                          }
+                        ]
+                      }
+                    ],
+                    "layoutMode": "HORIZONTAL",
+                    "itemSpacing": 8,
+                    "paddingLeft": 16,
+                    "paddingRight": 16,
+                    "paddingTop": 12,
+                    "paddingBottom": 12,
+                    "layoutAlign": "STRETCH"
+                  },
+                  {
+                    "id": "987b61e076e496560b50940f71321253",
+                    "name": "Transaction2",
+                    "type": "FRAME",
+                    "children": [
+                      {
+                        "id": "087b61e076e496560b50940f71321254",
+                        "name": "Category",
+                        "type": "TEXT",
+                        "characters": "Transportation",
+                        "style": {
+                          "fontSize": 14,
+                          "textDecoration": "NONE",
+                          "fontFamily": "Roboto",
+                          "fontWeight": 400,
+                          "letterSpacing": 0
+                        },
+                        "fills": [
+                          {
+                            "type": "SOLID",
+                            "color": {
+                              "r": 0.451,
+                              "g": 0.451,
+                              "b": 0.451
+                            }
+                          }
+                        ]
+                      },
+                      {
+                        "id": "087b61e076e496560b50940f71321255",
+                        "name": "Amount",
+                        "type": "TEXT",
+                        "characters": "-Rp 75,000",
+                        "style": {
+                          "fontSize": 14,
+                          "textDecoration": "NONE",
+                          "fontFamily": "Roboto",
+                          "fontWeight": 700,
+                          "letterSpacing": 0
+                        },
+                        "fills": [
+                          {
+                            "type": "SOLID",
+                            "color": {
+                              "r": 0.957,
+                              "g": 0.263,
+                              "b": 0.212
+                            }
+                          }
+                        ]
+                      }
+                    ],
+                    "layoutMode": "HORIZONTAL",
+                    "itemSpacing": 8,
+                    "paddingLeft": 16,
+                    "paddingRight": 16,
+                    "paddingTop": 12,
+                    "paddingBottom": 12,
+                    "layoutAlign": "STRETCH"
+                  }
+                ],
+                "layoutMode": "VERTICAL",
+                "itemSpacing": 0,
+                "layoutAlign": "STRETCH"
+              }
+            ],
+            "layoutMode": "VERTICAL",
+            "itemSpacing": 16,
+            "paddingLeft": 0,
+            "paddingRight": 0,
+            "paddingTop": 0,
+            "paddingBottom": 80,
+            "backgrounds": [
+              {
+                "type": "SOLID",
+                "color": {
+                  "r": 0.961,
+                  "g": 0.961,
+                  "b": 0.961
+                }
+              }
+            ],
+            "name": "Home Screen"
+          },
+          {
+            "id": "787b61e076e496560b50940f71321256",
+            "name": "Screen/Transaction",
+            "type": "FRAME",
+            "children": [
+              {
+                "id": "887b61e076e496560b50940f71321257",
+                "name": "Header",
+                "type": "FRAME",
+                "children": [
+                  {
+                    "id": "987b61e076e496560b50940f71321258",
+                    "name": "BackButton",
+                    "type": "RECTANGLE",
+                    "width": 40,
+                    "height": 40,
+                    "cornerRadius": 9999,
+                    "fills": [
+                      {
+                        "type": "SOLID",
+                        "color": {
+                          "r": 0.878,
+                          "g": 0.878,
+                          "b": 0.878
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "id": "987b61e076e496560b50940f71321259",
+                    "name": "Title",
+                    "type": "TEXT",
+                    "characters": "Add Transaction",
+                    "style": {
+                      "fontSize": 20,
+                      "textDecoration": "NONE",
+                      "fontFamily": "Roboto",
+                      "fontWeight": 700,
+                      "textAlignHorizontal": "CENTER",
+                      "letterSpacing": 0
+                    },
+                    "layoutGrow": 1
+                  },
+                  {
+                    "id": "987b61e076e496560b50940f71321260",
+                    "name": "EmptySpace",
+                    "type": "RECTANGLE",
+                    "width": 40,
+                    "height": 40
+                  }
+                ],
+                "layoutMode": "HORIZONTAL",
+                "itemSpacing": 8,
+                "paddingLeft": 16,
+                "paddingRight": 16,
+                "paddingTop": 16,
+                "paddingBottom": 16,
+                "layoutAlign": "STRETCH"
+              },
+              {
+                "id": "887b61e076e496560b50940f71321261",
+                "name": "Form",
+                "type": "FRAME",
+                "children": [
+                  {
+                    "id": "987b61e076e496560b50940f71321262",
+                    "name": "AmountInput",
+                    "type": "INSTANCE",
+                    "componentId": "883b61e076e496560b50940f71321638",
+                    "characters": "Enter amount"
+                  },
+                  {
+                    "id": "987b61e076e496560b50940f71321263",
+                    "name": "CategoryInput",
+                    "type": "INSTANCE",
+                    "componentId": "883b61e076e496560b50940f71321638",
+                    "characters": "Select category"
+                  },
+                  {
+                    "id": "987b61e076e496560b50940f71321264",
+                    "name": "DescriptionInput",
+                    "type": "INSTANCE",
+                    "componentId": "883b61e076e496560b50940f71321638",
+                    "characters": "Add description (optional)"
+                  },
+                  {
+                    "id": "987b61e076e496560b50940f71321265",
+                    "name": "SaveButton",
+                    "type": "INSTANCE",
+                    "componentId": "883b61e076e496560b50940f71321636",
+                    "characters": "Save Transaction"
+                  }
+                ],
+                "layoutMode": "VERTICAL",
+                "itemSpacing": 16,
+                "paddingLeft": 16,
+                "paddingRight": 16,
+                "layoutAlign": "STRETCH"
+              }
+            ],
+            "layoutMode": "VERTICAL",
+            "itemSpacing": 0,
+            "backgrounds": [
+              {
+                "type": "SOLID",
+                "color": {
+                  "r": 1,
+                  "g": 1,
+                  "b": 1
+                }
+              }
+            ],
+            "name": "Transaction Screen"
+          },
+          {
+            "id": "787b61e076e496560b50940f71321266",
+            "name": "Screen/Analytics",
+            "type": "FRAME",
+            "children": [
+              {
+                "id": "887b61e076e496560b50940f71321267",
+                "name": "Header",
+                "type": "FRAME",
+                "children": [
+                  {
+                    "id": "987b61e076e496560b50940f71321268",
+                    "name": "Title",
+                    "type": "TEXT",
+                    "characters": "Analytics",
+                    "style": {
+                      "fontSize": 24,
+                      "textDecoration": "NONE",
+                      "fontFamily": "Roboto",
+                      "fontWeight": 700,
+                      "letterSpacing": 0
+                    },
+                    "fills": [
+                      {
+                        "type": "SOLID",
+                        "color": {
+                          "r": 0.129,
+                          "g": 0.588,
+                          "b": 0.957
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "layoutMode": "HORIZONTAL",
+                "paddingLeft": 16,
+                "paddingRight": 16,
+                "paddingTop": 16,
+                "paddingBottom": 16,
+                "layoutAlign": "STRETCH"
+              },
+              {
+                "id": "887b61e076e496560b50940f71321269",
+                "name": "SummaryCards",
+                "type": "FRAME",
+                "children": [
+                  {
+                    "id": "987b61e076e496560b50940f71321270",
+                    "name": "SpentCard",
+                    "type": "INSTANCE",
+                    "componentId": "883b61e076e496560b50940f71321637",
+                    "children": [
+                      {
+                        "id": "087b61e076e496560b50940f71321271",
+                        "name": "SpentTitle",
+                        "type": "TEXT",
+                        "characters": "Spent",
+                        "style": {
+                          "fontSize": 14,
+                          "textDecoration": "NONE",
+                          "fontFamily": "Roboto",
+                          "fontWeight": 400,
+                          "textAlignHorizontal": "CENTER",
+                          "letterSpacing": 0
+                        }
+                      },
+                      {
+                        "id": "087b61e076e496560b50940f71321272",
+                        "name": "SpentAmount",
+                        "type": "TEXT",
+                        "characters": "Rp 3,200,000",
+                        "style": {
+                          "fontSize": 18,
+                          "textDecoration": "NONE",
+                          "fontFamily": "Roboto",
+                          "fontWeight": 700,
+                          "textAlignHorizontal": "CENTER",
+                          "letterSpacing": 0
+                        }
+                      }
+                    ],
+                    "layoutMode": "VERTICAL",
+                    "itemSpacing": 8,
+                    "layoutAlign": "STRETCH"
+                  },
+                  {
+                    "id": "987b61e076e496560b50940f71321273",
+                    "name": "IncomeCard",
+                    "type": "INSTANCE",
+                    "componentId": "883b61e076e496560b50940f71321637",
+                    "children": [
+                      {
+                        "id": "087b61e076e496560b50940f71321274",
+                        "name": "IncomeTitle",
+                        "type": "TEXT",
+                        "characters": "Income",
+                        "style": {
+                          "fontSize": 14,
+                          "textDecoration": "NONE",
+                          "fontFamily": "Roboto",
+                          "fontWeight": 400,
+                          "textAlignHorizontal": "CENTER",
+                          "letterSpacing": 0
+                        }
+                      },
+                      {
+                        "id": "087b61e076e496560b50940f71321275",
+                        "name": "IncomeAmount",
+                        "type": "TEXT",
+                        "characters": "Rp 8,500,000",
+                        "style": {
+                          "fontSize": 18,
+                          "textDecoration": "NONE",
+                          "fontFamily": "Roboto",
+                          "fontWeight": 700,
+                          "textAlignHorizontal": "CENTER",
+                          "letterSpacing": 0
+                        }
+                      }
+                    ],
+                    "layoutMode": "VERTICAL",
+                    "itemSpacing": 8,
+                    "layoutAlign": "STRETCH"
+                  }
+                ],
+                "layoutMode": "HORIZONTAL",
+                "itemSpacing": 12,
+                "paddingLeft": 16,
+                "paddingRight": 16,
+                "layoutAlign": "STRETCH"
+              },
+              {
+                "id": "887b61e076e496560b50940f71321276",
+                "name": "ChartCard",
+                "type": "INSTANCE",
+                "componentId": "883b61e076e496560b50940f71321637",
+                "children": [
+                  {
+                    "id": "987b61e076e496560b50940f71321277",
+                    "name": "ChartTitle",
+                    "type": "TEXT",
+                    "characters": "Spending by Category",
+                    "style": {
+                      "fontSize": 16,
+                      "textDecoration": "NONE",
+                      "fontFamily": "Roboto",
+                      "fontWeight": 700,
+                      "letterSpacing": 0
+                    },
+                    "paddingLeft": 16,
+                    "paddingRight": 16,
+                    "paddingTop": 16,
+                    "paddingBottom": 8
+                  },
+                  {
+                    "id": "987b61e076e496560b50940f71321278",
+                    "name": "ChartPlaceholder",
+                    "type": "RECTANGLE",
+                    "height": 200,
+                    "fills": [
+                      {
+                        "type": "SOLID",
+                        "color": {
+                          "r": 0.961,
+                          "g": 0.961,
+                          "b": 0.961
+                        }
+                      }
+                    ],
+                    "cornerRadius": 8,
+                    "paddingLeft": 16,
+                    "paddingRight": 16,
+                    "paddingTop": 16,
+                    "paddingBottom": 16,
+                    "layoutAlign": "STRETCH"
+                  }
+                ],
+                "layoutMode": "VERTICAL",
+                "itemSpacing": 0,
+                "layoutAlign": "STRETCH"
+              }
+            ],
+            "layoutMode": "VERTICAL",
+            "itemSpacing": 16,
+            "paddingBottom": 80,
+            "backgrounds": [
+              {
+                "type": "SOLID",
+                "color": {
+                  "r": 0.961,
+                  "g": 0.961,
+                  "b": 0.961
+                }
+              }
+            ],
+            "name": "Analytics Screen"
+          }
+        ],
+        "backgrounds": [
+          {
+            "type": "SOLID",
+            "color": {
+              "r": 0.961,
+              "g": 0.961,
+              "b": 0.961
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "components": {
+    "883b61e076e496560b50940f71321636": {
+      "name": "Button/Primary",
+      "description": "Primary button component"
+    },
+    "883b61e076e496560b50940f71321637": {
+      "name": "Card/Default",
+      "description": "Default card component"
+    },
+    "883b61e076e496560b50940f71321638": {
+      "name": "Input/Default",
+      "description": "Default input component"
+    }
+  },
+  "schemaVersion": 0,
+  "styles": {}
+}

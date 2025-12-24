@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:financial_app/utils/form_validators.dart';
 
 class NotesField extends StatelessWidget {
   final TextEditingController controller;
@@ -32,6 +33,8 @@ class NotesField extends StatelessWidget {
         filled: true,
         fillColor: const Color(0xFF1A1A1A),
       ),
+      maxLength: FormValidators.maxNotesLength,
+      validator: (value) => FormValidators.validateNotes(value),
     );
   }
 }
