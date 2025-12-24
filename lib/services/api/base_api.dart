@@ -82,6 +82,12 @@ class BaseApiClient {
       return data;
     } else if (response.statusCode == 401) {
       throw Exception('Unauthorized - Please login again');
+    } else if (response.statusCode == 404) {
+      // For 404, log as debug instead of error (endpoint might not exist yet)
+      LoggerService.debug('Endpoint not found (404): $endpoint');
+      // Ensure error response is properly decoded with UTF-8 encoding
+      final responseBody = utf8.decode(response.bodyBytes);
+      throw Exception('Endpoint not found (404): $responseBody');
     } else {
       // Ensure error response is properly decoded with UTF-8 encoding
       final responseBody = utf8.decode(response.bodyBytes);

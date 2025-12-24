@@ -4,6 +4,7 @@ import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:financial_app/services/api_service.dart';
 import 'package:financial_app/services/error_handler_service.dart';
 import 'package:financial_app/services/logger_service.dart';
+import 'package:financial_app/l10n/app_localizations.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -161,7 +162,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           onPressed: () => Navigator.of(context).pop(),
         ),
         title: Text(
-          'Profil Pengguna',
+          AppLocalizations.of(context)!.user_profile,
           style: GoogleFonts.poppins(
             color: Colors.white,
             fontSize: 18,
@@ -190,7 +191,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             Icon(Icons.error_outline, color: Colors.red[400], size: 48),
             const SizedBox(height: 12),
             Text(
-              'Gagal memuat profil',
+              AppLocalizations.of(context)!.failed_to_load_profile,
               style: GoogleFonts.poppins(
                 color: Colors.white,
                 fontSize: 16,
@@ -214,7 +215,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
               ),
               child: Text(
-                'Coba lagi',
+                AppLocalizations.of(context)!.try_again,
                 style: GoogleFonts.poppins(fontSize: 14),
               ),
             ),
@@ -233,7 +234,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Informasi Akun',
+              AppLocalizations.of(context)!.account_information,
               style: GoogleFonts.poppins(
                 color: Colors.white,
                 fontSize: 16,
@@ -241,27 +242,27 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
             ),
             const SizedBox(height: 12),
-            _buildReadOnlyField('Email', _email),
+            _buildReadOnlyField(AppLocalizations.of(context)!.email, _email),
             const SizedBox(height: 16),
             _buildTextField(
-              label: 'Nama Lengkap',
+              label: AppLocalizations.of(context)!.full_name,
               controller: _fullNameController,
               validator: (value) {
                 if (value == null || value.trim().isEmpty) {
-                  return 'Nama lengkap harus diisi';
+                  return AppLocalizations.of(context)!.full_name_required;
                 }
                 return null;
               },
             ),
             const SizedBox(height: 16),
             _buildTextField(
-              label: 'Nomor Telepon',
+              label: AppLocalizations.of(context)!.phone_number,
               controller: _phoneController,
               keyboardType: TextInputType.phone,
             ),
             const SizedBox(height: 24),
             Text(
-              'Informasi Finansial',
+              AppLocalizations.of(context)!.financial_information,
               style: GoogleFonts.poppins(
                 color: Colors.white,
                 fontSize: 16,
@@ -272,13 +273,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
             _buildDropdownField(),
             const SizedBox(height: 16),
             _buildTextField(
-              label: 'Jumlah Anggota Keluarga',
+              label: AppLocalizations.of(context)!.family_members_count,
               controller: _familySizeController,
               keyboardType: TextInputType.number,
             ),
             const SizedBox(height: 16),
             _buildTextField(
-              label: 'Lokasi Domisili',
+              label: AppLocalizations.of(context)!.residence_location,
               controller: _baseLocationController,
             ),
             const SizedBox(height: 24),
@@ -306,7 +307,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           ),
                         )
                         : Text(
-                          'Simpan Perubahan',
+                          AppLocalizations.of(context)!.save_changes,
                           style: GoogleFonts.poppins(fontSize: 14),
                         ),
               ),
@@ -373,7 +374,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       dropdownColor: const Color(0xFF1A1A1A),
       style: const TextStyle(color: Colors.white),
       decoration: InputDecoration(
-        labelText: 'Rentang Penghasilan',
+        labelText: AppLocalizations.of(context)!.income_range,
         labelStyle: TextStyle(color: Colors.grey[400]),
         filled: true,
         fillColor: const Color(0xFF1A1A1A),

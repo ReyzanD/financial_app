@@ -9,6 +9,7 @@ import 'package:financial_app/widgets/common/shimmer_loading.dart';
 import 'package:financial_app/widgets/common/empty_state.dart';
 import 'package:financial_app/utils/page_transitions.dart';
 import 'package:financial_app/utils/responsive_helper.dart';
+import 'package:financial_app/l10n/app_localizations.dart';
 
 class BudgetsScreen extends StatefulWidget {
   const BudgetsScreen({super.key});
@@ -140,7 +141,7 @@ class _BudgetsScreenState extends State<BudgetsScreen> {
               ),
               SizedBox(width: ResponsiveHelper.horizontalSpacing(context, 8)),
               Text(
-                'Budget',
+                AppLocalizations.of(context)!.budget,
                 style: GoogleFonts.poppins(
                   color: Colors.white,
                   fontSize: ResponsiveHelper.fontSize(context, 20),
@@ -149,7 +150,9 @@ class _BudgetsScreenState extends State<BudgetsScreen> {
               ),
               const Spacer(),
               Text(
-                _activeOnly ? 'Aktif' : 'Semua',
+                _activeOnly
+                    ? AppLocalizations.of(context)!.active
+                    : AppLocalizations.of(context)!.all,
                 style: GoogleFonts.poppins(
                   color: Colors.grey[400],
                   fontSize: ResponsiveHelper.fontSize(context, 12),
@@ -184,11 +187,23 @@ class _BudgetsScreenState extends State<BudgetsScreen> {
 
     return Row(
       children: [
-        _buildSummaryChip(context, 'Total Budget', totalBudget),
+        _buildSummaryChip(
+          context,
+          AppLocalizations.of(context)!.total_budget,
+          totalBudget,
+        ),
         SizedBox(width: ResponsiveHelper.horizontalSpacing(context, 8)),
-        _buildSummaryChip(context, 'Terpakai', totalSpent),
+        _buildSummaryChip(
+          context,
+          AppLocalizations.of(context)!.spent,
+          totalSpent,
+        ),
         SizedBox(width: ResponsiveHelper.horizontalSpacing(context, 8)),
-        _buildSummaryChip(context, 'Sisa', totalRemaining),
+        _buildSummaryChip(
+          context,
+          AppLocalizations.of(context)!.remaining,
+          totalRemaining,
+        ),
       ],
     );
   }
@@ -239,11 +254,11 @@ class _BudgetsScreenState extends State<BudgetsScreen> {
     }
 
     if (_errorMessage != null) {
-      return EmptyStates.serverError(_loadData);
+      return EmptyStates.serverError(_loadData, context);
     }
 
     if (_budgets.isEmpty) {
-      return EmptyStates.noBudgets(_showAddBudgetModal);
+      return EmptyStates.noBudgets(_showAddBudgetModal, context);
     }
 
     return ListView.builder(
@@ -269,7 +284,7 @@ class _BudgetsScreenState extends State<BudgetsScreen> {
     final category =
         categoryId != null && _categories.containsKey(categoryId)
             ? _categories[categoryId]!
-            : 'Semua Kategori';
+            : AppLocalizations.of(context)!.all_categories;
 
     final amount = (budget['amount'] as num?)?.toDouble() ?? 0.0;
     final spent = (budget['spent'] as num?)?.toDouble() ?? 0.0;
@@ -311,76 +326,92 @@ class _BudgetsScreenState extends State<BudgetsScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Row(
-                  children: [
-                    Container(
-                      padding: ResponsiveHelper.padding(context, multiplier: 0.375),
-                      decoration: BoxDecoration(
-                        color: displayColor.withOpacity(0.15),
-                        borderRadius: BorderRadius.circular(
-                          ResponsiveHelper.borderRadius(context, 8),
-                        ),
-                        border: Border.all(
-                          color: displayColor.withOpacity(0.3),
-                          width: 1,
-                        ),
-                      ),
-                      child: Icon(
-                        Icons.account_balance_wallet_rounded,
-                        color: displayColor,
-                        size: ResponsiveHelper.iconSize(context, 16),
-                      ),
-                    ),
-                    SizedBox(
-                      width: ResponsiveHelper.horizontalSpacing(context, 10),
-                    ),
-                    Expanded(
-                      child: Text(
-                        category,
-                        style: GoogleFonts.poppins(
-                          color: Colors.white,
-                          fontSize: ResponsiveHelper.fontSize(context, 14),
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                    if (isOverBudget) ...[
+                Flexible(
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
                       Container(
-                        padding: ResponsiveHelper.symmetricPadding(
+                        padding: ResponsiveHelper.padding(
                           context,
-                          horizontal: 6,
-                          vertical: 2,
+                          multiplier: 0.375,
                         ),
                         decoration: BoxDecoration(
-                          color: Colors.red.withOpacity(0.2),
+                          color: displayColor.withOpacity(0.15),
                           borderRadius: BorderRadius.circular(
                             ResponsiveHelper.borderRadius(context, 8),
                           ),
+                          border: Border.all(
+                            color: displayColor.withOpacity(0.3),
+                            width: 1,
+                          ),
                         ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(
-                              Icons.warning_rounded,
-                              color: Colors.red,
-                              size: ResponsiveHelper.iconSize(context, 14),
-                            ),
-                            SizedBox(
-                              width: ResponsiveHelper.horizontalSpacing(context, 4),
-                            ),
-                            Text(
-                              'Over',
-                              style: GoogleFonts.poppins(
-                                color: Colors.red,
-                                fontSize: ResponsiveHelper.fontSize(context, 10),
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ],
+                        child: Icon(
+                          Icons.account_balance_wallet_rounded,
+                          color: displayColor,
+                          size: ResponsiveHelper.iconSize(context, 16),
                         ),
                       ),
+                      SizedBox(
+                        width: ResponsiveHelper.horizontalSpacing(context, 10),
+                      ),
+                      Flexible(
+                        child: Text(
+                          category,
+                          style: GoogleFonts.poppins(
+                            color: Colors.white,
+                            fontSize: ResponsiveHelper.fontSize(context, 14),
+                            fontWeight: FontWeight.w600,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      if (isOverBudget) ...[
+                        SizedBox(
+                          width: ResponsiveHelper.horizontalSpacing(context, 8),
+                        ),
+                        Container(
+                          padding: ResponsiveHelper.symmetricPadding(
+                            context,
+                            horizontal: 6,
+                            vertical: 2,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.red.withOpacity(0.2),
+                            borderRadius: BorderRadius.circular(
+                              ResponsiveHelper.borderRadius(context, 8),
+                            ),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                Icons.warning_rounded,
+                                color: Colors.red,
+                                size: ResponsiveHelper.iconSize(context, 14),
+                              ),
+                              SizedBox(
+                                width: ResponsiveHelper.horizontalSpacing(
+                                  context,
+                                  4,
+                                ),
+                              ),
+                              Text(
+                                AppLocalizations.of(context)!.over,
+                                style: GoogleFonts.poppins(
+                                  color: Colors.red,
+                                  fontSize: ResponsiveHelper.fontSize(
+                                    context,
+                                    10,
+                                  ),
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                     ],
-                  ],
+                  ),
                 ),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
@@ -430,7 +461,7 @@ class _BudgetsScreenState extends State<BudgetsScreen> {
                       ),
                     ),
                     child: Text(
-                      'Nonaktif',
+                      AppLocalizations.of(context)!.inactive,
                       style: GoogleFonts.poppins(
                         color: Colors.grey[300],
                         fontSize: ResponsiveHelper.fontSize(context, 10),
@@ -527,7 +558,7 @@ class _BudgetsScreenState extends State<BudgetsScreen> {
         return AlertDialog(
           backgroundColor: const Color(0xFF1A1A1A),
           title: Text(
-            'Hapus Budget',
+            AppLocalizations.of(context)!.delete_budget,
             style: GoogleFonts.poppins(
               color: Colors.white,
               fontSize: 16,
@@ -535,17 +566,20 @@ class _BudgetsScreenState extends State<BudgetsScreen> {
             ),
           ),
           content: Text(
-            'Yakin ingin menghapus budget ini?',
+            AppLocalizations.of(context)!.confirm_delete_budget,
             style: GoogleFonts.poppins(color: Colors.grey[400], fontSize: 13),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context, false),
-              child: const Text('Batal'),
+              child: Text(AppLocalizations.of(context)!.cancel),
             ),
             TextButton(
               onPressed: () => Navigator.pop(context, true),
-              child: const Text('Hapus', style: TextStyle(color: Colors.red)),
+              child: Text(
+                AppLocalizations.of(context)!.delete,
+                style: const TextStyle(color: Colors.red),
+              ),
             ),
           ],
         );
@@ -557,9 +591,11 @@ class _BudgetsScreenState extends State<BudgetsScreen> {
         await _apiService.deleteBudget(id);
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Budget berhasil dihapus.'),
-            backgroundColor: Color(0xFF8B5FBF),
+          SnackBar(
+            content: Text(
+              AppLocalizations.of(context)!.budget_deleted_successfully,
+            ),
+            backgroundColor: const Color(0xFF8B5FBF),
           ),
         );
         await _loadData();
@@ -592,4 +628,3 @@ class _BudgetsScreenState extends State<BudgetsScreen> {
     }
   }
 }
-

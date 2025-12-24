@@ -14,8 +14,10 @@ void main() {
     testWidgets('should display no transactions message', (tester) async {
       await tester.pumpWidget(
         MaterialApp(
-          home: Scaffold(
-            body: EmptyStates.noTransactions(() {}),
+          home: Builder(
+            builder: (context) => Scaffold(
+              body: EmptyStates.noTransactions(() {}, context),
+            ),
           ),
         ),
       );
@@ -28,10 +30,12 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
-          home: Scaffold(
-            body: EmptyStates.noTransactions(() {
-              buttonPressed = true;
-            }),
+          home: Builder(
+            builder: (context) => Scaffold(
+              body: EmptyStates.noTransactions(() {
+                buttonPressed = true;
+              }, context),
+            ),
           ),
         ),
       );

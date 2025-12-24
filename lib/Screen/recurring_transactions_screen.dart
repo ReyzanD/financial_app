@@ -5,6 +5,7 @@ import 'package:financial_app/services/api_service.dart';
 import 'package:financial_app/services/error_handler_service.dart';
 import 'package:financial_app/services/logger_service.dart';
 import 'package:financial_app/utils/formatters.dart';
+import 'package:financial_app/l10n/app_localizations.dart';
 
 class RecurringTransactionsScreen extends StatefulWidget {
   const RecurringTransactionsScreen({super.key});
@@ -103,8 +104,8 @@ class _RecurringTransactionsScreenState
         await _apiService.pauseRecurringTransaction(id);
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Transaksi dijeda'),
+            SnackBar(
+              content: Text(AppLocalizations.of(context)!.transaction_paused),
               backgroundColor: Colors.orange,
             ),
           );
@@ -113,8 +114,8 @@ class _RecurringTransactionsScreenState
         await _apiService.resumeRecurringTransaction(id);
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Transaksi dilanjutkan'),
+            SnackBar(
+              content: Text(AppLocalizations.of(context)!.transaction_resumed),
               backgroundColor: Colors.green,
             ),
           );
@@ -125,7 +126,9 @@ class _RecurringTransactionsScreenState
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Gagal: ${e.toString()}'),
+            content: Text(
+              '${AppLocalizations.of(context)!.failed}: ${e.toString()}',
+            ),
             backgroundColor: Colors.red,
           ),
         );
@@ -140,25 +143,25 @@ class _RecurringTransactionsScreenState
           (context) => AlertDialog(
             backgroundColor: const Color(0xFF1A1A1A),
             title: Text(
-              'Hapus Transaksi Berulang?',
+              AppLocalizations.of(context)!.delete_recurring_transaction_title,
               style: GoogleFonts.poppins(color: Colors.white),
             ),
             content: Text(
-              'Transaksi "${transaction['description']}" akan dihapus permanen.',
+              '${AppLocalizations.of(context)!.transactions} "${transaction['description']}" ${AppLocalizations.of(context)!.delete_recurring_transaction_message}',
               style: GoogleFonts.poppins(color: Colors.grey[400]),
             ),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context, false),
                 child: Text(
-                  'Batal',
+                  AppLocalizations.of(context)!.cancel,
                   style: GoogleFonts.poppins(color: Colors.grey),
                 ),
               ),
               TextButton(
                 onPressed: () => Navigator.pop(context, true),
                 child: Text(
-                  'Hapus',
+                  AppLocalizations.of(context)!.delete_label,
                   style: GoogleFonts.poppins(color: Colors.red),
                 ),
               ),
@@ -173,8 +176,10 @@ class _RecurringTransactionsScreenState
         );
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Transaksi berhasil dihapus'),
+            SnackBar(
+              content: Text(
+                AppLocalizations.of(context)!.transaction_deleted_successfully,
+              ),
               backgroundColor: Colors.green,
             ),
           );
@@ -184,7 +189,9 @@ class _RecurringTransactionsScreenState
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Gagal: ${e.toString()}'),
+              content: Text(
+                '${AppLocalizations.of(context)!.failed}: ${e.toString()}',
+              ),
               backgroundColor: Colors.red,
             ),
           );
@@ -265,12 +272,12 @@ class _RecurringTransactionsScreenState
           Icon(Iconsax.repeat, size: 64, color: Colors.grey[600]),
           const SizedBox(height: 16),
           Text(
-            'Belum ada transaksi berulang',
+            AppLocalizations.of(context)!.no_recurring_transactions_yet,
             style: GoogleFonts.poppins(color: Colors.grey[500], fontSize: 16),
           ),
           const SizedBox(height: 8),
           Text(
-            'Tap tombol + untuk membuat',
+            AppLocalizations.of(context)!.tap_plus_to_create,
             style: GoogleFonts.poppins(color: Colors.grey[600], fontSize: 14),
           ),
         ],
@@ -442,7 +449,10 @@ class _RecurringTransactionsScreenState
               Expanded(
                 child: _buildActionButton(
                   icon: isActive ? Iconsax.pause : Iconsax.play,
-                  label: isActive ? 'Jeda' : 'Lanjut',
+                  label:
+                      isActive
+                          ? AppLocalizations.of(context)!.pause
+                          : AppLocalizations.of(context)!.resume,
                   color: isActive ? Colors.orange : Colors.green,
                   onTap: () => _togglePause(transaction),
                 ),
@@ -455,8 +465,12 @@ class _RecurringTransactionsScreenState
                   color: Colors.blue,
                   onTap: () {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Fitur edit segera hadir'),
+                      SnackBar(
+                        content: Text(
+                          AppLocalizations.of(
+                            context,
+                          )!.edit_feature_coming_soon,
+                        ),
                         backgroundColor: Colors.orange,
                       ),
                     );
@@ -467,7 +481,7 @@ class _RecurringTransactionsScreenState
               Expanded(
                 child: _buildActionButton(
                   icon: Iconsax.trash,
-                  label: 'Hapus',
+                  label: AppLocalizations.of(context)!.delete_label,
                   color: Colors.red,
                   onTap: () => _deleteTransaction(transaction),
                 ),

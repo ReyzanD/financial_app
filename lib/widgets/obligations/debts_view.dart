@@ -2,27 +2,45 @@ import 'package:flutter/material.dart';
 import 'package:financial_app/models/financial_obligation.dart';
 import 'package:financial_app/services/obligation_service.dart';
 import 'package:financial_app/widgets/obligations/obligation_helpers.dart';
+import 'package:financial_app/l10n/app_localizations.dart';
 import 'debt_progress_card.dart';
 import 'debt_item.dart';
 import 'payoff_strategy_card.dart';
 
 class DebtsView extends StatelessWidget {
-  const DebtsView({super.key});
+  final String searchQuery;
+
+  const DebtsView({super.key, this.searchQuery = ''});
 
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<DebtSummary>(
       future: ObligationService().getDebtSummary(),
       builder: (context, snapshot) {
-        if (!snapshot.hasData)
-          return Center(child: CircularProgressIndicator());
+        if (!snapshot.hasData) {
+          return const Center(child: CircularProgressIndicator());
+        }
 
         final summary = snapshot.data!;
+        var debts = summary.debts;
 
-        if (summary.debts.isEmpty) {
+        // Apply search filter
+        if (searchQuery.isNotEmpty) {
+          final query = searchQuery.toLowerCase();
+          debts =
+              debts.where((d) {
+                return d.name.toLowerCase().contains(query) ||
+                    (d.category?.toLowerCase().contains(query) ?? false) ||
+                    d.monthlyAmount.toString().contains(query);
+              }).toList();
+        }
+
+        if (debts.isEmpty) {
           return Center(
             child: Text(
-              'Tidak ada hutang aktif',
+              searchQuery.isNotEmpty
+                  ? AppLocalizations.of(context)!.no_search_results
+                  : AppLocalizations.of(context)!.no_debts,
               style: TextStyle(color: Colors.grey[400]),
             ),
           );
@@ -36,16 +54,16 @@ class DebtsView extends StatelessWidget {
             // Debt List
             Expanded(
               child: ListView.builder(
-                padding: EdgeInsets.all(16),
-                itemCount: summary.debts.length,
+                padding: const EdgeInsets.all(16),
+                itemCount: debts.length,
                 itemBuilder: (context, index) {
                   return GestureDetector(
                     onTap:
                         () => ObligationHelpers.showObligationDetails(
                           context,
-                          summary.debts[index],
+                          debts[index],
                         ),
-                    child: DebtItem(debt: summary.debts[index]),
+                    child: DebtItem(debt: debts[index]),
                   );
                 },
               ),

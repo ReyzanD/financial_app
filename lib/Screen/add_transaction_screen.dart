@@ -39,6 +39,7 @@ import 'package:financial_app/services/api_service.dart';
 import 'package:financial_app/services/location_service.dart';
 import 'package:financial_app/services/error_handler_service.dart';
 import 'package:financial_app/services/logger_service.dart';
+import 'package:financial_app/services/receipt_scanning_service.dart';
 import 'package:financial_app/utils/formatters.dart';
 import 'package:financial_app/utils/app_refresh.dart';
 import 'package:financial_app/utils/responsive_helper.dart';
@@ -54,6 +55,7 @@ import 'package:financial_app/widgets/add_transaction/submit_button.dart';
 import 'package:financial_app/widgets/add_transaction/additional_options.dart';
 import 'package:financial_app/widgets/add_transaction/notes_field.dart';
 import 'package:financial_app/utils/form_validators.dart';
+import 'package:financial_app/l10n/app_localizations.dart';
 
 class AddTransactionScreen extends StatefulWidget {
   final Map<String, dynamic>? transaction; // Optional for edit mode
@@ -73,6 +75,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
   final _descriptionController = TextEditingController();
   final _notesController = TextEditingController();
   final ApiService _apiService = ApiService();
+  final ReceiptScanningService _receiptService = ReceiptScanningService();
 
   // Form state
   String _selectedType = 'expense';
@@ -84,6 +87,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
   bool _isGettingLocation = false;
   bool _isRecurring = false;
   bool _isSubmitting = false;
+  bool _isScanningReceipt = false;
 
   // Category data from API
   List<Map<String, dynamic>> _categories = [];
@@ -134,6 +138,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
     _amountController.dispose();
     _descriptionController.dispose();
     _notesController.dispose();
+    _receiptService.dispose();
     super.dispose();
   }
 
@@ -196,7 +201,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
     });
     ErrorHandlerService.showInfoSnackbar(
       context,
-      'Lokasi dihapus',
+      AppLocalizations.of(context)!.location_removed,
     );
   }
 
@@ -212,7 +217,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
         if (mounted) {
           ErrorHandlerService.showWarningSnackbar(
             context,
-            'Gagal mendapatkan lokasi. Pastikan izin lokasi aktif.',
+            AppLocalizations.of(context)!.failed_to_get_location,
           );
         }
       } else {
@@ -251,6 +256,175 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
       }
     } finally {
       setState(() => _isGettingLocation = false);
+    }
+  }
+
+  Future<void> _showReceiptScanOptions() async {
+    final option = await showModalBottomSheet<String>(
+      context: context,
+      backgroundColor: const Color(0xFF1A1A1A),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder:
+          (context) => Container(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  AppLocalizations.of(context)!.select_image_source,
+                  style: GoogleFonts.poppins(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 20),
+                ListTile(
+                  leading: const Icon(Iconsax.camera, color: Color(0xFF8B5FBF)),
+                  title: Text(
+                    AppLocalizations.of(context)!.take_photo,
+                    style: GoogleFonts.poppins(color: Colors.white),
+                  ),
+                  onTap: () => Navigator.pop(context, 'camera'),
+                ),
+                ListTile(
+                  leading: const Icon(
+                    Iconsax.gallery,
+                    color: Color(0xFF8B5FBF),
+                  ),
+                  title: Text(
+                    AppLocalizations.of(context)!.choose_from_gallery,
+                    style: GoogleFonts.poppins(color: Colors.white),
+                  ),
+                  onTap: () => Navigator.pop(context, 'gallery'),
+                ),
+                const SizedBox(height: 10),
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: Text(
+                    AppLocalizations.of(context)!.cancel,
+                    style: GoogleFonts.poppins(color: Colors.grey),
+                  ),
+                ),
+              ],
+            ),
+          ),
+    );
+
+    if (option != null) {
+      await _scanReceipt(fromCamera: option == 'camera');
+    }
+  }
+
+  Future<void> _scanReceipt({required bool fromCamera}) async {
+    setState(() => _isScanningReceipt = true);
+
+    try {
+      // Pick image
+      final imageFile = await _receiptService.pickImage(fromCamera: fromCamera);
+      if (imageFile == null) {
+        setState(() => _isScanningReceipt = false);
+        return;
+      }
+
+      // Show scanning message
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              AppLocalizations.of(context)!.loading,
+              style: GoogleFonts.poppins(),
+            ),
+            backgroundColor: const Color(0xFF8B5FBF),
+            duration: const Duration(seconds: 2),
+          ),
+        );
+      }
+
+      // Scan receipt
+      final scanResult = await _receiptService.scanReceipt(imageFile);
+
+      if (scanResult != null && mounted) {
+        final parsedData = scanResult['parsed_data'] as Map<String, dynamic>;
+        final amount = (parsedData['total'] as num?)?.toDouble() ?? 0.0;
+        final merchant = parsedData['merchant'] as String? ?? '';
+        final dateStr = parsedData['date'] as String?;
+
+        // Auto-populate form fields
+        if (amount > 0) {
+          _amountController.text = amount.toStringAsFixed(0);
+        }
+        if (merchant.isNotEmpty) {
+          _descriptionController.text = merchant;
+        }
+
+        // Parse and set date if available
+        if (dateStr != null && dateStr.isNotEmpty) {
+          try {
+            // Try to parse date (format: DD/MM/YYYY or DD-MM-YYYY)
+            final dateParts = dateStr.split(RegExp(r'[/-]'));
+            if (dateParts.length == 3) {
+              final day = int.parse(dateParts[0]);
+              final month = int.parse(dateParts[1]);
+              final year = int.parse(
+                dateParts[2].length == 2 ? '20${dateParts[2]}' : dateParts[2],
+              );
+              final parsedDate = DateTime(year, month, day);
+
+              // Only set if date is valid and not in future (for expenses)
+              if (_selectedType == 'expense' &&
+                  parsedDate.isAfter(DateTime.now())) {
+                // Don't set future dates for expenses
+              } else {
+                setState(() {
+                  _selectedDate = parsedDate;
+                  _selectedTime = TimeOfDay.now();
+                });
+              }
+            }
+          } catch (e) {
+            LoggerService.warning('Error parsing receipt date', error: e);
+          }
+        }
+
+        // Set transaction type to expense (receipts are usually expenses)
+        setState(() {
+          _selectedType = 'expense';
+        });
+
+        // Show success message
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              AppLocalizations.of(context)!.receipt_scanned_successfully,
+              style: GoogleFonts.poppins(),
+            ),
+            backgroundColor: Colors.green,
+            duration: const Duration(seconds: 3),
+          ),
+        );
+
+        LoggerService.success('Receipt scanned successfully');
+      } else {
+        if (mounted) {
+          ErrorHandlerService.showWarningSnackbar(
+            context,
+            AppLocalizations.of(context)!.cannot_scan_receipt,
+          );
+        }
+      }
+    } catch (e) {
+      LoggerService.error('Error scanning receipt', error: e);
+      if (mounted) {
+        ErrorHandlerService.showErrorSnackbar(
+          context,
+          AppLocalizations.of(context)!.error_scanning_receipt,
+        );
+      }
+    } finally {
+      setState(() => _isScanningReceipt = false);
     }
   }
 
@@ -461,7 +635,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                           const SizedBox(width: 8),
                           Expanded(
                             child: Text(
-                              'Tambahkan pemasukan terlebih dahulu atau kurangi jumlah pengeluaran.',
+                              AppLocalizations.of(context)!.add_income_first,
                               style: GoogleFonts.poppins(
                                 color: Colors.blue[300],
                                 fontSize: 11,
@@ -484,7 +658,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                       minimumSize: const Size(double.infinity, 45),
                     ),
                     child: Text(
-                      'Mengerti',
+                      AppLocalizations.of(context)!.understood,
                       style: GoogleFonts.poppins(
                         color: Colors.white,
                         fontWeight: FontWeight.w600,
@@ -547,7 +721,9 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
 
       // Check for duplicate transactions
       try {
-        final recentTransactionsData = await _apiService.getTransactions(limit: 20);
+        final recentTransactionsData = await _apiService.getTransactions(
+          limit: 20,
+        );
         final recentTransactions = List<Map<String, dynamic>>.from(
           recentTransactionsData['transactions'] ?? [],
         );
@@ -564,30 +740,31 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
         if (isDuplicate) {
           final shouldContinue = await showDialog<bool>(
             context: context,
-            builder: (context) => AlertDialog(
-              backgroundColor: const Color(0xFF1A1A1A),
-              title: const Text(
-                'Transaksi Duplikat?',
-                style: TextStyle(color: Colors.white),
-              ),
-              content: const Text(
-                'Transaksi serupa baru saja ditambahkan. Apakah Anda yakin ingin melanjutkan?',
-                style: TextStyle(color: Colors.white70),
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(context, false),
-                  child: const Text('Batal'),
-                ),
-                ElevatedButton(
-                  onPressed: () => Navigator.pop(context, true),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF8B5FBF),
+            builder:
+                (context) => AlertDialog(
+                  backgroundColor: const Color(0xFF1A1A1A),
+                  title: Text(
+                    AppLocalizations.of(context)!.duplicate_transaction,
+                    style: const TextStyle(color: Colors.white),
                   ),
-                  child: const Text('Lanjutkan'),
+                  content: Text(
+                    AppLocalizations.of(context)!.similar_transaction_added,
+                    style: const TextStyle(color: Colors.white70),
+                  ),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(context, false),
+                      child: Text(AppLocalizations.of(context)!.cancel),
+                    ),
+                    ElevatedButton(
+                      onPressed: () => Navigator.pop(context, true),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF8B5FBF),
+                      ),
+                      child: Text(AppLocalizations.of(context)!.continueText),
+                    ),
+                  ],
                 ),
-              ],
-            ),
           );
 
           if (shouldContinue != true) {
@@ -665,7 +842,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
         if (context.mounted) {
           ErrorHandlerService.showSuccessSnackbar(
             context,
-            'Transaksi berhasil disimpan!',
+            AppLocalizations.of(context)!.transaction_saved_successfully,
           );
         }
 
@@ -708,10 +885,18 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
         ),
         actions: [
           IconButton(
-            icon: const Icon(Iconsax.scan_barcode, color: Colors.white),
-            onPressed: () {
-              // OCR receipt scanning feature
-            },
+            icon:
+                _isScanningReceipt
+                    ? const SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: Colors.white,
+                      ),
+                    )
+                    : const Icon(Iconsax.scan_barcode, color: Colors.white),
+            onPressed: _isScanningReceipt ? null : _showReceiptScanOptions,
           ),
         ],
       ),

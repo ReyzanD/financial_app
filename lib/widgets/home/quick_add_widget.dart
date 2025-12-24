@@ -6,6 +6,7 @@ import 'package:financial_app/utils/formatters.dart';
 import 'package:financial_app/utils/responsive_helper.dart';
 import 'package:financial_app/services/logger_service.dart';
 import 'package:financial_app/widgets/home/quick_add/quick_add_modal.dart';
+import 'package:financial_app/l10n/app_localizations.dart';
 
 class QuickAddWidget extends StatefulWidget {
   final VoidCallback? onTransactionAdded;
@@ -47,7 +48,7 @@ class _QuickAddWidgetState extends State<QuickAddWidget> {
 
       // Count category usage
       final Map<String, int> categoryUsageCount = {};
-      for (var transaction in transactions) {
+      for (var transaction in transactions['transactions'] as List<dynamic>) {
         final categoryId = transaction['category_id'];
         if (categoryId != null) {
           final idString = categoryId.toString();
@@ -139,7 +140,7 @@ class _QuickAddWidgetState extends State<QuickAddWidget> {
               ),
               SizedBox(width: ResponsiveHelper.horizontalSpacing(context, 8)),
               Text(
-                'Tambah Cepat',
+                AppLocalizations.of(context)!.quick_add,
                 style: GoogleFonts.poppins(
                   color: Colors.white,
                   fontSize: ResponsiveHelper.fontSize(context, 16),
@@ -156,7 +157,7 @@ class _QuickAddWidgetState extends State<QuickAddWidget> {
               Expanded(
                 child: _buildQuickTypeButton(
                   context: context,
-                  label: 'Pemasukan',
+                  label: AppLocalizations.of(context)!.income,
                   icon: Iconsax.arrow_down_1,
                   color: Colors.green,
                   type: 'income',
@@ -166,7 +167,7 @@ class _QuickAddWidgetState extends State<QuickAddWidget> {
               Expanded(
                 child: _buildQuickTypeButton(
                   context: context,
-                  label: 'Pengeluaran',
+                  label: AppLocalizations.of(context)!.expense,
                   icon: Iconsax.arrow_up_3,
                   color: Colors.red,
                   type: 'expense',
@@ -178,7 +179,7 @@ class _QuickAddWidgetState extends State<QuickAddWidget> {
 
           // Quick amounts section
           Text(
-            'Nominal Cepat',
+            AppLocalizations.of(context)!.quick_amounts,
             style: GoogleFonts.poppins(
               color: Colors.white70,
               fontSize: ResponsiveHelper.fontSize(context, 12),
@@ -198,7 +199,7 @@ class _QuickAddWidgetState extends State<QuickAddWidget> {
           // Recent categories section
           SizedBox(height: ResponsiveHelper.verticalSpacing(context, 16)),
           Text(
-            'Kategori Sering',
+            AppLocalizations.of(context)!.frequent_categories,
             style: GoogleFonts.poppins(
               color: Colors.white70,
               fontSize: ResponsiveHelper.fontSize(context, 12),
@@ -226,7 +227,7 @@ class _QuickAddWidgetState extends State<QuickAddWidget> {
                 ),
               ),
               child: Text(
-                'Belum ada kategori yang sering digunakan',
+                AppLocalizations.of(context)!.no_frequent_categories,
                 style: GoogleFonts.poppins(
                   color: Colors.grey[600],
                   fontSize: ResponsiveHelper.fontSize(context, 11),

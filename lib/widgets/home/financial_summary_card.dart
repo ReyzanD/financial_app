@@ -6,7 +6,6 @@ import 'package:financial_app/services/logger_service.dart';
 import 'package:financial_app/services/financial_calculator.dart';
 import 'package:financial_app/utils/app_refresh.dart';
 import 'package:financial_app/utils/responsive_helper.dart';
-import 'package:financial_app/widgets/common/shimmer_loading.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:money2/money2.dart';
@@ -138,7 +137,9 @@ class _FinancialSummaryCardState extends State<FinancialSummaryCard>
     super.didUpdateWidget(oldWidget);
     // Reload when widget is rebuilt with new key
     if (widget.key != oldWidget.key) {
-      LoggerService.debug('[FinancialSummaryCard] Widget key changed, reloading data');
+      LoggerService.debug(
+        '[FinancialSummaryCard] Widget key changed, reloading data',
+      );
       _loadFinancialSummary();
     }
   }
@@ -238,32 +239,34 @@ class _FinancialSummaryCardState extends State<FinancialSummaryCard>
         (summaries['income'] as Map<String, dynamic>?)?['total_amount'] ?? 0.0;
     final expense =
         (summaries['expense'] as Map<String, dynamic>?)?['total_amount'] ?? 0.0;
-    
+
     // Use FinancialCalculator for accurate balance calculation
     final incomeDouble = (income is num) ? income.toDouble() : 0.0;
     final expenseDouble = (expense is num) ? expense.toDouble() : 0.0;
-    
+
     final balanceData = _calculator.calculateBalance(
       income: incomeDouble,
       expenses: expenseDouble,
     );
-    
+
     // Handle Money object or double for backward compatibility
     final balanceMoney = balanceData['balance'] as Money?;
-    final balanceAmount = balanceMoney != null 
-        ? balanceMoney.minorUnits.toDouble() 
-        : (balanceData['balanceAmount'] as double? ?? 0.0);
+    final balanceAmount =
+        balanceMoney != null
+            ? balanceMoney.minorUnits.toDouble()
+            : (balanceData['balanceAmount'] as double? ?? 0.0);
     final actualBalance = balanceAmount;
-    final balance = actualBalance < 0 ? 0.0 : actualBalance; // Display as 0 if negative
+    final balance =
+        actualBalance < 0 ? 0.0 : actualBalance; // Display as 0 if negative
     final isNegative = balanceData['isNegative'] as bool;
     final warning = balanceData['warning'] as String?;
-    
+
     // Calculate savings rate
     final savingsRate = _calculator.calculateSavingsRate(
       income: incomeDouble,
       expenses: expenseDouble,
     );
-    
+
     // Calculate financial health score with inflation and tax rates
     final healthScore = _calculator.calculateFinancialHealthScore(
       income: incomeDouble,
@@ -433,7 +436,7 @@ class _FinancialSummaryCardState extends State<FinancialSummaryCard>
                 ),
               ],
             ),
-            
+
             // Savings Rate & Health Score
             SizedBox(height: ResponsiveHelper.verticalSpacing(context, 16)),
             Row(
@@ -442,10 +445,11 @@ class _FinancialSummaryCardState extends State<FinancialSummaryCard>
                   child: _buildMetricItem(
                     title: 'Tingkat Tabungan',
                     value: '${savingsRate.toStringAsFixed(1)}%',
-                    color: savingsRate >= 20 
-                        ? const Color(0xFF4CAF50) 
-                        : savingsRate >= 10 
-                            ? const Color(0xFFFFB74D) 
+                    color:
+                        savingsRate >= 20
+                            ? const Color(0xFF4CAF50)
+                            : savingsRate >= 10
+                            ? const Color(0xFFFFB74D)
                             : const Color(0xFFF44336),
                     icon: Iconsax.wallet_3,
                   ),
@@ -456,10 +460,12 @@ class _FinancialSummaryCardState extends State<FinancialSummaryCard>
                 Expanded(
                   child: _buildMetricItem(
                     title: 'Skor Kesehatan',
-                    value: '${(healthScore['score'] as double).toStringAsFixed(0)}',
-                    color: (healthScore['score'] as double) >= 80
-                        ? const Color(0xFF4CAF50)
-                        : (healthScore['score'] as double) >= 60
+                    value:
+                        '${(healthScore['score'] as double).toStringAsFixed(0)}',
+                    color:
+                        (healthScore['score'] as double) >= 80
+                            ? const Color(0xFF4CAF50)
+                            : (healthScore['score'] as double) >= 60
                             ? const Color(0xFFFFB74D)
                             : const Color(0xFFF44336),
                     icon: Iconsax.health,
@@ -521,9 +527,7 @@ class _FinancialSummaryCardState extends State<FinancialSummaryCard>
                 color: color,
                 size: ResponsiveHelper.iconSize(context, 16),
               ),
-              SizedBox(
-                width: ResponsiveHelper.horizontalSpacing(context, 6),
-              ),
+              SizedBox(width: ResponsiveHelper.horizontalSpacing(context, 6)),
               Flexible(
                 child: Text(
                   title,
@@ -537,9 +541,7 @@ class _FinancialSummaryCardState extends State<FinancialSummaryCard>
               ),
             ],
           ),
-          SizedBox(
-            height: ResponsiveHelper.verticalSpacing(context, 4),
-          ),
+          SizedBox(height: ResponsiveHelper.verticalSpacing(context, 4)),
           Text(
             value,
             style: GoogleFonts.poppins(
@@ -560,51 +562,51 @@ class _FinancialSummaryCardState extends State<FinancialSummaryCard>
     required IconData icon,
   }) {
     return Container(
-        padding: ResponsiveHelper.padding(context, multiplier: 0.75),
-        decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.08),
-          borderRadius: BorderRadius.circular(
-            ResponsiveHelper.borderRadius(context, 12),
+      padding: ResponsiveHelper.padding(context, multiplier: 0.75),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.08),
+        borderRadius: BorderRadius.circular(
+          ResponsiveHelper.borderRadius(context, 12),
+        ),
+        border: Border.all(color: color.withOpacity(0.3), width: 1),
+      ),
+      child: Column(
+        children: [
+          Container(
+            padding: ResponsiveHelper.padding(context, multiplier: 0.625),
+            decoration: BoxDecoration(
+              color: color.withOpacity(0.15),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              icon,
+              color: color,
+              size: ResponsiveHelper.iconSize(context, 22),
+            ),
           ),
-          border: Border.all(color: color.withOpacity(0.3), width: 1),
-        ),
-        child: Column(
-          children: [
-            Container(
-              padding: ResponsiveHelper.padding(context, multiplier: 0.625),
-              decoration: BoxDecoration(
-                color: color.withOpacity(0.15),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                icon,
-                color: color,
-                size: ResponsiveHelper.iconSize(context, 22),
-              ),
+          SizedBox(height: ResponsiveHelper.verticalSpacing(context, 10)),
+          Text(
+            title,
+            style: GoogleFonts.poppins(
+              color: Colors.white70,
+              fontSize: ResponsiveHelper.fontSize(context, 11),
+              fontWeight: FontWeight.w500,
             ),
-            SizedBox(height: ResponsiveHelper.verticalSpacing(context, 10)),
-            Text(
-              title,
-              style: GoogleFonts.poppins(
-                color: Colors.white70,
-                fontSize: ResponsiveHelper.fontSize(context, 11),
-                fontWeight: FontWeight.w500,
-              ),
+          ),
+          SizedBox(height: ResponsiveHelper.verticalSpacing(context, 6)),
+          Text(
+            amount,
+            style: GoogleFonts.poppins(
+              color: Colors.white,
+              fontSize: ResponsiveHelper.fontSize(context, 13),
+              fontWeight: FontWeight.bold,
             ),
-            SizedBox(height: ResponsiveHelper.verticalSpacing(context, 6)),
-            Text(
-              amount,
-              style: GoogleFonts.poppins(
-                color: Colors.white,
-                fontSize: ResponsiveHelper.fontSize(context, 13),
-                fontWeight: FontWeight.bold,
-              ),
-              textAlign: TextAlign.center,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ],
-        ),
+            textAlign: TextAlign.center,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ],
+      ),
     );
   }
 }

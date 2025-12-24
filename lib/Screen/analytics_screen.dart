@@ -10,6 +10,7 @@ import '../services/api_service.dart';
 import '../services/error_handler_service.dart';
 import '../services/logger_service.dart';
 import '../utils/responsive_helper.dart';
+import '../l10n/app_localizations.dart';
 
 class AnalyticsScreen extends StatefulWidget {
   const AnalyticsScreen({super.key});
@@ -19,7 +20,7 @@ class AnalyticsScreen extends StatefulWidget {
 }
 
 class _AnalyticsScreenState extends State<AnalyticsScreen> {
-  String _selectedPeriod = 'Minggu Ini';
+  String _selectedPeriod = '';
   final ApiService _apiService = ApiService();
   bool _isLoading = true;
   String? _errorMessage;
@@ -29,7 +30,28 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
   @override
   void initState() {
     super.initState();
-    _loadData();
+    _selectedPeriod =
+        'Minggu Ini'; // Default value, will be updated in didChangeDependencies
+    // Delay _loadData() until after the widget tree is built
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        _loadData();
+      }
+    });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Update period with localized value now that context is available
+    final localizations = AppLocalizations.of(context);
+    if (localizations != null && _selectedPeriod == 'Minggu Ini') {
+      _selectedPeriod = localizations.this_week;
+      // Reload data with updated period if it was already loaded
+      if (!_isLoading && _transactions.isEmpty) {
+        _loadData();
+      }
+    }
   }
 
   Future<void> _loadData() async {
@@ -44,15 +66,34 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
       DateTime? startDate;
       DateTime? endDate = now;
 
-      if (_selectedPeriod == 'Minggu Ini') {
-        final today = DateTime(now.year, now.month, now.day);
-        startDate = today.subtract(Duration(days: today.weekday - 1));
-      } else if (_selectedPeriod == 'Bulan Ini') {
-        startDate = DateTime(now.year, now.month, 1);
-      } else if (_selectedPeriod == '3 Bulan') {
-        startDate = DateTime(now.year, now.month - 2, 1);
-      } else if (_selectedPeriod == 'Tahun Ini') {
-        startDate = DateTime(now.year, 1, 1);
+      // Use localized or default period strings
+      final localizations = AppLocalizations.of(context);
+      final period = _selectedPeriod;
+
+      if (localizations != null) {
+        if (period == localizations.this_week || period == 'Minggu Ini') {
+          final today = DateTime(now.year, now.month, now.day);
+          startDate = today.subtract(Duration(days: today.weekday - 1));
+        } else if (period == localizations.this_month ||
+            period == 'Bulan Ini') {
+          startDate = DateTime(now.year, now.month, 1);
+        } else if (period == localizations.three_months ||
+            period == '3 Bulan') {
+          startDate = DateTime(now.year, now.month - 2, 1);
+        } else if (period == localizations.this_year || period == 'Tahun Ini') {
+          startDate = DateTime(now.year, 1, 1);
+        }
+      } else {
+        if (period == 'Minggu Ini') {
+          final today = DateTime(now.year, now.month, now.day);
+          startDate = today.subtract(Duration(days: today.weekday - 1));
+        } else if (period == 'Bulan Ini') {
+          startDate = DateTime(now.year, now.month, 1);
+        } else if (period == '3 Bulan') {
+          startDate = DateTime(now.year, now.month - 2, 1);
+        } else if (period == 'Tahun Ini') {
+          startDate = DateTime(now.year, 1, 1);
+        }
       }
 
       final transactionsData = await _apiService.getTransactions(
@@ -125,7 +166,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                 ),
                 SizedBox(height: ResponsiveHelper.verticalSpacing(context, 12)),
                 Text(
-                  'Gagal memuat analitik',
+                  AppLocalizations.of(context)!.failed_to_load_analytics,
                   style: GoogleFonts.poppins(
                     color: Colors.grey[300],
                     fontSize: ResponsiveHelper.fontSize(context, 16),

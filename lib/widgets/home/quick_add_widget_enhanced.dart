@@ -7,6 +7,7 @@ import 'package:financial_app/services/receipt_scanning_service.dart';
 import 'package:financial_app/services/transaction_templates_service.dart';
 import 'package:financial_app/utils/formatters.dart';
 import 'package:financial_app/utils/responsive_helper.dart';
+import 'package:financial_app/l10n/app_localizations.dart';
 
 /// Enhanced Quick Add Widget dengan voice input, receipt scanning, smart suggestions, dan templates
 class QuickAddWidgetEnhanced extends StatefulWidget {
@@ -22,8 +23,9 @@ class _QuickAddWidgetEnhancedState extends State<QuickAddWidgetEnhanced> {
   final ApiService _apiService = ApiService();
   final VoiceInputService _voiceService = VoiceInputService();
   final ReceiptScanningService _receiptService = ReceiptScanningService();
-  final TransactionTemplatesService _templatesService = TransactionTemplatesService();
-  
+  final TransactionTemplatesService _templatesService =
+      TransactionTemplatesService();
+
   List<dynamic> _recentCategories = [];
   List<Map<String, dynamic>> _templates = [];
   bool _isLoadingCategories = true;
@@ -31,7 +33,12 @@ class _QuickAddWidgetEnhancedState extends State<QuickAddWidgetEnhanced> {
   bool _isScanning = false;
 
   final List<double> _quickAmounts = [
-    10000, 25000, 50000, 100000, 250000, 500000,
+    10000,
+    25000,
+    50000,
+    100000,
+    250000,
+    500000,
   ];
 
   @override
@@ -58,17 +65,20 @@ class _QuickAddWidgetEnhancedState extends State<QuickAddWidgetEnhanced> {
       final transactions = await _apiService.getTransactions(limit: 20);
 
       final Map<String, int> categoryUsageCount = {};
-      for (var transaction in transactions) {
+      for (var transaction in transactions['transactions'] as List<dynamic>) {
         final categoryId = transaction['category_id'];
         if (categoryId != null) {
           final idString = categoryId.toString();
-          categoryUsageCount[idString] = (categoryUsageCount[idString] ?? 0) + 1;
+          categoryUsageCount[idString] =
+              (categoryUsageCount[idString] ?? 0) + 1;
         }
       }
 
       final List<Map<String, dynamic>> categoryList = [];
       for (var category in categories) {
-        if (category != null && category['id'] != null && category['name'] != null) {
+        if (category != null &&
+            category['id'] != null &&
+            category['name'] != null) {
           final idString = category['id'].toString();
           categoryList.add({
             'id': idString,
@@ -107,8 +117,10 @@ class _QuickAddWidgetEnhancedState extends State<QuickAddWidgetEnhanced> {
   Future<void> _startVoiceInput() async {
     if (!_voiceService.isAvailable) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Voice input tidak tersedia'),
+        SnackBar(
+          content: Text(
+            AppLocalizations.of(context)!.voice_input_not_available,
+          ),
           backgroundColor: Colors.orange,
         ),
       );
@@ -138,7 +150,9 @@ class _QuickAddWidgetEnhancedState extends State<QuickAddWidgetEnhanced> {
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text('Tidak dapat mengenali jumlah dari: $result'),
+                content: Text(
+                  '${AppLocalizations.of(context)!.cannot_recognize_amount}: $result',
+                ),
                 backgroundColor: Colors.orange,
               ),
             );
@@ -151,7 +165,9 @@ class _QuickAddWidgetEnhancedState extends State<QuickAddWidgetEnhanced> {
       });
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Error: ${e.toString()}'),
+          content: Text(
+            '${AppLocalizations.of(context)!.error}: ${e.toString()}',
+          ),
           backgroundColor: Colors.red,
         ),
       );
@@ -162,12 +178,12 @@ class _QuickAddWidgetEnhancedState extends State<QuickAddWidgetEnhanced> {
     // Extract numbers from voice input
     final numberPattern = RegExp(r'\d+');
     final matches = numberPattern.allMatches(text);
-    
+
     if (matches.isNotEmpty) {
       final numberStr = matches.map((m) => m.group(0)).join('');
       return double.tryParse(numberStr) ?? 0.0;
     }
-    
+
     return 0.0;
   }
 
@@ -196,8 +212,10 @@ class _QuickAddWidgetEnhancedState extends State<QuickAddWidgetEnhanced> {
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Tidak dapat memindai struk. Coba lagi.'),
+          SnackBar(
+            content: Text(
+              AppLocalizations.of(context)!.cannot_scan_receipt_try_again,
+            ),
             backgroundColor: Colors.orange,
           ),
         );
@@ -205,7 +223,9 @@ class _QuickAddWidgetEnhancedState extends State<QuickAddWidgetEnhanced> {
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Error scanning: ${e.toString()}'),
+          content: Text(
+            '${AppLocalizations.of(context)!.error_scanning}: ${e.toString()}',
+          ),
           backgroundColor: Colors.red,
         ),
       );
@@ -229,43 +249,44 @@ class _QuickAddWidgetEnhancedState extends State<QuickAddWidgetEnhanced> {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      builder: (context) => Container(
-        padding: EdgeInsets.only(
-          bottom: MediaQuery.of(context).viewInsets.bottom,
-          left: 16,
-          right: 16,
-          top: 16,
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              'Quick Add (Enhanced)',
-              style: GoogleFonts.poppins(
-                color: Colors.white,
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
+      builder:
+          (context) => Container(
+            padding: EdgeInsets.only(
+              bottom: MediaQuery.of(context).viewInsets.bottom,
+              left: 16,
+              right: 16,
+              top: 16,
             ),
-            const SizedBox(height: 20),
-            if (presetAmount != null)
-              Text(
-                'Amount: ${CurrencyFormatter.formatRupiah(presetAmount.toInt())}',
-                style: GoogleFonts.poppins(color: Colors.white),
-              ),
-            if (presetDescription != null)
-              Text(
-                'Merchant: $presetDescription',
-                style: GoogleFonts.poppins(color: Colors.white70),
-              ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('Close'),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'Quick Add (Enhanced)',
+                  style: GoogleFonts.poppins(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 20),
+                if (presetAmount != null)
+                  Text(
+                    'Amount: ${CurrencyFormatter.formatRupiah(presetAmount.toInt())}',
+                    style: GoogleFonts.poppins(color: Colors.white),
+                  ),
+                if (presetDescription != null)
+                  Text(
+                    'Merchant: $presetDescription',
+                    style: GoogleFonts.poppins(color: Colors.white70),
+                  ),
+                const SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: Text(AppLocalizations.of(context)!.close),
+                ),
+              ],
             ),
-          ],
-        ),
-      ),
+          ),
     );
   }
 
@@ -293,7 +314,7 @@ class _QuickAddWidgetEnhancedState extends State<QuickAddWidgetEnhanced> {
               ),
               SizedBox(width: ResponsiveHelper.horizontalSpacing(context, 8)),
               Text(
-                'Tambah Cepat (Enhanced)',
+                AppLocalizations.of(context)!.quick_add_enhanced,
                 style: GoogleFonts.poppins(
                   color: Colors.white,
                   fontSize: ResponsiveHelper.fontSize(context, 16),
@@ -310,7 +331,10 @@ class _QuickAddWidgetEnhancedState extends State<QuickAddWidgetEnhanced> {
               Expanded(
                 child: _buildActionButton(
                   context: context,
-                  icon: _isListening ? Iconsax.microphone_slash : Iconsax.microphone_2,
+                  icon:
+                      _isListening
+                          ? Iconsax.microphone_slash
+                          : Iconsax.microphone_2,
                   label: _isListening ? 'Mendengarkan...' : 'Voice Input',
                   color: Colors.blue,
                   onTap: _isListening ? null : _startVoiceInput,
@@ -336,7 +360,7 @@ class _QuickAddWidgetEnhancedState extends State<QuickAddWidgetEnhanced> {
               Expanded(
                 child: _buildQuickTypeButton(
                   context: context,
-                  label: 'Pemasukan',
+                  label: AppLocalizations.of(context)!.income,
                   icon: Iconsax.arrow_down_1,
                   color: Colors.green,
                   type: 'income',
@@ -346,7 +370,7 @@ class _QuickAddWidgetEnhancedState extends State<QuickAddWidgetEnhanced> {
               Expanded(
                 child: _buildQuickTypeButton(
                   context: context,
-                  label: 'Pengeluaran',
+                  label: AppLocalizations.of(context)!.expense,
                   icon: Iconsax.arrow_up_3,
                   color: Colors.red,
                   type: 'expense',
@@ -370,16 +394,17 @@ class _QuickAddWidgetEnhancedState extends State<QuickAddWidgetEnhanced> {
             Wrap(
               spacing: ResponsiveHelper.horizontalSpacing(context, 8),
               runSpacing: ResponsiveHelper.verticalSpacing(context, 8),
-              children: _templates.map((template) {
-                return _buildTemplateChip(context, template);
-              }).toList(),
+              children:
+                  _templates.map((template) {
+                    return _buildTemplateChip(context, template);
+                  }).toList(),
             ),
             SizedBox(height: ResponsiveHelper.verticalSpacing(context, 16)),
           ],
 
           // Quick amounts section
           Text(
-            'Nominal Cepat',
+            AppLocalizations.of(context)!.quick_amounts,
             style: GoogleFonts.poppins(
               color: Colors.white70,
               fontSize: ResponsiveHelper.fontSize(context, 12),
@@ -390,15 +415,16 @@ class _QuickAddWidgetEnhancedState extends State<QuickAddWidgetEnhanced> {
           Wrap(
             spacing: ResponsiveHelper.horizontalSpacing(context, 8),
             runSpacing: ResponsiveHelper.verticalSpacing(context, 8),
-            children: _quickAmounts.map((amount) {
-              return _buildAmountChip(context, amount);
-            }).toList(),
+            children:
+                _quickAmounts.map((amount) {
+                  return _buildAmountChip(context, amount);
+                }).toList(),
           ),
 
           // Recent categories section
           SizedBox(height: ResponsiveHelper.verticalSpacing(context, 16)),
           Text(
-            'Kategori Sering',
+            AppLocalizations.of(context)!.frequent_categories,
             style: GoogleFonts.poppins(
               color: Colors.white70,
               fontSize: ResponsiveHelper.fontSize(context, 12),
@@ -426,7 +452,7 @@ class _QuickAddWidgetEnhancedState extends State<QuickAddWidgetEnhanced> {
                 ),
               ),
               child: Text(
-                'Belum ada kategori yang sering digunakan',
+                AppLocalizations.of(context)!.no_frequent_categories,
                 style: GoogleFonts.poppins(
                   color: Colors.grey[600],
                   fontSize: ResponsiveHelper.fontSize(context, 11),
@@ -437,9 +463,10 @@ class _QuickAddWidgetEnhancedState extends State<QuickAddWidgetEnhanced> {
             Wrap(
               spacing: ResponsiveHelper.horizontalSpacing(context, 8),
               runSpacing: ResponsiveHelper.verticalSpacing(context, 8),
-              children: _recentCategories.map((category) {
-                return _buildCategoryChip(context, category);
-              }).toList(),
+              children:
+                  _recentCategories.map((category) {
+                    return _buildCategoryChip(context, category);
+                  }).toList(),
             ),
         ],
       ),
@@ -532,7 +559,10 @@ class _QuickAddWidgetEnhancedState extends State<QuickAddWidgetEnhanced> {
     );
   }
 
-  Widget _buildTemplateChip(BuildContext context, Map<String, dynamic> template) {
+  Widget _buildTemplateChip(
+    BuildContext context,
+    Map<String, dynamic> template,
+  ) {
     return GestureDetector(
       onTap: () {
         _showQuickAddModal(
@@ -607,12 +637,16 @@ class _QuickAddWidgetEnhancedState extends State<QuickAddWidgetEnhanced> {
     );
   }
 
-  Widget _buildCategoryChip(BuildContext context, Map<String, dynamic> category) {
+  Widget _buildCategoryChip(
+    BuildContext context,
+    Map<String, dynamic> category,
+  ) {
     return GestureDetector(
-      onTap: () => _showQuickAddModal(
-        type: 'expense',
-        presetCategoryId: category['id'].toString(),
-      ),
+      onTap:
+          () => _showQuickAddModal(
+            type: 'expense',
+            presetCategoryId: category['id'].toString(),
+          ),
       child: Container(
         padding: ResponsiveHelper.symmetricPadding(
           context,
@@ -649,4 +683,3 @@ class _QuickAddWidgetEnhancedState extends State<QuickAddWidgetEnhanced> {
     );
   }
 }
-

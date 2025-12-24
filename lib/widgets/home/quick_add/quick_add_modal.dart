@@ -6,6 +6,7 @@ import 'package:financial_app/services/logger_service.dart';
 import 'package:financial_app/utils/formatters.dart';
 import 'package:financial_app/utils/form_validators.dart';
 import 'package:financial_app/utils/app_refresh.dart';
+import 'package:financial_app/l10n/app_localizations.dart';
 
 /// Modal untuk quick add transaction dengan form lengkap
 class QuickAddModal extends StatefulWidget {
@@ -77,7 +78,9 @@ class _QuickAddModalState extends State<QuickAddModal> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Gagal memuat kategori: ${e.toString()}'),
+            content: Text(
+              '${AppLocalizations.of(context)!.failed_to_load_categories}: ${e.toString()}',
+            ),
             backgroundColor: Colors.red,
           ),
         );
@@ -136,7 +139,9 @@ class _QuickAddModalState extends State<QuickAddModal> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Transaksi ditolak! Saldo Anda tidak mencukupi untuk pengeluaran ini.',
+                      AppLocalizations.of(
+                        context,
+                      )!.transaction_rejected_insufficient_balance,
                       style: GoogleFonts.poppins(
                         color: Colors.white70,
                         fontSize: 14,
@@ -154,25 +159,25 @@ class _QuickAddModalState extends State<QuickAddModal> {
                       child: Column(
                         children: [
                           _buildBalanceRow(
-                            'Saldo Tersedia',
+                            AppLocalizations.of(context)!.available_balance,
                             currentBalance,
                             Colors.white70,
                           ),
                           const SizedBox(height: 8),
                           _buildBalanceRow(
-                            'Saldo Minimum',
+                            AppLocalizations.of(context)!.minimum_balance,
                             minimumBalance,
                             Colors.orange[300]!,
                           ),
                           const SizedBox(height: 8),
                           _buildBalanceRow(
-                            'Pengeluaran',
+                            AppLocalizations.of(context)!.expense,
                             expenseAmount,
                             Colors.red[300]!,
                           ),
                           const Divider(color: Colors.grey, height: 20),
                           _buildBalanceRow(
-                            'Kekurangan',
+                            AppLocalizations.of(context)!.shortage,
                             (minimumBalance - newBalance).abs(),
                             Colors.red[400]!,
                             isBold: true,
@@ -198,7 +203,7 @@ class _QuickAddModalState extends State<QuickAddModal> {
                           const SizedBox(width: 8),
                           Expanded(
                             child: Text(
-                              'Tambahkan pemasukan terlebih dahulu atau kurangi jumlah pengeluaran.',
+                              AppLocalizations.of(context)!.add_income_first,
                               style: GoogleFonts.poppins(
                                 color: Colors.blue[300],
                                 fontSize: 11,
@@ -221,7 +226,7 @@ class _QuickAddModalState extends State<QuickAddModal> {
                       minimumSize: const Size(double.infinity, 45),
                     ),
                     child: Text(
-                      'Mengerti',
+                      AppLocalizations.of(context)!.understood,
                       style: GoogleFonts.poppins(
                         color: Colors.white,
                         fontWeight: FontWeight.w600,
@@ -275,10 +280,7 @@ class _QuickAddModalState extends State<QuickAddModal> {
     final amountError = FormValidators.validateAmount(_amountController.text);
     if (amountError != null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(amountError),
-          backgroundColor: Colors.red,
-        ),
+        SnackBar(content: Text(amountError), backgroundColor: Colors.red),
       );
       return;
     }
@@ -288,18 +290,15 @@ class _QuickAddModalState extends State<QuickAddModal> {
     final descriptionError = FormValidators.validateDescription(description);
     if (descriptionError != null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(descriptionError),
-          backgroundColor: Colors.red,
-        ),
+        SnackBar(content: Text(descriptionError), backgroundColor: Colors.red),
       );
       return;
     }
 
     if (_selectedCategoryId == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Pilih kategori'),
+        SnackBar(
+          content: Text(AppLocalizations.of(context)!.select_category),
           backgroundColor: Colors.red,
         ),
       );
@@ -324,7 +323,9 @@ class _QuickAddModalState extends State<QuickAddModal> {
       await _apiService.addTransaction({
         'description':
             description.isEmpty
-                ? 'Quick ${widget.type == 'income' ? 'Income' : 'Expense'}'
+                ? widget.type == 'income'
+                    ? AppLocalizations.of(context)!.quick_income
+                    : AppLocalizations.of(context)!.quick_expense
                 : description,
         'amount': amount,
         'type': widget.type,
@@ -353,7 +354,9 @@ class _QuickAddModalState extends State<QuickAddModal> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Gagal: ${e.toString()}'),
+            content: Text(
+              '${AppLocalizations.of(context)!.failed}: ${e.toString()}',
+            ),
             backgroundColor: Colors.red,
           ),
         );
@@ -394,8 +397,8 @@ class _QuickAddModalState extends State<QuickAddModal> {
                 Expanded(
                   child: Text(
                     widget.type == 'income'
-                        ? 'Tambah Pemasukan'
-                        : 'Tambah Pengeluaran',
+                        ? AppLocalizations.of(context)!.add_income
+                        : AppLocalizations.of(context)!.add_expense,
                     style: GoogleFonts.poppins(
                       color: Colors.white,
                       fontSize: 20,
@@ -452,7 +455,7 @@ class _QuickAddModalState extends State<QuickAddModal> {
 
             // Category
             Text(
-              'Kategori',
+              AppLocalizations.of(context)!.category,
               style: GoogleFonts.poppins(
                 color: Colors.white,
                 fontSize: 14,
@@ -482,7 +485,9 @@ class _QuickAddModalState extends State<QuickAddModal> {
                       const SizedBox(width: 12),
                       Expanded(
                         child: Text(
-                          'Tidak ada kategori. Buat kategori terlebih dahulu di menu Budget.',
+                          AppLocalizations.of(
+                            context,
+                          )!.no_categories_create_first,
                           style: GoogleFonts.poppins(
                             color: Colors.orange,
                             fontSize: 12,
@@ -497,7 +502,7 @@ class _QuickAddModalState extends State<QuickAddModal> {
                   dropdownColor: const Color(0xFF1A1A1A),
                   style: GoogleFonts.poppins(color: Colors.white),
                   hint: Text(
-                    'Pilih kategori',
+                    AppLocalizations.of(context)!.select_category,
                     style: GoogleFonts.poppins(color: Colors.grey[600]),
                   ),
                   decoration: InputDecoration(
@@ -547,7 +552,7 @@ class _QuickAddModalState extends State<QuickAddModal> {
               controller: _descriptionController,
               style: GoogleFonts.poppins(color: Colors.white, fontSize: 14),
               decoration: InputDecoration(
-                hintText: 'Tambahkan deskripsi...',
+                hintText: AppLocalizations.of(context)!.add_description,
                 hintStyle: GoogleFonts.poppins(color: Colors.grey[600]),
                 filled: true,
                 fillColor: const Color(0xFF1A1A1A),
@@ -586,7 +591,7 @@ class _QuickAddModalState extends State<QuickAddModal> {
                     _isLoading
                         ? const CircularProgressIndicator(color: Colors.white)
                         : Text(
-                          'Tambah Transaksi',
+                          AppLocalizations.of(context)!.add_transaction,
                           style: GoogleFonts.poppins(
                             color: Colors.white,
                             fontSize: 16,
@@ -602,4 +607,3 @@ class _QuickAddModalState extends State<QuickAddModal> {
     );
   }
 }
-

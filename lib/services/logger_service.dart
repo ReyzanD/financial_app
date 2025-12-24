@@ -58,6 +58,9 @@ class LoggerService {
     if (!_enableLogging) return;
     if (statusCode >= 200 && statusCode < 300) {
       print('✅ [API] $statusCode $endpoint');
+    } else if (statusCode == 404) {
+      // 404 is logged as debug, not error (endpoint might not exist yet)
+      debug('API 404: $endpoint');
     } else {
       print('❌ [API] $statusCode $endpoint');
     }

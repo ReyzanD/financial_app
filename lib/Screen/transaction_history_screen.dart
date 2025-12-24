@@ -5,6 +5,7 @@ import 'package:financial_app/services/api_service.dart';
 import 'package:financial_app/services/error_handler_service.dart';
 import 'package:financial_app/services/logger_service.dart';
 import 'package:financial_app/Screen/report_screen.dart';
+import 'package:financial_app/l10n/app_localizations.dart';
 
 class TransactionHistoryScreen extends StatefulWidget {
   const TransactionHistoryScreen({super.key});
@@ -351,9 +352,7 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(
-                  builder: (context) => const ReportScreen(),
-                ),
+                MaterialPageRoute(builder: (context) => const ReportScreen()),
               );
             },
             tooltip: 'Buat Laporan',
@@ -430,7 +429,11 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(Icons.account_balance_wallet_rounded, color: Colors.white, size: 20),
+                const Icon(
+                  Icons.account_balance_wallet_rounded,
+                  color: Colors.white,
+                  size: 20,
+                ),
                 const SizedBox(width: 8),
                 Text(
                   'Saldo Akhir: ',
@@ -618,22 +621,30 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
                           });
                         }
                       },
-                      items: const [
+                      items: [
                         DropdownMenuItem(
                           value: 'date_desc',
-                          child: Text('Tanggal Terbaru'),
+                          child: Text(
+                            AppLocalizations.of(context)!.newest_date,
+                          ),
                         ),
                         DropdownMenuItem(
                           value: 'date_asc',
-                          child: Text('Tanggal Terlama'),
+                          child: Text(
+                            AppLocalizations.of(context)!.oldest_date,
+                          ),
                         ),
                         DropdownMenuItem(
                           value: 'amount_desc',
-                          child: Text('Jumlah Terbesar'),
+                          child: Text(
+                            AppLocalizations.of(context)!.highest_amount,
+                          ),
                         ),
                         DropdownMenuItem(
                           value: 'amount_asc',
-                          child: Text('Jumlah Terkecil'),
+                          child: Text(
+                            AppLocalizations.of(context)!.lowest_amount,
+                          ),
                         ),
                       ],
                     ),
@@ -693,7 +704,11 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.account_balance_wallet_outlined, size: 64, color: Colors.grey[600]),
+            Icon(
+              Icons.account_balance_wallet_outlined,
+              size: 64,
+              color: Colors.grey[600],
+            ),
             const SizedBox(height: 16),
             Text(
               'Tidak ada transaksi',
@@ -751,10 +766,7 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
             decoration: BoxDecoration(
               color: typeColor.withOpacity(0.15),
               borderRadius: BorderRadius.circular(14),
-              border: Border.all(
-                color: typeColor.withOpacity(0.3),
-                width: 1.5,
-              ),
+              border: Border.all(color: typeColor.withOpacity(0.3), width: 1.5),
             ),
             child: Icon(typeIcon, color: typeColor, size: 26),
           ),
@@ -818,7 +830,11 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(Icons.account_balance_wallet_rounded, size: 12, color: Colors.grey[500]),
+                      Icon(
+                        Icons.account_balance_wallet_rounded,
+                        size: 12,
+                        color: Colors.grey[500],
+                      ),
                       const SizedBox(width: 4),
                       Text(
                         'Saldo: ${_formatCurrency(runningBalance)}',

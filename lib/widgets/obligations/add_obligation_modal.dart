@@ -4,6 +4,7 @@ import 'package:financial_app/services/obligation_service.dart';
 import 'package:financial_app/services/error_handler_service.dart';
 import 'package:financial_app/services/logger_service.dart';
 import 'package:financial_app/utils/form_validators.dart';
+import 'package:financial_app/l10n/app_localizations.dart';
 
 class AddObligationModal extends StatefulWidget {
   final Map<String, dynamic>? initialObligation;
@@ -138,7 +139,7 @@ class _AddObligationModalState extends State<AddObligationModal> {
         final id =
             widget.initialObligation?['obligation_id_232143']?.toString();
         if (id == null) {
-          throw Exception('ID kewajiban tidak valid');
+          throw Exception(AppLocalizations.of(context)!.invalid_obligation_id);
         }
         await _obligationService.updateObligation(id, data);
         LoggerService.success('Update successful');
@@ -201,7 +202,9 @@ class _AddObligationModalState extends State<AddObligationModal> {
               ),
               const SizedBox(height: 20),
               Text(
-                _isEdit ? 'Edit Kewajiban' : 'Tambah Kewajiban',
+                _isEdit
+                    ? AppLocalizations.of(context)!.edit_obligation
+                    : AppLocalizations.of(context)!.add_obligation,
                 style: GoogleFonts.poppins(
                   color: Colors.white,
                   fontSize: 18,
@@ -215,7 +218,7 @@ class _AddObligationModalState extends State<AddObligationModal> {
                 controller: _nameController,
                 style: const TextStyle(color: Colors.white),
                 decoration: InputDecoration(
-                  labelText: 'Nama Kewajiban',
+                  labelText: AppLocalizations.of(context)!.obligation_name,
                   labelStyle: TextStyle(color: Colors.grey[400]),
                   filled: true,
                   fillColor: const Color(0xFF1A1A1A),
@@ -224,7 +227,11 @@ class _AddObligationModalState extends State<AddObligationModal> {
                     borderSide: BorderSide.none,
                   ),
                 ),
-                validator: (value) => FormValidators.validateName(value, fieldName: 'Nama'),
+                validator:
+                    (value) => FormValidators.validateName(
+                      value,
+                      fieldName: AppLocalizations.of(context)!.name,
+                    ),
               ),
               const SizedBox(height: 16),
 
@@ -234,7 +241,7 @@ class _AddObligationModalState extends State<AddObligationModal> {
                 dropdownColor: const Color(0xFF1A1A1A),
                 style: const TextStyle(color: Colors.white),
                 decoration: InputDecoration(
-                  labelText: 'Tipe',
+                  labelText: AppLocalizations.of(context)!.type,
                   labelStyle: TextStyle(color: Colors.grey[400]),
                   filled: true,
                   fillColor: const Color(0xFF1A1A1A),
@@ -243,12 +250,18 @@ class _AddObligationModalState extends State<AddObligationModal> {
                     borderSide: BorderSide.none,
                   ),
                 ),
-                items: const [
-                  DropdownMenuItem(value: 'bill', child: Text('Tagihan')),
-                  DropdownMenuItem(value: 'debt', child: Text('Hutang')),
+                items: [
+                  DropdownMenuItem(
+                    value: 'bill',
+                    child: Text(AppLocalizations.of(context)!.bill),
+                  ),
+                  DropdownMenuItem(
+                    value: 'debt',
+                    child: Text(AppLocalizations.of(context)!.debt),
+                  ),
                   DropdownMenuItem(
                     value: 'subscription',
-                    child: Text('Langganan'),
+                    child: Text(AppLocalizations.of(context)!.subscription),
                   ),
                 ],
                 onChanged: (value) {
@@ -267,7 +280,7 @@ class _AddObligationModalState extends State<AddObligationModal> {
                 dropdownColor: const Color(0xFF1A1A1A),
                 style: const TextStyle(color: Colors.white),
                 decoration: InputDecoration(
-                  labelText: 'Kategori',
+                  labelText: AppLocalizations.of(context)!.category,
                   labelStyle: TextStyle(color: Colors.grey[400]),
                   filled: true,
                   fillColor: const Color(0xFF1A1A1A),
@@ -276,33 +289,51 @@ class _AddObligationModalState extends State<AddObligationModal> {
                     borderSide: BorderSide.none,
                   ),
                 ),
-                items: const [
-                  DropdownMenuItem(value: 'utility', child: Text('Utilitas')),
-                  DropdownMenuItem(value: 'internet', child: Text('Internet')),
-                  DropdownMenuItem(value: 'phone', child: Text('Telepon')),
-                  DropdownMenuItem(value: 'insurance', child: Text('Asuransi')),
+                items: [
+                  DropdownMenuItem(
+                    value: 'utility',
+                    child: Text(AppLocalizations.of(context)!.utilities),
+                  ),
+                  DropdownMenuItem(
+                    value: 'internet',
+                    child: Text(AppLocalizations.of(context)!.internet),
+                  ),
+                  DropdownMenuItem(
+                    value: 'phone',
+                    child: Text(AppLocalizations.of(context)!.phone),
+                  ),
+                  DropdownMenuItem(
+                    value: 'insurance',
+                    child: Text(AppLocalizations.of(context)!.insurance),
+                  ),
                   DropdownMenuItem(
                     value: 'credit_card',
-                    child: Text('Kartu Kredit'),
+                    child: Text(AppLocalizations.of(context)!.credit_card),
                   ),
                   DropdownMenuItem(
                     value: 'personal_loan',
-                    child: Text('Pinjaman Pribadi'),
+                    child: Text(AppLocalizations.of(context)!.personal_loan),
                   ),
-                  DropdownMenuItem(value: 'mortgage', child: Text('KPR')),
+                  DropdownMenuItem(
+                    value: 'mortgage',
+                    child: Text(AppLocalizations.of(context)!.mortgage),
+                  ),
                   DropdownMenuItem(
                     value: 'car_loan',
-                    child: Text('Kredit Mobil'),
+                    child: Text(AppLocalizations.of(context)!.car_loan),
                   ),
                   DropdownMenuItem(
                     value: 'student_loan',
-                    child: Text('Pinjaman Pendidikan'),
+                    child: Text(AppLocalizations.of(context)!.student_loan),
                   ),
                   DropdownMenuItem(
                     value: 'subscription',
-                    child: Text('Langganan'),
+                    child: Text(AppLocalizations.of(context)!.subscription),
                   ),
-                  DropdownMenuItem(value: 'other', child: Text('Lainnya')),
+                  DropdownMenuItem(
+                    value: 'other',
+                    child: Text(AppLocalizations.of(context)!.other),
+                  ),
                 ],
                 onChanged: (value) {
                   if (value != null) {
@@ -320,7 +351,7 @@ class _AddObligationModalState extends State<AddObligationModal> {
                 keyboardType: TextInputType.number,
                 style: const TextStyle(color: Colors.white),
                 decoration: InputDecoration(
-                  labelText: 'Jumlah Bulanan (Rp)',
+                  labelText: AppLocalizations.of(context)!.monthly_amount_rp,
                   labelStyle: TextStyle(color: Colors.grey[400]),
                   filled: true,
                   fillColor: const Color(0xFF1A1A1A),
@@ -339,7 +370,7 @@ class _AddObligationModalState extends State<AddObligationModal> {
                 dropdownColor: const Color(0xFF1A1A1A),
                 style: const TextStyle(color: Colors.white),
                 decoration: InputDecoration(
-                  labelText: 'Jatuh Tempo (Tanggal)',
+                  labelText: AppLocalizations.of(context)!.due_date_day,
                   labelStyle: TextStyle(color: Colors.grey[400]),
                   filled: true,
                   fillColor: const Color(0xFF1A1A1A),
@@ -372,7 +403,10 @@ class _AddObligationModalState extends State<AddObligationModal> {
                   keyboardType: TextInputType.number,
                   style: const TextStyle(color: Colors.white),
                   decoration: InputDecoration(
-                    labelText: 'Jumlah Awal Hutang (Opsional)',
+                    labelText:
+                        AppLocalizations.of(
+                          context,
+                        )!.original_debt_amount_optional,
                     labelStyle: TextStyle(color: Colors.grey[400]),
                     filled: true,
                     fillColor: const Color(0xFF1A1A1A),
@@ -388,7 +422,8 @@ class _AddObligationModalState extends State<AddObligationModal> {
                   keyboardType: TextInputType.number,
                   style: const TextStyle(color: Colors.white),
                   decoration: InputDecoration(
-                    labelText: 'Saldo Saat Ini (Opsional)',
+                    labelText:
+                        AppLocalizations.of(context)!.current_balance_optional,
                     labelStyle: TextStyle(color: Colors.grey[400]),
                     filled: true,
                     fillColor: const Color(0xFF1A1A1A),
@@ -404,7 +439,10 @@ class _AddObligationModalState extends State<AddObligationModal> {
                   keyboardType: TextInputType.number,
                   style: const TextStyle(color: Colors.white),
                   decoration: InputDecoration(
-                    labelText: 'Bunga (%) (Opsional)',
+                    labelText:
+                        AppLocalizations.of(
+                          context,
+                        )!.interest_rate_percent_optional,
                     labelStyle: TextStyle(color: Colors.grey[400]),
                     filled: true,
                     fillColor: const Color(0xFF1A1A1A),
@@ -420,7 +458,8 @@ class _AddObligationModalState extends State<AddObligationModal> {
                   keyboardType: TextInputType.number,
                   style: const TextStyle(color: Colors.white),
                   decoration: InputDecoration(
-                    labelText: 'Pembayaran Minimum (Opsional)',
+                    labelText:
+                        AppLocalizations.of(context)!.minimum_payment_optional,
                     labelStyle: TextStyle(color: Colors.grey[400]),
                     filled: true,
                     fillColor: const Color(0xFF1A1A1A),
@@ -440,7 +479,8 @@ class _AddObligationModalState extends State<AddObligationModal> {
                   dropdownColor: const Color(0xFF1A1A1A),
                   style: const TextStyle(color: Colors.white),
                   decoration: InputDecoration(
-                    labelText: 'Siklus Langganan',
+                    labelText:
+                        AppLocalizations.of(context)!.subscription_cycle_label,
                     labelStyle: TextStyle(color: Colors.grey[400]),
                     filled: true,
                     fillColor: const Color(0xFF1A1A1A),
@@ -449,10 +489,19 @@ class _AddObligationModalState extends State<AddObligationModal> {
                       borderSide: BorderSide.none,
                     ),
                   ),
-                  items: const [
-                    DropdownMenuItem(value: 'monthly', child: Text('Bulanan')),
-                    DropdownMenuItem(value: 'yearly', child: Text('Tahunan')),
-                    DropdownMenuItem(value: 'weekly', child: Text('Mingguan')),
+                  items: [
+                    DropdownMenuItem(
+                      value: 'monthly',
+                      child: Text(AppLocalizations.of(context)!.monthly),
+                    ),
+                    DropdownMenuItem(
+                      value: 'yearly',
+                      child: Text(AppLocalizations.of(context)!.yearly),
+                    ),
+                    DropdownMenuItem(
+                      value: 'weekly',
+                      child: Text(AppLocalizations.of(context)!.weekly),
+                    ),
                   ],
                   onChanged: (value) {
                     setState(() {
@@ -486,7 +535,9 @@ class _AddObligationModalState extends State<AddObligationModal> {
                           ),
                         )
                         : Text(
-                          _isEdit ? 'Simpan Perubahan' : 'Tambah Kewajiban',
+                          _isEdit
+                              ? AppLocalizations.of(context)!.save_changes
+                              : AppLocalizations.of(context)!.add_obligation,
                         ),
               ),
               const SizedBox(height: 20),

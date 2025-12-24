@@ -5,6 +5,7 @@ import 'package:financial_app/services/pin_auth_service.dart';
 import 'package:financial_app/services/error_handler_service.dart';
 import 'package:financial_app/services/logger_service.dart';
 import 'package:financial_app/widgets/auth/pin_pad.dart';
+import 'package:financial_app/l10n/app_localizations.dart';
 
 class PinSetupScreen extends StatefulWidget {
   const PinSetupScreen({super.key});
@@ -143,7 +144,9 @@ class _PinSetupScreenState extends State<PinSetupScreen> {
 
                       // Title
                       Text(
-                        _isConfirmStep ? 'Konfirmasi PIN' : 'Buat PIN',
+                        _isConfirmStep
+                            ? AppLocalizations.of(context)!.confirm_pin
+                            : AppLocalizations.of(context)!.create_pin,
                         style: GoogleFonts.poppins(
                           color: Colors.white,
                           fontSize: 28,
@@ -155,8 +158,10 @@ class _PinSetupScreenState extends State<PinSetupScreen> {
                       // Subtitle
                       Text(
                         _isConfirmStep
-                            ? 'Masukkan PIN sekali lagi untuk konfirmasi'
-                            : 'Buat PIN untuk mengamankan akun Anda',
+                            ? AppLocalizations.of(context)!.enter_pin_again
+                            : AppLocalizations.of(
+                              context,
+                            )!.create_pin_to_secure,
                         style: GoogleFonts.poppins(
                           color: Colors.grey[400],
                           fontSize: 14,
@@ -168,7 +173,7 @@ class _PinSetupScreenState extends State<PinSetupScreen> {
                       // PIN Length Selection (only on first step)
                       if (!_isConfirmStep) ...[
                         Text(
-                          'Pilih Panjang PIN',
+                          AppLocalizations.of(context)!.select_pin_length,
                           style: GoogleFonts.poppins(
                             color: Colors.white,
                             fontSize: 16,
@@ -214,7 +219,7 @@ class _PinSetupScreenState extends State<PinSetupScreen> {
                             const SizedBox(width: 12),
                             Expanded(
                               child: Text(
-                                'Gunakan PIN ini untuk membuka aplikasi dengan cepat setiap kali Anda masuk',
+                                AppLocalizations.of(context)!.use_pin_to_unlock,
                                 style: GoogleFonts.poppins(
                                   color: Colors.grey[400],
                                   fontSize: 12,

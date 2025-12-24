@@ -6,6 +6,7 @@ import 'package:financial_app/services/notification_service.dart';
 import 'package:financial_app/services/notification_history_service.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:intl/intl.dart';
+import 'package:financial_app/l10n/app_localizations.dart';
 
 class NotificationCenterScreen extends StatefulWidget {
   const NotificationCenterScreen({super.key});
@@ -114,7 +115,7 @@ class _NotificationCenterScreenState extends State<NotificationCenterScreen>
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
-          'Notifikasi',
+          AppLocalizations.of(context)!.notifications,
           style: GoogleFonts.poppins(
             color: Colors.white,
             fontSize: 20,
@@ -129,7 +130,7 @@ class _NotificationCenterScreenState extends State<NotificationCenterScreen>
                 _loadData();
               },
               child: Text(
-                'Tandai Semua',
+                AppLocalizations.of(context)!.mark_all,
                 style: GoogleFonts.poppins(
                   color: const Color(0xFF8B5FBF),
                   fontSize: 13,
@@ -146,10 +147,10 @@ class _NotificationCenterScreenState extends State<NotificationCenterScreen>
             fontSize: 14,
             fontWeight: FontWeight.w600,
           ),
-          tabs: const [
-            Tab(text: 'Riwayat'),
-            Tab(text: 'Terjadwal'),
-            Tab(text: 'Pengaturan'),
+          tabs: [
+            Tab(text: AppLocalizations.of(context)!.history),
+            Tab(text: AppLocalizations.of(context)!.scheduled),
+            Tab(text: AppLocalizations.of(context)!.settings),
           ],
         ),
       ),
@@ -178,12 +179,12 @@ class _NotificationCenterScreenState extends State<NotificationCenterScreen>
             const Icon(Iconsax.notification, size: 80, color: Colors.grey),
             const SizedBox(height: 16),
             Text(
-              'Belum ada notifikasi',
+              AppLocalizations.of(context)!.no_notifications_yet,
               style: GoogleFonts.poppins(color: Colors.grey, fontSize: 16),
             ),
             const SizedBox(height: 8),
             Text(
-              'Notifikasi akan muncul di sini',
+              AppLocalizations.of(context)!.notifications_will_appear_here,
               style: GoogleFonts.poppins(color: Colors.grey[600], fontSize: 13),
             ),
           ],
@@ -227,9 +228,11 @@ class _NotificationCenterScreenState extends State<NotificationCenterScreen>
                 .then((_) {
                   if (mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Notifikasi dihapus'),
-                        duration: Duration(seconds: 2),
+                      SnackBar(
+                        content: Text(
+                          AppLocalizations.of(context)!.notification_deleted,
+                        ),
+                        duration: const Duration(seconds: 2),
                       ),
                     );
                   }
@@ -240,7 +243,9 @@ class _NotificationCenterScreenState extends State<NotificationCenterScreen>
                     _loadData();
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                        content: Text('Gagal menghapus: $e'),
+                        content: Text(
+                          '${AppLocalizations.of(context)!.failed_to_delete_notification}: $e',
+                        ),
                         backgroundColor: Colors.red,
                       ),
                     );
@@ -361,7 +366,7 @@ class _NotificationCenterScreenState extends State<NotificationCenterScreen>
                 const Icon(Iconsax.calendar, size: 80, color: Colors.grey),
                 const SizedBox(height: 16),
                 Text(
-                  'Tidak ada notifikasi terjadwal',
+                  AppLocalizations.of(context)!.no_scheduled_notifications,
                   style: GoogleFonts.poppins(color: Colors.grey, fontSize: 16),
                 ),
               ],
@@ -406,7 +411,8 @@ class _NotificationCenterScreenState extends State<NotificationCenterScreen>
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          notification.title ?? 'Notifikasi',
+                          notification.title ??
+                              AppLocalizations.of(context)!.notifications,
                           style: GoogleFonts.poppins(
                             color: Colors.white,
                             fontSize: 14,
@@ -444,7 +450,13 @@ class _NotificationCenterScreenState extends State<NotificationCenterScreen>
                       );
                       setState(() {});
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Notifikasi dibatalkan')),
+                        SnackBar(
+                          content: Text(
+                            AppLocalizations.of(
+                              context,
+                            )!.notification_cancelled,
+                          ),
+                        ),
                       );
                     },
                   ),
@@ -473,7 +485,8 @@ class _NotificationCenterScreenState extends State<NotificationCenterScreen>
         _buildSettingTile(
           icon: Iconsax.warning_2,
           title: 'Peringatan Budget',
-          subtitle: 'Notifikasi saat budget hampir/sudah habis',
+          subtitle:
+              AppLocalizations.of(context)!.notifications_budget_almost_empty,
           value: _budgetAlertsEnabled,
           onChanged: (value) {
             setState(() => _budgetAlertsEnabled = value);
@@ -483,7 +496,7 @@ class _NotificationCenterScreenState extends State<NotificationCenterScreen>
         _buildSettingTile(
           icon: Iconsax.receipt,
           title: 'Pengingat Tagihan',
-          subtitle: 'Notifikasi tagihan yang akan jatuh tempo',
+          subtitle: AppLocalizations.of(context)!.notifications_bills_due,
           value: _billRemindersEnabled,
           onChanged: (value) {
             setState(() => _billRemindersEnabled = value);
@@ -493,7 +506,8 @@ class _NotificationCenterScreenState extends State<NotificationCenterScreen>
         _buildSettingTile(
           icon: Iconsax.flag,
           title: 'Pencapaian Tujuan',
-          subtitle: 'Notifikasi progress dan pencapaian tujuan',
+          subtitle:
+              AppLocalizations.of(context)!.notifications_progress_achievements,
           value: _goalNotificationsEnabled,
           onChanged: (value) {
             setState(() => _goalNotificationsEnabled = value);
@@ -525,8 +539,8 @@ class _NotificationCenterScreenState extends State<NotificationCenterScreen>
           title: 'Ringkasan Harian',
           subtitle:
               _dailySummaryEnabled
-                  ? 'Setiap hari pukul ${_dailySummaryHour}:00'
-                  : 'Ringkasan transaksi harian',
+                  ? '${AppLocalizations.of(context)!.every_day_at} ${_dailySummaryHour}:00'
+                  : AppLocalizations.of(context)!.view_today_financial_activity,
           value: _dailySummaryEnabled,
           onChanged: (value) async {
             setState(() => _dailySummaryEnabled = value);
@@ -536,7 +550,8 @@ class _NotificationCenterScreenState extends State<NotificationCenterScreen>
               await _notificationService.scheduleDailyNotification(
                 id: 999,
                 title: '📊 Ringkasan Harian',
-                body: 'Lihat aktivitas keuangan Anda hari ini',
+                body:
+                    AppLocalizations.of(context)!.view_today_financial_activity,
                 time: NotificationServiceTimeOfDay(
                   hour: _dailySummaryHour,
                   minute: 0,
@@ -571,7 +586,7 @@ class _NotificationCenterScreenState extends State<NotificationCenterScreen>
               const SizedBox(width: 12),
               Expanded(
                 child: Text(
-                  'Notifikasi membantu Anda tetap update dengan keuangan',
+                  AppLocalizations.of(context)!.notifications_help_stay_updated,
                   style: GoogleFonts.poppins(
                     color: Colors.grey[400],
                     fontSize: 12,
@@ -590,18 +605,20 @@ class _NotificationCenterScreenState extends State<NotificationCenterScreen>
                   (context) => AlertDialog(
                     backgroundColor: const Color(0xFF1A1A1A),
                     title: Text(
-                      'Hapus Riwayat?',
+                      AppLocalizations.of(context)!.delete_history_question,
                       style: GoogleFonts.poppins(color: Colors.white),
                     ),
                     content: Text(
-                      'Semua riwayat notifikasi akan dihapus',
+                      AppLocalizations.of(
+                        context,
+                      )!.delete_notification_history_message,
                       style: GoogleFonts.poppins(color: Colors.grey[400]),
                     ),
                     actions: [
                       TextButton(
                         onPressed: () => Navigator.pop(context, false),
                         child: Text(
-                          'Batal',
+                          AppLocalizations.of(context)!.cancel,
                           style: GoogleFonts.poppins(color: Colors.grey),
                         ),
                       ),
@@ -611,7 +628,7 @@ class _NotificationCenterScreenState extends State<NotificationCenterScreen>
                           backgroundColor: Colors.red,
                         ),
                         child: Text(
-                          'Hapus',
+                          AppLocalizations.of(context)!.delete,
                           style: GoogleFonts.poppins(color: Colors.white),
                         ),
                       ),
@@ -624,7 +641,13 @@ class _NotificationCenterScreenState extends State<NotificationCenterScreen>
               _loadData();
               if (mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Riwayat notifikasi dihapus')),
+                  SnackBar(
+                    content: Text(
+                      AppLocalizations.of(
+                        context,
+                      )!.notification_history_deleted,
+                    ),
+                  ),
                 );
               }
             }
@@ -634,7 +657,7 @@ class _NotificationCenterScreenState extends State<NotificationCenterScreen>
             padding: const EdgeInsets.symmetric(vertical: 16),
           ),
           child: Text(
-            'Hapus Semua Riwayat',
+            AppLocalizations.of(context)!.delete_all_history,
             style: GoogleFonts.poppins(
               color: Colors.red,
               fontWeight: FontWeight.w600,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
+import 'package:financial_app/l10n/app_localizations.dart';
 
 /// Beautiful empty state widget with icon, message, and optional action
 class EmptyState extends StatelessWidget {
@@ -107,97 +108,106 @@ class EmptyState extends StatelessWidget {
 /// Pre-configured empty states for common scenarios
 class EmptyStates {
   /// No transactions
-  static Widget noTransactions(VoidCallback onAdd) {
+  static Widget noTransactions(VoidCallback onAdd, BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return EmptyState(
       icon: Iconsax.wallet,
-      title: 'Belum Ada Transaksi',
-      subtitle: 'Mulai catat pengeluaran dan pemasukan Anda',
-      actionText: 'Tambah Transaksi',
+      title: l10n?.no_transactions_title ?? 'Belum Ada Transaksi',
+      subtitle: l10n?.no_transactions_subtitle ?? 'Mulai catat pengeluaran dan pemasukan Anda',
+      actionText: l10n?.add_transaction ?? 'Tambah Transaksi',
       onAction: onAdd,
     );
   }
 
   /// No budgets
-  static Widget noBudgets(VoidCallback onAdd) {
+  static Widget noBudgets(VoidCallback onAdd, BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return EmptyState(
       icon: Iconsax.chart,
-      title: 'Belum Ada Budget',
-      subtitle: 'Atur budget untuk mengontrol pengeluaran Anda',
-      actionText: 'Buat Budget',
+      title: l10n?.no_budgets_title ?? 'Belum Ada Budget',
+      subtitle: l10n?.no_budgets_subtitle ?? 'Atur budget untuk mengontrol pengeluaran Anda',
+      actionText: l10n?.create_budget ?? 'Buat Budget',
       onAction: onAdd,
     );
   }
 
   /// No goals
-  static Widget noGoals(VoidCallback onAdd) {
+  static Widget noGoals(VoidCallback onAdd, BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return EmptyState(
       icon: Iconsax.flag,
-      title: 'Belum Ada Target',
-      subtitle: 'Tetapkan target keuangan dan capai impian Anda',
-      actionText: 'Tambah Target',
+      title: l10n?.no_goals_title ?? 'Belum Ada Target',
+      subtitle: l10n?.no_goals_subtitle ?? 'Tetapkan target keuangan dan capai impian Anda',
+      actionText: l10n?.add_target ?? 'Tambah Target',
       onAction: onAdd,
     );
   }
 
   /// No notifications
-  static Widget noNotifications() {
+  static Widget noNotifications(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return EmptyState(
       icon: Iconsax.notification,
-      title: 'Belum Ada Notifikasi',
-      subtitle: 'Notifikasi Anda akan muncul di sini',
+      title: l10n?.no_notifications_title ?? 'Belum Ada Notifikasi',
+      subtitle: l10n?.no_notifications_subtitle ?? 'Notifikasi Anda akan muncul di sini',
     );
   }
 
   /// No search results
-  static Widget noSearchResults() {
+  static Widget noSearchResults(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return EmptyState(
       icon: Iconsax.search_normal,
-      title: 'Tidak Ada Hasil',
-      subtitle: 'Coba kata kunci lain atau filter berbeda',
+      title: l10n?.no_search_results_title ?? 'Tidak Ada Hasil',
+      subtitle: l10n?.no_search_results_subtitle ?? 'Coba kata kunci lain atau filter berbeda',
     );
   }
 
   /// No obligations
-  static Widget noObligations(VoidCallback onAdd) {
+  static Widget noObligations(VoidCallback onAdd, BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return EmptyState(
       icon: Iconsax.receipt_text,
-      title: 'Belum Ada Kewajiban',
-      subtitle: 'Catat tagihan dan subscription Anda',
-      actionText: 'Tambah Kewajiban',
+      title: l10n?.no_obligations_title ?? 'Belum Ada Kewajiban',
+      subtitle: l10n?.no_obligations_subtitle ?? 'Catat tagihan dan subscription Anda',
+      actionText: l10n?.add_obligation ?? 'Tambah Kewajiban',
       onAction: onAdd,
     );
   }
 
   /// No recurring transactions
-  static Widget noRecurringTransactions(VoidCallback onAdd) {
+  static Widget noRecurringTransactions(VoidCallback onAdd, BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return EmptyState(
       icon: Iconsax.repeat,
-      title: 'Belum Ada Transaksi Berulang',
-      subtitle: 'Otomatis catat transaksi yang terjadi secara rutin',
-      actionText: 'Tambah Transaksi Berulang',
+      title: l10n?.no_recurring_transactions_title ?? 'Belum Ada Transaksi Berulang',
+      subtitle: l10n?.no_recurring_transactions_subtitle ?? 'Otomatis catat transaksi yang terjadi secara rutin',
+      actionText: l10n?.add_recurring_transaction ?? 'Tambah Transaksi Berulang',
       onAction: onAdd,
     );
   }
 
   /// Network error
-  static Widget networkError(VoidCallback onRetry) {
+  static Widget networkError(VoidCallback onRetry, BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return EmptyState(
       icon: Iconsax.wifi,
-      title: 'Tidak Ada Koneksi',
-      subtitle: 'Periksa koneksi internet Anda dan coba lagi',
-      actionText: 'Coba Lagi',
+      title: l10n?.no_connection_title ?? 'Tidak Ada Koneksi',
+      subtitle: l10n?.no_connection_subtitle ?? 'Periksa koneksi internet Anda dan coba lagi',
+      actionText: l10n?.try_again ?? 'Coba Lagi',
       onAction: onRetry,
       iconColor: Colors.orange,
     );
   }
 
   /// Server error
-  static Widget serverError(VoidCallback onRetry) {
+  static Widget serverError(VoidCallback onRetry, BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return EmptyState(
       icon: Iconsax.warning_2,
-      title: 'Terjadi Kesalahan',
-      subtitle: 'Server sedang bermasalah. Coba lagi dalam beberapa saat',
-      actionText: 'Coba Lagi',
+      title: l10n?.server_error_title ?? 'Terjadi Kesalahan',
+      subtitle: l10n?.server_error_subtitle ?? 'Server sedang bermasalah. Coba lagi dalam beberapa saat',
+      actionText: l10n?.try_again ?? 'Coba Lagi',
       onAction: onRetry,
       iconColor: Colors.red,
     );

@@ -9,6 +9,7 @@ import 'package:financial_app/services/error_handler_service.dart';
 import 'package:financial_app/services/logger_service.dart';
 import 'package:financial_app/widgets/auth/pin_pad.dart';
 import 'package:local_auth/local_auth.dart';
+import 'package:financial_app/l10n/app_localizations.dart';
 
 class PinUnlockScreen extends StatefulWidget {
   const PinUnlockScreen({super.key});
@@ -49,7 +50,7 @@ class _PinUnlockScreenState extends State<PinUnlockScreen> {
       final pinLength = await _pinAuthService.getPinLength();
       final remaining = await _pinAuthService.getRemainingAttempts();
       final lockTime = await _pinAuthService.getLockRemainingTime();
-      
+
       // Check biometric availability
       final biometricAvailable = await _biometricService.isAvailable();
       final biometricEnabled = await _biometricService.isBiometricEnabled();
@@ -73,19 +74,19 @@ class _PinUnlockScreenState extends State<PinUnlockScreen> {
       setState(() => _isLoading = false);
     }
   }
-  
+
   Future<void> _tryBiometricAuth() async {
     if (_lockDuration != null || _isVerifying) return;
-    
+
     setState(() => _isVerifying = true);
-    
+
     try {
       final authenticated = await _biometricService.authenticate(
         reason: 'Autentikasi diperlukan untuk membuka aplikasi',
         useErrorDialogs: true,
         stickyAuth: true,
       );
-      
+
       if (authenticated && mounted) {
         // Biometric authentication successful, navigate to home
         Navigator.of(context).pushReplacementNamed('/home');
@@ -198,14 +199,14 @@ class _PinUnlockScreenState extends State<PinUnlockScreen> {
               style: GoogleFonts.poppins(color: Colors.white),
             ),
             content: Text(
-              'Anda perlu login kembali dengan email dan password.',
+              AppLocalizations.of(context)!.you_need_to_login_again,
               style: GoogleFonts.poppins(color: Colors.grey[400]),
             ),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context, false),
                 child: Text(
-                  'Batal',
+                  AppLocalizations.of(context)!.cancel,
                   style: GoogleFonts.poppins(color: Colors.grey),
                 ),
               ),
@@ -213,7 +214,7 @@ class _PinUnlockScreenState extends State<PinUnlockScreen> {
                 onPressed: () => Navigator.pop(context, true),
                 style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
                 child: Text(
-                  'Logout',
+                  AppLocalizations.of(context)!.logout,
                   style: GoogleFonts.poppins(color: Colors.white),
                 ),
               ),
@@ -267,7 +268,7 @@ class _PinUnlockScreenState extends State<PinUnlockScreen> {
 
               // Title
               Text(
-                'Masukkan PIN',
+                AppLocalizations.of(context)!.enter_pin,
                 style: GoogleFonts.poppins(
                   color: Colors.white,
                   fontSize: 28,
@@ -279,8 +280,8 @@ class _PinUnlockScreenState extends State<PinUnlockScreen> {
               // Subtitle
               Text(
                 _lockDuration != null
-                    ? 'Tunggu ${_formatDuration(_lockDuration!)}'
-                    : 'Masukkan PIN untuk membuka aplikasi',
+                    ? '${AppLocalizations.of(context)!.wait} ${_formatDuration(_lockDuration!)}'
+                    : AppLocalizations.of(context)!.enter_pin_to_unlock,
                 style: GoogleFonts.poppins(
                   color:
                       _lockDuration != null
@@ -291,38 +292,42 @@ class _PinUnlockScreenState extends State<PinUnlockScreen> {
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 40),
-              
+
               // Biometric Authentication Button
-              if (_biometricAvailable && _biometricEnabled && _lockDuration == null)
+              if (_biometricAvailable &&
+                  _biometricEnabled &&
+                  _lockDuration == null)
                 Padding(
                   padding: const EdgeInsets.only(bottom: 24),
                   child: FutureBuilder<List<BiometricType>>(
                     future: _biometricService.getAvailableBiometrics(),
                     builder: (context, snapshot) {
                       if (!snapshot.hasData) return const SizedBox.shrink();
-                      
+
                       final biometrics = snapshot.data!;
-                      final hasFingerprint = biometrics.contains(BiometricType.fingerprint);
+                      final hasFingerprint = biometrics.contains(
+                        BiometricType.fingerprint,
+                      );
                       final hasFace = biometrics.contains(BiometricType.face);
                       final hasIris = biometrics.contains(BiometricType.iris);
-                      
+
                       IconData icon;
                       String label;
-                      
+
                       if (hasFace) {
                         icon = Iconsax.scan_barcode;
-                        label = 'Gunakan Face ID';
+                        label = AppLocalizations.of(context)!.use_face_id;
                       } else if (hasFingerprint) {
                         icon = Iconsax.finger_scan;
-                        label = 'Gunakan Fingerprint';
+                        label = AppLocalizations.of(context)!.use_fingerprint;
                       } else if (hasIris) {
                         icon = Iconsax.scan;
-                        label = 'Gunakan Iris';
+                        label = AppLocalizations.of(context)!.use_iris;
                       } else {
                         icon = Iconsax.scan_barcode;
-                        label = 'Gunakan Biometric';
+                        label = AppLocalizations.of(context)!.use_biometric;
                       }
-                      
+
                       return ElevatedButton.icon(
                         onPressed: _isVerifying ? null : _tryBiometricAuth,
                         icon: Icon(icon, size: 20),
@@ -396,7 +401,7 @@ class _PinUnlockScreenState extends State<PinUnlockScreen> {
               TextButton(
                 onPressed: _logout,
                 child: Text(
-                  'Lupa PIN? Logout',
+                  AppLocalizations.of(context)!.forgot_pin_logout,
                   style: GoogleFonts.poppins(
                     color: const Color(0xFF8B5FBF),
                     fontSize: 14,

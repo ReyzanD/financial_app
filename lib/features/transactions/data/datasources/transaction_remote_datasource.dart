@@ -1,4 +1,5 @@
 import 'package:financial_app/services/api/transaction_api.dart';
+import 'package:financial_app/widgets/transactions/transaction_list.dart';
 
 /// Transaction Remote Data Source (Data Layer)
 class TransactionRemoteDataSource {
@@ -16,10 +17,13 @@ class TransactionRemoteDataSource {
       endDate: endDate?.toIso8601String(),
       limit: limit,
     );
-    return result.map((t) => t as Map<String, dynamic>).toList();
+    final transactions = result['transactions'] as List;
+    return transactions.map((t) => t as Map<String, dynamic>).toList();
   }
 
-  Future<Map<String, dynamic>> createTransaction(Map<String, dynamic> data) async {
+  Future<Map<String, dynamic>> createTransaction(
+    Map<String, dynamic> data,
+  ) async {
     return await TransactionApi.addTransaction(data);
   }
 
@@ -34,4 +38,3 @@ class TransactionRemoteDataSource {
     await TransactionApi.deleteTransaction(id);
   }
 }
-

@@ -13,8 +13,9 @@ class AIRecommendations extends StatefulWidget {
 
 class _AIRecommendationsState extends State<AIRecommendations> {
   final AIService _aiService = AIService();
-  Map<String, dynamic>? _recommendations;
+  List<Map<String, dynamic>> _recommendations = [];
   bool _isLoading = true;
+  int _currentIndex = 0;
 
   @override
   void initState() {
@@ -37,11 +38,12 @@ class _AIRecommendationsState extends State<AIRecommendations> {
         return;
       }
 
-      final recommendations = await _aiService.generateRecommendations();
+      final recommendations = await _aiService.generateMultipleRecommendations(limit: 5);
       if (mounted) {
         setState(() {
           _recommendations = recommendations;
           _isLoading = false;
+          _currentIndex = 0;
         });
       }
     } catch (e) {
@@ -96,12 +98,32 @@ class _AIRecommendationsState extends State<AIRecommendations> {
       );
     }
 
-    final recommendation =
-        _recommendations?['recommendation'] ??
-        'Belum ada rekomendasi AI tersedia';
-    final savings = (_recommendations?['potential_savings'] ?? 0).toDouble();
-    final priority = _recommendations?['priority'];
-    final category = _recommendations?['category'];
+    if (_recommendations.isEmpty) {
+      return Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: const Color(0xFF1A1A1A),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: const Color(0xFF8B5FBF).withOpacity(0.3)),
+        ),
+        child: Center(
+          child: Text(
+            'Belum ada rekomendasi AI tersedia',
+            style: GoogleFonts.poppins(
+              color: Colors.grey[500],
+              fontSize: 13,
+            ),
+          ),
+        ),
+      );
+    }
+
+    final currentRec = _recommendations[_currentIndex];
+    final recommendation = currentRec['recommendation'] ?? 'Belum ada rekomendasi AI tersedia';
+    final savings = (currentRec['potential_savings'] ?? 0).toDouble();
+    final priority = currentRec['priority'];
+    final category = currentRec['category'];
+    final action = currentRec['action'] as String?;
 
     final priorityColor = _getPriorityColor(priority);
     final priorityIcon = _getPriorityIcon(priority);
@@ -239,7 +261,66 @@ class _AIRecommendationsState extends State<AIRecommendations> {
               ),
             ),
           ],
-          const SizedBox(height: 12),
+          if (_recommendations.length > 1) ...[
+            const SizedBox(height: 12),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                if (_currentIndex > 0)
+                  IconButton(
+                    icon: const Icon(Icons.chevron_left, color: Colors.white70),
+                    onPressed: () {
+                      setState(() {
+                        _currentIndex = (_currentIndex - 1) % _recommendations.length;
+                      });
+                    },
+                    iconSize: 20,
+                  ),
+                Text(
+                  '${_currentIndex + 1} / ${_recommendations.length}',
+                  style: GoogleFonts.poppins(
+                    color: Colors.grey[500],
+                    fontSize: 11,
+                  ),
+                ),
+                if (_currentIndex < _recommendations.length - 1)
+                  IconButton(
+                    icon: const Icon(Icons.chevron_right, color: Colors.white70),
+                    onPressed: () {
+                      setState(() {
+                        _currentIndex = (_currentIndex + 1) % _recommendations.length;
+                      });
+                    },
+                    iconSize: 20,
+                  ),
+              ],
+            ),
+          ],
+          if (action != null) ...[
+            const SizedBox(height: 12),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () => _handleAction(action, currentRec),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: priorityColor,
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                child: Text(
+                  _getActionLabel(action),
+                  style: GoogleFonts.poppins(
+                    color: Colors.white,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ),
+          ],
+          const SizedBox(height: 8),
           GestureDetector(
             onTap: _loadAIRecommendations,
             child: Row(
@@ -258,6 +339,50 @@ class _AIRecommendationsState extends State<AIRecommendations> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  String _getActionLabel(String action) {
+    switch (action) {
+      case 'review_budget':
+        return 'Tinjau Budget';
+      case 'create_budget':
+        return 'Buat Budget';
+      case 'set_goal':
+        return 'Buat Goal';
+      case 'review_spending':
+        return 'Tinjau Pengeluaran';
+      case 'plan_spending':
+        return 'Rencanakan Pengeluaran';
+      case 'review_subscriptions':
+        return 'Tinjau Langganan';
+      case 'view_obligations':
+        return 'Lihat Tagihan';
+      case 'view_goal':
+        return 'Lihat Goal';
+      case 'view_investment':
+        return 'Lihat Investasi';
+      default:
+        return 'Tindakan';
+    }
+  }
+
+  void _handleAction(String action, Map<String, dynamic> recommendation) {
+    // Track feedback
+    _aiService.trackRecommendationFeedback(
+      recommendationId: recommendation['category'] ?? 'unknown',
+      recommendationType: recommendation['category'] ?? 'general',
+      action: 'acted_on',
+    );
+
+    // Navigate based on action
+    // Note: This would need proper navigation context
+    // For now, just show a snackbar
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Aksi: ${_getActionLabel(action)}'),
+        duration: const Duration(seconds: 2),
       ),
     );
   }

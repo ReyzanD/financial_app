@@ -396,7 +396,80 @@ class ApiService {
   }
 
   Future<Map<String, dynamic>> getBudgetsSummary() async {
-    return await BudgetApi.getBudgetAnalytics();
+    try {
+      // Try to get analytics from backend
+      return await BudgetApi.getBudgetAnalytics();
+    } catch (e) {
+      // If endpoint doesn't exist (404) or other error, calculate summary from budgets
+      final errorStr = e.toString().toLowerCase();
+      if (errorStr.contains('404') || errorStr.contains('not found')) {
+        LoggerService.debug(
+          'Budget analytics endpoint not found (404), calculating from budgets',
+        );
+      } else {
+        LoggerService.warning(
+          'Budget analytics endpoint error, calculating from budgets',
+          error: e,
+        );
+      }
+
+      try {
+        final budgets = await getBudgets();
+        final summary = _calculateBudgetsSummary(budgets);
+        LoggerService.debug(
+          'Calculated budgets summary: ${summary['total_budgets']} budgets, '
+          '${summary['active_budgets']} active',
+        );
+        return summary;
+      } catch (e2) {
+        LoggerService.error('Error calculating budgets summary', error: e2);
+        // Return empty summary as fallback
+        return {
+          'total_budgets': 0,
+          'total_amount': 0.0,
+          'total_spent': 0.0,
+          'total_remaining': 0.0,
+          'over_budget_count': 0,
+          'active_budgets': 0,
+          'average_usage_percent': 0.0,
+        };
+      }
+    }
+  }
+
+  /// Calculate budgets summary from budgets list
+  Map<String, dynamic> _calculateBudgetsSummary(List<dynamic> budgets) {
+    double totalAmount = 0.0;
+    double totalSpent = 0.0;
+    int overBudgetCount = 0;
+    int activeBudgets = 0;
+
+    for (var budget in budgets) {
+      final amount = ((budget['amount'] as num?)?.toDouble() ?? 0.0);
+      final spent = ((budget['spent'] as num?)?.toDouble() ?? 0.0);
+      final isActive = budget['is_active'] as bool? ?? true;
+
+      if (isActive) {
+        activeBudgets++;
+        totalAmount += amount;
+        totalSpent += spent;
+        if (spent > amount) {
+          overBudgetCount++;
+        }
+      }
+    }
+
+    return {
+      'total_budgets': budgets.length,
+      'total_amount': totalAmount,
+      'total_spent': totalSpent,
+      'total_remaining': totalAmount - totalSpent,
+      'over_budget_count': overBudgetCount,
+      'active_budgets': activeBudgets,
+      'average_usage_percent': totalAmount > 0
+          ? (totalSpent / totalAmount) * 100
+          : 0.0,
+    };
   }
 
   // AI Recommendations

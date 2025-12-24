@@ -21,11 +21,11 @@ class BudgetCategoryCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final categoryName = category['name'] as String;
-    final currentPercentage =
-        editedPercentages[categoryName]?.toInt() ?? category['percentage'] as int;
+    final currentPercentage = editedPercentages[categoryName]?.toInt() ??
+        ((category['percentage'] as num?)?.toInt() ?? 0);
     final currentAmount = editedPercentages[categoryName] != null
         ? totalIncome * (editedPercentages[categoryName]! / 100)
-        : category['amount'] as double;
+        : ((category['amount'] as num?)?.toDouble() ?? 0.0);
 
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
@@ -124,7 +124,7 @@ class BudgetCategoryCard extends StatelessWidget {
                 children: [
                   const Divider(color: Colors.grey),
                   const SizedBox(height: 8),
-                  ...(category['subcategories'] as List).map(
+                  ...((category['subcategories'] as List?) ?? <dynamic>[]).map(
                     (sub) => Padding(
                       padding: const EdgeInsets.symmetric(vertical: 6),
                       child: Row(
@@ -158,7 +158,9 @@ class BudgetCategoryCard extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
                               Text(
-                                CurrencyFormatter.formatRupiah(sub['amount'] as double),
+                                CurrencyFormatter.formatRupiah(
+                                  ((sub['amount'] as num?)?.toDouble() ?? 0.0),
+                                ),
                                 style: GoogleFonts.poppins(
                                   color: Colors.white,
                                   fontSize: 13,

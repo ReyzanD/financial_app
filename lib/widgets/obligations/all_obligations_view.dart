@@ -3,10 +3,13 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:financial_app/models/financial_obligation.dart';
 import 'package:financial_app/services/obligation_service.dart';
 import 'package:financial_app/widgets/obligations/obligation_helpers.dart';
+import 'package:financial_app/l10n/app_localizations.dart';
 import 'obligation_item.dart';
 
 class AllObligationsView extends StatefulWidget {
-  const AllObligationsView({super.key});
+  final String searchQuery;
+
+  const AllObligationsView({super.key, this.searchQuery = ''});
 
   @override
   State<AllObligationsView> createState() => _AllObligationsViewState();
@@ -45,7 +48,7 @@ class _AllObligationsViewState extends State<AllObligationsView> {
                 ),
                 const SizedBox(height: 16),
                 Text(
-                  'Belum ada kewajiban',
+                  AppLocalizations.of(context)!.no_obligations,
                   style: GoogleFonts.poppins(
                     color: Colors.grey[400],
                     fontSize: 16,
@@ -53,7 +56,7 @@ class _AllObligationsViewState extends State<AllObligationsView> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Tap + untuk menambah tagihan',
+                  AppLocalizations.of(context)!.add_obligation_hint,
                   style: GoogleFonts.poppins(
                     color: Colors.grey[600],
                     fontSize: 12,
@@ -79,7 +82,10 @@ class _AllObligationsViewState extends State<AllObligationsView> {
           children: [
             // Bills Section
             if (bills.isNotEmpty) ...[
-              _buildSectionHeader('Tagihan', bills.length),
+              _buildSectionHeader(
+                AppLocalizations.of(context)!.bill,
+                bills.length,
+              ),
               const SizedBox(height: 8),
               ...bills.map(
                 (obligation) => Padding(
@@ -100,7 +106,10 @@ class _AllObligationsViewState extends State<AllObligationsView> {
 
             // Subscriptions Section
             if (subscriptions.isNotEmpty) ...[
-              _buildSectionHeader('Langganan', subscriptions.length),
+              _buildSectionHeader(
+                AppLocalizations.of(context)!.subscription,
+                subscriptions.length,
+              ),
               const SizedBox(height: 8),
               ...subscriptions.map(
                 (obligation) => Padding(
@@ -121,7 +130,10 @@ class _AllObligationsViewState extends State<AllObligationsView> {
 
             // Debts Section
             if (debts.isNotEmpty) ...[
-              _buildSectionHeader('Hutang', debts.length),
+              _buildSectionHeader(
+                AppLocalizations.of(context)!.debt,
+                debts.length,
+              ),
               const SizedBox(height: 8),
               ...debts.map(
                 (obligation) => Padding(

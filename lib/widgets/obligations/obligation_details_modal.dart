@@ -5,6 +5,8 @@ import 'package:financial_app/models/financial_obligation.dart';
 import 'package:financial_app/services/obligation_service.dart';
 import 'package:financial_app/utils/formatters.dart';
 import 'package:financial_app/widgets/obligations/add_obligation_modal.dart';
+import 'package:financial_app/widgets/obligations/reminder_settings.dart';
+import 'package:financial_app/l10n/app_localizations.dart';
 
 class ObligationDetailsModal extends StatefulWidget {
   final FinancialObligation obligation;
@@ -26,22 +28,22 @@ class _ObligationDetailsModalState extends State<ObligationDetailsModal> {
           (context) => AlertDialog(
             backgroundColor: const Color(0xFF1A1A1A),
             title: Text(
-              'Hapus Kewajiban',
+              AppLocalizations.of(context)!.delete_obligation,
               style: GoogleFonts.poppins(color: Colors.white),
             ),
             content: Text(
-              'Yakin ingin menghapus kewajiban "${widget.obligation.name}"?',
+              '${AppLocalizations.of(context)!.delete_obligation_confirm} "${widget.obligation.name}"?',
               style: const TextStyle(color: Colors.white70),
             ),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context, false),
-                child: const Text('Batal'),
+                child: Text(AppLocalizations.of(context)!.cancel),
               ),
               TextButton(
                 onPressed: () => Navigator.pop(context, true),
                 style: TextButton.styleFrom(foregroundColor: Colors.red),
-                child: const Text('Hapus'),
+                child: Text(AppLocalizations.of(context)!.delete),
               ),
             ],
           ),
@@ -60,8 +62,10 @@ class _ObligationDetailsModalState extends State<ObligationDetailsModal> {
 
       Navigator.pop(context, true);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Kewajiban berhasil dihapus'),
+        SnackBar(
+          content: Text(
+            AppLocalizations.of(context)!.obligation_deleted_successfully,
+          ),
           backgroundColor: Color(0xFF8B5FBF),
         ),
       );
@@ -72,7 +76,9 @@ class _ObligationDetailsModalState extends State<ObligationDetailsModal> {
       });
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Error: ${e.toString()}'),
+          content: Text(
+            '${AppLocalizations.of(context)!.error}: ${e.toString()}',
+          ),
           backgroundColor: Colors.red,
         ),
       );
@@ -87,7 +93,7 @@ class _ObligationDetailsModalState extends State<ObligationDetailsModal> {
       'type_232143': widget.obligation.type.name,
       'category_232143': widget.obligation.category,
       'monthly_amount_232143': widget.obligation.monthlyAmount,
-      'due_date_232143': widget.obligation.dueDate.day,
+      'dueDate_232143': widget.obligation.dueDate.day,
       'original_amount_232143': widget.obligation.originalAmount,
       'current_balance_232143': widget.obligation.currentBalance,
       'interest_rate_232143': widget.obligation.interestRate,
@@ -135,13 +141,15 @@ class _ObligationDetailsModalState extends State<ObligationDetailsModal> {
   }
 
   String _getTypeName() {
+    final l10n = AppLocalizations.of(context);
+    if (l10n == null) return '';
     switch (widget.obligation.type) {
       case ObligationType.bill:
-        return 'Tagihan';
+        return l10n.bill;
       case ObligationType.debt:
-        return 'Hutang';
+        return l10n.debt;
       case ObligationType.subscription:
-        return 'Langganan';
+        return l10n.subscription;
     }
   }
 
@@ -207,11 +215,22 @@ class _ObligationDetailsModalState extends State<ObligationDetailsModal> {
 
             // Monthly Amount Card
             Container(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: const Color(0xFF1A1A1A),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: color.withOpacity(0.3)),
+                gradient: LinearGradient(
+                  colors: [const Color(0xFF1F1F1F), const Color(0xFF1A1A1A)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: color.withOpacity(0.3), width: 1.5),
+                boxShadow: [
+                  BoxShadow(
+                    color: color.withOpacity(0.15),
+                    blurRadius: 12,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
               ),
               child: Row(
                 children: [
@@ -222,7 +241,7 @@ class _ObligationDetailsModalState extends State<ObligationDetailsModal> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Jumlah Bulanan',
+                          AppLocalizations.of(context)!.monthly_amount,
                           style: TextStyle(
                             color: Colors.grey[400],
                             fontSize: 12,
@@ -249,17 +268,17 @@ class _ObligationDetailsModalState extends State<ObligationDetailsModal> {
 
             // Details Grid
             _buildDetailRow(
-              'Jatuh Tempo',
-              'Tanggal ${widget.obligation.dueDate.day}',
+              AppLocalizations.of(context)!.due_date,
+              '${AppLocalizations.of(context)!.date_label} ${widget.obligation.dueDate.day}',
             ),
             if (widget.obligation.daysUntilDue >= 0)
               _buildDetailRow(
-                'Waktu Tersisa',
-                '${widget.obligation.daysUntilDue} hari',
+                AppLocalizations.of(context)!.days_remaining,
+                '${widget.obligation.daysUntilDue} ${AppLocalizations.of(context)!.days}',
               ),
             if (widget.obligation.category != null)
               _buildDetailRow(
-                'Kategori',
+                AppLocalizations.of(context)!.category,
                 _getCategoryName(widget.obligation.category!),
               ),
 
@@ -267,26 +286,26 @@ class _ObligationDetailsModalState extends State<ObligationDetailsModal> {
             if (widget.obligation.type == ObligationType.debt) ...[
               if (widget.obligation.currentBalance != null)
                 _buildDetailRow(
-                  'Saldo Saat Ini',
+                  AppLocalizations.of(context)!.current_balance,
                   CurrencyFormatter.formatRupiah(
                     widget.obligation.currentBalance!,
                   ),
                 ),
               if (widget.obligation.originalAmount != null)
                 _buildDetailRow(
-                  'Jumlah Awal',
+                  AppLocalizations.of(context)!.original_amount,
                   CurrencyFormatter.formatRupiah(
                     widget.obligation.originalAmount!,
                   ),
                 ),
               if (widget.obligation.interestRate != null)
                 _buildDetailRow(
-                  'Bunga',
+                  AppLocalizations.of(context)!.interest,
                   '${widget.obligation.interestRate!.toStringAsFixed(2)}%',
                 ),
               if (widget.obligation.minimumPayment != null)
                 _buildDetailRow(
-                  'Pembayaran Minimum',
+                  AppLocalizations.of(context)!.minimum_payment,
                   CurrencyFormatter.formatRupiah(
                     widget.obligation.minimumPayment!,
                   ),
@@ -297,7 +316,7 @@ class _ObligationDetailsModalState extends State<ObligationDetailsModal> {
             if (widget.obligation.type == ObligationType.subscription) ...[
               if (widget.obligation.subscriptionCycle != null)
                 _buildDetailRow(
-                  'Siklus',
+                  AppLocalizations.of(context)!.cycle,
                   _getSubscriptionCycleName(
                     widget.obligation.subscriptionCycle!,
                   ),
@@ -305,6 +324,10 @@ class _ObligationDetailsModalState extends State<ObligationDetailsModal> {
             ],
 
             const SizedBox(height: 24),
+
+            // Reminder Settings
+            ReminderSettings(obligation: widget.obligation),
+            const SizedBox(height: 16),
 
             // Action Buttons
             Row(
@@ -323,7 +346,7 @@ class _ObligationDetailsModalState extends State<ObligationDetailsModal> {
                               ),
                             )
                             : const Icon(Iconsax.trash, size: 18),
-                    label: const Text('Hapus'),
+                    label: Text(AppLocalizations.of(context)!.delete),
                     style: OutlinedButton.styleFrom(
                       foregroundColor: Colors.red,
                       side: const BorderSide(color: Colors.red),
@@ -339,7 +362,7 @@ class _ObligationDetailsModalState extends State<ObligationDetailsModal> {
                   child: ElevatedButton.icon(
                     onPressed: _isDeleting ? null : _editObligation,
                     icon: const Icon(Iconsax.edit, size: 18),
-                    label: const Text('Edit'),
+                    label: Text(AppLocalizations.of(context)!.edit),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF8B5FBF),
                       foregroundColor: Colors.white,
@@ -379,22 +402,38 @@ class _ObligationDetailsModalState extends State<ObligationDetailsModal> {
   }
 
   String _getCategoryName(String category) {
-    const categoryMap = {
-      'utilities': 'Utilitas',
-      'housing': 'Perumahan',
-      'transportation': 'Transportasi',
-      'entertainment': 'Hiburan',
-      'other': 'Lainnya',
-    };
-    return categoryMap[category] ?? category;
+    final l10n = AppLocalizations.of(context);
+    if (l10n == null) return category;
+
+    switch (category) {
+      case 'utilities':
+        return l10n.utilities;
+      case 'housing':
+        return l10n.housing;
+      case 'transportation':
+        return l10n.transportation;
+      case 'entertainment':
+        return l10n.entertainment;
+      case 'other':
+        return l10n.other;
+      default:
+        return category;
+    }
   }
 
   String _getSubscriptionCycleName(String cycle) {
-    const cycleMap = {
-      'monthly': 'Bulanan',
-      'yearly': 'Tahunan',
-      'weekly': 'Mingguan',
-    };
-    return cycleMap[cycle] ?? cycle;
+    final l10n = AppLocalizations.of(context);
+    if (l10n == null) return cycle;
+
+    switch (cycle) {
+      case 'monthly':
+        return l10n.subscription_cycle_monthly;
+      case 'yearly':
+        return l10n.subscription_cycle_yearly;
+      case 'weekly':
+        return l10n.subscription_cycle_weekly;
+      default:
+        return cycle;
+    }
   }
 }

@@ -91,7 +91,7 @@ class _BudgetProgressState extends State<BudgetProgress>
       if (mounted) {
         setState(() {
           _categories = categoryMap;
-          // Limit to top 5 budgets for home screen (sorted by percentage used)
+          // Limit to top 3 budgets for home screen (sorted by percentage used)
           final budgetsList =
               budgets.map((b) => b as Map<String, dynamic>).toList();
           budgetsList.sort((a, b) {
@@ -103,7 +103,7 @@ class _BudgetProgressState extends State<BudgetProgress>
             final percentageB = amountB > 0 ? spentB / amountB : 0.0;
             return percentageB.compareTo(percentageA); // Sort descending
           });
-          _budgets = budgetsList.take(5).toList(); // Show only top 5
+          _budgets = budgetsList.take(3).toList(); // Show only top 3
           _isLoading = false;
           _errorMessage = null;
           _retryCount = 0;

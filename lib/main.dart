@@ -18,8 +18,11 @@ import 'package:financial_app/services/network_service.dart';
 import 'package:financial_app/services/logger_service.dart';
 import 'package:financial_app/services/theme_service.dart';
 import 'package:financial_app/services/map_provider_service.dart';
+import 'package:financial_app/services/localization_service.dart';
+import 'package:financial_app/l10n/app_localizations.dart';
 import 'package:financial_app/state/app_state.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 void main() async {
   // Initialize Flutter bindings before making platform channel calls
@@ -63,6 +66,7 @@ void main() async {
       providers: [
         ChangeNotifierProvider(create: (context) => AppState(dataService)),
         ChangeNotifierProvider(create: (context) => ThemeService()),
+        ChangeNotifierProvider(create: (context) => LocalizationService()),
       ],
       child: const MyApp(),
     ),
@@ -101,14 +105,22 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<ThemeService>(
-      builder: (context, themeService, child) {
+    return Consumer2<ThemeService, LocalizationService>(
+      builder: (context, themeService, localizationService, child) {
         return MaterialApp(
           title: 'Financial App',
           debugShowCheckedModeBanner: false,
           theme: ThemeService.lightTheme,
           darkTheme: ThemeService.darkTheme,
           themeMode: themeService.getThemeMode(),
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: localizationService.supportedLocales,
+          locale: localizationService.currentLocale,
           // Custom error widget for better UX
           builder: (context, widget) {
             ErrorWidget.builder = (FlutterErrorDetails errorDetails) {

@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:financial_app/utils/formatters.dart';
 import 'package:financial_app/models/location_recommendation.dart';
+import 'package:financial_app/l10n/app_localizations.dart';
 
 class AlternativeRecommendationCard extends StatelessWidget {
   final LocationRecommendation recommendation;
@@ -110,8 +111,8 @@ class AlternativeRecommendationCard extends StatelessWidget {
 
                         if (lat != null && lng != null) {
                           // Open in Google Maps
-                          final googleMapsUrl =
-                              'https://www.google.com/maps/search/?api=1&query=$lat,$lng';
+                          // final googleMapsUrl =
+                          //     'https://www.google.com/maps/search/?api=1&query=$lat,$lng';
                           // For iOS, use maps.apple.com
                           // For Android, this will open in browser which redirects to Google Maps
                           try {
@@ -166,7 +167,7 @@ class AlternativeRecommendationCard extends StatelessWidget {
                         fontWeight: FontWeight.w500,
                       ),
                     ),
-                    child: const Text('Kunjungi'),
+                    child: Text(AppLocalizations.of(context)!.visit),
                   ),
                 ],
               ),

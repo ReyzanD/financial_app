@@ -10,6 +10,7 @@ import 'package:financial_app/services/api/transaction_api.dart';
 import 'package:financial_app/services/logger_service.dart';
 import 'package:financial_app/services/error_handler_service.dart';
 import 'package:financial_app/models/transaction_model.dart';
+import 'package:financial_app/l10n/app_localizations.dart';
 import 'dart:io';
 
 class ReportScreen extends StatefulWidget {
@@ -53,7 +54,7 @@ class _ReportScreenState extends State<ReportScreen> {
     if (_selectedMonth == null && _selectedYear == null) {
       ErrorHandlerService.showWarningSnackbar(
         context,
-        'Silakan pilih periode terlebih dahulu',
+        AppLocalizations.of(context)!.please_select_period_first,
       );
       return;
     }
@@ -69,7 +70,7 @@ class _ReportScreenState extends State<ReportScreen> {
           setState(() => _isGenerating = false);
           ErrorHandlerService.showWarningSnackbar(
             context,
-            'Silakan pilih bulan',
+            AppLocalizations.of(context)!.please_select_month,
           );
           return;
         }
@@ -87,7 +88,7 @@ class _ReportScreenState extends State<ReportScreen> {
           setState(() => _isGenerating = false);
           ErrorHandlerService.showWarningSnackbar(
             context,
-            'Silakan pilih tahun',
+            AppLocalizations.of(context)!.please_select_year,
           );
           return;
         }
@@ -106,15 +107,19 @@ class _ReportScreenState extends State<ReportScreen> {
       final transactionsList = List<dynamic>.from(
         transactionsData['transactions'] ?? [],
       );
-      final transactions = transactionsList
-          .map((json) => TransactionModel.fromJson(json as Map<String, dynamic>))
-          .toList();
+      final transactions =
+          transactionsList
+              .map(
+                (json) =>
+                    TransactionModel.fromJson(json as Map<String, dynamic>),
+              )
+              .toList();
 
       if (transactions.isEmpty) {
         setState(() => _isGenerating = false);
         ErrorHandlerService.showWarningSnackbar(
           context,
-          'Tidak ada transaksi untuk periode yang dipilih',
+          AppLocalizations.of(context)!.no_transactions_for_period,
         );
         return;
       }
@@ -187,7 +192,7 @@ class _ReportScreenState extends State<ReportScreen> {
               ),
             ),
             content: Text(
-              'Pilih aksi yang ingin dilakukan:',
+              AppLocalizations.of(context)!.select_action,
               style: GoogleFonts.poppins(color: Colors.white70),
             ),
             actions: [
@@ -247,7 +252,6 @@ class _ReportScreenState extends State<ReportScreen> {
     return 'Periode';
   }
 
-
   Future<void> _selectMonth() async {
     final now = DateTime.now();
     final firstDate = DateTime(now.year - 5, 1);
@@ -259,7 +263,7 @@ class _ReportScreenState extends State<ReportScreen> {
       firstDate: firstDate,
       lastDate: lastDate,
       initialDatePickerMode: DatePickerMode.year,
-      helpText: 'Pilih Bulan',
+      helpText: AppLocalizations.of(context)!.select_month,
       locale: const Locale('id', 'ID'),
     );
 
@@ -278,7 +282,7 @@ class _ReportScreenState extends State<ReportScreen> {
         return AlertDialog(
           backgroundColor: const Color(0xFF1A1A1A),
           title: Text(
-            'Pilih Tahun',
+            AppLocalizations.of(context)!.select_year,
             style: GoogleFonts.poppins(
               color: Colors.white,
               fontWeight: FontWeight.bold,
@@ -387,21 +391,22 @@ class _ReportScreenState extends State<ReportScreen> {
             const SizedBox(height: 24),
 
             // Period Selection
-            _buildSectionTitle('Pilih Periode'),
+            _buildSectionTitle(AppLocalizations.of(context)!.select_period),
             const SizedBox(height: 12),
             if (_selectedPeriodType == 'monthly')
               _buildDateSelector(
                 'Bulan',
                 _selectedMonth != null
                     ? DateFormat('MMMM yyyy', 'id_ID').format(_selectedMonth!)
-                    : 'Pilih Bulan',
+                    : AppLocalizations.of(context)!.select_month,
                 _selectMonth,
                 Icons.calendar_month_rounded,
               )
             else
               _buildDateSelector(
                 'Tahun',
-                _selectedYear?.toString() ?? 'Pilih Tahun',
+                _selectedYear?.toString() ??
+                    AppLocalizations.of(context)!.select_year,
                 _selectYear,
                 Icons.calendar_today_rounded,
               ),
@@ -433,7 +438,7 @@ class _ReportScreenState extends State<ReportScreen> {
 
             // Filter Options (for CSV)
             if (_selectedFormat == 'csv') ...[
-              _buildSectionTitle('Filter (Opsional)'),
+              _buildSectionTitle(AppLocalizations.of(context)!.filter_optional),
               const SizedBox(height: 12),
               _buildFilterDropdown(
                 'Tipe Transaksi',

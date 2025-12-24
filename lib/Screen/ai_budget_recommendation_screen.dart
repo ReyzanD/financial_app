@@ -75,7 +75,7 @@ class _AIBudgetRecommendationScreenState
         final categoryName = recCategory['name'] as String;
         final percentage =
             _editedPercentages[categoryName] ??
-            (recCategory['percentage'] as int).toDouble();
+            ((recCategory['percentage'] as num?)?.toDouble() ?? 0.0);
         final amount = income * (percentage / 100);
 
         // Find matching category in user's categories
@@ -298,13 +298,48 @@ class _AIBudgetRecommendationScreenState
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               child: Text(
-                                '💡 Berdasarkan aturan 50/30/20 yang disesuaikan',
+                                _budgetRecommendation!['is_new_user'] == true
+                                    ? '💡 Template standar untuk user baru - akan disesuaikan setelah ada transaksi'
+                                    : '💡 Berdasarkan aturan 50/30/20 yang disesuaikan dengan pola pengeluaran Anda',
                                 style: GoogleFonts.poppins(
                                   color: Colors.white,
                                   fontSize: 10,
                                 ),
                               ),
                             ),
+                            if (_budgetRecommendation!['is_new_user'] == true) ...[
+                              const SizedBox(height: 8),
+                              Container(
+                                padding: const EdgeInsets.all(12),
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(8),
+                                  border: Border.all(
+                                    color: Colors.white.withOpacity(0.2),
+                                  ),
+                                ),
+                                child: Row(
+                                  children: [
+                                    const Icon(
+                                      Iconsax.info_circle,
+                                      color: Colors.white70,
+                                      size: 16,
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Expanded(
+                                      child: Text(
+                                        _budgetRecommendation!['message'] as String? ??
+                                            'Mulai catat transaksi untuk mendapatkan rekomendasi yang lebih personal',
+                                        style: GoogleFonts.poppins(
+                                          color: Colors.white70,
+                                          fontSize: 11,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
                           ],
                         ),
                       ),
@@ -331,7 +366,7 @@ class _AIBudgetRecommendationScreenState
                                   final categoryName = category['name'] as String;
                                   final currentPercentage =
                                       _editedPercentages[categoryName]?.toInt() ??
-                                      category['percentage'] as int;
+                                      ((category['percentage'] as num?)?.toInt() ?? 0);
                                   _showEditDialog(categoryName, currentPercentage);
                                 },
                               ))

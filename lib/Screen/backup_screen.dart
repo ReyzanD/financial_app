@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:financial_app/services/backup_service.dart';
+import 'package:financial_app/l10n/app_localizations.dart';
 
 class BackupScreen extends StatefulWidget {
   const BackupScreen({super.key});
@@ -37,7 +38,9 @@ class _BackupScreenState extends State<BackupScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Gagal memuat backup: ${e.toString()}'),
+            content: Text(
+              '${AppLocalizations.of(context)!.failed_to_load_backup}: ${e.toString()}',
+            ),
             backgroundColor: Colors.red,
           ),
         );
@@ -56,8 +59,8 @@ class _BackupScreenState extends State<BackupScreen> {
           SnackBar(
             content: Text(
               share
-                  ? '✅ Backup dibuat dan siap dibagikan!'
-                  : '✅ Backup berhasil dibuat!',
+                  ? '✅ ${AppLocalizations.of(context)!.backup_created_and_ready}'
+                  : '✅ ${AppLocalizations.of(context)!.backup_created_successfully}',
               style: GoogleFonts.poppins(),
             ),
             backgroundColor: Colors.green,
@@ -65,7 +68,7 @@ class _BackupScreenState extends State<BackupScreen> {
                 share
                     ? null
                     : SnackBarAction(
-                      label: 'Bagikan',
+                      label: AppLocalizations.of(context)!.share,
                       textColor: Colors.white,
                       onPressed: () async {
                         try {
@@ -75,7 +78,7 @@ class _BackupScreenState extends State<BackupScreen> {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
                                 content: Text(
-                                  'Gagal membagikan: ${e.toString()}',
+                                  '${AppLocalizations.of(context)!.failed_to_share}: ${e.toString()}',
                                 ),
                                 backgroundColor: Colors.red,
                               ),
@@ -93,7 +96,9 @@ class _BackupScreenState extends State<BackupScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Gagal membuat backup: ${e.toString()}'),
+            content: Text(
+              '${AppLocalizations.of(context)!.failed_to_create_backup}: ${e.toString()}',
+            ),
             backgroundColor: Colors.red,
           ),
         );
@@ -155,7 +160,7 @@ class _BackupScreenState extends State<BackupScreen> {
                 TextButton(
                   onPressed: () => Navigator.pop(context),
                   child: Text(
-                    'Tutup',
+                    AppLocalizations.of(context)!.close,
                     style: GoogleFonts.poppins(color: const Color(0xFF8B5FBF)),
                   ),
                 ),
@@ -168,7 +173,9 @@ class _BackupScreenState extends State<BackupScreen> {
                       if (mounted) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
-                            content: Text('Gagal membagikan: ${e.toString()}'),
+                            content: Text(
+                              '${AppLocalizations.of(context)!.failed_to_share}: ${e.toString()}',
+                            ),
                             backgroundColor: Colors.red,
                           ),
                         );
@@ -179,7 +186,7 @@ class _BackupScreenState extends State<BackupScreen> {
                     backgroundColor: const Color(0xFF8B5FBF),
                   ),
                   child: Text(
-                    'Bagikan',
+                    AppLocalizations.of(context)!.share,
                     style: GoogleFonts.poppins(color: Colors.white),
                   ),
                 ),
@@ -190,7 +197,9 @@ class _BackupScreenState extends State<BackupScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Gagal memuat info: ${e.toString()}'),
+            content: Text(
+              '${AppLocalizations.of(context)!.failed_to_load_info}: ${e.toString()}',
+            ),
             backgroundColor: Colors.red,
           ),
         );
@@ -231,18 +240,18 @@ class _BackupScreenState extends State<BackupScreen> {
               borderRadius: BorderRadius.circular(20),
             ),
             title: Text(
-              'Hapus Backup?',
+              AppLocalizations.of(context)!.delete_backup_title,
               style: GoogleFonts.poppins(color: Colors.white),
             ),
             content: Text(
-              'Backup ini akan dihapus permanen.',
+              AppLocalizations.of(context)!.delete_backup_message,
               style: GoogleFonts.poppins(color: Colors.grey[400]),
             ),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context, false),
                 child: Text(
-                  'Batal',
+                  AppLocalizations.of(context)!.cancel,
                   style: GoogleFonts.poppins(color: Colors.grey),
                 ),
               ),
@@ -250,7 +259,7 @@ class _BackupScreenState extends State<BackupScreen> {
                 onPressed: () => Navigator.pop(context, true),
                 style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
                 child: Text(
-                  'Hapus',
+                  AppLocalizations.of(context)!.delete_label,
                   style: GoogleFonts.poppins(color: Colors.white),
                 ),
               ),
@@ -264,7 +273,10 @@ class _BackupScreenState extends State<BackupScreen> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('✅ Backup dihapus', style: GoogleFonts.poppins()),
+              content: Text(
+                '✅ ${AppLocalizations.of(context)!.backup_deleted}',
+                style: GoogleFonts.poppins(),
+              ),
               backgroundColor: Colors.green,
             ),
           );
@@ -274,7 +286,9 @@ class _BackupScreenState extends State<BackupScreen> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Gagal menghapus: ${e.toString()}'),
+              content: Text(
+                '${AppLocalizations.of(context)!.failed_to_delete}: ${e.toString()}',
+              ),
               backgroundColor: Colors.red,
             ),
           );
@@ -308,7 +322,7 @@ class _BackupScreenState extends State<BackupScreen> {
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
-          'Backup & Restore',
+          AppLocalizations.of(context)!.backup_restore,
           style: GoogleFonts.poppins(
             color: Colors.white,
             fontSize: 20,
@@ -363,7 +377,7 @@ class _BackupScreenState extends State<BackupScreen> {
                           ),
                           const SizedBox(height: 8),
                           Text(
-                            'Backup data finansial Anda secara teratur. File backup dapat dibagikan ke email atau cloud storage.',
+                            AppLocalizations.of(context)!.backup_description,
                             style: GoogleFonts.poppins(
                               color: Colors.white.withOpacity(0.9),
                               fontSize: 14,
@@ -445,7 +459,7 @@ class _BackupScreenState extends State<BackupScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          'Backup Tersimpan',
+                          AppLocalizations.of(context)!.backup_saved,
                           style: GoogleFonts.poppins(
                             color: Colors.white,
                             fontSize: 18,
@@ -476,7 +490,7 @@ class _BackupScreenState extends State<BackupScreen> {
                             ),
                             const SizedBox(height: 16),
                             Text(
-                              'Belum ada backup',
+                              AppLocalizations.of(context)!.no_backup_yet,
                               style: GoogleFonts.poppins(
                                 color: Colors.grey[500],
                                 fontSize: 16,
@@ -547,7 +561,7 @@ class _BackupScreenState extends State<BackupScreen> {
             IconButton(
               icon: const Icon(Iconsax.trash, color: Colors.red),
               onPressed: () => _deleteBackup(file),
-              tooltip: 'Hapus',
+              tooltip: AppLocalizations.of(context)!.delete,
             ),
           ],
         ),

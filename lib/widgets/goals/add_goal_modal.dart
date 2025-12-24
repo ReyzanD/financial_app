@@ -5,6 +5,7 @@ import 'package:financial_app/services/error_handler_service.dart';
 import 'package:financial_app/services/logger_service.dart';
 import 'package:financial_app/utils/form_validators.dart';
 import 'package:intl/intl.dart';
+import 'package:financial_app/l10n/app_localizations.dart';
 
 class AddGoalModal extends StatefulWidget {
   final Map<String, dynamic>? initialGoal;
@@ -28,21 +29,52 @@ class _AddGoalModalState extends State<AddGoalModal> {
   int _priority = 3;
   bool _isLoading = false;
 
-  final List<Map<String, dynamic>> _goalTypes = [
-    {
-      'value': 'emergency_fund',
-      'label': 'Dana Darurat',
-      'icon': Icons.security,
-    },
-    {'value': 'vacation', 'label': 'Liburan', 'icon': Icons.beach_access},
-    {'value': 'investment', 'label': 'Investasi', 'icon': Icons.trending_up},
-    {'value': 'debt_payment', 'label': 'Bayar Hutang', 'icon': Icons.payment},
-    {'value': 'education', 'label': 'Pendidikan', 'icon': Icons.school},
-    {'value': 'vehicle', 'label': 'Kendaraan', 'icon': Icons.directions_car},
-    {'value': 'house', 'label': 'Rumah', 'icon': Icons.home},
-    {'value': 'wedding', 'label': 'Pernikahan', 'icon': Icons.favorite},
-    {'value': 'other', 'label': 'Lainnya', 'icon': Icons.more_horiz},
-  ];
+  List<Map<String, dynamic>> _getGoalTypes(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return [
+      {
+        'value': 'emergency_fund',
+        'label': l10n?.emergency_fund ?? 'Dana Darurat',
+        'icon': Icons.security,
+      },
+      {
+        'value': 'vacation',
+        'label': l10n?.vacation ?? 'Liburan',
+        'icon': Icons.beach_access,
+      },
+      {
+        'value': 'investment',
+        'label': l10n?.investment ?? 'Investasi',
+        'icon': Icons.trending_up,
+      },
+      {
+        'value': 'debt_payment',
+        'label': l10n?.debt_payment ?? 'Bayar Hutang',
+        'icon': Icons.payment,
+      },
+      {
+        'value': 'education',
+        'label': l10n?.education ?? 'Pendidikan',
+        'icon': Icons.school,
+      },
+      {
+        'value': 'vehicle',
+        'label': l10n?.vehicle ?? 'Kendaraan',
+        'icon': Icons.directions_car,
+      },
+      {'value': 'house', 'label': l10n?.house ?? 'Rumah', 'icon': Icons.home},
+      {
+        'value': 'wedding',
+        'label': l10n?.wedding ?? 'Pernikahan',
+        'icon': Icons.favorite,
+      },
+      {
+        'value': 'other',
+        'label': l10n?.other ?? 'Lainnya',
+        'icon': Icons.more_horiz,
+      },
+    ];
+  }
 
   bool get _isEdit => widget.initialGoal != null;
 
@@ -262,7 +294,11 @@ class _AddGoalModalState extends State<AddGoalModal> {
                     borderSide: BorderSide.none,
                   ),
                 ),
-                validator: (value) => FormValidators.validateName(value, fieldName: 'Nama target'),
+                validator:
+                    (value) => FormValidators.validateName(
+                      value,
+                      fieldName: 'Nama target',
+                    ),
               ),
               const SizedBox(height: 16),
 
@@ -282,7 +318,9 @@ class _AddGoalModalState extends State<AddGoalModal> {
                   ),
                 ),
                 items:
-                    _goalTypes.map<DropdownMenuItem<String>>((type) {
+                    _getGoalTypes(context).map<DropdownMenuItem<String>>((
+                      type,
+                    ) {
                       return DropdownMenuItem<String>(
                         value: type['value'] as String,
                         child: Row(
@@ -427,7 +465,7 @@ class _AddGoalModalState extends State<AddGoalModal> {
                             color: Colors.white,
                           ),
                         )
-                        : const Text('Tambah Target'),
+                        : Text(AppLocalizations.of(context)!.add_target),
               ),
               const SizedBox(height: 20),
             ],

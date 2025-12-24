@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:financial_app/l10n/app_localizations.dart';
 
 class ObligationViewTabs extends StatelessWidget {
   final String selectedView;
@@ -16,16 +17,16 @@ class ObligationViewTabs extends StatelessWidget {
       padding: EdgeInsets.symmetric(horizontal: 16),
       child: Row(
         children: [
-          _buildViewTab('Semua', 'all'),
-          _buildViewTab('Mendatang', 'upcoming'),
-          _buildViewTab('Hutang', 'debts'),
-          _buildViewTab('Langganan', 'subscriptions'),
+          _buildViewTab(context, AppLocalizations.of(context)!.all, 'all'),
+          _buildViewTab(context, AppLocalizations.of(context)!.upcoming, 'upcoming'),
+          _buildViewTab(context, AppLocalizations.of(context)!.debt, 'debts'),
+          _buildViewTab(context, AppLocalizations.of(context)!.subscription, 'subscriptions'),
         ],
       ),
     );
   }
 
-  Widget _buildViewTab(String label, String value) {
+  Widget _buildViewTab(BuildContext context, String label, String value) {
     final isSelected = selectedView == value;
 
     return Expanded(
