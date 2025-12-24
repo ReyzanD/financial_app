@@ -321,7 +321,7 @@ Jika ada error, cek:
 
 ```bash
 # Test register endpoint
-curl -X POST https://your-app.onrender.com/api/v1/auth/register \
+curl -X POST https://financial-app-fua2.onrender.com/api/v1/auth/register \
   -H "Content-Type: application/json" \
   -d '{
     "email": "test@example.com",
@@ -356,18 +356,51 @@ curl -X POST https://your-app.onrender.com/api/v1/auth/register \
 
 ### Problem: Database connection failed
 
-**Error**: `Database connection failed`
+**Error**: `Database connection failed` atau `Connection refused` ke localhost
 
 **Solution**:
 
-1. Cek semua environment variables sudah benar
+1. **PENTING: Pastikan DATABASE_URL sudah di-set di Render**
+
+   - Buka Render Dashboard → Service → Environment
+   - Pastikan ada environment variable `DATABASE_URL` dengan nilai connection string
+   - Format: `postgresql://user:password@host:port/database`
+   - Jika tidak ada, tambahkan sekarang!
+
+2. **Jika error menunjukkan "localhost" atau "Connection refused":**
+
+   - Ini berarti `DATABASE_URL` tidak ter-set atau kosong
+   - Aplikasi fallback ke localhost (yang tidak tersedia di production)
+   - **Solusi**: Set `DATABASE_URL` di Render environment variables
+   - Copy connection string dari Supabase (Project Settings → Database → Connection string)
+
+3. Cek semua environment variables sudah benar
+
    - Jika menggunakan `DATABASE_URL`, pastikan format: `postgresql://user:password@host:port/db`
    - Jika menggunakan individual parameters, pastikan semua `POSTGRES_*` variables sudah diisi
-2. Pastikan Supabase project masih aktif (tidak di-pause atau di-delete)
-3. Reset password di Supabase jika perlu (Project Settings → Database → Reset database password)
-4. Cek connection string di Supabase dashboard (Project Settings → Database → Connection string)
-5. Pastikan database schema sudah dibuat (jalankan `financial_db_232143_postgresql.sql` di SQL Editor)
-6. Supabase free tier tidak memerlukan IP whitelist
+   - **Catatan**: Di production (Render), gunakan `DATABASE_URL`, bukan individual parameters
+
+4. Pastikan Supabase project masih aktif (tidak di-pause atau di-delete)
+
+5. Reset password di Supabase jika perlu (Project Settings → Database → Reset database password)
+
+6. Cek connection string di Supabase dashboard (Project Settings → Database → Connection string)
+
+7. Pastikan database schema sudah dibuat (jalankan `financial_db_232143_postgresql.sql` di SQL Editor)
+
+8. Supabase free tier tidak memerlukan IP whitelist
+
+**Cara verifikasi DATABASE_URL di Render:**
+
+1. Buka Render Dashboard
+2. Pilih service Anda
+3. Klik tab "Environment"
+4. Scroll ke bawah, cari `DATABASE_URL`
+5. Jika tidak ada, klik "Add Environment Variable"
+6. Key: `DATABASE_URL`
+7. Value: Copy dari Supabase connection string
+8. Klik "Save Changes"
+9. Render akan auto-redeploy service
 
 ---
 
