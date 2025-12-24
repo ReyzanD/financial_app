@@ -1,14 +1,14 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:financial_app/core/app_config.dart';
 import 'package:financial_app/services/pin_auth_service.dart';
 import 'package:financial_app/services/api_service.dart';
 import 'package:financial_app/services/logger_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthService {
-  // Use 10.0.2.2 for Android emulator to connect to localhost on the host machine
-  static const String baseUrl = 'http://10.0.2.2:5000/api/v1/auth';
+  static String get baseUrl => AppConfig.effectiveAuthBaseUrl;
   final FlutterSecureStorage _storage = const FlutterSecureStorage();
   final PinAuthService _pinAuthService = PinAuthService();
 

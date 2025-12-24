@@ -22,6 +22,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:financial_app/core/app_config.dart';
 import 'package:financial_app/services/logger_service.dart';
 import 'package:financial_app/services/api/transaction_api.dart';
 import 'package:financial_app/services/api/budget_api.dart';
@@ -31,7 +32,7 @@ import 'package:financial_app/services/api/obligation_api.dart';
 import 'package:financial_app/services/api/base_api.dart';
 
 class ApiService {
-  static const String baseUrl = 'http://10.0.2.2:5000/api/v1';
+  static String get baseUrl => AppConfig.effectiveBaseUrl;
   final FlutterSecureStorage _storage = const FlutterSecureStorage();
 
   // Cache layer for frequently accessed data

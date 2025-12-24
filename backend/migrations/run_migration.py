@@ -1,78 +1,49 @@
 """
-Migration script to add missing budget triggers
+Migration script to add missing budget triggers (PostgreSQL version)
 Run this to fix budget not updating when transactions are added/updated/deleted
 """
 
 import sys
 import os
-import pymysql
-
-# Database connection settings
-DB_CONFIG = {
-    'host': 'localhost',
-    'user': 'root',
-    'password': '',
-    'database': 'financial_db_232143',
-    'charset': 'utf8mb4',
-    'cursorclass': pymysql.cursors.DictCursor
-}
+import psycopg2
+from psycopg2.extras import RealDictCursor
+from config import Config
 
 def run_migration():
-    """Run the migration to add budget triggers"""
+    """Run the migration to add budget triggers (PostgreSQL)"""
     print("🔄 Starting migration: Adding budget update triggers...")
     
-    # Connect directly to database
-    db = pymysql.connect(**DB_CONFIG)
+    # Connect to database
+    if Config.DATABASE_URL:
+        db = psycopg2.connect(Config.DATABASE_URL, cursor_factory=RealDictCursor)
+    else:
+        db = psycopg2.connect(
+            host=Config.POSTGRES_HOST,
+            user=Config.POSTGRES_USER,
+            password=Config.POSTGRES_PASSWORD,
+            database=Config.POSTGRES_DB,
+            port=Config.POSTGRES_PORT,
+            cursor_factory=RealDictCursor
+        )
     
     try:
-        # Read the SQL migration file
-        migration_file = os.path.join(os.path.dirname(__file__), 'add_budget_triggers.sql')
-        with open(migration_file, 'r') as f:
+        # Read the SQL migration file (PostgreSQL version)
+        migration_file = os.path.join(os.path.dirname(__file__), 'add_budget_triggers_postgresql.sql')
+        if not os.path.exists(migration_file):
+            # Fallback to MySQL version if PostgreSQL version doesn't exist
+            migration_file = os.path.join(os.path.dirname(__file__), 'add_budget_triggers.sql')
+            print("⚠️  Using MySQL migration file. Consider using PostgreSQL version.")
+        
+        with open(migration_file, 'r', encoding='utf-8') as f:
             sql_content = f.read()
         
-        # Split by DELIMITER to handle stored procedures/triggers
-        statements = []
-        current_delimiter = ';'
-        current_statement = []
-        
-        for line in sql_content.split('\n'):
-            line = line.strip()
-            
-            # Skip comments and empty lines
-            if not line or line.startswith('--'):
-                continue
-            
-            # Check for DELIMITER change
-            if line.upper().startswith('DELIMITER'):
-                if current_statement:
-                    statements.append('\n'.join(current_statement))
-                    current_statement = []
-                current_delimiter = line.split()[1]
-                continue
-            
-            current_statement.append(line)
-            
-            # Check if statement ends with current delimiter
-            if line.endswith(current_delimiter):
-                # Remove the delimiter from the statement
-                statement = '\n'.join(current_statement)
-                if current_delimiter != ';':
-                    statement = statement[:-len(current_delimiter)].strip()
-                else:
-                    statement = statement[:-1].strip()
-                
-                if statement:
-                    statements.append(statement)
-                current_statement = []
-        
-        # Add any remaining statement
-        if current_statement:
-            statements.append('\n'.join(current_statement))
+        # Split SQL by semicolons (PostgreSQL doesn't use DELIMITER)
+        statements = [s.strip() for s in sql_content.split(';') if s.strip() and not s.strip().startswith('--')]
         
         # Execute each statement
         with db.cursor() as cursor:
             for i, statement in enumerate(statements, 1):
-                if statement.strip():
+                if statement.strip() and not statement.strip().startswith('--'):
                     try:
                         print(f"   Executing statement {i}/{len(statements)}...")
                         cursor.execute(statement)
@@ -80,6 +51,7 @@ def run_migration():
                     except Exception as e:
                         print(f"   ⚠️  Warning on statement {i}: {e}")
                         # Continue with other statements
+                        db.rollback()
         
         print("✅ Migration completed successfully!")
         print("\n📊 Triggers added:")

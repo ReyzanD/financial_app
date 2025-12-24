@@ -4,36 +4,41 @@ Run this to enable location-based recommendations
 """
 
 import sys
-import pymysql
+import psycopg2
+from psycopg2.extras import RealDictCursor
+from config import Config
 
-# Database connection settings
-DB_CONFIG = {
-    'host': 'localhost',
-    'user': 'root',
-    'password': '',
-    'database': 'financial_db_232143',
-    'charset': 'utf8mb4',
-    'cursorclass': pymysql.cursors.DictCursor
-}
+# Database connection - use Config for connection
 
 def run_migration():
     """Add location fields to transactions table"""
     print("🔄 Starting migration: Adding location fields...")
     print("   This will add: location_name, latitude, longitude columns")
     
-    db = pymysql.connect(**DB_CONFIG)
+    # Connect to database
+    if Config.DATABASE_URL:
+        db = psycopg2.connect(Config.DATABASE_URL, cursor_factory=RealDictCursor)
+    else:
+        db = psycopg2.connect(
+            host=Config.POSTGRES_HOST,
+            user=Config.POSTGRES_USER,
+            password=Config.POSTGRES_PASSWORD,
+            database=Config.POSTGRES_DB,
+            port=Config.POSTGRES_PORT,
+            cursor_factory=RealDictCursor
+        )
     
     try:
         with db.cursor() as cursor:
-            # Check if columns already exist
+            # Check if columns already exist (PostgreSQL way)
             cursor.execute("""
-                SELECT COLUMN_NAME 
-                FROM INFORMATION_SCHEMA.COLUMNS 
-                WHERE TABLE_SCHEMA = 'financial_db_232143' 
-                AND TABLE_NAME = 'transactions_232143'
-                AND COLUMN_NAME IN ('location_name_232143', 'latitude_232143', 'longitude_232143')
+                SELECT column_name 
+                FROM information_schema.columns 
+                WHERE table_schema = 'public' 
+                AND table_name = 'transactions_232143'
+                AND column_name IN ('location_name_232143', 'latitude_232143', 'longitude_232143')
             """)
-            existing_columns = [row['COLUMN_NAME'] for row in cursor.fetchall()]
+            existing_columns = [row['column_name'] for row in cursor.fetchall()]
             
             if len(existing_columns) == 3:
                 print("✅ All location columns already exist!")
@@ -44,7 +49,7 @@ def run_migration():
                 print("   Adding location_name_232143 column...")
                 cursor.execute("""
                     ALTER TABLE transactions_232143
-                    ADD COLUMN location_name_232143 TEXT
+                    ADD COLUMN IF NOT EXISTS location_name_232143 TEXT
                 """)
                 db.commit()
                 print("   ✅ location_name_232143 added")
@@ -56,7 +61,7 @@ def run_migration():
                 print("   Adding latitude_232143 column...")
                 cursor.execute("""
                     ALTER TABLE transactions_232143
-                    ADD COLUMN latitude_232143 DECIMAL(10, 7)
+                    ADD COLUMN IF NOT EXISTS latitude_232143 DECIMAL(10, 7)
                 """)
                 db.commit()
                 print("   ✅ latitude_232143 added")
@@ -68,7 +73,7 @@ def run_migration():
                 print("   Adding longitude_232143 column...")
                 cursor.execute("""
                     ALTER TABLE transactions_232143
-                    ADD COLUMN longitude_232143 DECIMAL(10, 7)
+                    ADD COLUMN IF NOT EXISTS longitude_232143 DECIMAL(10, 7)
                 """)
                 db.commit()
                 print("   ✅ longitude_232143 added")
@@ -79,13 +84,14 @@ def run_migration():
             print("   Creating index for location queries...")
             try:
                 cursor.execute("""
-                    CREATE INDEX idx_transactions_location 
-                    ON transactions_232143(location_name_232143(255))
+                    CREATE INDEX IF NOT EXISTS idx_transactions_location 
+                    ON transactions_232143(location_name_232143)
+                    WHERE location_name_232143 IS NOT NULL
                 """)
                 db.commit()
                 print("   ✅ Index created")
             except Exception as e:
-                if 'Duplicate key name' in str(e):
+                if 'already exists' in str(e).lower():
                     print("   ⏭️  Index already exists")
                 else:
                     print(f"   ⚠️  Warning creating index: {e}")

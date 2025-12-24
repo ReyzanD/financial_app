@@ -1,11 +1,12 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:financial_app/core/app_config.dart';
 import 'package:financial_app/services/auth_service.dart';
 import 'package:financial_app/services/logger_service.dart';
 
 /// Base API client with common functionality
 class BaseApiClient {
-  static const String baseUrl = 'http://10.0.2.2:5000/api/v1';
+  static String get baseUrl => AppConfig.effectiveBaseUrl;
 
   // Simple in-memory cache
   static final Map<String, dynamic> _cache = {};

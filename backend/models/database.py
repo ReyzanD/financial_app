@@ -1,20 +1,29 @@
-import pymysql
+import psycopg2
+from psycopg2.extras import RealDictCursor
 from flask import g
 import config
 
 def get_db():
     if 'db' not in g:
         try:
-            g.db = pymysql.connect(
-                host=config.Config.MYSQL_HOST,
-                user=config.Config.MYSQL_USER,
-                password=config.Config.MYSQL_PASSWORD,
-                database=config.Config.MYSQL_DB,
-                port=config.Config.MYSQL_PORT,
-                charset='utf8mb4',
-                cursorclass=pymysql.cursors.DictCursor,
-                autocommit=True
-            )
+            # Prefer DATABASE_URL (Supabase connection string) if available
+            if config.Config.DATABASE_URL:
+                g.db = psycopg2.connect(
+                    config.Config.DATABASE_URL,
+                    cursor_factory=RealDictCursor
+                )
+            else:
+                # Fallback to individual parameters
+                g.db = psycopg2.connect(
+                    host=config.Config.POSTGRES_HOST,
+                    user=config.Config.POSTGRES_USER,
+                    password=config.Config.POSTGRES_PASSWORD,
+                    database=config.Config.POSTGRES_DB,
+                    port=config.Config.POSTGRES_PORT,
+                    cursor_factory=RealDictCursor
+                )
+            # PostgreSQL doesn't use autocommit by default, but we can set it
+            g.db.autocommit = True
             print("✅ Database connection successful")
         except Exception as e:
             print(f"❌ Database connection failed: {e}")
