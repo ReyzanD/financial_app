@@ -112,7 +112,7 @@ Isi form dengan konfigurasi berikut:
 - **Branch**: `main` (atau branch yang digunakan)
 - **Root Directory**: `backend` (penting! karena code ada di folder backend)
 - **Runtime**: `Python 3`
-- **Build Command**: `pip install -r requirements.txt`
+- **Build Command**: `pip install --upgrade pip setuptools wheel && pip install -r requirements.txt`
 - **Start Command**: `gunicorn app:create_app\(\) --bind 0.0.0.0:$PORT --workers 2 --timeout 120`
 
 **⚠️ CATATAN**:
