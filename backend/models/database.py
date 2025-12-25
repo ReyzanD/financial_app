@@ -48,8 +48,8 @@ def _get_connection_pool():
                         maxconn=maxconn,
                         dsn=database_url,
                         cursor_factory=RealDictCursor,
-                        # Connection timeout (seconds)
-                        connect_timeout=10,
+                        # Connection timeout (seconds) - increased for Supabase
+                        connect_timeout=30,
                         # Keep connections alive
                         keepalives=1,
                         keepalives_idle=30,
@@ -85,16 +85,18 @@ def get_db():
                         g.db = pool.getconn()
                     
                     # Quick ping to ensure connection is working
+                    # Note: Don't set autocommit with Supabase connection pooling (pgbouncer)
+                    # PgBouncer doesn't support autocommit mode
                     cursor = g.db.cursor()
                     cursor.execute("SELECT 1")
                     cursor.close()
-                    
-                    # Set autocommit for better performance
-                    g.db.autocommit = True
+                    # Commit the test query
+                    g.db.commit()
                     
                     break  # Success, exit retry loop
                     
-                except (psycopg2.OperationalError, psycopg2.InterfaceError) as e:
+                except (psycopg2.OperationalError, psycopg2.InterfaceError, psycopg2.DatabaseError) as e:
+                    error_str = str(e)
                     # Connection might be stale, try to get a new one
                     if 'db' in g and g.db:
                         try:
@@ -103,10 +105,17 @@ def get_db():
                             pass
                         g.pop('db', None)
                     
+                    # Log the error for debugging
+                    if attempt == 0:
+                        print(f"⚠️  Connection attempt {attempt + 1} failed: {error_str[:100]}")
+                    
                     if attempt < max_retries - 1:
-                        time.sleep(retry_delay * (attempt + 1))  # Exponential backoff
+                        wait_time = retry_delay * (attempt + 1)
+                        print(f"   Retrying in {wait_time}s... (attempt {attempt + 2}/{max_retries})")
+                        time.sleep(wait_time)  # Exponential backoff
                         continue
                     else:
+                        print(f"❌ All connection attempts failed")
                         raise
                         
         except psycopg2.OperationalError as e:
@@ -116,14 +125,18 @@ def get_db():
             if "Connection refused" in str(e) or "localhost" in str(e):
                 print("⚠️  HINT: Make sure DATABASE_URL is set in your environment variables.")
                 print("   For Render.com, set DATABASE_URL in your service environment variables.")
-            elif "Network is unreachable" in str(e) or "unreachable" in str(e).lower():
-                print("⚠️  HINT: Network connectivity issue detected.")
-                print("   For Supabase, try using Connection Pooling instead of direct connection:")
-                print("   1. Go to Supabase Dashboard → Project Settings → Database")
-                print("   2. Select 'Connection pooling' tab (not 'URI')")
-                print("   3. Copy the connection string (port 6543, not 5432)")
-                print("   4. Update DATABASE_URL in Render with the pooling URL")
-                print("   Connection pooling is more reliable for production environments.")
+            elif "Network is unreachable" in str(e) or "unreachable" in str(e).lower() or "timeout" in str(e).lower():
+                print("⚠️  HINT: Network connectivity issue or timeout detected.")
+                print("   Possible solutions:")
+                print("   1. Check if Supabase project is active (not paused)")
+                print("   2. Verify DATABASE_URL uses Connection Pooling (port 6543)")
+                print("   3. Check network connectivity from Render to Supabase")
+                print("   4. Try increasing connect_timeout in database.py (currently 30s)")
+                print("   5. If using direct connection, switch to Connection Pooling:")
+                print("      - Go to Supabase Dashboard → Project Settings → Database")
+                print("      - Select 'Connection pooling' tab (not 'URI')")
+                print("      - Copy the connection string (port 6543, not 5432)")
+                print("      - Update DATABASE_URL in Render with the pooling URL")
             raise e
         except Exception as e:
             print(f"❌ Database connection failed: {e}")
