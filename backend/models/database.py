@@ -6,6 +6,7 @@ import config
 import os
 import time
 import threading
+import json
 
 # Global connection pool
 _connection_pool = None
@@ -77,24 +78,87 @@ def get_db():
             
             for attempt in range(max_retries):
                 try:
+                    # #region agent log
+                    try:
+                        with open(r'd:\CODE\Project\FinancialApp\financial_app\.cursor\debug.log', 'a', encoding='utf-8') as f:
+                            f.write(json.dumps({"id":f"log_{int(time.time()*1000)}_getconn","timestamp":int(time.time()*1000),"location":"database.py:80","message":"Getting connection from pool","data":{"attempt":attempt,"max_retries":max_retries},"sessionId":"debug-session","runId":"run1","hypothesisId":"A"}) + "\n")
+                    except: pass
+                    # #endregion
                     g.db = pool.getconn()
+                    
+                    # #region agent log
+                    try:
+                        with open(r'd:\CODE\Project\FinancialApp\financial_app\.cursor\debug.log', 'a', encoding='utf-8') as f:
+                            f.write(json.dumps({"id":f"log_{int(time.time()*1000)}_conn_state","timestamp":int(time.time()*1000),"location":"database.py:82","message":"Connection state before operations","data":{"closed":g.db.closed,"autocommit":getattr(g.db,'autocommit',None),"status":g.db.status if hasattr(g.db,'status') else None},"sessionId":"debug-session","runId":"run1","hypothesisId":"A"}) + "\n")
+                    except: pass
+                    # #endregion
                     
                     # Test connection is alive
                     if g.db.closed:
                         pool.putconn(g.db, close=True)
                         g.db = pool.getconn()
                     
-                    # Quick ping to ensure connection is working
+                    # Reset connection state: rollback any pending transaction before setting autocommit
+                    # This prevents "set_session cannot be used inside a transaction" error
+                    try:
+                        if not g.db.autocommit:
+                            g.db.rollback()
+                    except:
+                        pass  # Ignore if rollback fails (connection might already be clean)
+                    
+                    # #region agent log
+                    try:
+                        with open(r'd:\CODE\Project\FinancialApp\financial_app\.cursor\debug.log', 'a', encoding='utf-8') as f:
+                            f.write(json.dumps({"id":f"log_{int(time.time()*1000)}_before_autocommit","timestamp":int(time.time()*1000),"location":"database.py:100","message":"Before setting autocommit=True (after rollback)","data":{"current_autocommit":getattr(g.db,'autocommit',None)},"sessionId":"debug-session","runId":"run1","hypothesisId":"A"}) + "\n")
+                    except: pass
+                    # #endregion
+                    
+                    # Set autocommit for better performance
+                    # This must be done BEFORE any queries to avoid transaction conflicts
+                    g.db.autocommit = True
+                    
+                    # #region agent log
+                    try:
+                        with open(r'd:\CODE\Project\FinancialApp\financial_app\.cursor\debug.log', 'a', encoding='utf-8') as f:
+                            f.write(json.dumps({"id":f"log_{int(time.time()*1000)}_after_autocommit","timestamp":int(time.time()*1000),"location":"database.py:107","message":"After setting autocommit=True","data":{"autocommit":g.db.autocommit},"sessionId":"debug-session","runId":"run1","hypothesisId":"A"}) + "\n")
+                    except: pass
+                    # #endregion
+                    
+                    # Quick ping to ensure connection is working (after autocommit is set)
+                    # #region agent log
+                    try:
+                        with open(r'd:\CODE\Project\FinancialApp\financial_app\.cursor\debug.log', 'a', encoding='utf-8') as f:
+                            f.write(json.dumps({"id":f"log_{int(time.time()*1000)}_before_ping","timestamp":int(time.time()*1000),"location":"database.py:110","message":"Before SELECT 1 ping","data":{"autocommit":g.db.autocommit},"sessionId":"debug-session","runId":"run1","hypothesisId":"E"}) + "\n")
+                    except: pass
+                    # #endregion
+                    
                     cursor = g.db.cursor()
                     cursor.execute("SELECT 1")
                     cursor.close()
                     
-                    # Set autocommit for better performance
-                    g.db.autocommit = True
+                    # #region agent log
+                    try:
+                        with open(r'd:\CODE\Project\FinancialApp\financial_app\.cursor\debug.log', 'a', encoding='utf-8') as f:
+                            f.write(json.dumps({"id":f"log_{int(time.time()*1000)}_after_ping","timestamp":int(time.time()*1000),"location":"database.py:116","message":"After SELECT 1 ping","data":{"autocommit":g.db.autocommit},"sessionId":"debug-session","runId":"run1","hypothesisId":"E"}) + "\n")
+                    except: pass
+                    # #endregion
+                    
+                    # #region agent log
+                    try:
+                        with open(r'd:\CODE\Project\FinancialApp\financial_app\.cursor\debug.log', 'a', encoding='utf-8') as f:
+                            f.write(json.dumps({"id":f"log_{int(time.time()*1000)}_after_autocommit","timestamp":int(time.time()*1000),"location":"database.py:98","message":"After setting autocommit=True","data":{"autocommit":g.db.autocommit},"sessionId":"debug-session","runId":"run1","hypothesisId":"A"}) + "\n")
+                    except: pass
+                    # #endregion
                     
                     break  # Success, exit retry loop
                     
                 except (psycopg2.OperationalError, psycopg2.InterfaceError) as e:
+                    # #region agent log
+                    try:
+                        with open(r'd:\CODE\Project\FinancialApp\financial_app\.cursor\debug.log', 'a', encoding='utf-8') as f:
+                            f.write(json.dumps({"id":f"log_{int(time.time()*1000)}_conn_error","timestamp":int(time.time()*1000),"location":"database.py:97","message":"Connection error in retry loop","data":{"error":str(e),"error_type":type(e).__name__,"attempt":attempt},"sessionId":"debug-session","runId":"run1","hypothesisId":"A"}) + "\n")
+                    except: pass
+                    # #endregion
                     # Connection might be stale, try to get a new one
                     if 'db' in g and g.db:
                         try:
@@ -110,6 +174,12 @@ def get_db():
                         raise
                         
         except psycopg2.OperationalError as e:
+            # #region agent log
+            try:
+                with open(r'd:\CODE\Project\FinancialApp\financial_app\.cursor\debug.log', 'a', encoding='utf-8') as f:
+                    f.write(json.dumps({"id":f"log_{int(time.time()*1000)}_final_error","timestamp":int(time.time()*1000),"location":"database.py:112","message":"Final OperationalError","data":{"error":str(e),"error_type":type(e).__name__,"set_session_in_error":"set_session" in str(e).lower()},"sessionId":"debug-session","runId":"run1","hypothesisId":"A"}) + "\n")
+            except: pass
+            # #endregion
             error_msg = f"❌ Database connection failed: {e}"
             print(error_msg)
             # Provide more helpful error message
@@ -126,6 +196,12 @@ def get_db():
                 print("   Connection pooling is more reliable for production environments.")
             raise e
         except Exception as e:
+            # #region agent log
+            try:
+                with open(r'd:\CODE\Project\FinancialApp\financial_app\.cursor\debug.log', 'a', encoding='utf-8') as f:
+                    f.write(json.dumps({"id":f"log_{int(time.time()*1000)}_general_error","timestamp":int(time.time()*1000),"location":"database.py:129","message":"General exception in get_db","data":{"error":str(e),"error_type":type(e).__name__,"set_session_in_error":"set_session" in str(e).lower()},"sessionId":"debug-session","runId":"run1","hypothesisId":"A"}) + "\n")
+            except: pass
+            # #endregion
             print(f"❌ Database connection failed: {e}")
             raise e
     
@@ -136,6 +212,25 @@ def close_db(e=None):
     db = g.pop('db', None)
     if db is not None:
         try:
+            # #region agent log
+            try:
+                with open(r'd:\CODE\Project\FinancialApp\financial_app\.cursor\debug.log', 'a', encoding='utf-8') as f:
+                    f.write(json.dumps({"id":f"log_{int(time.time()*1000)}_close_db","timestamp":int(time.time()*1000),"location":"database.py:180","message":"close_db called, returning connection to pool","data":{"autocommit":getattr(db,'autocommit',None),"closed":db.closed},"sessionId":"debug-session","runId":"run1","hypothesisId":"C"}) + "\n")
+            except: pass
+            # #endregion
+            
+            # Reset connection state before returning to pool
+            # Rollback any pending transaction to ensure clean state
+            try:
+                if not db.closed:
+                    if not db.autocommit:
+                        db.rollback()
+                    # Reset autocommit to default (False) for next use
+                    # The next get_db() will set it to True again
+                    db.autocommit = False
+            except:
+                pass  # Ignore errors during cleanup
+            
             pool = _get_connection_pool()
             # Return connection to pool (reuse for next request)
             pool.putconn(db)

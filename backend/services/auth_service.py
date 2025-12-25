@@ -9,6 +9,14 @@ from utils.encoding_utils import safe_print, safe_print_exc, safe_str
 class AuthService:
     @staticmethod
     def login_user(email, password):
+        import json
+        import time
+        # #region agent log
+        try:
+            with open(r'd:\CODE\Project\FinancialApp\financial_app\.cursor\debug.log', 'a', encoding='utf-8') as f:
+                f.write(json.dumps({"id":f"log_{int(time.time()*1000)}_login_start","timestamp":int(time.time()*1000),"location":"auth_service.py:11","message":"login_user called","data":{"email":email},"sessionId":"debug-session","runId":"run1","hypothesisId":"A"}) + "\n")
+        except: pass
+        # #endregion
         user = UserModel.get_user_by_email(email)
         
         if not user:
@@ -17,10 +25,22 @@ class AuthService:
         if not UserModel.verify_password(user['password_hash_232143'], password):
             return None, "Invalid password"
         
+        # #region agent log
+        try:
+            with open(r'd:\CODE\Project\FinancialApp\financial_app\.cursor\debug.log', 'a', encoding='utf-8') as f:
+                f.write(json.dumps({"id":f"log_{int(time.time()*1000)}_before_update","timestamp":int(time.time()*1000),"location":"auth_service.py:21","message":"Before update_user_profile in login","data":{"user_id":user['user_id_232143']},"sessionId":"debug-session","runId":"run1","hypothesisId":"A"}) + "\n")
+        except: pass
+        # #endregion
         # Update last login
         UserModel.update_user_profile(user['user_id_232143'], {
             'last_login_232143': datetime.now()
         })
+        # #region agent log
+        try:
+            with open(r'd:\CODE\Project\FinancialApp\financial_app\.cursor\debug.log', 'a', encoding='utf-8') as f:
+                f.write(json.dumps({"id":f"log_{int(time.time()*1000)}_after_update","timestamp":int(time.time()*1000),"location":"auth_service.py:23","message":"After update_user_profile in login","data":{},"sessionId":"debug-session","runId":"run1","hypothesisId":"A"}) + "\n")
+        except: pass
+        # #endregion
         
         # Create access token
         access_token = create_access_token(identity=user['user_id_232143'])
