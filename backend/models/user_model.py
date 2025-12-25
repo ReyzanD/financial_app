@@ -2,7 +2,6 @@ from .database import get_db
 import bcrypt
 import uuid
 from datetime import datetime
-import json
 
 class UserModel:
     @staticmethod
@@ -43,21 +42,7 @@ class UserModel:
 
     @staticmethod
     def update_user_profile(user_id, update_data):
-        import json
-        import time
-        # #region agent log
-        try:
-            with open(r'd:\CODE\Project\FinancialApp\financial_app\.cursor\debug.log', 'a', encoding='utf-8') as f:
-                f.write(json.dumps({"id":f"log_{int(time.time()*1000)}_update_start","timestamp":int(time.time()*1000),"location":"user_model.py:45","message":"update_user_profile called","data":{"user_id":user_id,"has_update_data":bool(update_data)},"sessionId":"debug-session","runId":"run1","hypothesisId":"D"}) + "\n")
-        except: pass
-        # #endregion
         db = get_db()
-        # #region agent log
-        try:
-            with open(r'd:\CODE\Project\FinancialApp\financial_app\.cursor\debug.log', 'a', encoding='utf-8') as f:
-                f.write(json.dumps({"id":f"log_{int(time.time()*1000)}_update_db_state","timestamp":int(time.time()*1000),"location":"user_model.py:47","message":"DB state in update_user_profile","data":{"autocommit":getattr(db,'autocommit',None)},"sessionId":"debug-session","runId":"run1","hypothesisId":"D"}) + "\n")
-        except: pass
-        # #endregion
         with db.cursor() as cursor:
             if not update_data:
                 return False
@@ -68,26 +53,8 @@ class UserModel:
             values = list(update_data.values())
             values.extend([datetime.now(), user_id])
             
-            # #region agent log
-            try:
-                with open(r'd:\CODE\Project\FinancialApp\financial_app\.cursor\debug.log', 'a', encoding='utf-8') as f:
-                    f.write(json.dumps({"id":f"log_{int(time.time()*1000)}_before_execute","timestamp":int(time.time()*1000),"location":"user_model.py:57","message":"Before execute UPDATE","data":{"autocommit":getattr(db,'autocommit',None)},"sessionId":"debug-session","runId":"run1","hypothesisId":"D"}) + "\n")
-            except: pass
-            # #endregion
             cursor.execute(sql, values)
-            # #region agent log
-            try:
-                with open(r'd:\CODE\Project\FinancialApp\financial_app\.cursor\debug.log', 'a', encoding='utf-8') as f:
-                    f.write(json.dumps({"id":f"log_{int(time.time()*1000)}_before_commit","timestamp":int(time.time()*1000),"location":"user_model.py:58","message":"Before db.commit()","data":{"autocommit":getattr(db,'autocommit',None)},"sessionId":"debug-session","runId":"run1","hypothesisId":"D"}) + "\n")
-            except: pass
-            # #endregion
             db.commit()
-            # #region agent log
-            try:
-                with open(r'd:\CODE\Project\FinancialApp\financial_app\.cursor\debug.log', 'a', encoding='utf-8') as f:
-                    f.write(json.dumps({"id":f"log_{int(time.time()*1000)}_after_commit","timestamp":int(time.time()*1000),"location":"user_model.py:59","message":"After db.commit()","data":{"rowcount":cursor.rowcount},"sessionId":"debug-session","runId":"run1","hypothesisId":"D"}) + "\n")
-            except: pass
-            # #endregion
             
             return cursor.rowcount > 0
 

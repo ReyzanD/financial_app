@@ -2,11 +2,19 @@ from .database import get_db
 import uuid
 from datetime import datetime, date, timedelta
 from decimal import Decimal
+import json
+import time
 
 class BudgetModel:
     @staticmethod
     def get_user_budgets(user_id, active_only=True):
         """Get all budgets for a user"""
+        # #region agent log
+        try:
+            with open(r'd:\CODE\Project\FinancialApp\financial_app\.cursor\debug.log', 'a', encoding='utf-8') as f:
+                f.write(json.dumps({"id":f"log_{int(time.time()*1000)}_get_budgets_start","timestamp":int(time.time()*1000),"location":"budget_model.py:8","message":"get_user_budgets called","data":{"user_id":user_id,"active_only":active_only},"sessionId":"debug-session","runId":"run1","hypothesisId":"A"}) + "\n")
+        except: pass
+        # #endregion
         db = get_db()
         with db.cursor() as cursor:
             if active_only:
@@ -29,7 +37,7 @@ class BudgetModel:
                     created_at_232143,
                     updated_at_232143
                 FROM budgets_232143 
-                WHERE user_id_232143 = %s AND is_active_232143 = 1
+                WHERE user_id_232143 = %s AND is_active_232143 = TRUE
                 ORDER BY period_start_232143 DESC
                 """
             else:
@@ -55,8 +63,21 @@ class BudgetModel:
                 WHERE user_id_232143 = %s
                 ORDER BY period_start_232143 DESC
                 """
+            # #region agent log
+            try:
+                with open(r'd:\CODE\Project\FinancialApp\financial_app\.cursor\debug.log', 'a', encoding='utf-8') as f:
+                    f.write(json.dumps({"id":f"log_{int(time.time()*1000)}_before_execute","timestamp":int(time.time()*1000),"location":"budget_model.py:58","message":"Before executing SQL query","data":{"active_only":active_only,"sql_has_true":"TRUE" in sql},"sessionId":"debug-session","runId":"run1","hypothesisId":"A"}) + "\n")
+            except: pass
+            # #endregion
             cursor.execute(sql, (user_id,))
-            return cursor.fetchall()
+            # #region agent log
+            try:
+                results = cursor.fetchall()
+                with open(r'd:\CODE\Project\FinancialApp\financial_app\.cursor\debug.log', 'a', encoding='utf-8') as f:
+                    f.write(json.dumps({"id":f"log_{int(time.time()*1000)}_after_execute","timestamp":int(time.time()*1000),"location":"budget_model.py:60","message":"After executing SQL query","data":{"result_count":len(results)},"sessionId":"debug-session","runId":"run1","hypothesisId":"A"}) + "\n")
+            except: pass
+            # #endregion
+            return results
     
     @staticmethod
     def get_budget_by_id(budget_id, user_id):
@@ -204,7 +225,7 @@ class BudgetModel:
                     THEN (spent_amount_232143 / amount_232143) * 100 
                     ELSE 0 END) as avg_usage_percentage
             FROM budgets_232143
-            WHERE user_id_232143 = %s AND is_active_232143 = 1
+            WHERE user_id_232143 = %s AND is_active_232143 = TRUE
             """
             cursor.execute(sql, (user_id,))
             return cursor.fetchone()
