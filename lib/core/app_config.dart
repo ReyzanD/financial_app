@@ -10,7 +10,7 @@ class AppConfig {
   // Format: https://your-app-name.onrender.com/api/v1
   static const String _prodBaseUrl = String.fromEnvironment(
     'API_BASE_URL',
-    defaultValue: 'https://your-app-name.onrender.com/api/v1',
+    defaultValue: 'https://financial-app-fua2.onrender.com/api/v1',
   );
 
   /// Determine if we're in production mode
@@ -30,10 +30,11 @@ class AppConfig {
   ///
   /// Returns production URL if in production mode, otherwise development URL.
   static String get baseUrl {
-    if (isProduction ||
-        _prodBaseUrl != 'https://financial-app-fua2.onrender.com/api/v1') {
+    // Always use production URL if it's not the placeholder
+    if (_prodBaseUrl != 'https://your-app-name.onrender.com/api/v1') {
       return _prodBaseUrl;
     }
+    // Fallback to dev URL
     return _devBaseUrl;
   }
 

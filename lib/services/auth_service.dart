@@ -46,8 +46,11 @@ class AuthService {
     String fullName,
   ) async {
     try {
+      final url = '$baseUrl/register';
+      LoggerService.info('Registering user at: $url');
+      
       final response = await http.post(
-        Uri.parse('$baseUrl/register'),
+        Uri.parse(url),
         headers: {'Content-Type': 'application/json; charset=utf-8'},
         body: json.encode({
           'email': email,
@@ -55,6 +58,9 @@ class AuthService {
           'full_name': fullName,
         }),
       );
+
+      LoggerService.info('Registration response status: ${response.statusCode}');
+      LoggerService.info('Registration response body: ${response.body}');
 
       if (response.statusCode == 201) {
         // Ensure response body is properly decoded with UTF-8 encoding
@@ -64,8 +70,15 @@ class AuthService {
       } else {
         // Ensure error response is properly decoded with UTF-8 encoding
         final responseBody = utf8.decode(response.bodyBytes);
-        final error = json.decode(responseBody);
-        throw Exception(error['error'] ?? 'Registration failed');
+        
+        // Try to parse as JSON, if fails, return the raw response
+        try {
+          final error = json.decode(responseBody);
+          throw Exception(error['error'] ?? 'Registration failed');
+        } catch (e) {
+          // If response is not JSON (e.g., HTML 404 page), throw with status code
+          throw Exception('Registration failed (${response.statusCode}): $responseBody');
+        }
       }
     } catch (e) {
       LoggerService.error('Error during registration', error: e);

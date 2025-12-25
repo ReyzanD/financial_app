@@ -1,59 +1,114 @@
 import psycopg2
+from psycopg2 import pool
 from psycopg2.extras import RealDictCursor
 from flask import g
 import config
 import os
+import time
+import threading
+
+# Global connection pool
+_connection_pool = None
+_pool_lock = threading.Lock()
+
+def _get_connection_pool():
+    """Initialize and return connection pool (thread-safe singleton)"""
+    global _connection_pool
+    
+    if _connection_pool is None:
+        with _pool_lock:
+            # Double-check pattern
+            if _connection_pool is None:
+                try:
+                    database_url = config.Config.DATABASE_URL or os.getenv('DATABASE_URL')
+                    
+                    if not database_url or not database_url.strip():
+                        # Fallback to individual parameters (development only)
+                        is_production = os.getenv('PORT') or os.getenv('RENDER')
+                        if is_production:
+                            raise ValueError("DATABASE_URL must be set in production")
+                        
+                        # Build connection string from individual parameters
+                        database_url = (
+                            f"postgresql://{config.Config.POSTGRES_USER}:{config.Config.POSTGRES_PASSWORD}"
+                            f"@{config.Config.POSTGRES_HOST}:{config.Config.POSTGRES_PORT}/{config.Config.POSTGRES_DB}"
+                        )
+                    
+                    # Create connection pool
+                    # For production: minconn=2, maxconn=10 (adjust based on traffic)
+                    # For development: minconn=1, maxconn=5
+                    is_production = os.getenv('PORT') or os.getenv('RENDER')
+                    minconn = 2 if is_production else 1
+                    maxconn = 10 if is_production else 5
+                    
+                    print(f"🔗 Initializing database connection pool (min={minconn}, max={maxconn})...")
+                    
+                    _connection_pool = pool.ThreadedConnectionPool(
+                        minconn=minconn,
+                        maxconn=maxconn,
+                        dsn=database_url,
+                        cursor_factory=RealDictCursor,
+                        # Connection timeout (seconds)
+                        connect_timeout=10,
+                        # Keep connections alive
+                        keepalives=1,
+                        keepalives_idle=30,
+                        keepalives_interval=10,
+                        keepalives_count=5
+                    )
+                    
+                    print("✅ Database connection pool initialized successfully")
+                    
+                except Exception as e:
+                    print(f"❌ Failed to create connection pool: {e}")
+                    raise
+    
+    return _connection_pool
 
 def get_db():
+    """Get database connection from pool (reuses connections efficiently)"""
     if 'db' not in g:
         try:
-            # Prefer DATABASE_URL (Supabase/Render connection string) if available
-            # Check both from config and directly from env to ensure we catch it
-            database_url = config.Config.DATABASE_URL or os.getenv('DATABASE_URL')
+            pool = _get_connection_pool()
             
-            if database_url and database_url.strip():
-                # Use connection string (production/preferred method)
-                print(f"🔗 Connecting to database using DATABASE_URL...")
+            # Get connection from pool
+            max_retries = 3
+            retry_delay = 0.5  # seconds
+            
+            for attempt in range(max_retries):
                 try:
-                    g.db = psycopg2.connect(
-                        database_url,
-                        cursor_factory=RealDictCursor
-                    )
-                except psycopg2.OperationalError as conn_error:
-                    raise
-                print("✅ Database connection successful (using DATABASE_URL)")
-            else:
-                # Fallback to individual parameters (development only)
-                # In production, this should not happen - DATABASE_URL should be set
-                # Check if we're in production (Render sets PORT, or we can check for Render-specific env vars)
-                is_production = os.getenv('PORT') or os.getenv('RENDER') or not os.getenv('FLASK_ENV')
-                
-                if is_production:
-                    # In production, DATABASE_URL must be set
-                    error_msg = (
-                        "❌ DATABASE_URL environment variable is not set in production! "
-                        "Please set DATABASE_URL in Render Dashboard → Environment tab. "
-                        f"Current env vars: PORT={os.getenv('PORT')}, RENDER={os.getenv('RENDER')}, "
-                        f"FLASK_ENV={os.getenv('FLASK_ENV')}"
-                    )
-                    print(error_msg)
-                    raise ValueError(error_msg)
-                
-                # Development fallback
-                print(f"⚠️  DATABASE_URL not set, using individual parameters (development mode)")
-                print(f"   Connecting to: {config.Config.POSTGRES_HOST}:{config.Config.POSTGRES_PORT}/{config.Config.POSTGRES_DB}")
-                g.db = psycopg2.connect(
-                    host=config.Config.POSTGRES_HOST,
-                    user=config.Config.POSTGRES_USER,
-                    password=config.Config.POSTGRES_PASSWORD,
-                    database=config.Config.POSTGRES_DB,
-                    port=config.Config.POSTGRES_PORT,
-                    cursor_factory=RealDictCursor
-                )
-                print("✅ Database connection successful (using individual parameters)")
-            
-            # PostgreSQL doesn't use autocommit by default, but we can set it
-            g.db.autocommit = True
+                    g.db = pool.getconn()
+                    
+                    # Test connection is alive
+                    if g.db.closed:
+                        pool.putconn(g.db, close=True)
+                        g.db = pool.getconn()
+                    
+                    # Quick ping to ensure connection is working
+                    cursor = g.db.cursor()
+                    cursor.execute("SELECT 1")
+                    cursor.close()
+                    
+                    # Set autocommit for better performance
+                    g.db.autocommit = True
+                    
+                    break  # Success, exit retry loop
+                    
+                except (psycopg2.OperationalError, psycopg2.InterfaceError) as e:
+                    # Connection might be stale, try to get a new one
+                    if 'db' in g and g.db:
+                        try:
+                            pool.putconn(g.db, close=True)
+                        except:
+                            pass
+                        g.pop('db', None)
+                    
+                    if attempt < max_retries - 1:
+                        time.sleep(retry_delay * (attempt + 1))  # Exponential backoff
+                        continue
+                    else:
+                        raise
+                        
         except psycopg2.OperationalError as e:
             error_msg = f"❌ Database connection failed: {e}"
             print(error_msg)
@@ -73,12 +128,42 @@ def get_db():
         except Exception as e:
             print(f"❌ Database connection failed: {e}")
             raise e
+    
     return g.db
 
 def close_db(e=None):
+    """Return connection to pool (doesn't actually close, just returns to pool)"""
     db = g.pop('db', None)
     if db is not None:
-        db.close()
+        try:
+            pool = _get_connection_pool()
+            # Return connection to pool (reuse for next request)
+            pool.putconn(db)
+        except Exception as e:
+            # If pool is closed or error, just close the connection
+            try:
+                db.close()
+            except:
+                pass
+
+def close_all_connections():
+    """Close all connections in pool (called on app shutdown)"""
+    global _connection_pool
+    if _connection_pool is not None:
+        try:
+            _connection_pool.closeall()
+            print("✅ All database connections closed")
+        except:
+            pass
+        _connection_pool = None
 
 def init_app(app):
+    """Initialize database for Flask app"""
     app.teardown_appcontext(close_db)
+    
+    # Close all connections on app shutdown
+    @app.teardown_appcontext
+    def shutdown_db(error):
+        # Connection is already returned to pool in close_db
+        # This is just for cleanup if needed
+        pass
