@@ -48,13 +48,9 @@ class AuthService:
         db = get_db()
         cursor = db.cursor()
         try:
-            # Step 1: Create the user (MySQL will generate the ID)
+            # Step 1: Create the user (returns user_id)
             safe_print(f'Creating user: {email}')
-            UserModel.create_user(cursor, email, password, full_name, phone_number)
-            
-            # Step 2: Get the user we just created to retrieve their new ID
-            newly_created_user = UserModel.get_user_by_email(email)
-            user_id = newly_created_user['user_id_232143']
+            user_id = UserModel.create_user(cursor, email, password, full_name, phone_number)
             safe_print(f'User created with ID: {user_id}')
             
             # Create default categories for the user

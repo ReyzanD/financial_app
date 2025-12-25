@@ -7,16 +7,19 @@ import json
 class UserModel:
     @staticmethod
     def create_user(cursor, email, password, full_name, phone_number=None):
+        # Generate UUID for user_id (SQLite doesn't support DEFAULT gen_random_uuid())
+        user_id = str(uuid.uuid4())
         password_hash = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
         
         sql = """
         INSERT INTO users_232143 (
-            email_232143, password_hash_232143, 
+            user_id_232143, email_232143, password_hash_232143, 
             full_name_232143, phone_number_232143, created_at_232143
-        ) VALUES (%s, %s, %s, %s, %s)
+        ) VALUES (%s, %s, %s, %s, %s, %s)
         """
         
-        cursor.execute(sql, (email, password_hash, full_name, phone_number, datetime.now()))
+        cursor.execute(sql, (user_id, email, password_hash, full_name, phone_number, datetime.now()))
+        return user_id
 
     @staticmethod
     def get_user_by_email(email):

@@ -1,2 +1,4 @@
+# Procfile for production deployment (optional - not used for local SQLite setup)
+# This file is kept for reference if you want to deploy to cloud hosting later
 web: gunicorn app:create_app\(\) --bind 0.0.0.0:$PORT --workers 4 --threads 2 --timeout 120 --keep-alive 5 --max-requests 1000 --max-requests-jitter 100 --worker-class sync
 

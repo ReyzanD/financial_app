@@ -1,81 +1,68 @@
 """
-Migration script to add location fields to transactions table
+Migration script to add location fields to transactions table (SQLite version)
 Run this to enable location-based recommendations
+Note: These columns are already included in the SQLite schema, but this script
+can be used to add them to existing databases if needed.
 """
 
 import sys
-import psycopg2
-from psycopg2.extras import RealDictCursor
+import sqlite3
 from config import Config
 
-# Database connection - use Config for connection
-
 def run_migration():
-    """Add location fields to transactions table"""
+    """Add location fields to transactions table (SQLite)"""
     print("🔄 Starting migration: Adding location fields...")
     print("   This will add: location_name, latitude, longitude columns")
     
-    # Connect to database
-    if Config.DATABASE_URL:
-        db = psycopg2.connect(Config.DATABASE_URL, cursor_factory=RealDictCursor)
-    else:
-        db = psycopg2.connect(
-            host=Config.POSTGRES_HOST,
-            user=Config.POSTGRES_USER,
-            password=Config.POSTGRES_PASSWORD,
-            database=Config.POSTGRES_DB,
-            port=Config.POSTGRES_PORT,
-            cursor_factory=RealDictCursor
-        )
+    db_path = Config.SQLITE_DB_PATH
     
     try:
+        db = sqlite3.connect(db_path)
+        db.execute("PRAGMA foreign_keys=ON")
+        
         with db.cursor() as cursor:
-            # Check if columns already exist (PostgreSQL way)
-            cursor.execute("""
-                SELECT column_name 
-                FROM information_schema.columns 
-                WHERE table_schema = 'public' 
-                AND table_name = 'transactions_232143'
-                AND column_name IN ('location_name_232143', 'latitude_232143', 'longitude_232143')
-            """)
-            existing_columns = [row['column_name'] for row in cursor.fetchall()]
+            # Check if columns already exist (SQLite way)
+            cursor.execute("PRAGMA table_info(transactions_232143)")
+            columns = {row[1]: row for row in cursor.fetchall()}
             
-            if len(existing_columns) == 3:
+            existing_location_cols = [
+                col for col in ['location_name_232143', 'latitude_232143', 'longitude_232143']
+                if col in columns
+            ]
+            
+            if len(existing_location_cols) == 3:
                 print("✅ All location columns already exist!")
                 return
             
             # Add location_name column
-            if 'location_name_232143' not in existing_columns:
+            if 'location_name_232143' not in columns:
                 print("   Adding location_name_232143 column...")
                 cursor.execute("""
                     ALTER TABLE transactions_232143
-                    ADD COLUMN IF NOT EXISTS location_name_232143 TEXT
+                    ADD COLUMN location_name_232143 TEXT
                 """)
-                db.commit()
                 print("   ✅ location_name_232143 added")
             else:
                 print("   ⏭️  location_name_232143 already exists")
             
             # Add latitude column
-            if 'latitude_232143' not in existing_columns:
+            if 'latitude_232143' not in columns:
                 print("   Adding latitude_232143 column...")
                 cursor.execute("""
                     ALTER TABLE transactions_232143
-                    ADD COLUMN IF NOT EXISTS latitude_232143 DECIMAL(10, 7)
+                    ADD COLUMN latitude_232143 DECIMAL(10, 8)
                 """)
-                db.commit()
                 print("   ✅ latitude_232143 added")
             else:
                 print("   ⏭️  latitude_232143 already exists")
             
             # Add longitude column
-            if 'longitude_232143' not in existing_columns:
+            if 'longitude_232143' not in columns:
                 print("   Adding longitude_232143 column...")
                 cursor.execute("""
                     ALTER TABLE transactions_232143
-                    ADD COLUMN IF NOT EXISTS longitude_232143 DECIMAL(10, 7)
+                    ADD COLUMN longitude_232143 DECIMAL(11, 8)
                 """)
-                db.commit()
                 print("   ✅ longitude_232143 added")
             else:
                 print("   ⏭️  longitude_232143 already exists")
@@ -88,14 +75,14 @@ def run_migration():
                     ON transactions_232143(location_name_232143)
                     WHERE location_name_232143 IS NOT NULL
                 """)
-                db.commit()
                 print("   ✅ Index created")
             except Exception as e:
-                if 'already exists' in str(e).lower():
+                if 'already exists' in str(e).lower() or 'duplicate' in str(e).lower():
                     print("   ⏭️  Index already exists")
                 else:
                     print(f"   ⚠️  Warning creating index: {e}")
             
+            db.commit()
             print("\n✅ Migration completed successfully!")
             print("\n📊 Columns added:")
             print("   - location_name_232143 (TEXT)")
@@ -115,7 +102,7 @@ def run_migration():
 
 if __name__ == '__main__':
     print("=" * 60)
-    print("  LOCATION FIELDS MIGRATION")
+    print("  LOCATION FIELDS MIGRATION (SQLite)")
     print("=" * 60)
     run_migration()
     print("=" * 60)

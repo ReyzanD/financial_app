@@ -1,5 +1,6 @@
 #!/bin/bash
-# Build script for Render deployment
+# Build script for cloud deployment (optional - not used for local SQLite setup)
+# This file is kept for reference if you want to deploy to cloud hosting later
 # Ensures setuptools and wheel are installed before other packages
 
 set -e

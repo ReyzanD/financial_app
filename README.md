@@ -37,7 +37,7 @@ Lihat file [LICENSE](LICENSE) untuk informasi lengkap tentang hak cipta dan bata
 
 ### Backend
 - **Python Flask** - Web framework
-- **PostgreSQL** - Database
+- **SQLite** - Database (local file, no internet required)
 - **JWT** - Authentication
 - **RESTful API** - API architecture
 
@@ -48,8 +48,9 @@ Lihat file [LICENSE](LICENSE) untuk informasi lengkap tentang hak cipta dan bata
 - Flutter SDK (3.7.0 or higher)
 - Dart SDK
 - Python 3.8+
-- PostgreSQL database
 - Git
+
+**Note**: This branch uses SQLite (local file database) - no PostgreSQL or cloud database required.
 
 ### Installation
 
@@ -71,8 +72,11 @@ pip install -r requirements.txt
 ```
 
 4. Konfigurasi environment variables:
-   - Copy `.env.example` ke `.env`
-   - Isi dengan konfigurasi database dan API keys Anda
+   ```bash
+   cd backend
+   cp .env.example .env
+   # Edit .env dan set JWT_SECRET_KEY (generate dengan: openssl rand -hex 32)
+   ```
 
 5. Jalankan aplikasi:
 ```bash
@@ -86,9 +90,31 @@ flutter run
 
 ## Dokumentasi
 
-- [Deployment Guide](docs/DEPLOYMENT_GUIDE.md) - Panduan deployment aplikasi
+- [Local Setup Guide](docs/LOCAL_SETUP.md) - **Panduan setup lokal dengan SQLite (Recommended untuk branch ini)**
+- [Deployment Guide](docs/DEPLOYMENT_GUIDE.md) - Panduan deployment ke cloud (Render/Supabase) - Optional
 - [Obfuscation Guide](docs/OBFUSCATION_GUIDE.md) - Panduan melindungi kode dengan obfuscation
 - [Security Guidelines](SECURITY.md) - Panduan keamanan dan best practices
+
+## Quick Start (Local SQLite)
+
+Untuk setup cepat dengan SQLite lokal:
+
+1. **Backend**:
+   ```bash
+   cd backend
+   pip install -r requirements.txt
+   cp .env.example .env
+   # Edit .env dan set JWT_SECRET_KEY
+   python app.py
+   ```
+
+2. **Flutter**:
+   ```bash
+   flutter pub get
+   flutter run
+   ```
+
+Database akan dibuat otomatis saat pertama kali menjalankan backend. Lihat [Local Setup Guide](docs/LOCAL_SETUP.md) untuk detail lengkap.
 
 ## Contributing
 

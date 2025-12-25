@@ -1,6 +1,15 @@
-# Deployment Guide: Render + Supabase
+# Deployment Guide (Legacy - PostgreSQL/Render)
+
+**NOTE: This guide is for reference only. This branch uses SQLite for fully local operation.**
+
+For local SQLite setup, see [Local Setup Guide](LOCAL_SETUP.md).
+
+---
+
+# Legacy Deployment Guide: Render + Supabase
 
 Panduan lengkap untuk deploy backend Flask ke Render dan setup database PostgreSQL di Supabase.
+**This is kept for reference but not used in the current SQLite-only branch.**
 
 ## Daftar Isi
 

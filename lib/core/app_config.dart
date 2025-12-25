@@ -1,40 +1,31 @@
 /// Centralized application configuration
 ///
 /// This file manages environment-specific settings like API base URLs.
-/// For production builds, use build flags or environment variables.
+///
+/// **LOCAL MODE CONFIGURATION**
+/// This branch is configured for fully local deployment with SQLite database.
+/// All API calls go to local backend (localhost:5000) - no Render/Supabase dependency.
+///
+/// For physical device testing, use setCustomBaseUrl() with your computer's IP address.
 class AppConfig {
-  // Development API URL (for Android emulator)
+  // Local API URL (for Android emulator)
+  // This is the default URL for local development with SQLite
   static const String _devBaseUrl = 'http://10.0.2.2:5000/api/v1';
-
-  // Production API URL - Update this with your Render URL after deployment
-  // Format: https://your-app-name.onrender.com/api/v1
-  static const String _prodBaseUrl = String.fromEnvironment(
-    'API_BASE_URL',
-    defaultValue: 'https://financial-app-fua2.onrender.com/api/v1',
-  );
 
   /// Determine if we're in production mode
   ///
-  /// Checks for production build flag or environment variable.
-  /// Defaults to false (development mode).
+  /// Always returns false for local mode deployment.
   static bool get isProduction {
-    // Check if PRODUCTION flag is set
-    const isProdFlag = bool.fromEnvironment('PRODUCTION', defaultValue: false);
-    // Also check if API_BASE_URL is set (indicates production)
-    const apiUrlSet =
-        String.fromEnvironment('API_BASE_URL', defaultValue: '') != '';
-    return isProdFlag || apiUrlSet;
+    // Local mode - always return false
+    return false;
   }
 
   /// Get the base URL for API calls
   ///
-  /// Returns production URL if in production mode, otherwise development URL.
+  /// Always returns local backend URL for this branch.
+  /// Use setCustomBaseUrl() for physical device testing.
   static String get baseUrl {
-    // Always use production URL if it's not the placeholder
-    if (_prodBaseUrl != 'https://your-app-name.onrender.com/api/v1') {
-      return _prodBaseUrl;
-    }
-    // Fallback to dev URL
+    // Always use local URL for this branch
     return _devBaseUrl;
   }
 

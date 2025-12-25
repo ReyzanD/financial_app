@@ -5,6 +5,7 @@ from services.recommendation_service import RecommendationService
 from datetime import datetime
 from utils.encoding_utils import safe_print, safe_str
 import json
+import config
 
 transaction_bp = Blueprint('transactions_232143', __name__)
 
@@ -55,8 +56,8 @@ def get_transactions():
         # Transform the data to match frontend expectations
         formatted_transactions = []
         for t in transactions:
-            # Debug: Print first transaction to see structure
-            if len(formatted_transactions) == 0:
+            # Debug: Print first transaction to see structure (only in DEBUG mode)
+            if config.Config.DEBUG and len(formatted_transactions) == 0:
                 safe_print(f"Sample transaction from DB:")
                 safe_print(f"  location_name: {t.get('location_name')}")
                 safe_print(f"  latitude: {t.get('latitude')}")

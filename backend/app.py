@@ -1,5 +1,6 @@
 import sys
 import io
+import os
 from flask import Flask, jsonify
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager
@@ -25,6 +26,17 @@ if sys.platform == 'win32':
 def create_app():
     app = Flask(__name__)
     app.config.from_object(config.Config)
+    
+    # Initialize SQLite database if using SQLite
+    if config.Config.USE_SQLITE:
+        from init_sqlite_db import init_database
+        db_path = config.Config.SQLITE_DB_PATH
+        if not os.path.exists(db_path):
+            print(f"📦 SQLite database not found. Initializing at: {db_path}")
+            if not init_database(db_path):
+                print("⚠️  Warning: Failed to initialize SQLite database. Continuing anyway...")
+        else:
+            print(f"✅ SQLite database found at: {db_path}")
     
     # Initialize extensions
     CORS(app)
@@ -102,4 +114,4 @@ def create_app():
 
 if __name__ == '__main__':
     app = create_app()
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    app.run(debug=config.Config.DEBUG, host='0.0.0.0', port=config.Config.PORT)

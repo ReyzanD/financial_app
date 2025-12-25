@@ -1,6 +1,12 @@
+# Production Readiness Checklist (Legacy - PostgreSQL/Render)
+
+**NOTE: This checklist is for PostgreSQL/Render deployment. For SQLite local setup, see [Local Setup Guide](LOCAL_SETUP.md).**
+
+---
+
 # Production Readiness Checklist
 
-Dokumen ini berisi checklist untuk memastikan aplikasi siap untuk production release.
+Dokumen ini berisi checklist untuk memastikan aplikasi siap untuk production release dengan PostgreSQL dan Render.
 
 ## 🔐 Security Checklist
 
