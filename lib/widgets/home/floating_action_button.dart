@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:financial_app/Screen/add_transaction_screen.dart';
 import 'package:provider/provider.dart';
-import 'package:financial_app/services/data_service.dart';
+import 'package:financial_app/state/app_state.dart';
 
 class HomeFloatingActionButton extends StatelessWidget {
   const HomeFloatingActionButton({super.key});
@@ -19,9 +19,9 @@ class HomeFloatingActionButton extends StatelessWidget {
 
         // If transaction was added successfully, refresh the dashboard
         if (result == true && context.mounted) {
-          // Trigger data refresh using DataService
-          final dataService = Provider.of<DataService>(context, listen: false);
-          await dataService.refreshAllData();
+          // Trigger data refresh using AppState which has DataService
+          final appState = Provider.of<AppState>(context, listen: false);
+          await appState.refreshData(forceRefresh: true);
 
           // Show success feedback
           ScaffoldMessenger.of(context).showSnackBar(

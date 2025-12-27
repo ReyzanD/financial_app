@@ -1,85 +1,55 @@
-import 'dart:convert';
-import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:financial_app/core/app_config.dart';
 import 'package:financial_app/services/pin_auth_service.dart';
 import 'package:financial_app/services/api_service.dart';
+import 'package:financial_app/services/local_auth_service.dart';
+import 'package:financial_app/services/local_database_service.dart';
 import 'package:financial_app/services/logger_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+/// Authentication Service - Now uses local database (no backend server required)
 class AuthService {
-  static String get baseUrl => AppConfig.effectiveAuthBaseUrl;
+  final LocalAuthService _localAuth = LocalAuthService();
   final FlutterSecureStorage _storage = const FlutterSecureStorage();
   final PinAuthService _pinAuthService = PinAuthService();
 
+  /// Login user (local database)
   Future<Map<String, dynamic>?> login(String email, String password) async {
     try {
       // Clear any cached data from previous sessions before login
       ApiService.clearCache();
 
-      final response = await http.post(
-        Uri.parse('$baseUrl/login'),
-        headers: {'Content-Type': 'application/json; charset=utf-8'},
-        body: json.encode({'email': email, 'password': password}),
-      );
-
-      if (response.statusCode == 200) {
-        // Ensure response body is properly decoded with UTF-8 encoding
-        final responseBody = utf8.decode(response.bodyBytes);
-        final data = json.decode(responseBody);
-        await _storage.write(key: 'auth_token', value: data['access_token']);
-        return data;
-      } else {
-        // Ensure error response is properly decoded with UTF-8 encoding
-        final responseBody = utf8.decode(response.bodyBytes);
-        final error = json.decode(responseBody);
-        throw Exception(error['error'] ?? 'Login failed');
-      }
+      final result = await _localAuth.login(email, password);
+      
+      // Store token (user_id) in secure storage
+      await _storage.write(key: 'auth_token', value: result['access_token']);
+      
+      return result;
     } catch (e) {
+      LoggerService.error('Login error', error: e);
       throw Exception('Login error: $e');
     }
   }
 
+  /// Register new user (local database)
   Future<Map<String, dynamic>?> register(
     String email,
     String password,
     String fullName,
   ) async {
     try {
-      final url = '$baseUrl/register';
-      LoggerService.info('Registering user at: $url');
+      LoggerService.info('Registering user locally: $email');
       
-      final response = await http.post(
-        Uri.parse(url),
-        headers: {'Content-Type': 'application/json; charset=utf-8'},
-        body: json.encode({
-          'email': email,
-          'password': password,
-          'full_name': fullName,
-        }),
+      final result = await _localAuth.register(
+        email: email,
+        password: password,
+        fullName: fullName,
       );
 
-      LoggerService.info('Registration response status: ${response.statusCode}');
-      LoggerService.info('Registration response body: ${response.body}');
-
-      if (response.statusCode == 201) {
-        // Ensure response body is properly decoded with UTF-8 encoding
-        final responseBody = utf8.decode(response.bodyBytes);
-        final data = json.decode(responseBody);
-        return data;
-      } else {
-        // Ensure error response is properly decoded with UTF-8 encoding
-        final responseBody = utf8.decode(response.bodyBytes);
-        
-        // Try to parse as JSON, if fails, return the raw response
-        try {
-          final error = json.decode(responseBody);
-          throw Exception(error['error'] ?? 'Registration failed');
-        } catch (e) {
-          // If response is not JSON (e.g., HTML 404 page), throw with status code
-          throw Exception('Registration failed (${response.statusCode}): $responseBody');
-        }
-      }
+      LoggerService.info('Registration successful: $email');
+      return {
+        'message': 'User registered successfully',
+        'user': result,
+      };
     } catch (e) {
       LoggerService.error('Error during registration', error: e);
       throw Exception('Registration error: $e');
@@ -92,6 +62,9 @@ class AuthService {
 
     // Clear all API caches (critical to prevent data leakage between users)
     ApiService.clearCache();
+
+    // Logout from local auth
+    await _localAuth.logout();
 
     // Clear auth token and secure storage
     await _storage.delete(key: 'auth_token');
@@ -108,43 +81,47 @@ class AuthService {
     return await _storage.read(key: 'auth_token');
   }
 
-  /// Validates if the JWT token has correct format (3 segments)
+  /// Validates if token exists (for local auth, token is user_id)
   bool isValidTokenFormat(String? token) {
     if (token == null || token.isEmpty) return false;
-    final segments = token.split('.');
-    return segments.length == 3;
+    // For local auth, token is UUID (36 chars)
+    return token.length == 36;
   }
 
   /// Checks if user has a valid token stored
   Future<bool> hasValidToken() async {
     final token = await getToken();
-    return isValidTokenFormat(token);
+    if (token == null || token.isEmpty) return false;
+    
+    // Verify user still exists in database
+    try {
+      final user = await _localAuth.getCurrentUser();
+      return user != null;
+    } catch (e) {
+      return false;
+    }
   }
 
+  /// Delete account (local database)
   Future<void> deleteAccount() async {
     try {
-      final token = await getToken();
-      if (token == null || token.isEmpty) {
+      final userId = await getToken();
+      if (userId == null || userId.isEmpty) {
         throw Exception('Not authenticated');
       }
 
-      final response = await http.delete(
-        Uri.parse('$baseUrl/account'),
-        headers: {
-          'Content-Type': 'application/json; charset=utf-8',
-          'Authorization': 'Bearer $token',
-        },
+      // Delete user from local database (cascade will delete all related data)
+      final db = await LocalDatabaseService().database;
+      await db.delete(
+        'users_232143',
+        where: 'user_id_232143 = ?',
+        whereArgs: [userId],
       );
 
-      if (response.statusCode == 200) {
-        await logout();
-      } else {
-        // Ensure error response is properly decoded with UTF-8 encoding
-        final responseBody = utf8.decode(response.bodyBytes);
-        final error = json.decode(responseBody);
-        throw Exception(error['error'] ?? 'Failed to delete account');
-      }
+      await logout();
+      LoggerService.info('Account deleted successfully');
     } catch (e) {
+      LoggerService.error('Delete account error', error: e);
       throw Exception('Delete account error: $e');
     }
   }

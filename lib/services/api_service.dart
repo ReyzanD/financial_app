@@ -1,11 +1,15 @@
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:financial_app/services/logger_service.dart';
+import 'package:financial_app/services/local_data_service.dart';
+
 /// API Service - Main facade for all API operations
 ///
-/// This service provides a unified interface for all backend API calls.
-/// It delegates to specific API clients (TransactionApi, BudgetApi, etc.)
-/// and handles caching, error handling, and authentication.
+/// This service provides a unified interface for all data operations.
+/// It now uses local database (no backend server required).
+/// All operations are performed locally using SQLite.
 ///
 /// Features:
-/// - Automatic token management
+/// - Automatic token management (user_id stored as token)
 /// - Response caching (2-minute TTL)
 /// - Error handling and logging
 /// - Request/response transformation
@@ -18,27 +22,13 @@
 ///
 /// Author: Financial App Team
 /// Last Updated: 2024
-
-import 'dart:convert';
-import 'package:http/http.dart' as http;
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:financial_app/core/app_config.dart';
-import 'package:financial_app/services/logger_service.dart';
-import 'package:financial_app/services/api/transaction_api.dart';
-import 'package:financial_app/services/api/budget_api.dart';
-import 'package:financial_app/services/api/category_api.dart';
-import 'package:financial_app/services/api/goal_api.dart';
-import 'package:financial_app/services/api/obligation_api.dart';
-import 'package:financial_app/services/api/base_api.dart';
-
 class ApiService {
-  static String get baseUrl => AppConfig.effectiveBaseUrl;
+  final LocalDataService _localData = LocalDataService();
   final FlutterSecureStorage _storage = const FlutterSecureStorage();
 
   // Cache layer for frequently accessed data
   static final Map<String, dynamic> _cache = {};
   static final Map<String, DateTime> _cacheTimestamps = {};
-  static const Duration _cacheDuration = Duration(minutes: 2);
 
   Future<Map<String, String>> _getHeaders() async {
     final token = await _storage.read(key: 'auth_token');
@@ -51,33 +41,6 @@ class ApiService {
   // Public methods for use by other services
   Future<Map<String, String>> getHeaders() async {
     return await _getHeaders();
-  }
-
-  dynamic handleResponse(http.Response response) {
-    return _handleResponse(response);
-  }
-
-  // Check if cached data is still valid
-  bool _isCacheValid(String key) {
-    if (!_cache.containsKey(key)) return false;
-    final timestamp = _cacheTimestamps[key];
-    if (timestamp == null) return false;
-    return DateTime.now().difference(timestamp) < _cacheDuration;
-  }
-
-  // Get cached data or null
-  dynamic _getCached(String key) {
-    if (_isCacheValid(key)) {
-      LoggerService.cache('HIT', key);
-      return _cache[key];
-    }
-    return null;
-  }
-
-  // Store data in cache
-  void _setCache(String key, dynamic data) {
-    _cache[key] = data;
-    _cacheTimestamps[key] = DateTime.now();
   }
 
   // Clear specific cache or all
@@ -103,180 +66,22 @@ class ApiService {
     _cachedSummaryMonth = null;
   }
 
-  // Generic GET request with caching
-  Future<dynamic> get(String endpoint, {bool useCache = true}) async {
-    // Check cache first for GET requests
-    if (useCache) {
-      final cached = _getCached(endpoint);
-      if (cached != null) return cached;
-    }
-
-    LoggerService.apiRequest('GET', endpoint);
-    try {
-      final response = await http.get(
-        Uri.parse('$baseUrl/$endpoint'),
-        headers: await _getHeaders(),
-      ).timeout(
-        const Duration(seconds: 30),
-        onTimeout: () {
-          throw Exception('Connection timeout');
-        },
-      );
-
-      LoggerService.apiResponse(response.statusCode, endpoint);
-      final data = _handleResponse(response);
-
-      // Cache the response
-      if (useCache) {
-        _setCache(endpoint, data);
-      }
-
-      return data;
-    } catch (e) {
-      LoggerService.error('GET request failed', error: e);
-      rethrow;
-    }
-  }
-
-  // Generic POST request
-  Future<dynamic> post(String endpoint, dynamic data) async {
-    LoggerService.apiRequest('POST', endpoint);
-    try {
-      final response = await http.post(
-        Uri.parse('$baseUrl/$endpoint'),
-        headers: await _getHeaders(),
-        body: json.encode(data),
-      ).timeout(
-        const Duration(seconds: 30),
-        onTimeout: () {
-          throw Exception('Connection timeout');
-        },
-      );
-
-      // Clear cache on mutations
-      clearCache();
-
-      LoggerService.apiResponse(response.statusCode, endpoint);
-      return _handleResponse(response);
-    } catch (e) {
-      LoggerService.error('POST request failed', error: e);
-      rethrow;
-    }
-  }
-
-  // Generic PUT request
-  Future<dynamic> put(String endpoint, dynamic data) async {
-    LoggerService.apiRequest('PUT', endpoint);
-    try {
-      final response = await http.put(
-        Uri.parse('$baseUrl/$endpoint'),
-        headers: await _getHeaders(),
-        body: json.encode(data),
-      ).timeout(
-        const Duration(seconds: 30),
-        onTimeout: () {
-          throw Exception('Connection timeout');
-        },
-      );
-
-      // Clear cache on mutations
-      clearCache();
-
-      LoggerService.apiResponse(response.statusCode, endpoint);
-      return _handleResponse(response);
-    } catch (e) {
-      LoggerService.error('PUT request failed', error: e);
-      rethrow;
-    }
-  }
-
-  // Generic DELETE request
-  Future<dynamic> delete(String endpoint) async {
-    LoggerService.apiRequest('DELETE', endpoint);
-    try {
-      final response = await http.delete(
-        Uri.parse('$baseUrl/$endpoint'),
-        headers: await _getHeaders(),
-      ).timeout(
-        const Duration(seconds: 30),
-        onTimeout: () {
-          throw Exception('Connection timeout');
-        },
-      );
-
-      // Clear cache on mutations
-      clearCache();
-
-      LoggerService.apiResponse(response.statusCode, endpoint);
-      return _handleResponse(response);
-    } catch (e) {
-      LoggerService.error('DELETE request failed', error: e);
-      rethrow;
-    }
-  }
-
-  dynamic _handleResponse(http.Response response) {
-    // Ensure response body is properly decoded with UTF-8 encoding
-    final responseBody = utf8.decode(response.bodyBytes);
-
-    switch (response.statusCode) {
-      case 200:
-        return json.decode(responseBody);
-      case 201:
-        return json.decode(responseBody);
-      case 400:
-        final errorBody = json.decode(responseBody);
-        throw Exception('Bad request: ${errorBody['error'] ?? 'Invalid data'}');
-      case 401:
-        throw Exception('Unauthorized - Please login again');
-      case 403:
-        throw Exception('Forbidden - Access denied');
-      case 404:
-        throw Exception('Not found - Resource does not exist');
-      case 422:
-        // Unprocessable Entity - Validation failed
-        try {
-          final errorBody = json.decode(responseBody);
-          final errorMsg =
-              errorBody['error'] ?? errorBody['message'] ?? 'Validation failed';
-          throw Exception('Validation error: $errorMsg');
-        } catch (e) {
-          throw Exception('Validation error: ${responseBody}');
-        }
-      case 500:
-        LoggerService.error('Server error', error: responseBody);
-        throw Exception('Server error - Please try again later');
-      default:
-        LoggerService.error(
-          'HTTP ${response.statusCode}',
-          error: responseBody,
-        );
-        throw Exception('Error ${response.statusCode}: ${responseBody}');
-    }
-  }
-
-  // User Profile
+  // User Profile - Using local database
   Future<Map<String, dynamic>> getUserProfile() async {
-    return await get('auth/profile');
+    final user = await _localData.authService.getCurrentUser();
+    if (user == null) throw Exception('Not authenticated');
+    return {'user': user};
   }
 
-  // Update User Profile
+  // Update User Profile - Using local database
   Future<Map<String, dynamic>> updateProfile(
     Map<String, dynamic> profileData,
   ) async {
-    try {
-      final response = await http.put(
-        Uri.parse('$baseUrl/auth/profile'),
-        headers: await _getHeaders(),
-        body: json.encode(profileData),
-      );
-      return _handleResponse(response);
-    } catch (e) {
-      throw Exception('Network error: $e');
-    }
+    // TODO: Implement update profile in LocalAuthService
+    throw Exception('Update profile not yet implemented in local database');
   }
 
-  // Transactions - Delegated to TransactionApi
+  // Transactions - Using local database
   /// Get transactions with pagination support
   /// Returns a map with 'transactions' list and pagination metadata
   Future<Map<String, dynamic>> getTransactions({
@@ -290,7 +95,7 @@ class ApiService {
     double? maxAmount,
     String? search,
   }) async {
-    return await TransactionApi.getTransactions(
+    return await _localData.getTransactions(
       limit: limit,
       offset: offset,
       type: type,
@@ -300,7 +105,6 @@ class ApiService {
       search: search,
     );
   }
-
 
   // Cache for financial summary
   Map<String, dynamic>? _cachedSummary;
@@ -329,32 +133,10 @@ class ApiService {
     }
 
     try {
-      final response = await TransactionApi.getFinancialSummary(
+      final result = await _localData.getFinancialSummary(
         year: targetYear,
         month: targetMonth,
       );
-      final List<dynamic> summaryList = response['summary'] ?? [];
-      LoggerService.debug('[ApiService] Summary list from API: $summaryList');
-      Map<String, dynamic> summaryMap = {};
-      for (var item in summaryList) {
-        final type = item['type_232143']?.toString() ?? '';
-        LoggerService.debug('[ApiService] Processing type: $type, amount: ${item['total_amount_232143']}');
-        summaryMap[type] = {
-          'total_amount': double.parse(
-            item['total_amount_232143']?.toString() ?? '0',
-          ),
-          'transaction_count': int.parse(
-            item['transaction_count']?.toString() ?? '0',
-          ),
-        };
-      }
-      LoggerService.debug('[ApiService] Final summary map: $summaryMap');
-
-      final result = {
-        'year': targetYear,
-        'month': targetMonth,
-        'summary': summaryMap,
-      };
 
       _cachedSummary = result;
       _cachedSummaryYear = targetYear;
@@ -370,71 +152,61 @@ class ApiService {
     }
   }
 
-  // Budgets - Delegated to BudgetApi
+  // Budgets - Using local database
   Future<List<dynamic>> getBudgets({bool activeOnly = true}) async {
-    return await BudgetApi.getBudgets();
+    return await _localData.getBudgets(activeOnly: activeOnly);
   }
 
   Future<Map<String, dynamic>> getBudget(String budgetId) async {
-    return await BudgetApi.getBudget(budgetId);
+    final budgets = await _localData.getBudgets(activeOnly: false);
+    final budget = budgets.firstWhere(
+      (b) => b['budget_id_232143'] == budgetId,
+      orElse: () => {},
+    );
+    return {'budget': budget};
   }
 
   Future<Map<String, dynamic>> createBudget(
     Map<String, dynamic> budgetData,
   ) async {
-    return await BudgetApi.createBudget(budgetData);
+    return await _localData.addBudget(budgetData);
   }
 
   Future<Map<String, dynamic>> updateBudget(
     String budgetId,
     Map<String, dynamic> budgetData,
   ) async {
-    return await BudgetApi.updateBudget(budgetId, budgetData);
+    // TODO: Implement update budget in LocalDataService
+    throw Exception('Update budget not yet implemented in local database');
   }
 
   Future<Map<String, dynamic>> deleteBudget(String budgetId) async {
-    return await BudgetApi.deleteBudget(budgetId);
+    // TODO: Implement delete budget in LocalDataService
+    throw Exception('Delete budget not yet implemented in local database');
   }
 
   Future<Map<String, dynamic>> getBudgetsSummary() async {
     try {
-      // Try to get analytics from backend
-      return await BudgetApi.getBudgetAnalytics();
+      // Calculate summary from local budgets
+      final budgets = await getBudgets();
+      final summary = _calculateBudgetsSummary(budgets);
+      LoggerService.debug(
+        'Calculated budgets summary: ${summary['total_budgets']} budgets, '
+        '${summary['active_budgets']} active',
+      );
+      return summary;
     } catch (e) {
-      // If endpoint doesn't exist (404) or other error, calculate summary from budgets
-      final errorStr = e.toString().toLowerCase();
-      if (errorStr.contains('404') || errorStr.contains('not found')) {
-        LoggerService.debug(
-          'Budget analytics endpoint not found (404), calculating from budgets',
-        );
-      } else {
-        LoggerService.warning(
-          'Budget analytics endpoint error, calculating from budgets',
-          error: e,
-        );
-      }
-
-      try {
-        final budgets = await getBudgets();
-        final summary = _calculateBudgetsSummary(budgets);
-        LoggerService.debug(
-          'Calculated budgets summary: ${summary['total_budgets']} budgets, '
-          '${summary['active_budgets']} active',
-        );
-        return summary;
-      } catch (e2) {
-        LoggerService.error('Error calculating budgets summary', error: e2);
-        // Return empty summary as fallback
-        return {
-          'total_budgets': 0,
-          'total_amount': 0.0,
-          'total_spent': 0.0,
-          'total_remaining': 0.0,
-          'over_budget_count': 0,
-          'active_budgets': 0,
-          'average_usage_percent': 0.0,
-        };
-      }
+      LoggerService.error('Error calculating budgets summary', error: e);
+      // Return empty summary as fallback
+      return {
+        'total_budgets': 0,
+        'total_amount': 0.0,
+        'total_spent': 0.0,
+        'total_remaining': 0.0,
+        'over_budget_count': 0,
+        'active_budgets': 0,
+        'average_usage_percent': 0.0,
+      };
     }
   }
 
@@ -467,15 +239,15 @@ class ApiService {
       'total_remaining': totalAmount - totalSpent,
       'over_budget_count': overBudgetCount,
       'active_budgets': activeBudgets,
-      'average_usage_percent': totalAmount > 0
-          ? (totalSpent / totalAmount) * 100
-          : 0.0,
+      'average_usage_percent':
+          totalAmount > 0 ? (totalSpent / totalAmount) * 100 : 0.0,
     };
   }
 
-  // AI Recommendations
+  // AI Recommendations - TODO: Implement in local database
   Future<dynamic> getAIRecommendations() async {
-    return await get('transactions_232143/recommendations');
+    // TODO: Implement AI recommendations using local data
+    return {'recommendations': []};
   }
 
   // Cache for categories (5 minutes)
@@ -483,7 +255,7 @@ class ApiService {
   static DateTime? _categoriesCacheTime;
   static const _categoriesCacheDuration = Duration(minutes: 5);
 
-  // Get Categories (with caching)
+  // Get Categories (with caching) - Using local database
   Future<List<dynamic>> getCategories({bool forceRefresh = false}) async {
     // Return cached data if valid and not forcing refresh
     if (!forceRefresh &&
@@ -492,13 +264,15 @@ class ApiService {
         DateTime.now().difference(_categoriesCacheTime!) <
             _categoriesCacheDuration) {
       LoggerService.cache('HIT', 'categories_232143');
-      LoggerService.debug('Using cached categories (${_cachedCategories!.length} items)');
+      LoggerService.debug(
+        'Using cached categories (${_cachedCategories!.length} items)',
+      );
       return _cachedCategories!;
     }
 
     try {
-      LoggerService.debug('Fetching fresh categories from API...');
-      final categories = await CategoryApi.getCategories();
+      LoggerService.debug('Fetching categories from local database...');
+      final categories = await _localData.getCategories();
 
       // Update cache
       _cachedCategories = categories;
@@ -517,30 +291,33 @@ class ApiService {
     }
   }
 
-  // Add Transaction - Delegated to TransactionApi with cache clearing
+  // Add Transaction - Using local database
   Future<Map<String, dynamic>> addTransaction(
     Map<String, dynamic> transactionData,
   ) async {
-    final result = await TransactionApi.addTransaction(transactionData);
+    final result = await _localData.addTransaction(transactionData);
     // Clear caches after adding transaction
     LoggerService.debug('Clearing transaction caches after add...');
     _clearTransactionCaches();
-    BaseApiClient.clearCache(); // Also clear base API cache
+    clearCache(); // Clear cache
     return result;
   }
 
-  // Update Transaction - Delegated to TransactionApi with cache clearing
+  // Update Transaction - Using local database
   Future<Map<String, dynamic>> updateTransaction(
     String transactionId,
     Map<String, dynamic> transactionData,
   ) async {
     try {
       LoggerService.debug('Updating transaction: $transactionId');
-      final result = await TransactionApi.updateTransaction(transactionId, transactionData);
+      final result = await _localData.updateTransaction(
+        transactionId,
+        transactionData,
+      );
       // Clear caches after updating transaction
       LoggerService.debug('Clearing transaction caches after update...');
       _clearTransactionCaches();
-      BaseApiClient.clearCache();
+      clearCache();
       return result;
     } catch (e) {
       LoggerService.error('Update error', error: e);
@@ -548,16 +325,16 @@ class ApiService {
     }
   }
 
-  // Delete Transaction - Delegated to TransactionApi with cache clearing
+  // Delete Transaction - Using local database
   Future<Map<String, dynamic>> deleteTransaction(String transactionId) async {
     try {
       LoggerService.debug('Deleting transaction: $transactionId');
-      final result = await TransactionApi.deleteTransaction(transactionId);
+      await _localData.deleteTransaction(transactionId);
       // Clear all transaction-related caches after deletion
       LoggerService.debug('Clearing transaction caches...');
       _clearTransactionCaches();
-      BaseApiClient.clearCache();
-      return result;
+      clearCache();
+      return {'message': 'Transaction deleted successfully'};
     } catch (e) {
       LoggerService.error('Delete error', error: e);
       rethrow;
@@ -588,28 +365,35 @@ class ApiService {
     _lastSummaryFetch = null;
   }
 
-  // Goals - Delegated to GoalApi
+  // Goals - Using local database
   Future<List<dynamic>> getGoals({bool includeCompleted = false}) async {
-    return await GoalApi.getGoals();
+    return await _localData.getGoals();
   }
 
   Future<Map<String, dynamic>> getGoal(String goalId) async {
-    return await GoalApi.getGoal(goalId);
+    final goals = await _localData.getGoals();
+    final goal = goals.firstWhere(
+      (g) => g['goal_id_232143'] == goalId,
+      orElse: () => {},
+    );
+    return {'goal': goal};
   }
 
   Future<Map<String, dynamic>> createGoal(Map<String, dynamic> goalData) async {
-    return await GoalApi.createGoal(goalData);
+    return await _localData.addGoal(goalData);
   }
 
   Future<Map<String, dynamic>> updateGoal(
     String goalId,
     Map<String, dynamic> goalData,
   ) async {
-    return await GoalApi.updateGoal(goalId, goalData);
+    // TODO: Implement update goal in LocalDataService
+    throw Exception('Update goal not yet implemented in local database');
   }
 
   Future<Map<String, dynamic>> deleteGoal(String goalId) async {
-    return await GoalApi.deleteGoal(goalId);
+    // TODO: Implement delete goal in LocalDataService
+    throw Exception('Delete goal not yet implemented in local database');
   }
 
   /// Add money to a goal (contribution)
@@ -617,96 +401,174 @@ class ApiService {
     String goalId,
     double amount,
   ) async {
-    return await GoalApi.addContribution(goalId, {'amount': amount});
+    // TODO: Implement add contribution in LocalDataService
+    throw Exception(
+      'Add goal contribution not yet implemented in local database',
+    );
   }
 
   Future<Map<String, dynamic>> getGoalsSummary() async {
-    // Note: GoalApi doesn't have getGoalsSummary, so we'll keep the original implementation
-    return await get('goals/summary');
+    // Calculate summary from local goals
+    try {
+      final goals = await getGoals();
+      double totalTarget = 0.0;
+      double totalCurrent = 0.0;
+      int completedCount = 0;
+
+      for (var goal in goals) {
+        totalTarget +=
+            (goal['target_amount_232143'] as num?)?.toDouble() ?? 0.0;
+        totalCurrent +=
+            (goal['current_amount_232143'] as num?)?.toDouble() ?? 0.0;
+        if (goal['is_completed_232143'] == 1) {
+          completedCount++;
+        }
+      }
+
+      return {
+        'total_goals': goals.length,
+        'total_target': totalTarget,
+        'total_current': totalCurrent,
+        'completed_count': completedCount,
+        'overall_progress':
+            totalTarget > 0 ? (totalCurrent / totalTarget * 100) : 0.0,
+      };
+    } catch (e) {
+      LoggerService.error('Error calculating goals summary', error: e);
+      return {
+        'total_goals': 0,
+        'total_target': 0.0,
+        'total_current': 0.0,
+        'completed_count': 0,
+        'overall_progress': 0.0,
+      };
+    }
   }
 
-  // Obligations - Delegated to ObligationApi
+  // Obligations - Using local database
   Future<List<dynamic>> getObligations({String? type}) async {
-    return await ObligationApi.getObligations(type: type);
+    final userId = await _storage.read(key: 'auth_token');
+    if (userId == null) throw Exception('User not authenticated');
+    return await _localData.getObligations(type: type);
   }
 
   Future<List<dynamic>> getUpcomingObligations({int days = 7}) async {
-    return await ObligationApi.getUpcomingObligations(days: days);
+    final userId = await _storage.read(key: 'auth_token');
+    if (userId == null) throw Exception('User not authenticated');
+    return await _localData.getUpcomingObligations(days: days);
   }
 
   Future<Map<String, dynamic>> createObligation(
     Map<String, dynamic> obligationData,
   ) async {
-    return await ObligationApi.createObligation(obligationData);
+    final userId = await _storage.read(key: 'auth_token');
+    if (userId == null) throw Exception('User not authenticated');
+    final result = await _localData.addObligation(obligationData);
+    clearCache(); // Clear cache on mutations
+    return result;
   }
 
   Future<Map<String, dynamic>> updateObligation(
     String obligationId,
     Map<String, dynamic> obligationData,
   ) async {
-    return await ObligationApi.updateObligation(obligationId, obligationData);
+    final userId = await _storage.read(key: 'auth_token');
+    if (userId == null) throw Exception('User not authenticated');
+    final result = await _localData.updateObligation(
+      obligationId,
+      obligationData,
+    );
+    clearCache(); // Clear cache on mutations
+    return result;
   }
 
   Future<Map<String, dynamic>> deleteObligation(String obligationId) async {
-    return await ObligationApi.deleteObligation(obligationId);
+    final userId = await _storage.read(key: 'auth_token');
+    if (userId == null) throw Exception('User not authenticated');
+    final result = await _localData.deleteObligation(obligationId);
+    clearCache(); // Clear cache on mutations
+    return result;
   }
 
   Future<Map<String, dynamic>> recordObligationPayment(
     String obligationId,
     Map<String, dynamic> paymentData,
   ) async {
-    return await ObligationApi.recordObligationPayment(obligationId, paymentData);
+    final userId = await _storage.read(key: 'auth_token');
+    if (userId == null) throw Exception('User not authenticated');
+    final result = await _localData.recordObligationPayment(
+      obligationId,
+      paymentData,
+    );
+    clearCache(); // Clear cache on mutations
+    return result;
   }
 
   /// Calculate obligations summary from obligations list
   Future<Map<String, dynamic>> getObligationsSummary() async {
-    return await ObligationApi.getObligationsSummary();
+    final userId = await _storage.read(key: 'auth_token');
+    if (userId == null) throw Exception('User not authenticated');
+    final obligations = await _localData.getObligations();
+    return _localData.calculateObligationsSummary(obligations);
   }
 
-  // Recurring Transactions
+  // Recurring Transactions - Using local database
   Future<List<dynamic>> getRecurringTransactions({
     bool activeOnly = true,
   }) async {
-    String endpoint = 'recurring-transactions';
-    if (!activeOnly) {
-      endpoint += '?active_only=false';
-    }
-    final response = await get(endpoint);
-    return response['recurring_transactions'] ?? [];
+    // Get recurring transactions from local database
+    final transactions = await _localData.getTransactions(limit: 1000);
+    var recurring =
+        (transactions['transactions'] as List)
+            .where((t) => (t['is_recurring_232143'] as int? ?? 0) == 1)
+            .toList();
+    return recurring;
   }
 
   Future<Map<String, dynamic>> getRecurringTransaction(String id) async {
-    final response = await get('recurring-transactions/$id');
-    return response['recurring_transaction'] ?? {};
+    final transaction = await _localData.getTransaction(id);
+    return {'recurring_transaction': transaction ?? {}};
   }
 
   Future<Map<String, dynamic>> createRecurringTransaction(
     Map<String, dynamic> data,
   ) async {
-    return await post('recurring-transactions', data);
+    data['is_recurring'] = true;
+    return await addTransaction(data);
   }
 
   Future<Map<String, dynamic>> updateRecurringTransaction(
     String id,
     Map<String, dynamic> data,
   ) async {
-    return await put('recurring-transactions/$id', data);
+    return await updateTransaction(id, data);
   }
 
   Future<void> deleteRecurringTransaction(String id) async {
-    await delete('recurring-transactions/$id');
+    await deleteTransaction(id);
   }
 
   Future<Map<String, dynamic>> pauseRecurringTransaction(String id) async {
-    return await post('recurring-transactions/$id/pause', {});
+    return await updateTransaction(id, {'is_recurring': false});
   }
 
   Future<Map<String, dynamic>> resumeRecurringTransaction(String id) async {
-    return await post('recurring-transactions/$id/resume', {});
+    return await updateTransaction(id, {'is_recurring': true});
   }
 
   Future<List<dynamic>> getUpcomingRecurringTransactions({int days = 7}) async {
-    final response = await get('recurring-transactions/upcoming?days=$days');
-    return response['upcoming'] ?? [];
+    // Get upcoming recurring transactions from local database
+    final now = DateTime.now();
+    final endDate = now.add(Duration(days: days));
+    final transactions = await _localData.getTransactions(
+      limit: 1000,
+      startDate: now.toIso8601String().split('T')[0],
+      endDate: endDate.toIso8601String().split('T')[0],
+    );
+    var recurring =
+        (transactions['transactions'] as List)
+            .where((t) => (t['is_recurring_232143'] as int? ?? 0) == 1)
+            .toList();
+    return recurring;
   }
 }

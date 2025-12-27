@@ -1,15 +1,16 @@
-# Deployment Guide (Legacy - PostgreSQL/Render)
+# Deployment Guide (Legacy - DEPRECATED)
 
-**NOTE: This guide is for reference only. This branch uses SQLite for fully local operation.**
+**⚠️ DEPRECATED: Aplikasi sekarang berjalan fully standalone tanpa backend server.**
 
-For local SQLite setup, see [Local Setup Guide](LOCAL_SETUP.md).
+Guide ini disimpan untuk referensi historis saja. Aplikasi sekarang menggunakan SQLite lokal di device dan tidak memerlukan backend server, Render, atau Supabase.
+
+Untuk setup aplikasi standalone, lihat [Local Setup Guide](LOCAL_SETUP.md).
 
 ---
 
-# Legacy Deployment Guide: Render + Supabase
+# Legacy Deployment Guide: Render + Supabase (DEPRECATED)
 
-Panduan lengkap untuk deploy backend Flask ke Render dan setup database PostgreSQL di Supabase.
-**This is kept for reference but not used in the current SQLite-only branch.**
+**TIDAK DIGUNAKAN LAGI** - Panduan ini untuk referensi historis saja.
 
 ## Daftar Isi
 

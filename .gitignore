@@ -120,3 +120,13 @@ ios/Runner.xcworkspace/
 test_data/
 mock_data/
 debug_logs/
+
+# Backend (no longer needed - app is standalone)
+backend/
+*.py
+__pycache__/
+*.pyc
+requirements.txt
+Procfile
+runtime.txt
+.env.example

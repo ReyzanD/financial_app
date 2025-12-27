@@ -96,9 +96,7 @@ class AIService {
         final firstItem = backendResponse[0];
         if (firstItem is Map) {
           backendRecs = Map<String, dynamic>.from(
-            firstItem.map(
-              (key, value) => MapEntry(key.toString(), value),
-            ),
+            firstItem.map((key, value) => MapEntry(key.toString(), value)),
           );
         }
       }
@@ -249,30 +247,31 @@ class AIService {
   ) {
     // Use the same logic as _selectBestRecommendation but return all recommendations
     final allRecs = <Map<String, dynamic>>[];
-    final savingsRate = analysis['savingsRate'] as double;
-    final totalExpense = analysis['totalExpense'] as double;
-    final totalIncome = analysis['totalIncome'] as double;
+    final savingsRate = (analysis['savingsRate'] as num?)?.toDouble() ?? 0.0;
+    final totalExpense = (analysis['totalExpense'] as num?)?.toDouble() ?? 0.0;
+    final totalIncome = (analysis['totalIncome'] as num?)?.toDouble() ?? 0.0;
     final highestCategory = analysis['highestCategory'] as String?;
-    final highestAmount = analysis['highestAmount'] as double;
+    final highestAmount =
+        (analysis['highestAmount'] as num?)?.toDouble() ?? 0.0;
     final transactionCount = analysis['transactionCount'] as int? ?? 0;
 
     // Enhanced analysis data
     final trendsRaw = analysis['trends'];
-    final trends = trendsRaw is Map
-        ? Map<String, dynamic>.from(
-            trendsRaw.map(
-              (key, value) => MapEntry(key.toString(), value),
-            ),
-          )
-        : <String, dynamic>{};
+    final trends =
+        trendsRaw is Map
+            ? Map<String, dynamic>.from(
+              trendsRaw.map((key, value) => MapEntry(key.toString(), value)),
+            )
+            : <String, dynamic>{};
     final dayOfWeekPatternsRaw = analysis['day_of_week_patterns'];
-    final dayOfWeekPatterns = dayOfWeekPatternsRaw is Map
-        ? Map<String, dynamic>.from(
-            dayOfWeekPatternsRaw.map(
-              (key, value) => MapEntry(key.toString(), value),
-            ),
-          )
-        : <String, dynamic>{};
+    final dayOfWeekPatterns =
+        dayOfWeekPatternsRaw is Map
+            ? Map<String, dynamic>.from(
+              dayOfWeekPatternsRaw.map(
+                (key, value) => MapEntry(key.toString(), value),
+              ),
+            )
+            : <String, dynamic>{};
 
     // Add all the recommendation logic here (same as _selectBestRecommendation)
     // Recommendation 1: Low savings rate
@@ -386,9 +385,15 @@ class AIService {
 
     // Recommendation 4: Budget exceeded
     for (var budget in budgets) {
-      final spent = (budget['spent'] ?? 0).toDouble();
-      final limit = (budget['limit'] ?? 1).toDouble();
+      // Map database field names to expected field names
+      final spentAmount = budget['spent_amount_232143'] ?? budget['spent'];
+      final budgetAmount =
+          budget['amount_232143'] ?? budget['limit'] ?? budget['amount'];
+      final spent = ((spentAmount as num?) ?? 0).toDouble();
+      final limit = ((budgetAmount as num?) ?? 1).toDouble();
       if (spent > limit) {
+        final categoryName =
+            budget['category_name'] ?? budget['name_232143'] ?? 'Unknown';
         final confidence = _calculateConfidence(
           dataQuality: 0.9,
           patternStrength: ((spent - limit) / limit).clamp(0.0, 1.0),
@@ -401,7 +406,7 @@ class AIService {
         );
         final actionability = _calculateActionabilityScore(
           action: 'review_budget',
-          category: budget['category_name'],
+          category: categoryName,
         );
         final score = _calculateRecommendationScore(
           confidence: confidence,
@@ -412,10 +417,10 @@ class AIService {
         );
         allRecs.add({
           'recommendation':
-              '⚠️ Budget "${budget['category_name']}" melebihi batas! Anda telah menghabiskan Rp ${spent.toInt()} dari budget Rp ${limit.toInt()}. Pertimbangkan untuk mengurangi pengeluaran kategori ini.',
+              '⚠️ Budget "$categoryName" melebihi batas! Anda telah menghabiskan Rp ${spent.toInt()} dari budget Rp ${limit.toInt()}. Pertimbangkan untuk mengurangi pengeluaran kategori ini.',
           'potential_savings': potentialSavings,
           'priority': 'high',
-          'category': budget['category_name'],
+          'category': categoryName,
           'icon': 'danger',
           'confidence': confidence,
           'impact': impact,
@@ -429,7 +434,7 @@ class AIService {
     // Add trend-based recommendations
     final expenseTrend = trends['expense_trend'] as String?;
     final expenseChangePercent =
-        trends['expense_change_percent'] as double? ?? 0.0;
+        (trends['expense_change_percent'] as num?)?.toDouble() ?? 0.0;
     if (expenseTrend == 'increasing' && expenseChangePercent > 15) {
       final potentialSavings = totalExpense * 0.1;
       final impact = _calculateImpactScore(
@@ -465,8 +470,9 @@ class AIService {
     // Day-of-week pattern recommendation
     final peakDay = dayOfWeekPatterns['peak_day'] as String?;
     final peakDayAmount =
-        dayOfWeekPatterns['peak_day_amount'] as double? ?? 0.0;
-    final avgPerDay = dayOfWeekPatterns['average_per_day'] as double? ?? 0.0;
+        (dayOfWeekPatterns['peak_day_amount'] as num?)?.toDouble() ?? 0.0;
+    final avgPerDay =
+        (dayOfWeekPatterns['average_per_day'] as num?)?.toDouble() ?? 0.0;
     if (peakDay != null && peakDayAmount > avgPerDay * 1.3) {
       final confidence = _calculateConfidence(
         dataQuality: transactionCount > 15 ? 0.8 : 0.6,
@@ -509,8 +515,8 @@ class AIService {
 
     // Sort by score
     allRecs.sort((a, b) {
-      final scoreA = a['score'] as double? ?? 0.0;
-      final scoreB = b['score'] as double? ?? 0.0;
+      final scoreA = (a['score'] as num?)?.toDouble() ?? 0.0;
+      final scoreB = (b['score'] as num?)?.toDouble() ?? 0.0;
       return scoreB.compareTo(scoreA);
     });
 
@@ -522,30 +528,31 @@ class AIService {
     List<dynamic> budgets,
     List<dynamic> goals,
   ) {
-    final savingsRate = analysis['savingsRate'] as double;
-    final totalExpense = analysis['totalExpense'] as double;
-    final totalIncome = analysis['totalIncome'] as double;
+    final savingsRate = (analysis['savingsRate'] as num?)?.toDouble() ?? 0.0;
+    final totalExpense = (analysis['totalExpense'] as num?)?.toDouble() ?? 0.0;
+    final totalIncome = (analysis['totalIncome'] as num?)?.toDouble() ?? 0.0;
     final highestCategory = analysis['highestCategory'] as String?;
-    final highestAmount = analysis['highestAmount'] as double;
+    final highestAmount =
+        (analysis['highestAmount'] as num?)?.toDouble() ?? 0.0;
     final transactionCount = analysis['transactionCount'] as int? ?? 0;
 
     // Enhanced analysis data
     final trendsRaw = analysis['trends'];
-    final trends = trendsRaw is Map
-        ? Map<String, dynamic>.from(
-            trendsRaw.map(
-              (key, value) => MapEntry(key.toString(), value),
-            ),
-          )
-        : <String, dynamic>{};
+    final trends =
+        trendsRaw is Map
+            ? Map<String, dynamic>.from(
+              trendsRaw.map((key, value) => MapEntry(key.toString(), value)),
+            )
+            : <String, dynamic>{};
     final dayOfWeekPatternsRaw = analysis['day_of_week_patterns'];
-    final dayOfWeekPatterns = dayOfWeekPatternsRaw is Map
-        ? Map<String, dynamic>.from(
-            dayOfWeekPatternsRaw.map(
-              (key, value) => MapEntry(key.toString(), value),
-            ),
-          )
-        : <String, dynamic>{};
+    final dayOfWeekPatterns =
+        dayOfWeekPatternsRaw is Map
+            ? Map<String, dynamic>.from(
+              dayOfWeekPatternsRaw.map(
+                (key, value) => MapEntry(key.toString(), value),
+              ),
+            )
+            : <String, dynamic>{};
     final frequentMerchants =
         analysis['frequent_merchants'] as List<dynamic>? ?? [];
 
@@ -555,7 +562,7 @@ class AIService {
     // Enhanced recommendation: Trend-based alerts
     final expenseTrend = trends['expense_trend'] as String?;
     final expenseChangePercent =
-        trends['expense_change_percent'] as double? ?? 0.0;
+        (trends['expense_change_percent'] as num?)?.toDouble() ?? 0.0;
     if (expenseTrend == 'increasing' && expenseChangePercent > 15) {
       final confidence = _calculateConfidence(
         dataQuality: transactionCount > 20 ? 0.9 : 0.7,
@@ -577,8 +584,9 @@ class AIService {
     // Enhanced recommendation: Day-of-week pattern
     final peakDay = dayOfWeekPatterns['peak_day'] as String?;
     final peakDayAmount =
-        dayOfWeekPatterns['peak_day_amount'] as double? ?? 0.0;
-    final avgPerDay = dayOfWeekPatterns['average_per_day'] as double? ?? 0.0;
+        (dayOfWeekPatterns['peak_day_amount'] as num?)?.toDouble() ?? 0.0;
+    final avgPerDay =
+        (dayOfWeekPatterns['average_per_day'] as num?)?.toDouble() ?? 0.0;
     if (peakDay != null && peakDayAmount > avgPerDay * 1.3) {
       final confidence = _calculateConfidence(
         dataQuality: transactionCount > 15 ? 0.8 : 0.6,
@@ -700,9 +708,15 @@ class AIService {
 
     // Recommendation 4: Budget exceeded
     for (var budget in budgets) {
-      final spent = (budget['spent'] ?? 0).toDouble();
-      final limit = (budget['limit'] ?? 1).toDouble();
+      // Map database field names to expected field names
+      final spentAmount = budget['spent_amount_232143'] ?? budget['spent'];
+      final budgetAmount =
+          budget['amount_232143'] ?? budget['limit'] ?? budget['amount'];
+      final spent = ((spentAmount as num?) ?? 0).toDouble();
+      final limit = ((budgetAmount as num?) ?? 1).toDouble();
       if (spent > limit) {
+        final categoryName =
+            budget['category_name'] ?? budget['name_232143'] ?? 'Unknown';
         final confidence = _calculateConfidence(
           dataQuality: 0.9,
           patternStrength: ((spent - limit) / limit).clamp(0.0, 1.0),
@@ -710,10 +724,10 @@ class AIService {
         );
         recommendations.add({
           'recommendation':
-              '⚠️ Budget "${budget['category_name']}" melebihi batas! Anda telah menghabiskan Rp ${spent.toInt()} dari budget Rp ${limit.toInt()}. Pertimbangkan untuk mengurangi pengeluaran kategori ini.',
+              '⚠️ Budget "$categoryName" melebihi batas! Anda telah menghabiskan Rp ${spent.toInt()} dari budget Rp ${limit.toInt()}. Pertimbangkan untuk mengurangi pengeluaran kategori ini.',
           'potential_savings': spent - limit,
           'priority': 'high',
-          'category': budget['category_name'],
+          'category': categoryName,
           'icon': 'danger',
           'confidence': confidence,
         });
@@ -752,19 +766,19 @@ class AIService {
         final potentialSavings =
             (rec['potential_savings'] as num?)?.toDouble() ?? 0.0;
         final impact =
-            rec['impact'] as double? ??
+            (rec['impact'] as num?)?.toDouble() ??
             _calculateImpactScore(
               potentialSavings: potentialSavings,
               totalIncome: totalIncome,
             );
         final actionability =
-            rec['actionability'] as double? ??
+            (rec['actionability'] as num?)?.toDouble() ??
             _calculateActionabilityScore(
               action: rec['action'] as String?,
               category: rec['category'] as String? ?? 'general',
             );
         final score = _calculateRecommendationScore(
-          confidence: rec['confidence'] as double? ?? 0.5,
+          confidence: (rec['confidence'] as num?)?.toDouble() ?? 0.5,
           impact: impact,
           actionability: actionability,
           relevance: 0.8,
@@ -780,9 +794,13 @@ class AIService {
     if (recommendations.isNotEmpty) {
       recommendations.sort((a, b) {
         final scoreA =
-            (a['score'] as double?) ?? (a['confidence'] as double? ?? 0.0);
+            (a['score'] as num?)?.toDouble() ??
+            (a['confidence'] as num?)?.toDouble() ??
+            0.0;
         final scoreB =
-            (b['score'] as double?) ?? (b['confidence'] as double? ?? 0.0);
+            (b['score'] as num?)?.toDouble() ??
+            (b['confidence'] as num?)?.toDouble() ??
+            0.0;
         return scoreB.compareTo(scoreA);
       });
       return recommendations.first;
@@ -950,7 +968,8 @@ class AIService {
                 .map((t) => t as Map<String, dynamic>)
                 .toList(),
       );
-      final forecastAmount = forecast['forecastAmount'] as double? ?? 0.0;
+      final forecastAmount =
+          (forecast['forecastAmount'] as num?)?.toDouble() ?? 0.0;
       final projectedBalance = currentBalance - forecastAmount;
 
       String reasoning;
@@ -1088,8 +1107,9 @@ class AIService {
 
     // Month-end budget alerts
     if (dayOfMonth >= 25) {
-      final totalExpense = analysis['totalExpense'] as double? ?? 0.0;
-      final totalIncome = analysis['totalIncome'] as double? ?? 0.0;
+      final totalExpense =
+          (analysis['totalExpense'] as num?)?.toDouble() ?? 0.0;
+      final totalIncome = (analysis['totalIncome'] as num?)?.toDouble() ?? 0.0;
       final remainingDays =
           DateTime(now.year, now.month + 1, 0).day - dayOfMonth;
       final dailyAverage = totalExpense / dayOfMonth;
@@ -1113,7 +1133,7 @@ class AIService {
     // Payday recommendations (assuming payday is around 25th-28th or 1st-5th)
     if ((dayOfMonth >= 25 && dayOfMonth <= 28) ||
         (dayOfMonth >= 1 && dayOfMonth <= 5)) {
-      final savingsRate = analysis['savingsRate'] as double? ?? 0.0;
+      final savingsRate = (analysis['savingsRate'] as num?)?.toDouble() ?? 0.0;
       if (savingsRate < 20) {
         contextualRecs.add({
           'recommendation':
@@ -1132,13 +1152,14 @@ class AIService {
     // Weekend spending planning
     if (dayOfWeek == 6 || dayOfWeek == 7) {
       final dayOfWeekPatternsRaw = analysis['day_of_week_patterns'];
-      final dayOfWeekPatterns = dayOfWeekPatternsRaw is Map
-          ? Map<String, dynamic>.from(
-              dayOfWeekPatternsRaw.map(
-                (key, value) => MapEntry(key.toString(), value),
-              ),
-            )
-          : <String, dynamic>{};
+      final dayOfWeekPatterns =
+          dayOfWeekPatternsRaw is Map
+              ? Map<String, dynamic>.from(
+                dayOfWeekPatternsRaw.map(
+                  (key, value) => MapEntry(key.toString(), value),
+                ),
+              )
+              : <String, dynamic>{};
       final peakDay = dayOfWeekPatterns['peak_day'] as String?;
       if (peakDay != null && (dayOfWeek == 6 || dayOfWeek == 7)) {
         contextualRecs.add({
@@ -1253,7 +1274,7 @@ class AIService {
   /// Generate personalized tips based on spending patterns
   List<String> generateSmartTips(Map<String, dynamic> analysis) {
     final tips = <String>[];
-    final savingsRate = analysis['savingsRate'] as double? ?? 0;
+    final savingsRate = (analysis['savingsRate'] as num?)?.toDouble() ?? 0.0;
     final categorySpending =
         analysis['categorySpending'] as Map<String, double>? ?? {};
 

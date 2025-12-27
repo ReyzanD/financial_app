@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 class TransactionModel {
   final String id;
   final double amount;
@@ -26,25 +28,66 @@ class TransactionModel {
   });
 
   factory TransactionModel.fromJson(Map<String, dynamic> json) {
+    // Map database field names to model fields
+    final id = json['transaction_id_232143'] ?? json['id'] ?? '';
+    final amountValue = json['amount_232143'] ?? json['amount'];
+    final amount = amountValue != null ? (amountValue as num).toDouble() : 0.0;
+    final type = json['type_232143'] ?? json['type'] ?? 'expense';
+    final description = json['description_232143'] ?? json['description'] ?? '';
+    final categoryId = json['category_id_232143'] ?? json['category_id'] ?? '';
+    final categoryName =
+        json['category_name'] ?? json['category'] ?? 'Uncategorized';
+    final categoryColor =
+        json['category_color'] ?? json['color_232143'] ?? '#808080';
+    final paymentMethod =
+        json['payment_method_232143'] ?? json['payment_method'] ?? 'cash';
+    final dateStr =
+        json['transaction_date_232143'] ??
+        json['date'] ??
+        json['transaction_date'];
+    final createdAtStr =
+        json['created_at_232143'] ?? json['created_at'] ?? dateStr;
+
     return TransactionModel(
-      id: json['id'],
-      amount: double.parse(json['amount'].toString()),
-      type: json['type'],
-      description: json['description'],
-      categoryId: json['category_id'] ?? '',
-      categoryName: json['category'] ?? 'Uncategorized',
-      categoryColor: json['category_color'] ?? '#808080',
-      paymentMethod: json['payment_method'] ?? 'cash',
-      transactionDate: _parseDate(json['date']),
-      createdAt: _parseDate(json['created_at'] ?? json['date']),
-      locationData:
-          json['location'] != null && json['location'] != ''
-              ? {'address': json['location']}
-              : null,
+      id: id,
+      amount: amount,
+      type: type,
+      description: description,
+      categoryId: categoryId,
+      categoryName: categoryName,
+      categoryColor: categoryColor,
+      paymentMethod: paymentMethod,
+      transactionDate:
+          dateStr != null ? _parseDate(dateStr.toString()) : DateTime.now(),
+      createdAt:
+          createdAtStr != null
+              ? _parseDate(createdAtStr.toString())
+              : DateTime.now(),
+      locationData: _parseLocationData(json),
     );
   }
 
+  static Map<String, dynamic>? _parseLocationData(Map<String, dynamic> json) {
+    try {
+      if (json['location_data_232143'] != null) {
+        if (json['location_data_232143'] is String) {
+          final decoded = jsonDecode(json['location_data_232143'] as String);
+          return decoded is Map ? Map<String, dynamic>.from(decoded) : null;
+        } else if (json['location_data_232143'] is Map) {
+          return Map<String, dynamic>.from(json['location_data_232143'] as Map);
+        }
+      }
+      if (json['location'] != null && json['location'].toString().isNotEmpty) {
+        return {'address': json['location'].toString()};
+      }
+    } catch (e) {
+      // If parsing fails, return null
+    }
+    return null;
+  }
+
   static DateTime _parseDate(String dateString) {
+    if (dateString.isEmpty) return DateTime.now();
     try {
       return DateTime.parse(dateString);
     } catch (e) {

@@ -782,13 +782,26 @@ class _SettingsScreenState extends State<SettingsScreen> {
         localizations.exporting_data,
       );
 
-      final response = await _apiService.get('data/export');
+      // Get data from local database
+      final transactionsData = await _apiService.getTransactions(limit: 10000);
+      final budgets = await _apiService.getBudgets();
+      final goals = await _apiService.getGoals();
+
+      // Create export response
+      final response = {
+        'exported_at': DateTime.now().toIso8601String(),
+        'stats': {
+          'total_transactions': transactionsData['total'] ?? 0,
+          'budgets': budgets.length,
+          'goals': goals.length,
+        },
+      };
 
       // Show export data in dialog (in a real app, save to file)
       if (!mounted) return;
 
       final exportedAt = response['exported_at'] ?? '';
-      final stats = response['stats'] ?? {};
+      final stats = response['stats'] as Map<String, dynamic>;
 
       showDialog(
         context: context,
@@ -811,7 +824,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     ),
                   ),
                   Text(
-                    exportedAt.split('T')[0],
+                    (exportedAt as String).split('T')[0],
                     style: GoogleFonts.poppins(
                       color: Colors.white,
                       fontSize: 14,

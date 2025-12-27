@@ -101,8 +101,9 @@ class DataService {
     try {
       LoggerService.info('[DataService] Fetching transactions from API...');
       final transactionsData = await _apiService.getTransactions();
-      final transactions = List<dynamic>.from(
-        transactionsData['transactions'] ?? [],
+      final transactionsList = transactionsData['transactions'] ?? [];
+      final transactions = List<Map<String, dynamic>>.from(
+        transactionsList.map((t) => Map<String, dynamic>.from(t as Map)),
       );
       LoggerService.success(
         '[DataService] Received ${transactions.length} transactions from API',

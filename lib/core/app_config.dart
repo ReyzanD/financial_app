@@ -1,63 +1,59 @@
+import 'package:financial_app/services/logger_service.dart';
+
 /// Centralized application configuration
 ///
-/// This file manages environment-specific settings like API base URLs.
-///
-/// **LOCAL MODE CONFIGURATION**
-/// This branch is configured for fully local deployment with SQLite database.
-/// All API calls go to local backend (localhost:5000) - no Render/Supabase dependency.
-///
-/// For physical device testing, use setCustomBaseUrl() with your computer's IP address.
+/// **STANDALONE MODE - NO BACKEND SERVER REQUIRED**
+/// This app now runs fully standalone with local SQLite database.
+/// No backend server, no API URLs, no network calls needed.
+/// All data is stored locally on the device.
 class AppConfig {
-  // Local API URL (for Android emulator)
-  // This is the default URL for local development with SQLite
-  static const String _devBaseUrl = 'http://10.0.2.2:5000/api/v1';
+  static bool _initialized = false;
+
+  /// Initialize AppConfig
+  /// Call this once at app startup (in main.dart)
+  static Future<void> initialize() async {
+    if (_initialized) return;
+    
+    LoggerService.info('📱 App running in standalone mode (no backend required)');
+    _initialized = true;
+  }
 
   /// Determine if we're in production mode
   ///
-  /// Always returns false for local mode deployment.
+  /// Always returns false for standalone mode.
   static bool get isProduction {
-    // Local mode - always return false
     return false;
   }
 
   /// Get the base URL for API calls
   ///
-  /// Always returns local backend URL for this branch.
-  /// Use setCustomBaseUrl() for physical device testing.
+  /// Not used in standalone mode - returns empty string
+  @Deprecated('Not needed in standalone mode')
   static String get baseUrl {
-    // Always use local URL for this branch
-    return _devBaseUrl;
+    return '';
   }
 
   /// Get the auth endpoint base URL
   ///
-  /// Convenience method for auth-related endpoints.
-  static String get authBaseUrl => '$baseUrl/auth';
-
-  /// Update production URL programmatically
-  ///
-  /// This can be used if you need to change the URL at runtime.
-  /// Note: This requires storing the URL in shared preferences or similar.
-  static String? _customBaseUrl;
-
-  /// Set a custom base URL (useful for testing or manual configuration)
-  static void setCustomBaseUrl(String? url) {
-    _customBaseUrl = url;
+  /// Not used in standalone mode - returns empty string
+  @Deprecated('Not needed in standalone mode')
+  static String get authBaseUrl {
+    return '';
   }
 
-  /// Get the effective base URL (custom > production > development)
+  /// Get the effective base URL
+  ///
+  /// Not used in standalone mode - returns empty string
+  @Deprecated('Not needed in standalone mode')
   static String get effectiveBaseUrl {
-    if (_customBaseUrl != null) {
-      return _customBaseUrl!;
-    }
-    return baseUrl;
+    return '';
   }
 
   /// Get the effective auth base URL
+  ///
+  /// Not used in standalone mode - returns empty string
+  @Deprecated('Not needed in standalone mode')
   static String get effectiveAuthBaseUrl {
-    if (_customBaseUrl != null) {
-      return '$_customBaseUrl/auth';
-    }
-    return authBaseUrl;
+    return '';
   }
 }

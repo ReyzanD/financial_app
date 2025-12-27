@@ -17,14 +17,17 @@ class GoalCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final target = (goal['target'] as num).toDouble();
-    final saved = (goal['saved'] as num).toDouble();
+    // Map database field names to UI field names
+    final targetAmount = goal['target_amount_232143'] ?? goal['target'];
+    final currentAmount = goal['current_amount_232143'] ?? goal['saved'];
+    final target = (targetAmount as num?)?.toDouble() ?? 0.0;
+    final saved = (currentAmount as num?)?.toDouble() ?? 0.0;
     final progress = target > 0 ? saved / target : 0.0;
-    final deadline = goal['deadline'] as String?;
-    final type = goal['type'] as String;
+    final deadline = goal['target_date_232143'] ?? goal['deadline'];
+    final type = goal['goal_type_232143'] ?? goal['type'] ?? 'other';
 
     // Handle priority - can be int or String from backend
-    final priorityValue = goal['priority'];
+    final priorityValue = goal['priority_232143'] ?? goal['priority'];
     final priority =
         priorityValue is int
             ? priorityValue
@@ -44,6 +47,8 @@ class GoalCard extends StatelessWidget {
         border: Border.all(color: Colors.grey[800]!),
       ),
       child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Header
           Row(
@@ -63,15 +68,13 @@ class GoalCard extends StatelessWidget {
                   size: ResponsiveHelper.iconSize(context, 20),
                 ),
               ),
-              SizedBox(
-                width: ResponsiveHelper.horizontalSpacing(context, 12),
-              ),
+              SizedBox(width: ResponsiveHelper.horizontalSpacing(context, 12)),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      goal['name'] as String,
+                      goal['name_232143'] ?? goal['name'] ?? 'Unnamed Goal',
                       style: GoogleFonts.poppins(
                         color: Colors.white,
                         fontSize: ResponsiveHelper.fontSize(context, 16),
@@ -126,9 +129,9 @@ class GoalCard extends StatelessWidget {
                   fontSize: ResponsiveHelper.fontSize(context, 12),
                 ),
               ),
-              if (deadline != null)
+              if (deadline != null && deadline.toString().isNotEmpty)
                 Text(
-                  formatDeadline(deadline),
+                  formatDeadline(deadline.toString()),
                   style: GoogleFonts.poppins(
                     color: Colors.grey[400],
                     fontSize: ResponsiveHelper.fontSize(context, 12),
@@ -151,18 +154,14 @@ class GoalCard extends StatelessWidget {
                   onTap: () => _showContributeDialog(context),
                 ),
               ),
-              SizedBox(
-                width: ResponsiveHelper.horizontalSpacing(context, 8),
-              ),
+              SizedBox(width: ResponsiveHelper.horizontalSpacing(context, 8)),
               _buildIconButton(
                 context,
                 icon: Iconsax.edit,
                 color: Colors.blue,
                 onTap: () => _showEditDialog(context),
               ),
-              SizedBox(
-                width: ResponsiveHelper.horizontalSpacing(context, 8),
-              ),
+              SizedBox(width: ResponsiveHelper.horizontalSpacing(context, 8)),
               _buildIconButton(
                 context,
                 icon: Iconsax.trash,
@@ -205,9 +204,7 @@ class GoalCard extends StatelessWidget {
               color: color,
               size: ResponsiveHelper.iconSize(context, 16),
             ),
-            SizedBox(
-              width: ResponsiveHelper.horizontalSpacing(context, 6),
-            ),
+            SizedBox(width: ResponsiveHelper.horizontalSpacing(context, 6)),
             Text(
               label,
               style: GoogleFonts.poppins(
@@ -299,7 +296,7 @@ class GoalCard extends StatelessWidget {
             style: GoogleFonts.poppins(color: Colors.white),
           ),
           content: Text(
-            'Apakah Anda yakin ingin menghapus "${goal['name']}"?',
+            'Apakah Anda yakin ingin menghapus "${goal['name_232143'] ?? goal['name'] ?? 'Goal'}"?',
             style: GoogleFonts.poppins(color: Colors.grey[400]),
           ),
           actions: [
@@ -314,7 +311,9 @@ class GoalCard extends StatelessWidget {
               onPressed: () async {
                 try {
                   final apiService = ApiService();
-                  await apiService.deleteGoal(goal['id']);
+                  await apiService.deleteGoal(
+                    goal['goal_id_232143'] ?? goal['id'],
+                  );
                   if (dialogContext.mounted) {
                     Navigator.of(dialogContext).pop();
                     if (context.mounted) {

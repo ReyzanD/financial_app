@@ -32,20 +32,8 @@ class _GoalsListState extends State<GoalsList> {
       final fetchedGoals = await _apiService.getGoals();
       if (mounted) {
         setState(() {
-          goals =
-              fetchedGoals.map((goal) {
-                return {
-                  'id': goal['id'],
-                  'name': goal['name'],
-                  'target': goal['target'],
-                  'saved': goal['saved'],
-                  'deadline': goal['deadline'],
-                  'type': goal['type'],
-                  'priority': goal['priority'] ?? 3,
-                  'progress': goal['progress'] ?? 0,
-                  'description': goal['description'],
-                };
-              }).toList();
+          // Use data directly from database (already has _232143 suffix)
+          goals = List<Map<String, dynamic>>.from(fetchedGoals);
           _isLoading = false;
         });
       }

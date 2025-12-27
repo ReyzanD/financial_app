@@ -12,19 +12,11 @@ class PaymentHistoryService {
     String obligationId,
   ) async {
     try {
-      // Try to get payment history from API
-      // If API doesn't have this endpoint, we'll use local storage
-      final response = await _apiService.get(
-        'obligations/$obligationId/payments',
-      );
-      return List<Map<String, dynamic>>.from(response['payments'] ?? []);
-    } catch (e) {
-      LoggerService.warning(
-        'Payment history API not available, using local storage',
-        error: e,
-      );
-      // Fallback to local storage if API doesn't support it
+      // Use local storage directly (no API endpoint for payment history in standalone mode)
       return await _getLocalPaymentHistory(obligationId);
+    } catch (e) {
+      LoggerService.error('Error getting payment history', error: e);
+      return [];
     }
   }
 

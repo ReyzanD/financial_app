@@ -81,8 +81,9 @@ class _BudgetProgressState extends State<BudgetProgress>
       // Build category map
       final categoryMap = <String, String>{};
       for (var cat in categories) {
-        final id = cat['id'];
-        final name = cat['name'];
+        // Support both old and new field names
+        final id = cat['category_id_232143'] ?? cat['id'];
+        final name = cat['name_232143'] ?? cat['name'];
         if (id != null && name != null) {
           categoryMap[id.toString()] = name.toString();
         }
@@ -95,10 +96,17 @@ class _BudgetProgressState extends State<BudgetProgress>
           final budgetsList =
               budgets.map((b) => b as Map<String, dynamic>).toList();
           budgetsList.sort((a, b) {
-            final spentA = (a['spent'] as num?)?.toDouble() ?? 0.0;
-            final amountA = (a['amount'] as num?)?.toDouble() ?? 1.0;
-            final spentB = (b['spent'] as num?)?.toDouble() ?? 0.0;
-            final amountB = (b['amount'] as num?)?.toDouble() ?? 1.0;
+            // Support both old and new field names
+            final spentA =
+                (a['spent_amount_232143'] ?? a['spent'] as num?)?.toDouble() ??
+                0.0;
+            final amountA =
+                (a['amount_232143'] ?? a['amount'] as num?)?.toDouble() ?? 1.0;
+            final spentB =
+                (b['spent_amount_232143'] ?? b['spent'] as num?)?.toDouble() ??
+                0.0;
+            final amountB =
+                (b['amount_232143'] ?? b['amount'] as num?)?.toDouble() ?? 1.0;
             final percentageA = amountA > 0 ? spentA / amountA : 0.0;
             final percentageB = amountB > 0 ? spentB / amountB : 0.0;
             return percentageB.compareTo(percentageA); // Sort descending
@@ -221,7 +229,9 @@ class _BudgetProgressState extends State<BudgetProgress>
                     color: Colors.red[400],
                     size: ResponsiveHelper.iconSize(context, 48),
                   ),
-                  SizedBox(height: ResponsiveHelper.verticalSpacing(context, 12)),
+                  SizedBox(
+                    height: ResponsiveHelper.verticalSpacing(context, 12),
+                  ),
                   Text(
                     'Terjadi Kesalahan',
                     style: GoogleFonts.poppins(
@@ -230,7 +240,9 @@ class _BudgetProgressState extends State<BudgetProgress>
                       fontWeight: FontWeight.w600,
                     ),
                   ),
-                  SizedBox(height: ResponsiveHelper.verticalSpacing(context, 4)),
+                  SizedBox(
+                    height: ResponsiveHelper.verticalSpacing(context, 4),
+                  ),
                   Text(
                     _errorMessage!,
                     textAlign: TextAlign.center,
@@ -239,7 +251,9 @@ class _BudgetProgressState extends State<BudgetProgress>
                       fontSize: ResponsiveHelper.fontSize(context, 12),
                     ),
                   ),
-                  SizedBox(height: ResponsiveHelper.verticalSpacing(context, 12)),
+                  SizedBox(
+                    height: ResponsiveHelper.verticalSpacing(context, 12),
+                  ),
                   Container(
                     padding: ResponsiveHelper.symmetricPadding(
                       context,
@@ -317,14 +331,21 @@ class _BudgetProgressState extends State<BudgetProgress>
   }
 
   Widget _buildBudgetItem(Map<String, dynamic> budget) {
-    final categoryId = budget['category_id'] as String?;
+    // Support both old and new field names
+    final categoryId =
+        (budget['category_id_232143'] ?? budget['category_id'])?.toString();
     final category =
         categoryId != null && _categories.containsKey(categoryId)
             ? _categories[categoryId]!
             : 'All Categories';
 
-    final spent = (budget['spent'] as num?)?.toDouble() ?? 0.0;
-    final amount = (budget['amount'] as num?)?.toDouble() ?? 0.0;
+    final spent =
+        (budget['spent_amount_232143'] ?? budget['spent'] as num?)
+            ?.toDouble() ??
+        0.0;
+    final amount =
+        (budget['amount_232143'] ?? budget['amount'] as num?)?.toDouble() ??
+        0.0;
 
     // Handle edge cases
     if (amount <= 0) {
@@ -433,13 +454,19 @@ class _BudgetProgressState extends State<BudgetProgress>
                                 size: ResponsiveHelper.iconSize(context, 12),
                               ),
                               SizedBox(
-                                width: ResponsiveHelper.horizontalSpacing(context, 4),
+                                width: ResponsiveHelper.horizontalSpacing(
+                                  context,
+                                  4,
+                                ),
                               ),
                               Text(
                                 'Over',
                                 style: GoogleFonts.poppins(
                                   color: Colors.red,
-                                  fontSize: ResponsiveHelper.fontSize(context, 10),
+                                  fontSize: ResponsiveHelper.fontSize(
+                                    context,
+                                    10,
+                                  ),
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
@@ -540,4 +567,3 @@ class _BudgetProgressState extends State<BudgetProgress>
     }
   }
 }
-

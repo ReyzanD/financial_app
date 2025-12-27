@@ -1,8 +1,9 @@
-import 'package:financial_app/services/api/transaction_api.dart';
-import 'package:financial_app/widgets/transactions/transaction_list.dart';
+import 'package:financial_app/services/api_service.dart';
 
-/// Transaction Remote Data Source (Data Layer)
+/// Transaction Remote Data Source (Data Layer) - Now uses local database
 class TransactionRemoteDataSource {
+  final ApiService _apiService = ApiService();
+
   Future<List<Map<String, dynamic>>> getTransactions({
     String? type,
     DateTime? startDate,
@@ -10,11 +11,11 @@ class TransactionRemoteDataSource {
     String? categoryId,
     int limit = 100,
   }) async {
-    final result = await TransactionApi.getTransactions(
+    final result = await _apiService.getTransactions(
       type: type,
       categoryId: categoryId,
-      startDate: startDate?.toIso8601String(),
-      endDate: endDate?.toIso8601String(),
+      startDate: startDate,
+      endDate: endDate,
       limit: limit,
     );
     final transactions = result['transactions'] as List;
@@ -24,17 +25,17 @@ class TransactionRemoteDataSource {
   Future<Map<String, dynamic>> createTransaction(
     Map<String, dynamic> data,
   ) async {
-    return await TransactionApi.addTransaction(data);
+    return await _apiService.addTransaction(data);
   }
 
   Future<Map<String, dynamic>> updateTransaction(
     String id,
     Map<String, dynamic> data,
   ) async {
-    return await TransactionApi.updateTransaction(id, data);
+    return await _apiService.updateTransaction(id, data);
   }
 
   Future<void> deleteTransaction(String id) async {
-    await TransactionApi.deleteTransaction(id);
+    await _apiService.deleteTransaction(id);
   }
 }

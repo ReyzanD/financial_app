@@ -21,7 +21,8 @@ class AIBudgetRecommendationScreen extends StatefulWidget {
 class _AIBudgetRecommendationScreenState
     extends State<AIBudgetRecommendationScreen> {
   final ApiService _apiService = ApiService();
-  final BudgetRecommendationService _budgetService = BudgetRecommendationService();
+  final BudgetRecommendationService _budgetService =
+      BudgetRecommendationService();
   bool _isLoading = true;
   bool _isApplying = false;
   Map<String, dynamic>? _budgetRecommendation;
@@ -87,15 +88,34 @@ class _AIBudgetRecommendationScreenState
         if (matchingCategory != null) {
           try {
             // Create budget for this category
-            await _apiService.post('budgets', {
-              'category_id': matchingCategory['id'],
+            final now = DateTime.now();
+            final periodStart = DateTime(now.year, now.month, 1);
+            final periodEnd = DateTime(now.year, now.month + 1, 0);
+
+            // Use correct field name for category_id
+            final categoryId =
+                matchingCategory['category_id_232143'] ??
+                matchingCategory['id'];
+            if (categoryId == null) {
+              LoggerService.warning('Category ID not found for $categoryName');
+              errorCount++;
+              continue;
+            }
+
+            await _apiService.createBudget({
+              'category_id': categoryId,
               'amount': amount,
               'period': 'monthly',
+              'period_start': periodStart.toIso8601String().split('T')[0],
+              'period_end': periodEnd.toIso8601String().split('T')[0],
               'alert_threshold': 80,
             });
             successCount++;
           } catch (e) {
-            LoggerService.error('Error creating budget for $categoryName', error: e);
+            LoggerService.error(
+              'Error creating budget for $categoryName',
+              error: e,
+            );
             errorCount++;
           }
         }
@@ -148,7 +168,11 @@ class _AIBudgetRecommendationScreenState
     final possibleNames = mappings[recommendationName] ?? [recommendationName];
 
     for (var category in categories) {
-      final categoryName = (category['name'] as String? ?? '').toLowerCase();
+      // Support both old and new field names
+      final categoryName =
+          (category['name_232143'] ?? category['name'] ?? '')
+              .toString()
+              .toLowerCase();
       for (var possibleName in possibleNames) {
         if (categoryName.contains(possibleName.toLowerCase())) {
           return category;
@@ -159,20 +183,22 @@ class _AIBudgetRecommendationScreenState
     return null;
   }
 
-  Future<void> _showEditDialog(String categoryName, int currentPercentage) async {
+  Future<void> _showEditDialog(
+    String categoryName,
+    int currentPercentage,
+  ) async {
     final newPercentage = await BudgetEditDialog.show(
       context,
       categoryName: categoryName,
       currentPercentage: currentPercentage,
     );
-    
+
     if (newPercentage != null) {
       setState(() {
         _editedPercentages[categoryName] = newPercentage;
       });
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -196,9 +222,7 @@ class _AIBudgetRecommendationScreenState
       body:
           _isLoading
               ? const Center(
-                child: CircularProgressIndicator(
-                  color: Color(0xFF8B5FBF),
-                ),
+                child: CircularProgressIndicator(color: Color(0xFF8B5FBF)),
               )
               : _error != null
               ? Center(
@@ -307,7 +331,8 @@ class _AIBudgetRecommendationScreenState
                                 ),
                               ),
                             ),
-                            if (_budgetRecommendation!['is_new_user'] == true) ...[
+                            if (_budgetRecommendation!['is_new_user'] ==
+                                true) ...[
                               const SizedBox(height: 8),
                               Container(
                                 padding: const EdgeInsets.all(12),
@@ -328,7 +353,8 @@ class _AIBudgetRecommendationScreenState
                                     const SizedBox(width: 8),
                                     Expanded(
                                       child: Text(
-                                        _budgetRecommendation!['message'] as String? ??
+                                        _budgetRecommendation!['message']
+                                                as String? ??
                                             'Mulai catat transaksi untuk mendapatkan rekomendasi yang lebih personal',
                                         style: GoogleFonts.poppins(
                                           color: Colors.white70,
@@ -358,18 +384,27 @@ class _AIBudgetRecommendationScreenState
 
                       // Category Cards
                       ...(_budgetRecommendation!['categories'] as List)
-                          .map((category) => BudgetCategoryCard(
-                                category: category,
-                                editedPercentages: _editedPercentages,
-                                totalIncome: _budgetRecommendation!['total_income'] as double,
-                                onEdit: () {
-                                  final categoryName = category['name'] as String;
-                                  final currentPercentage =
-                                      _editedPercentages[categoryName]?.toInt() ??
-                                      ((category['percentage'] as num?)?.toInt() ?? 0);
-                                  _showEditDialog(categoryName, currentPercentage);
-                                },
-                              ))
+                          .map(
+                            (category) => BudgetCategoryCard(
+                              category: category,
+                              editedPercentages: _editedPercentages,
+                              totalIncome:
+                                  _budgetRecommendation!['total_income']
+                                      as double,
+                              onEdit: () {
+                                final categoryName = category['name'] as String;
+                                final currentPercentage =
+                                    _editedPercentages[categoryName]?.toInt() ??
+                                    ((category['percentage'] as num?)
+                                            ?.toInt() ??
+                                        0);
+                                _showEditDialog(
+                                  categoryName,
+                                  currentPercentage,
+                                );
+                              },
+                            ),
+                          )
                           .toList(),
 
                       const SizedBox(height: 24),
@@ -497,5 +532,4 @@ class _AIBudgetRecommendationScreenState
               ),
     );
   }
-
 }

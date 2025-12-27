@@ -19,6 +19,8 @@ import 'package:financial_app/services/logger_service.dart';
 import 'package:financial_app/services/theme_service.dart';
 import 'package:financial_app/services/map_provider_service.dart';
 import 'package:financial_app/services/localization_service.dart';
+import 'package:financial_app/services/local_database_service.dart';
+import 'package:financial_app/core/app_config.dart';
 import 'package:financial_app/l10n/app_localizations.dart';
 import 'package:financial_app/state/app_state.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -41,6 +43,17 @@ void main() async {
 
   // Initialize MapProviderService with env map
   await MapProviderService.initialize(envMap);
+
+  // Initialize Local Database (replaces backend server)
+  try {
+    await LocalDatabaseService().database;
+    LoggerService.info('✅ Local database initialized');
+  } catch (e) {
+    LoggerService.error('Failed to initialize local database', error: e);
+  }
+
+  // Initialize AppConfig (no longer needs URL for standalone mode)
+  await AppConfig.initialize();
 
   // Setup global error handlers
   _setupErrorHandlers();

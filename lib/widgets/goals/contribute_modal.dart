@@ -54,7 +54,7 @@ class _ContributeModalState extends State<ContributeModal> {
 
     try {
       await _apiService.addGoalContribution(
-        widget.goal['id'].toString(),
+        (widget.goal['goal_id_232143'] ?? widget.goal['id']).toString(),
         amount,
       );
 
@@ -89,8 +89,18 @@ class _ContributeModalState extends State<ContributeModal> {
 
   @override
   Widget build(BuildContext context) {
-    final currentAmount = (widget.goal['current_amount'] ?? 0).toDouble();
-    final targetAmount = (widget.goal['target_amount'] ?? 0).toDouble();
+    final currentAmount =
+        ((widget.goal['current_amount_232143'] ??
+                    widget.goal['current_amount'] ??
+                    0)
+                as num)
+            .toDouble();
+    final targetAmount =
+        ((widget.goal['target_amount_232143'] ??
+                    widget.goal['target_amount'] ??
+                    0)
+                as num)
+            .toDouble();
     final remaining = targetAmount - currentAmount;
 
     return Padding(
@@ -139,7 +149,7 @@ class _ContributeModalState extends State<ContributeModal> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    widget.goal['name'] ?? 'Goal',
+                    widget.goal['name_232143'] ?? widget.goal['name'] ?? 'Goal',
                     style: GoogleFonts.poppins(
                       color: Colors.white,
                       fontSize: 16,

@@ -6,7 +6,7 @@ import 'package:printing/printing.dart';
 import 'package:pdf/pdf.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:financial_app/services/report_service.dart';
-import 'package:financial_app/services/api/transaction_api.dart';
+import 'package:financial_app/services/api_service.dart';
 import 'package:financial_app/services/logger_service.dart';
 import 'package:financial_app/services/error_handler_service.dart';
 import 'package:financial_app/models/transaction_model.dart';
@@ -22,6 +22,7 @@ class ReportScreen extends StatefulWidget {
 
 class _ReportScreenState extends State<ReportScreen> {
   final ReportService _reportService = ReportService();
+  final ApiService _apiService = ApiService();
   bool _isGenerating = false;
   bool _localeInitialized = false;
   String _selectedPeriodType = 'monthly'; // 'monthly' or 'yearly'
@@ -97,11 +98,11 @@ class _ReportScreenState extends State<ReportScreen> {
       }
 
       // Fetch transactions
-      final transactionsData = await TransactionApi.getTransactions(
+      final transactionsData = await _apiService.getTransactions(
         limit: 10000,
         type: _selectedTypeFilter,
-        startDate: DateFormat('yyyy-MM-dd').format(startDate),
-        endDate: DateFormat('yyyy-MM-dd').format(endDate),
+        startDate: startDate,
+        endDate: endDate,
       );
 
       final transactionsList = List<dynamic>.from(

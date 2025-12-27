@@ -59,11 +59,14 @@ class _BudgetsScreenState extends State<BudgetsScreen> {
 
       final categoryMap = <String, String>{};
       for (final cat in categories) {
-        final id = cat['id'];
-        final name = cat['name'];
-        final type = cat['type'];
+        // Support both old and new field names
+        final id = cat['category_id_232143'] ?? cat['id'];
+        final name = cat['name_232143'] ?? cat['name'];
+        final type = cat['type_232143'] ?? cat['type'];
         // Only include expense categories for budgets
-        if (id != null && name != null && type == 'expense') {
+        if (id != null &&
+            name != null &&
+            type?.toString().toLowerCase() == 'expense') {
           categoryMap[id.toString()] = name.toString();
         }
       }
@@ -180,10 +183,14 @@ class _BudgetsScreenState extends State<BudgetsScreen> {
   }
 
   Widget _buildSummaryRow(BuildContext context) {
-    final totalBudget = (_summary?['total_budget'] as num?)?.toDouble() ?? 0;
-    final totalSpent = (_summary?['total_spent'] as num?)?.toDouble() ?? 0;
+    // Support both old and new field names
+    final totalBudget =
+        (_summary?['total_amount'] ?? _summary?['total_budget'] as num?)
+            ?.toDouble() ??
+        0.0;
+    final totalSpent = (_summary?['total_spent'] as num?)?.toDouble() ?? 0.0;
     final totalRemaining =
-        (_summary?['total_remaining'] as num?)?.toDouble() ?? 0;
+        (_summary?['total_remaining'] as num?)?.toDouble() ?? 0.0;
 
     return Row(
       children: [
@@ -280,17 +287,30 @@ class _BudgetsScreenState extends State<BudgetsScreen> {
   }
 
   Widget _buildBudgetItem(BuildContext context, Map<String, dynamic> budget) {
-    final categoryId = budget['category_id']?.toString();
+    // Support both old and new field names
+    final categoryId =
+        (budget['category_id_232143'] ?? budget['category_id'])?.toString();
     final category =
         categoryId != null && _categories.containsKey(categoryId)
             ? _categories[categoryId]!
             : AppLocalizations.of(context)!.all_categories;
 
-    final amount = (budget['amount'] as num?)?.toDouble() ?? 0.0;
-    final spent = (budget['spent'] as num?)?.toDouble() ?? 0.0;
+    final amount =
+        (budget['amount_232143'] ?? budget['amount'] as num?)?.toDouble() ??
+        0.0;
+    final spent =
+        (budget['spent_amount_232143'] ?? budget['spent'] as num?)
+            ?.toDouble() ??
+        0.0;
     final remaining = amount - spent;
-    final period = (budget['period'] as String?) ?? '-';
-    final isActive = (budget['is_active'] as bool?) ?? true;
+    final period =
+        (budget['period_232143'] ?? budget['period'] as String?) ?? '-';
+    // Handle is_active: in SQLite it's stored as int (0 or 1), not bool
+    final isActiveValue = budget['is_active_232143'] ?? budget['is_active'];
+    final isActive =
+        isActiveValue is bool
+            ? isActiveValue
+            : (isActiveValue is int ? isActiveValue == 1 : true);
 
     final percentage = amount > 0 ? (spent / amount).clamp(0.0, 1.0) : 0.0;
     final isOverBudget = spent > amount && amount > 0;
@@ -322,6 +342,7 @@ class _BudgetsScreenState extends State<BudgetsScreen> {
           ),
         ),
         child: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -547,7 +568,8 @@ class _BudgetsScreenState extends State<BudgetsScreen> {
   }
 
   Future<void> _confirmDeleteBudget(Map<String, dynamic> budget) async {
-    final id = budget['id']?.toString();
+    // Support both old and new field names
+    final id = (budget['budget_id_232143'] ?? budget['id'])?.toString();
     if (id == null) {
       return;
     }
