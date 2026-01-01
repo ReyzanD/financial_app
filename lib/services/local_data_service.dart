@@ -35,52 +35,59 @@ class LocalDataService {
       if (userId == null) throw Exception('Not authenticated');
 
       final db = await _dbService.database;
-      var where = 'user_id_232143 = ?';
+      var where = 't.user_id_232143 = ?';
       var whereArgs = <dynamic>[userId];
 
       if (type != null) {
-        where += ' AND type_232143 = ?';
+        where += ' AND t.type_232143 = ?';
         whereArgs.add(type);
       }
       if (categoryId != null) {
-        where += ' AND category_id_232143 = ?';
+        where += ' AND t.category_id_232143 = ?';
         whereArgs.add(categoryId);
       }
       if (startDate != null) {
-        where += ' AND transaction_date_232143 >= ?';
+        where += ' AND t.transaction_date_232143 >= ?';
         whereArgs.add(startDate);
       }
       if (endDate != null) {
-        where += ' AND transaction_date_232143 <= ?';
+        where += ' AND t.transaction_date_232143 <= ?';
         whereArgs.add(endDate);
       }
       if (search != null && search.isNotEmpty) {
-        where += ' AND description_232143 LIKE ?';
+        where += ' AND t.description_232143 LIKE ?';
         whereArgs.add('%$search%');
       }
 
       // Get total count
       final countResult = await db.rawQuery(
-        'SELECT COUNT(*) as count FROM transactions_232143 WHERE $where',
+        'SELECT COUNT(*) as count FROM transactions_232143 t WHERE $where',
         whereArgs,
       );
       final total = countResult.first['count'] as int;
 
       // Get transactions
-      final transactions = await db.query(
-        'transactions_232143',
-        where: where,
-        whereArgs: whereArgs,
-        orderBy: 'transaction_date_232143 DESC, created_at_232143 DESC',
-        limit: limit,
-        offset: offset,
+      final transactions = await db.rawQuery(
+        '''
+        SELECT
+        t.*,
+        c.name_232143 AS category_name,
+        c.color_232143 AS category_color,
+        c.icon_232143 AS category_icon
+        FROM transactions_232143 t
+        LEFT JOIN categories_232143 c ON t.category_id_232143 = c.category_id_232143
+        WHERE $where
+        ORDER BY t.transaction_date_232143 DESC, t.created_at_232143 DESC
+        LIMIT ? OFFSET ?
+        ''',
+        [...whereArgs, limit, offset],
       );
 
       return {
         'transactions': transactions,
         'total': total,
         'count': transactions.length,
-        'has_more': (offset + transactions.length) < total,
+        'hasMore': offset + transactions.length < total,
         'limit': limit,
         'offset': offset,
       };
@@ -97,10 +104,16 @@ class LocalDataService {
       if (userId == null) throw Exception('Not authenticated');
 
       final db = await _dbService.database;
-      final transactions = await db.query(
-        'transactions_232143',
-        where: 'transaction_id_232143 = ? AND user_id_232143 = ?',
-        whereArgs: [id, userId],
+      final transactions = await db.rawQuery(
+        '''SELECT
+          t.*,
+          c.name_232143 AS category_name,
+          c.color_232143 AS category_color,
+          c.icon_232143 AS category_icon
+        FROM transactions_232143 t
+        LEFT JOIN categories_232143 c ON t.category_id_232143 = c.category_id_232143
+        WHERE t.transaction_id_232143 = ? AND t.user_id_232143 = ?''',
+        [id, userId],
       );
 
       return transactions.isNotEmpty ? transactions.first : null;

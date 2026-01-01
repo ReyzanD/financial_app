@@ -29,7 +29,7 @@
 /// ```
 ///
 /// Author: Financial App Team
-/// Last Updated: 2024
+/// Last Updated: 2025
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
