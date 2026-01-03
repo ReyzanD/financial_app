@@ -491,6 +491,77 @@ class LocalDataService {
     }
   }
 
+  /// Delete budget
+  Future<Map<String, dynamic>> deleteBudget(String budgetId) async {
+    try {
+      final userId = await _getCurrentUserId();
+      if (userId == null) throw Exception('Not authenticated');
+
+      final db = await _dbService.database;
+
+      final rowsDeleted = await db.delete(
+        'budgets_232143',
+        where: 'budget_id_232143 = ? AND user_id_232143 = ?',
+        whereArgs: [budgetId, userId],
+      );
+
+      if (rowsDeleted > 0) {
+        LoggerService.info('✅ Budget deleted: $budgetId');
+        return {'success': true, 'message': 'Budget deleted successfully'};
+      } else {
+        return {'success': false, 'message': 'Budget not found'};
+      }
+    } catch (e) {
+      LoggerService.error('Error deleting budget', error: e);
+      rethrow;
+    }
+  }
+
+  /// Update budget
+  Future<Map<String, dynamic>> updateBudget(
+    String budgetId,
+    Map<String, dynamic> budgetData,
+  ) async {
+    try {
+      final userId = await _getCurrentUserId();
+      if (userId == null) throw Exception('Not authenticated');
+
+      final db = await _dbService.database;
+      final now = DateTime.now().toIso8601String();
+
+      final data = {
+        if (budgetData['category_id'] != null)
+          'category_id_232143': budgetData['category_id'],
+        if (budgetData['amount'] != null) 'amount_232143': budgetData['amount'],
+        if (budgetData['period'] != null) 'period_232143': budgetData['period'],
+        if (budgetData['period_start'] != null)
+          'period_start_232143': budgetData['period_start'],
+        if (budgetData['period_end'] != null)
+          'period_end_232143': budgetData['period_end'],
+        if (budgetData['is_active'] != null)
+          'is_active_232143': budgetData['is_active'] ? 1 : 0,
+        'updated_at_232143': now,
+      };
+
+      final rowsUpdated = await db.update(
+        'budgets_232143',
+        data,
+        where: 'budget_id_232143 = ? AND user_id_232143 = ?',
+        whereArgs: [budgetId, userId],
+      );
+
+      if (rowsUpdated > 0) {
+        LoggerService.info('✅ Budget updated: $budgetId');
+        return {'success': true, 'message': 'Budget updated successfully'};
+      } else {
+        return {'success': false, 'message': 'Budget not found'};
+      }
+    } catch (e) {
+      LoggerService.error('Error updating budget', error: e);
+      rethrow;
+    }
+  }
+
   // ==================== GOALS ====================
 
   /// Get goals
@@ -841,5 +912,65 @@ class LocalDataService {
       'overdue_count': overdueCount,
       'total_count': obligations.length,
     };
+  }
+
+  /// Get budgets by category ID
+  /// Get budgets by category ID
+  Future<List<Map<String, dynamic>>> getBudgetsByCategory(
+    String categoryId,
+  ) async {
+    try {
+      final db = await _dbService.database;
+      final userId = await _getCurrentUserId();
+
+      if (userId == null) {
+        LoggerService.warning('User not authenticated');
+        return [];
+      }
+
+      final budgets = await db.query(
+        'budgets_232143',
+        where:
+            'category_id_232143 = ? AND user_id_232143 = ? AND is_active_232143 = 1',
+        whereArgs: [categoryId, userId],
+      );
+
+      LoggerService.debug(
+        'Found ${budgets.length} budgets for category: $categoryId',
+      );
+      return budgets;
+    } catch (e) {
+      LoggerService.error('Error getting budgets by category', error: e);
+      return [];
+    }
+  }
+
+  /// Update budget spending amounts
+  Future<void> updateBudgetSpending({
+    required String budgetId,
+    required double spentAmount,
+    required double remainingAmount,
+  }) async {
+    try {
+      final db = await _dbService.database;
+
+      final rowsAffected = await db.update(
+        'budgets_232143',
+        {
+          'spent_amount_232143': spentAmount,
+          'remaining_amount_232143': remainingAmount,
+          'updated_at_232143': DateTime.now().toIso8601String(),
+        },
+        where: 'budget_id_232143 = ?',
+        whereArgs: [budgetId],
+      );
+
+      LoggerService.info(
+        '✅ Budget updated: id=$budgetId, spent=$spentAmount, remaining=$remainingAmount, rows=$rowsAffected',
+      );
+    } catch (e) {
+      LoggerService.error('Error updating budget spending', error: e);
+      rethrow;
+    }
   }
 }

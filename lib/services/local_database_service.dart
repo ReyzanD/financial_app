@@ -9,7 +9,7 @@ class LocalDatabaseService {
   static Database? _database;
 
   LocalDatabaseService._internal();
-  
+
   factory LocalDatabaseService() {
     _instance ??= LocalDatabaseService._internal();
     return _instance!;
@@ -204,20 +204,36 @@ class LocalDatabaseService {
     ''');
 
     // Create indexes for better performance
-    await db.execute('CREATE INDEX IF NOT EXISTS idx_users_email ON users_232143(email_232143)');
-    await db.execute('CREATE INDEX IF NOT EXISTS idx_transactions_user_date ON transactions_232143(user_id_232143, transaction_date_232143)');
-    await db.execute('CREATE INDEX IF NOT EXISTS idx_transactions_type_date ON transactions_232143(type_232143, transaction_date_232143)');
-    await db.execute('CREATE INDEX IF NOT EXISTS idx_categories_user ON categories_232143(user_id_232143)');
-    await db.execute('CREATE INDEX IF NOT EXISTS idx_budgets_user ON budgets_232143(user_id_232143)');
-    await db.execute('CREATE INDEX IF NOT EXISTS idx_goals_user ON financial_goals_232143(user_id_232143)');
-    await db.execute('CREATE INDEX IF NOT EXISTS idx_obligations_user ON financial_obligations_232143(user_id_232143)');
+    await db.execute(
+      'CREATE INDEX IF NOT EXISTS idx_users_email ON users_232143(email_232143)',
+    );
+    await db.execute(
+      'CREATE INDEX IF NOT EXISTS idx_transactions_user_date ON transactions_232143(user_id_232143, transaction_date_232143)',
+    );
+    await db.execute(
+      'CREATE INDEX IF NOT EXISTS idx_transactions_type_date ON transactions_232143(type_232143, transaction_date_232143)',
+    );
+    await db.execute(
+      'CREATE INDEX IF NOT EXISTS idx_categories_user ON categories_232143(user_id_232143)',
+    );
+    await db.execute(
+      'CREATE INDEX IF NOT EXISTS idx_budgets_user ON budgets_232143(user_id_232143)',
+    );
+    await db.execute(
+      'CREATE INDEX IF NOT EXISTS idx_goals_user ON financial_goals_232143(user_id_232143)',
+    );
+    await db.execute(
+      'CREATE INDEX IF NOT EXISTS idx_obligations_user ON financial_obligations_232143(user_id_232143)',
+    );
 
     LoggerService.info('✅ Database schema created successfully');
   }
 
   /// Upgrade database schema
   Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
-    LoggerService.info('📱 Upgrading database from version $oldVersion to $newVersion');
+    LoggerService.info(
+      '📱 Upgrading database from version $oldVersion to $newVersion',
+    );
     // Add migration logic here if needed
   }
 
@@ -239,4 +255,3 @@ class LocalDatabaseService {
     LoggerService.info('📱 Database deleted');
   }
 }
-

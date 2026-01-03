@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:financial_app/services/api_service.dart';
@@ -64,14 +65,17 @@ class _AIBudgetRecommendationScreenState
 
     try {
       final categories = await _apiService.getCategories();
+      final existingBudgets =
+          await _apiService.getBudgets(); // Fetch existing budgets
       final income = _budgetRecommendation!['total_income'] as double;
       final recommendedCategories =
           _budgetRecommendation!['categories'] as List;
 
-      int successCount = 0;
+      int createdCount = 0;
+      int updatedCount = 0;
       int errorCount = 0;
 
-      // Create budgets for main categories
+      // Create/Update budgets for main categories
       for (var recCategory in recommendedCategories) {
         final categoryName = recCategory['name'] as String;
         final percentage =
@@ -87,7 +91,6 @@ class _AIBudgetRecommendationScreenState
 
         if (matchingCategory != null) {
           try {
-            // Create budget for this category
             final now = DateTime.now();
             final periodStart = DateTime(now.year, now.month, 1);
             final periodEnd = DateTime(now.year, now.month + 1, 0);
@@ -96,24 +99,53 @@ class _AIBudgetRecommendationScreenState
             final categoryId =
                 matchingCategory['category_id_232143'] ??
                 matchingCategory['id'];
+
             if (categoryId == null) {
               LoggerService.warning('Category ID not found for $categoryName');
               errorCount++;
               continue;
             }
 
-            await _apiService.createBudget({
-              'category_id': categoryId,
-              'amount': amount,
-              'period': 'monthly',
-              'period_start': periodStart.toIso8601String().split('T')[0],
-              'period_end': periodEnd.toIso8601String().split('T')[0],
-              'alert_threshold': 80,
-            });
-            successCount++;
+            // Check if budget already exists for this category and period
+            final existingBudget = _findExistingBudget(
+              existingBudgets,
+              categoryId,
+              periodStart,
+              periodEnd,
+            );
+
+            if (existingBudget != null) {
+              // UPDATE existing budget
+              final budgetId =
+                  existingBudget['budget_id_232143'] ?? existingBudget['id'];
+
+              await _apiService.updateBudget(budgetId, {
+                'amount': amount,
+                'period': 'monthly',
+                'period_start': periodStart.toIso8601String().split('T')[0],
+                'period_end': periodEnd.toIso8601String().split('T')[0],
+                'alert_threshold': 80,
+              });
+
+              updatedCount++;
+              LoggerService.info('✅ Budget updated for $categoryName');
+            } else {
+              // CREATE new budget
+              await _apiService.createBudget({
+                'category_id': categoryId,
+                'amount': amount,
+                'period': 'monthly',
+                'period_start': periodStart.toIso8601String().split('T')[0],
+                'period_end': periodEnd.toIso8601String().split('T')[0],
+                'alert_threshold': 80,
+              });
+
+              createdCount++;
+              LoggerService.info('✅ Budget created for $categoryName');
+            }
           } catch (e) {
             LoggerService.error(
-              'Error creating budget for $categoryName',
+              'Error creating/updating budget for $categoryName',
               error: e,
             );
             errorCount++;
@@ -125,17 +157,29 @@ class _AIBudgetRecommendationScreenState
         setState(() => _isApplying = false);
 
         // Show success message
-        if (successCount > 0) {
-          ErrorHandlerService.showSuccessSnackbar(
-            context,
-            '$successCount budget berhasil dibuat!${errorCount > 0 ? " $errorCount gagal." : ""}',
-          );
+        final totalSuccess = createdCount + updatedCount;
+        if (totalSuccess > 0) {
+          String message = '';
+          if (createdCount > 0 && updatedCount > 0) {
+            message = '$createdCount budget dibuat, $updatedCount diperbarui!';
+          } else if (createdCount > 0) {
+            message = '$createdCount budget berhasil dibuat!';
+          } else {
+            message = '$updatedCount budget berhasil diperbarui!';
+          }
+
+          if (errorCount > 0) {
+            message += ' $errorCount gagal.';
+          }
+
+          ErrorHandlerService.showSuccessSnackbar(context, message);
+
           // Navigate back after showing message
           if (mounted) Navigator.pop(context, true);
         } else {
           ErrorHandlerService.showWarningSnackbar(
             context,
-            'Gagal membuat budget. Silakan coba lagi.',
+            'Gagal membuat/memperbarui budget. Silakan coba lagi.',
           );
         }
       }
@@ -148,6 +192,64 @@ class _AIBudgetRecommendationScreenState
           ErrorHandlerService.getUserFriendlyMessage(e),
         );
       }
+    }
+  }
+
+  /// Find existing budget for a category in the current period
+  Map<String, dynamic>? _findExistingBudget(
+    List<dynamic> budgets,
+    String categoryId,
+    DateTime periodStart,
+    DateTime periodEnd,
+  ) {
+    final periodStartStr = periodStart.toIso8601String().split('T')[0];
+    final periodEndStr = periodEnd.toIso8601String().split('T')[0];
+
+    for (var budget in budgets) {
+      final budgetCategoryId =
+          budget['category_id_232143'] ?? budget['category_id'];
+      final budgetPeriodStart =
+          budget['period_start_232143'] ?? budget['period_start'];
+      final budgetPeriodEnd =
+          budget['period_end_232143'] ?? budget['period_end'];
+
+      // Match by category ID and overlapping period
+      if (budgetCategoryId == categoryId) {
+        // Check if periods overlap or match
+        if (budgetPeriodStart == periodStartStr ||
+            budgetPeriodEnd == periodEndStr ||
+            _periodsOverlap(
+              budgetPeriodStart,
+              budgetPeriodEnd,
+              periodStartStr,
+              periodEndStr,
+            )) {
+          return budget;
+        }
+      }
+    }
+    return null;
+  }
+
+  /// Check if two date periods overlap
+  bool _periodsOverlap(
+    String? start1,
+    String? end1,
+    String start2,
+    String end2,
+  ) {
+    if (start1 == null || end1 == null) return false;
+
+    try {
+      final s1 = DateTime.parse(start1);
+      final e1 = DateTime.parse(end1);
+      final s2 = DateTime.parse(start2);
+      final e2 = DateTime.parse(end2);
+
+      // Periods overlap if one starts before the other ends
+      return s1.isBefore(e2) && s2.isBefore(e1);
+    } catch (e) {
+      return false;
     }
   }
 

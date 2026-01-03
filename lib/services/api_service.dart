@@ -176,13 +176,13 @@ class ApiService {
     String budgetId,
     Map<String, dynamic> budgetData,
   ) async {
+    return await _localData.updateBudget(budgetId, budgetData);
     // TODO: Implement update budget in LocalDataService
-    throw Exception('Update budget not yet implemented in local database');
   }
 
   Future<Map<String, dynamic>> deleteBudget(String budgetId) async {
     // TODO: Implement delete budget in LocalDataService
-    throw Exception('Delete budget not yet implemented in local database');
+    return await _localData.deleteBudget(budgetId);
   }
 
   Future<Map<String, dynamic>> getBudgetsSummary() async {
@@ -218,9 +218,16 @@ class ApiService {
     int activeBudgets = 0;
 
     for (var budget in budgets) {
-      final amount = ((budget['amount'] as num?)?.toDouble() ?? 0.0);
-      final spent = ((budget['spent'] as num?)?.toDouble() ?? 0.0);
-      final isActive = budget['is_active'] as bool? ?? true;
+      final amount =
+          ((budget['amount_232143'] ?? budget['amount']) as num?)?.toDouble() ??
+          0.0;
+      final spent =
+          ((budget['spent_232143'] ?? budget['spent']) as num?)?.toDouble() ??
+          0.0;
+
+      final isActiveValue =
+          budget['is_active_232143'] ?? budget['is_active'] ?? 1;
+      final isActive = (isActiveValue as num).toInt() == 1;
 
       if (isActive) {
         activeBudgets++;

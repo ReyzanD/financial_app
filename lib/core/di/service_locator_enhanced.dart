@@ -1,3 +1,4 @@
+import 'package:financial_app/services/local_data_service.dart';
 import 'package:get_it/get_it.dart';
 import 'package:financial_app/services/logger_service.dart';
 import 'package:financial_app/services/theme_service.dart';
@@ -39,12 +40,17 @@ Future<void> setupServiceLocator() async {
   getIt.registerLazySingleton<CacheService>(() => CacheService());
   getIt.registerLazySingleton<LocalizationService>(() => LocalizationService());
 
+  // ✅ Register LocalDataService in Core Services (needed by multiple features)
+  getIt.registerLazySingleton<LocalDataService>(() => LocalDataService());
+
   // ========== Feature Services ==========
   getIt.registerLazySingleton<SearchService>(() => SearchService());
   getIt.registerLazySingleton<ExportService>(() => ExportService());
   getIt.registerLazySingleton<PerformanceService>(() => PerformanceService());
   getIt.registerLazySingleton<UserFeedbackService>(() => UserFeedbackService());
-  getIt.registerLazySingleton<BudgetForecastService>(() => BudgetForecastService());
+  getIt.registerLazySingleton<BudgetForecastService>(
+    () => BudgetForecastService(),
+  );
   getIt.registerLazySingleton<QuickActionsAnalyticsService>(
     () => QuickActionsAnalyticsService(),
   );
@@ -52,7 +58,9 @@ Future<void> setupServiceLocator() async {
     () => AIRecommendationsEnhancedService(),
   );
   getIt.registerLazySingleton<VoiceInputService>(() => VoiceInputService());
-  getIt.registerLazySingleton<ReceiptScanningService>(() => ReceiptScanningService());
+  getIt.registerLazySingleton<ReceiptScanningService>(
+    () => ReceiptScanningService(),
+  );
   getIt.registerLazySingleton<TransactionTemplatesService>(
     () => TransactionTemplatesService(),
   );
@@ -63,9 +71,12 @@ Future<void> setupServiceLocator() async {
     () => TransactionRemoteDataSource(),
   );
 
-  // Repositories
+  // Repositories (LocalDataService is already registered above)
   getIt.registerLazySingleton<TransactionRepositoryInterface>(
-    () => TransactionRepository(getIt<TransactionRemoteDataSource>()),
+    () => TransactionRepository(
+      getIt<TransactionRemoteDataSource>(),
+      getIt<LocalDataService>(),
+    ),
   );
 
   // Use Cases
@@ -104,4 +115,3 @@ Future<void> disposeServiceLocator() async {
   getIt<ReceiptScanningService>().dispose();
   await getIt.reset();
 }
-
