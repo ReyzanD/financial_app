@@ -9,6 +9,7 @@ import 'package:financial_app/widgets/budget_recommendation/budget_category_card
 import 'package:financial_app/widgets/budget_recommendation/budget_edit_dialog.dart';
 import 'package:financial_app/widgets/budget_recommendation/budget_tips_section.dart';
 import 'package:financial_app/utils/formatters.dart';
+import 'package:financial_app/utils/app_refresh.dart';
 
 class AIBudgetRecommendationScreen extends StatefulWidget {
   const AIBudgetRecommendationScreen({super.key});
@@ -63,14 +64,26 @@ class _AIBudgetRecommendationScreenState
 
     try {
       final categories = await _apiService.getCategories();
+      final existingBudgets = await _apiService.getBudgets();
       final income = _budgetRecommendation!['total_income'] as double;
       final recommendedCategories =
           _budgetRecommendation!['categories'] as List;
 
       int successCount = 0;
       int errorCount = 0;
+      int updatedCount = 0;
+      int createdCount = 0;
 
-      // Create budgets for main categories
+      // Create a map of existing budgets by category_id for quick lookup
+      final Map<String, Map<String, dynamic>> budgetsByCategory = {};
+      for (var budget in existingBudgets) {
+        final categoryId = budget['category_id']?.toString();
+        if (categoryId != null) {
+          budgetsByCategory[categoryId] = budget as Map<String, dynamic>;
+        }
+      }
+
+      // Update or create budgets for main categories
       for (var recCategory in recommendedCategories) {
         final categoryName = recCategory['name'] as String;
         final percentage =
@@ -85,17 +98,71 @@ class _AIBudgetRecommendationScreenState
         );
 
         if (matchingCategory != null) {
+          final categoryId = matchingCategory['id']?.toString();
+          if (categoryId == null) continue;
+
           try {
-            // Create budget for this category
-            await _apiService.post('budgets', {
-              'category_id': matchingCategory['id'],
-              'amount': amount,
-              'period': 'monthly',
-              'alert_threshold': 80,
-            });
-            successCount++;
+            // Check if budget already exists for this category
+            final existingBudget = budgetsByCategory[categoryId];
+            
+            if (existingBudget != null) {
+              // Try to update existing budget
+              final budgetId = existingBudget['id']?.toString();
+              if (budgetId != null) {
+                try {
+                  await _apiService.updateBudget(budgetId, {
+                    'amount': amount,
+                    'period': 'monthly',
+                    'alert_threshold': 80,
+                  });
+                  updatedCount++;
+                  successCount++;
+                  LoggerService.debug('Updated budget for category: $categoryName');
+                } catch (updateError) {
+                  // If update fails (e.g., budget was deleted), create a new one
+                  final errorStr = updateError.toString().toLowerCase();
+                  if (errorStr.contains('404') || errorStr.contains('not found')) {
+                    LoggerService.debug('Budget not found, creating new one for category: $categoryName');
+                    await _apiService.createBudget({
+                      'category_id': categoryId,
+                      'amount': amount,
+                      'period': 'monthly',
+                      'alert_threshold': 80,
+                    });
+                    createdCount++;
+                    successCount++;
+                    LoggerService.debug('Created new budget for category: $categoryName (after update failed)');
+                  } else {
+                    // Re-throw if it's a different error
+                    rethrow;
+                  }
+                }
+              } else {
+                // No valid budget ID, create new one
+                await _apiService.createBudget({
+                  'category_id': categoryId,
+                  'amount': amount,
+                  'period': 'monthly',
+                  'alert_threshold': 80,
+                });
+                createdCount++;
+                successCount++;
+                LoggerService.debug('Created new budget for category: $categoryName (no valid ID)');
+              }
+            } else {
+              // Create new budget if it doesn't exist
+              await _apiService.createBudget({
+                'category_id': categoryId,
+                'amount': amount,
+                'period': 'monthly',
+                'alert_threshold': 80,
+              });
+              createdCount++;
+              successCount++;
+              LoggerService.debug('Created new budget for category: $categoryName');
+            }
           } catch (e) {
-            LoggerService.error('Error creating budget for $categoryName', error: e);
+            LoggerService.error('Error updating/creating budget for $categoryName', error: e);
             errorCount++;
           }
         }
@@ -106,12 +173,38 @@ class _AIBudgetRecommendationScreenState
 
         // Show success message
         if (successCount > 0) {
+          // Clear budget cache to ensure fresh data
+          ApiService.clearCache();
+          
+          // Trigger app-wide refresh to update budgets everywhere
+          if (mounted) {
+            await AppRefresh.refreshAll(context);
+          }
+          
+          // Build success message with update/create counts
+          String message = '';
+          if (updatedCount > 0 && createdCount > 0) {
+            message = '$updatedCount budget diperbarui, $createdCount budget dibuat!';
+          } else if (updatedCount > 0) {
+            message = '$updatedCount budget berhasil diperbarui!';
+          } else if (createdCount > 0) {
+            message = '$createdCount budget berhasil dibuat!';
+          } else {
+            message = '$successCount budget berhasil diproses!';
+          }
+          if (errorCount > 0) {
+            message += ' $errorCount gagal.';
+          }
+          
           ErrorHandlerService.showSuccessSnackbar(
             context,
-            '$successCount budget berhasil dibuat!${errorCount > 0 ? " $errorCount gagal." : ""}',
+            message,
           );
-          // Navigate back after showing message
-          if (mounted) Navigator.pop(context, true);
+          
+          // Navigate back after showing message with result to trigger refresh
+          if (mounted) {
+            Navigator.pop(context, true);
+          }
         } else {
           ErrorHandlerService.showWarningSnackbar(
             context,

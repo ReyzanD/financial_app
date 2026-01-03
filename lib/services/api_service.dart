@@ -371,8 +371,8 @@ class ApiService {
   }
 
   // Budgets - Delegated to BudgetApi
-  Future<List<dynamic>> getBudgets({bool activeOnly = true}) async {
-    return await BudgetApi.getBudgets();
+  Future<List<dynamic>> getBudgets({bool activeOnly = true, bool useCache = true}) async {
+    return await BudgetApi.getBudgets(useCache: useCache);
   }
 
   Future<Map<String, dynamic>> getBudget(String budgetId) async {
@@ -382,18 +382,27 @@ class ApiService {
   Future<Map<String, dynamic>> createBudget(
     Map<String, dynamic> budgetData,
   ) async {
-    return await BudgetApi.createBudget(budgetData);
+    final result = await BudgetApi.createBudget(budgetData);
+    // Clear cache to ensure fresh budget data
+    clearCache();
+    return result;
   }
 
   Future<Map<String, dynamic>> updateBudget(
     String budgetId,
     Map<String, dynamic> budgetData,
   ) async {
-    return await BudgetApi.updateBudget(budgetId, budgetData);
+    final result = await BudgetApi.updateBudget(budgetId, budgetData);
+    // Clear cache to ensure fresh budget data
+    clearCache();
+    return result;
   }
 
   Future<Map<String, dynamic>> deleteBudget(String budgetId) async {
-    return await BudgetApi.deleteBudget(budgetId);
+    final result = await BudgetApi.deleteBudget(budgetId);
+    // Clear cache to ensure fresh budget data
+    clearCache();
+    return result;
   }
 
   Future<Map<String, dynamic>> getBudgetsSummary() async {

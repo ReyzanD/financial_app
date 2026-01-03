@@ -8,6 +8,7 @@ import 'package:financial_app/Screen/backup_screen.dart';
 import 'package:financial_app/Screen/ai_budget_recommendation_screen.dart';
 import 'package:financial_app/utils/responsive_helper.dart';
 import 'package:financial_app/services/quick_actions_analytics_service.dart';
+import 'package:financial_app/utils/app_refresh.dart';
 
 /// Enhanced Quick Actions dengan customization, analytics, swipe gestures, dan categories
 class QuickActionsEnhanced extends StatefulWidget {
@@ -98,12 +99,19 @@ class _QuickActionsEnhancedState extends State<QuickActionsEnhanced> {
         'category': 'Analytics',
         'visible': true,
         'order': 0,
-        'onTap': () => Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => const AIBudgetRecommendationScreen(),
-          ),
-        ),
+        'onTap': () async {
+          final result = await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const AIBudgetRecommendationScreen(),
+            ),
+          );
+          // If budgets were created, trigger refresh
+          if (result == true) {
+            // Use RefreshNotifier to trigger global refresh
+            RefreshNotifier().triggerRefresh();
+          }
+        },
       },
       {
         'id': 'riwayat',

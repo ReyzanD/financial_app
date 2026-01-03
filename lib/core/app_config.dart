@@ -6,11 +6,10 @@ class AppConfig {
   // Development API URL (for Android emulator)
   static const String _devBaseUrl = 'http://10.0.2.2:5000/api/v1';
 
-  // Production API URL - Update this with your Render URL after deployment
-  // Format: https://your-app-name.onrender.com/api/v1
+  // Production API URL - Set via API_BASE_URL environment variable
   static const String _prodBaseUrl = String.fromEnvironment(
     'API_BASE_URL',
-    defaultValue: 'https://financial-app-fua2.onrender.com/api/v1',
+    defaultValue: 'http://10.0.2.2:5000/api/v1', // Default to local for development
   );
 
   /// Determine if we're in production mode
@@ -30,11 +29,11 @@ class AppConfig {
   ///
   /// Returns production URL if in production mode, otherwise development URL.
   static String get baseUrl {
-    // Always use production URL if it's not the placeholder
-    if (_prodBaseUrl != 'https://your-app-name.onrender.com/api/v1') {
+    // Use production URL only if explicitly in production mode
+    if (isProduction) {
       return _prodBaseUrl;
     }
-    // Fallback to dev URL
+    // Use development URL (localhost) for local development
     return _devBaseUrl;
   }
 

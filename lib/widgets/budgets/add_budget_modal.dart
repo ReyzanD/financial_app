@@ -4,6 +4,7 @@ import 'package:financial_app/services/api_service.dart';
 import 'package:financial_app/services/error_handler_service.dart';
 import 'package:financial_app/services/logger_service.dart';
 import 'package:financial_app/utils/form_validators.dart';
+import 'package:financial_app/utils/app_refresh.dart';
 import 'package:intl/intl.dart';
 
 class AddBudgetModal extends StatefulWidget {
@@ -50,7 +51,18 @@ class _AddBudgetModalState extends State<AddBudgetModal> {
       }
       final categoryId = initial['category_id'];
       if (categoryId != null) {
-        _selectedCategoryId = categoryId.toString();
+        final categoryIdStr = categoryId.toString();
+        // Only set selected category if it exists in the categories map
+        // This prevents dropdown errors when category was deleted or filtered out
+        if (widget.categories.containsKey(categoryIdStr)) {
+          _selectedCategoryId = categoryIdStr;
+        } else {
+          // Category doesn't exist in filtered list, reset to null
+          _selectedCategoryId = null;
+          LoggerService.debug(
+            'Category $categoryIdStr not found in categories map, resetting selection',
+          );
+        }
       }
       final period = initial['period'] as String?;
       if (period != null && period.isNotEmpty) {
@@ -174,6 +186,117 @@ class _AddBudgetModalState extends State<AddBudgetModal> {
     }
   }
 
+  Future<void> _confirmDelete() async {
+    final id = widget.initialBudget?['id']?.toString();
+    if (id == null) {
+      return;
+    }
+
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          backgroundColor: const Color(0xFF1A1A1A),
+          title: Text(
+            'Hapus Budget',
+            style: GoogleFonts.poppins(
+              color: Colors.white,
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          content: Text(
+            'Yakin ingin menghapus budget ini?',
+            style: GoogleFonts.poppins(color: Colors.grey[400], fontSize: 13),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: Text(
+                'Batal',
+                style: GoogleFonts.poppins(color: Colors.grey[400]),
+              ),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(context, true),
+              child: Text(
+                'Hapus',
+                style: GoogleFonts.poppins(color: Colors.red),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (confirmed == true) {
+      setState(() {
+        _isLoading = true;
+      });
+
+      try {
+        await _apiService.deleteBudget(id);
+        if (!mounted) return;
+
+        // Clear cache and trigger app-wide refresh
+        ApiService.clearCache();
+        if (context.mounted) {
+          await AppRefresh.refreshAll(context);
+        }
+
+        Navigator.pop(context, true);
+        if (context.mounted) {
+          ErrorHandlerService.showSuccessSnackbar(
+            context,
+            'Budget berhasil dihapus.',
+          );
+        }
+      } catch (e) {
+        LoggerService.error('Error deleting budget', error: e);
+        if (!mounted) return;
+        
+        final errorMessage = e.toString().toLowerCase();
+        final isNotFound = errorMessage.contains('404') || errorMessage.contains('not found');
+        
+        // If budget not found (404), it might already be deleted, so refresh the list anyway
+        if (isNotFound) {
+          // Clear cache and trigger refresh even if we got 404
+          ApiService.clearCache();
+          if (context.mounted) {
+            await AppRefresh.refreshAll(context);
+          }
+          Navigator.pop(context, true);
+          if (context.mounted) {
+            // Show a less alarming message since the budget is likely already gone
+            ErrorHandlerService.showSuccessSnackbar(
+              context,
+              'Budget tidak ditemukan. Daftar sudah diperbarui.',
+            );
+          }
+          return;
+        }
+        
+        setState(() {
+          _isLoading = false;
+        });
+        if (context.mounted) {
+          String userMessage;
+          
+          if (errorMessage.contains('401') || errorMessage.contains('unauthorized')) {
+            userMessage = 'Sesi Anda telah berakhir. Silakan login kembali.';
+          } else {
+            userMessage = ErrorHandlerService.getUserFriendlyMessage(e);
+          }
+          
+          ErrorHandlerService.showErrorSnackbar(
+            context,
+            userMessage,
+          );
+        }
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final periodOptions = <String, String>{
@@ -215,7 +338,10 @@ class _AddBudgetModalState extends State<AddBudgetModal> {
               ),
               const SizedBox(height: 24),
               DropdownButtonFormField<String?>(
-                value: _selectedCategoryId,
+                value: _selectedCategoryId != null &&
+                        widget.categories.containsKey(_selectedCategoryId)
+                    ? _selectedCategoryId
+                    : null, // Ensure value exists in items
                 dropdownColor: const Color(0xFF1A1A1A),
                 style: const TextStyle(color: Colors.white),
                 decoration: InputDecoration(
@@ -392,6 +518,21 @@ class _AddBudgetModalState extends State<AddBudgetModal> {
                         )
                         : Text(_isEdit ? 'Simpan Perubahan' : 'Tambah Budget'),
               ),
+              if (_isEdit) ...[
+                const SizedBox(height: 12),
+                OutlinedButton(
+                  onPressed: _isLoading ? null : _confirmDelete,
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: Colors.red,
+                    side: const BorderSide(color: Colors.red, width: 1.5),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    minimumSize: const Size(double.infinity, 50),
+                  ),
+                  child: const Text('Hapus Budget'),
+                ),
+              ],
               const SizedBox(height: 20),
             ],
           ),

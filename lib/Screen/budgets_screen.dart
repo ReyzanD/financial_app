@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:financial_app/services/api_service.dart';
+import 'package:financial_app/services/api/base_api.dart';
 import 'package:financial_app/services/error_handler_service.dart';
 import 'package:financial_app/services/logger_service.dart';
 import 'package:financial_app/widgets/budgets/add_budget_modal.dart';
@@ -35,7 +36,7 @@ class _BudgetsScreenState extends State<BudgetsScreen> {
     _loadData();
   }
 
-  Future<void> _loadData() async {
+  Future<void> _loadData({bool forceRefresh = false}) async {
     try {
       if (mounted) {
         setState(() {
@@ -44,9 +45,16 @@ class _BudgetsScreenState extends State<BudgetsScreen> {
         });
       }
 
+      // Clear cache if forcing refresh
+      if (forceRefresh) {
+        ApiService.clearCache();
+        // Also clear BaseApiClient cache
+        BaseApiClient.clearCache();
+      }
+
       final results = await Future.wait([
         _apiService.getCategories(),
-        _apiService.getBudgets(activeOnly: _activeOnly),
+        _apiService.getBudgets(activeOnly: _activeOnly, useCache: !forceRefresh),
         _apiService.getBudgetsSummary(),
       ]).timeout(
         const Duration(seconds: 10),
@@ -542,7 +550,8 @@ class _BudgetsScreenState extends State<BudgetsScreen> {
       },
     );
     if (result == true) {
-      await _loadData();
+      // Force refresh with cache cleared
+      await _loadData(forceRefresh: true);
     }
   }
 
@@ -587,9 +596,20 @@ class _BudgetsScreenState extends State<BudgetsScreen> {
     );
 
     if (confirmed == true) {
+      // Immediately remove from local state for instant UI feedback
+      final budgetToDelete = budget;
+      setState(() {
+        _budgets.removeWhere((b) => b['id']?.toString() == id);
+      });
+      
       try {
         await _apiService.deleteBudget(id);
         if (!mounted) return;
+        
+        // Clear both caches to ensure fresh data
+        ApiService.clearCache();
+        BaseApiClient.clearCache();
+        
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
@@ -598,17 +618,59 @@ class _BudgetsScreenState extends State<BudgetsScreen> {
             backgroundColor: const Color(0xFF8B5FBF),
           ),
         );
-        await _loadData();
+        // Reload to sync with server (force refresh)
+        await _loadData(forceRefresh: true);
       } catch (e) {
         LoggerService.error('Error deleting budget', error: e);
         if (!mounted) return;
+        
+        final errorMessage = e.toString().toLowerCase();
+        final isNotFound = errorMessage.contains('404') || errorMessage.contains('not found');
+        
+        // If budget not found (404), it's already deleted, so just refresh
+        if (isNotFound) {
+          // Clear cache and refresh list even if we got 404
+          await _loadData(forceRefresh: true);
+          if (context.mounted) {
+            // Show a less alarming message since the budget is likely already gone
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  'Budget tidak ditemukan. Daftar sudah diperbarui.',
+                ),
+                backgroundColor: const Color(0xFF8B5FBF),
+              ),
+            );
+          }
+          return;
+        }
+        
+        // If deletion failed, restore the budget to the list
+        setState(() {
+          if (!_budgets.any((b) => b['id']?.toString() == id)) {
+            _budgets.add(budgetToDelete);
+            // Sort to maintain order if needed
+            _budgets.sort((a, b) {
+              final aId = a['id']?.toString() ?? '';
+              final bId = b['id']?.toString() ?? '';
+              return aId.compareTo(bId);
+            });
+          }
+        });
+        
         ErrorHandlerService.showErrorSnackbar(
           context,
           ErrorHandlerService.getUserFriendlyMessage(e),
           onRetry: () async {
+            // Remove again before retry
+            setState(() {
+              _budgets.removeWhere((b) => b['id']?.toString() == id);
+            });
+            
             try {
               await _apiService.deleteBudget(id);
               if (!mounted) return;
+              ApiService.clearCache();
               if (context.mounted) {
                 ErrorHandlerService.showSuccessSnackbar(
                   context,
@@ -621,6 +683,19 @@ class _BudgetsScreenState extends State<BudgetsScreen> {
                 'Error retrying delete budget',
                 error: retryError,
               );
+              // If retry also gets 404, refresh anyway
+              final retryErrorMsg = retryError.toString().toLowerCase();
+              if (retryErrorMsg.contains('404') || retryErrorMsg.contains('not found')) {
+                ApiService.clearCache();
+                await _loadData();
+              } else {
+                // Restore on retry failure too
+                setState(() {
+                  if (!_budgets.any((b) => b['id']?.toString() == id)) {
+                    _budgets.add(budgetToDelete);
+                  }
+                });
+              }
             }
           },
         );

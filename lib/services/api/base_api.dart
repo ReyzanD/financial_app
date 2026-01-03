@@ -117,6 +117,14 @@ class BaseApiClient {
     LoggerService.apiResponse(response.statusCode, endpoint);
 
     if (response.statusCode == 200 || response.statusCode == 201) {
+      // Clear cache for related endpoints when creating/updating data
+      if (endpoint.contains('budgets') || 
+          endpoint.contains('transactions') || 
+          endpoint.contains('goals') ||
+          endpoint.contains('obligations')) {
+        clearCache();
+      }
+      
       // Ensure response body is properly decoded with UTF-8 encoding
       final responseBody = utf8.decode(response.bodyBytes);
       return json.decode(responseBody);
@@ -173,11 +181,21 @@ class BaseApiClient {
     LoggerService.apiResponse(response.statusCode, endpoint);
 
     if (response.statusCode == 200) {
-      return json.decode(response.body);
+      // Ensure response body is properly decoded with UTF-8 encoding
+      final responseBody = utf8.decode(response.bodyBytes);
+      return json.decode(responseBody);
     } else if (response.statusCode == 401) {
       throw Exception('Unauthorized - Please login again');
+    } else if (response.statusCode == 404) {
+      // Ensure error response is properly decoded with UTF-8 encoding
+      final responseBody = utf8.decode(response.bodyBytes);
+      final errorBody = json.decode(responseBody);
+      throw Exception(errorBody['error'] ?? 'Resource not found (404)');
     } else {
-      throw Exception('Server error - Please try again later');
+      // Ensure error response is properly decoded with UTF-8 encoding
+      final responseBody = utf8.decode(response.bodyBytes);
+      final errorBody = json.decode(responseBody);
+      throw Exception(errorBody['error'] ?? 'Server error - Please try again later');
     }
   }
 }

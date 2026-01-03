@@ -270,10 +270,20 @@ def get_monthly_summary():
             if isinstance(transaction_type, str) and transaction_type.endswith('_232143'):
                 transaction_type = transaction_type.replace('_232143', '')
             
+            # Handle MySQL Decimal types - convert to float then string
+            total_amount = item['total_amount']
+            if hasattr(total_amount, '__float__'):
+                # Decimal or other numeric type
+                total_amount = float(total_amount)
+            elif isinstance(total_amount, (int, float)):
+                total_amount = float(total_amount)
+            else:
+                total_amount = float(str(total_amount))
+            
             transformed_item = {
                 'type_232143': transaction_type,  # This will be 'income' or 'expense'
-                'total_amount_232143': str(item['total_amount']),
-                'transaction_count': item['transaction_count']
+                'total_amount_232143': str(total_amount),
+                'transaction_count': int(item['transaction_count'])
             }
             transformed_summary.append(transformed_item)
 

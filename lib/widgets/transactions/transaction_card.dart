@@ -19,14 +19,15 @@ class TransactionCard extends StatefulWidget {
 }
 
 class _TransactionCardState extends State<TransactionCard> {
-  bool _isDismissed = false;
+  bool _isDeleting = false;
 
   @override
   Widget build(BuildContext context) {
-    // Immediately hide if dismissed
-    if (_isDismissed) {
+    // Hide widget immediately if deletion is in progress
+    if (_isDeleting) {
       return const SizedBox.shrink();
     }
+    
     // Log transaction data for debugging
     LoggerService.debug(
       'TransactionCard Data',
@@ -56,8 +57,9 @@ class _TransactionCardState extends State<TransactionCard> {
     final date = widget.transaction['date'] as String? ?? '';
     final location = widget.transaction['location'] as String? ?? '';
 
+    // Use ValueKey with transaction ID - Flutter will handle removal when key changes
     return Dismissible(
-      key: Key(widget.transaction['id']?.toString() ?? ''),
+      key: ValueKey(widget.transaction['id']?.toString() ?? ''),
       direction: DismissDirection.endToStart,
       confirmDismiss: (direction) async {
         return await showDialog(
@@ -93,86 +95,22 @@ class _TransactionCardState extends State<TransactionCard> {
           },
         );
       },
-      onDismissed: (direction) async {
-        // Request biometric authentication before deletion
-        final authenticated = await BiometricHelper.requestBiometricAuth(
-          context: context,
-          reason: 'Autentikasi diperlukan untuk menghapus transaksi',
-        );
-
-        if (!authenticated) {
-          // User cancelled or failed authentication, restore the card
-          setState(() {
-            _isDismissed = false;
-          });
-          if (context.mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(
-                  'Autentikasi dibatalkan',
-                  style: GoogleFonts.poppins(),
-                ),
-                backgroundColor: Colors.orange,
-              ),
-            );
-          }
-          return;
-        }
-
-        // Immediately hide the widget
+      onDismissed: (direction) {
+        // onDismissed is called AFTER the widget is dismissed
+        // Immediately hide the widget and notify parent to remove from list
         setState(() {
-          _isDismissed = true;
+          _isDeleting = true;
         });
-
-        // Perform API call to delete from server
-        final apiService = ApiService();
+        
         final transactionId = widget.transaction['id']?.toString() ?? '';
-
-        LoggerService.debug('[TransactionCard] Starting deletion for ID: $transactionId');
-
-        try {
-          await apiService.deleteTransaction(transactionId);
-          LoggerService.success('Transaction deleted successfully');
-
-          // Only refresh parent data after successful deletion
-          LoggerService.debug('Calling onDeleted callback to refresh data');
-          widget.onDeleted?.call();
-          LoggerService.debug('onDeleted callback executed successfully');
-
-          if (context.mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(
-                  'Transaksi berhasil dihapus',
-                  style: GoogleFonts.poppins(),
-                ),
-                backgroundColor: Colors.green,
-                duration: const Duration(seconds: 2),
-              ),
-            );
-          }
-        } catch (e) {
-          LoggerService.error('[TransactionCard] Deletion failed', error: e);
-          // If deletion fails, show the widget again
-          if (mounted) {
-            setState(() {
-              _isDismissed = false;
-            });
-          }
-
-          if (context.mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(
-                  'Gagal menghapus transaksi: $e',
-                  style: GoogleFonts.poppins(),
-                ),
-                backgroundColor: Colors.red,
-                duration: const Duration(seconds: 3),
-              ),
-            );
-          }
-        }
+        LoggerService.debug('[TransactionCard] Dismissed, starting deletion for ID: $transactionId');
+        
+        // Immediately notify parent to remove from list (triggers rebuild)
+        // This must happen synchronously to remove widget from tree
+        widget.onDeleted?.call();
+        
+        // Perform async deletion in background
+        _performDeletion(transactionId);
       },
       background: Container(
         alignment: Alignment.centerRight,
@@ -348,6 +286,101 @@ class _TransactionCardState extends State<TransactionCard> {
         ),
       ),
     );
+  }
+
+  Future<void> _performDeletion(String transactionId) async {
+    // Store context reference and check if widget is still mounted
+    if (!mounted) return;
+    final currentContext = context;
+    
+    // Check if biometric should be required
+    final shouldRequire = await BiometricHelper.shouldRequireBiometric();
+    
+    if (shouldRequire && mounted) {
+      // Biometric is available and enabled - require authentication
+      final authenticated = await BiometricHelper.requestBiometricAuth(
+        context: currentContext,
+        reason: 'Autentikasi diperlukan untuk menghapus transaksi',
+      );
+
+      if (!authenticated) {
+        // User cancelled or authentication failed
+        // Restore the widget
+        if (mounted) {
+          setState(() {
+            _isDeleting = false;
+          });
+        }
+        if (mounted && currentContext.mounted) {
+          ScaffoldMessenger.of(currentContext).showSnackBar(
+            SnackBar(
+              content: Text(
+                'Autentikasi dibatalkan',
+                style: GoogleFonts.poppins(),
+              ),
+              backgroundColor: Colors.orange,
+            ),
+          );
+        }
+        // Refresh to restore the item in the list
+        widget.onDeleted?.call();
+        return;
+      }
+    }
+    
+    // If widget was unmounted during biometric check, stop here
+    if (!mounted) return;
+    
+    // If biometric is not available/enabled, proceed with deletion without authentication
+
+    // Perform API call to delete from server
+    final apiService = ApiService();
+
+    LoggerService.debug('[TransactionCard] Starting deletion for ID: $transactionId');
+
+    try {
+      await apiService.deleteTransaction(transactionId);
+      LoggerService.success('Transaction deleted successfully');
+
+      // Parent list already refreshed in onDismissed, just show success message
+      if (mounted && currentContext.mounted) {
+        ScaffoldMessenger.of(currentContext).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Transaksi berhasil dihapus',
+              style: GoogleFonts.poppins(),
+            ),
+            backgroundColor: Colors.green,
+            duration: const Duration(seconds: 2),
+          ),
+        );
+      }
+    } catch (e) {
+      LoggerService.error('[TransactionCard] Deletion failed', error: e);
+      
+      // Restore the widget if deletion failed
+      if (mounted) {
+        setState(() {
+          _isDeleting = false;
+        });
+      }
+      
+      // Refresh to restore the item in the list
+      widget.onDeleted?.call();
+
+      if (mounted && currentContext.mounted) {
+        ScaffoldMessenger.of(currentContext).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Gagal menghapus transaksi: $e',
+              style: GoogleFonts.poppins(),
+            ),
+            backgroundColor: Colors.red,
+            duration: const Duration(seconds: 3),
+          ),
+        );
+      }
+    }
   }
 }
 

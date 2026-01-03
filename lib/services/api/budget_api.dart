@@ -3,8 +3,8 @@ import 'base_api.dart';
 /// API client for budget-related endpoints
 class BudgetApi {
   /// Get all budgets
-  static Future<List<dynamic>> getBudgets() async {
-    final response = await BaseApiClient.get('budgets');
+  static Future<List<dynamic>> getBudgets({bool useCache = true}) async {
+    final response = await BaseApiClient.get('budgets', useCache: useCache);
     return response['budgets'] ?? [];
   }
 

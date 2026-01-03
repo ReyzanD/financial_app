@@ -175,18 +175,29 @@ class TransactionModel:
             first_day = f"{year}-{month:02d}-01"
             last_day = f"{year}-{month:02d}-{last_day_num}"
             
+            # MySQL: Use DATE() function to extract date part and compare
+            # This works for both DATE and DATETIME columns
             sql = """
             SELECT 
                 type_232143,
-                SUM(amount_232143) as total_amount,
+                COALESCE(SUM(amount_232143), 0) as total_amount,
                 COUNT(*) as transaction_count
             FROM transactions_232143 
             WHERE user_id_232143 = %s 
-                AND DATE(transaction_date_232143) BETWEEN %s AND %s
+                AND YEAR(transaction_date_232143) = %s
+                AND MONTH(transaction_date_232143) = %s
             GROUP BY type_232143
             """
-            cursor.execute(sql, (user_id, first_day, last_day))
-            return cursor.fetchall()
+            cursor.execute(sql, (user_id, year, month))
+            result = cursor.fetchall()
+            
+            # Debug: Print query result
+            print(f"🔍 [get_monthly_summary] Query: year={year}, month={month}, user_id={user_id}")
+            print(f"🔍 [get_monthly_summary] Result count: {len(result)}")
+            for row in result:
+                print(f"🔍 [get_monthly_summary] Row: {row}")
+            
+            return result
 
     @staticmethod
     def get_category_spending(user_id, start_date, end_date):

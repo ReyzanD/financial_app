@@ -1,5 +1,5 @@
 #!/bin/bash
-# Build script for Render deployment
+# Build script for deployment
 # Ensures setuptools and wheel are installed before other packages
 
 set -e
