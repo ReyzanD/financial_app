@@ -80,9 +80,14 @@ class _HomeHeaderState extends State<HomeHeader> {
             ),
           ),
 
-          // Notifications & Settings
+          // Chat, Notifications & Settings
           Row(
             children: [
+              _buildIconButton(
+                icon: Iconsax.message,
+                onPressed: () => Navigator.pushNamed(context, '/chat'),
+              ),
+              const SizedBox(width: 8),
               _buildIconButton(
                 icon: Iconsax.notification,
                 onPressed: () => Navigator.pushNamed(context, '/notifications'),

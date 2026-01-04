@@ -27,6 +27,15 @@ class _GoalsListState extends State<GoalsList> {
     _loadGoals();
   }
 
+  @override
+  void didUpdateWidget(GoalsList oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Reload goals when widget is updated (e.g., after deletion)
+    if (oldWidget.onGoalsChanged != widget.onGoalsChanged) {
+      _loadGoals();
+    }
+  }
+
   Future<void> _loadGoals() async {
     try {
       final fetchedGoals = await _apiService.getGoals();
@@ -92,7 +101,15 @@ class _GoalsListState extends State<GoalsList> {
           final goal = goals[index];
           return StaggeredListAnimation(
             index: index,
-            child: GoalCard(goal: goal, onUpdated: widget.onGoalsChanged),
+            child: GoalCard(
+              goal: goal,
+              onUpdated: () {
+                // Reload goals when a goal is updated/deleted
+                _loadGoals();
+                // Also notify parent if callback is provided
+                widget.onGoalsChanged?.call();
+              },
+            ),
           );
         },
       ),

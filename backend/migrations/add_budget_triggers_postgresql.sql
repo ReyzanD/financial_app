@@ -18,6 +18,13 @@ BEGIN
             WHERE t.category_id_232143 = NEW.category_id_232143
             AND t.transaction_date_232143 BETWEEN budgets_232143.period_start_232143 AND budgets_232143.period_end_232143
             AND t.type_232143 = 'expense'
+        ),
+        remaining_amount_232143 = amount_232143 - (
+            SELECT COALESCE(SUM(amount_232143), 0)
+            FROM transactions_232143 t
+            WHERE t.category_id_232143 = NEW.category_id_232143
+            AND t.transaction_date_232143 BETWEEN budgets_232143.period_start_232143 AND budgets_232143.period_end_232143
+            AND t.type_232143 = 'expense'
         )
         WHERE category_id_232143 = NEW.category_id_232143
         AND period_start_232143 <= NEW.transaction_date_232143 
@@ -40,6 +47,13 @@ BEGIN
             WHERE t.category_id_232143 = OLD.category_id_232143
             AND t.transaction_date_232143 BETWEEN budgets_232143.period_start_232143 AND budgets_232143.period_end_232143
             AND t.type_232143 = 'expense'
+        ),
+        remaining_amount_232143 = amount_232143 - (
+            SELECT COALESCE(SUM(amount_232143), 0)
+            FROM transactions_232143 t
+            WHERE t.category_id_232143 = OLD.category_id_232143
+            AND t.transaction_date_232143 BETWEEN budgets_232143.period_start_232143 AND budgets_232143.period_end_232143
+            AND t.type_232143 = 'expense'
         )
         WHERE category_id_232143 = OLD.category_id_232143
         AND period_start_232143 <= OLD.transaction_date_232143 
@@ -50,6 +64,13 @@ BEGIN
     IF NEW.category_id_232143 IS NOT NULL AND NEW.type_232143 = 'expense' THEN
         UPDATE budgets_232143 
         SET spent_amount_232143 = (
+            SELECT COALESCE(SUM(amount_232143), 0)
+            FROM transactions_232143 t
+            WHERE t.category_id_232143 = NEW.category_id_232143
+            AND t.transaction_date_232143 BETWEEN budgets_232143.period_start_232143 AND budgets_232143.period_end_232143
+            AND t.type_232143 = 'expense'
+        ),
+        remaining_amount_232143 = amount_232143 - (
             SELECT COALESCE(SUM(amount_232143), 0)
             FROM transactions_232143 t
             WHERE t.category_id_232143 = NEW.category_id_232143
@@ -71,6 +92,13 @@ BEGIN
     IF OLD.type_232143 = 'expense' AND OLD.category_id_232143 IS NOT NULL THEN
         UPDATE budgets_232143 
         SET spent_amount_232143 = (
+            SELECT COALESCE(SUM(amount_232143), 0)
+            FROM transactions_232143 t
+            WHERE t.category_id_232143 = OLD.category_id_232143
+            AND t.transaction_date_232143 BETWEEN budgets_232143.period_start_232143 AND budgets_232143.period_end_232143
+            AND t.type_232143 = 'expense'
+        ),
+        remaining_amount_232143 = amount_232143 - (
             SELECT COALESCE(SUM(amount_232143), 0)
             FROM transactions_232143 t
             WHERE t.category_id_232143 = OLD.category_id_232143

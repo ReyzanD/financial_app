@@ -88,6 +88,8 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
   bool _isRecurring = false;
   bool _isSubmitting = false;
   bool _isScanningReceipt = false;
+  bool _isCategorizing = false;
+  String? _aiSuggestedCategory;
 
   // Category data from API
   List<Map<String, dynamic>> _categories = [];
@@ -454,6 +456,58 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
           _selectedCategory = category['id'].toString();
         });
       }
+    }
+  }
+
+  Future<void> _suggestCategoryWithAI(String description, String amountText) async {
+    if (_isCategorizing || description.isEmpty || amountText.isEmpty) return;
+    
+    try {
+      final amount = double.tryParse(amountText);
+      if (amount == null) return;
+      
+      setState(() {
+        _isCategorizing = true;
+        _aiSuggestedCategory = null;
+      });
+      
+      final result = await _apiService.categorizeTransaction(
+        description,
+        amount,
+        date: _selectedDate.toIso8601String().split('T')[0],
+      );
+      
+      if (mounted && result['category'] != null) {
+        setState(() {
+          _aiSuggestedCategory = result['category'] as String;
+          _isCategorizing = false;
+        });
+      }
+    } catch (e) {
+      LoggerService.error('Failed to get AI category suggestion', error: e);
+      if (mounted) {
+        setState(() {
+          _isCategorizing = false;
+        });
+      }
+    }
+  }
+
+  void _applyAISuggestion() {
+    if (_aiSuggestedCategory == null) return;
+    
+    // Find category by name
+    final category = _categories.firstWhere(
+      (cat) => cat['name']?.toString().toLowerCase() == 
+               _aiSuggestedCategory!.toLowerCase(),
+      orElse: () => {},
+    );
+    
+    if (category.isNotEmpty && category['id'] != null) {
+      setState(() {
+        _selectedCategory = category['id'].toString();
+        _aiSuggestedCategory = null;
+      });
     }
   }
 
@@ -943,7 +997,46 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
               SizedBox(height: ResponsiveHelper.verticalSpacing(context, 20)),
 
               // Description
-              DescriptionField(controller: _descriptionController),
+              DescriptionField(
+                controller: _descriptionController,
+                onChanged: (value) {
+                  // Trigger AI categorization when description and amount are available
+                  if (value.isNotEmpty && _amountController.text.isNotEmpty) {
+                    _suggestCategoryWithAI(value, _amountController.text);
+                  }
+                },
+              ),
+              // Show AI suggested category badge
+              if (_aiSuggestedCategory != null && _selectedCategory == null) ...[
+                const SizedBox(height: 8),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: Colors.blue.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: Colors.blue.withOpacity(0.3)),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(Icons.auto_awesome, size: 16, color: Colors.blue[300]),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          'AI menyarankan: $_aiSuggestedCategory',
+                          style: TextStyle(
+                            color: Colors.blue[300],
+                            fontSize: 12,
+                          ),
+                        ),
+                      ),
+                      TextButton(
+                        onPressed: _applyAISuggestion,
+                        child: const Text('Gunakan', style: TextStyle(fontSize: 12)),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
               SizedBox(height: ResponsiveHelper.verticalSpacing(context, 20)),
 
               // Location Section (only for expenses, not for income)

@@ -400,9 +400,10 @@ class AIService {
           potentialSavings: potentialSavings,
           totalIncome: totalIncome,
         );
+        final categoryName = budget['category_name']?.toString() ?? 'Kategori';
         final actionability = _calculateActionabilityScore(
           action: 'review_budget',
-          category: budget['category_name'],
+          category: categoryName,
         );
         final score = _calculateRecommendationScore(
           confidence: confidence,
@@ -413,10 +414,10 @@ class AIService {
         );
         allRecs.add({
           'recommendation':
-              '⚠️ Budget "${budget['category_name']}" melebihi batas! Anda telah menghabiskan Rp ${spent.toInt()} dari budget Rp ${limit.toInt()}. Pertimbangkan untuk mengurangi pengeluaran kategori ini.',
+              '⚠️ Budget "$categoryName" melebihi batas! Anda telah menghabiskan Rp ${spent.toInt()} dari budget Rp ${limit.toInt()}. Pertimbangkan untuk mengurangi pengeluaran kategori ini.',
           'potential_savings': potentialSavings,
           'priority': 'high',
-          'category': budget['category_name'],
+          'category': categoryName,
           'icon': 'danger',
           'confidence': confidence,
           'impact': impact,

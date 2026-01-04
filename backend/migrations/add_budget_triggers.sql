@@ -6,6 +6,7 @@ DROP TRIGGER IF EXISTS `after_transaction_update_232143`;
 DROP TRIGGER IF EXISTS `after_transaction_delete_232143`;
 
 -- Trigger for INSERT (recreate to ensure consistency)
+-- Note: remaining_amount_232143 is a GENERATED column, so we only update spent_amount_232143
 DELIMITER $$
 CREATE TRIGGER `after_transaction_insert_232143` AFTER INSERT ON `transactions_232143` FOR EACH ROW 
 BEGIN
@@ -26,6 +27,7 @@ END$$
 DELIMITER ;
 
 -- Trigger for UPDATE
+-- Note: remaining_amount_232143 is a GENERATED column, so we only update spent_amount_232143
 DELIMITER $$
 CREATE TRIGGER `after_transaction_update_232143` AFTER UPDATE ON `transactions_232143` FOR EACH ROW 
 BEGIN
@@ -62,6 +64,7 @@ END$$
 DELIMITER ;
 
 -- Trigger for DELETE
+-- Note: remaining_amount_232143 is a GENERATED column, so we only update spent_amount_232143
 DELIMITER $$
 CREATE TRIGGER `after_transaction_delete_232143` AFTER DELETE ON `transactions_232143` FOR EACH ROW 
 BEGIN

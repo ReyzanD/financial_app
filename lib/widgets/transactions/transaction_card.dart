@@ -97,7 +97,7 @@ class _TransactionCardState extends State<TransactionCard> {
       },
       onDismissed: (direction) {
         // onDismissed is called AFTER the widget is dismissed
-        // Immediately hide the widget and notify parent to remove from list
+        // Immediately hide the widget
         setState(() {
           _isDeleting = true;
         });
@@ -105,11 +105,7 @@ class _TransactionCardState extends State<TransactionCard> {
         final transactionId = widget.transaction['id']?.toString() ?? '';
         LoggerService.debug('[TransactionCard] Dismissed, starting deletion for ID: $transactionId');
         
-        // Immediately notify parent to remove from list (triggers rebuild)
-        // This must happen synchronously to remove widget from tree
-        widget.onDeleted?.call();
-        
-        // Perform async deletion in background
+        // Perform async deletion - refresh will happen after successful deletion
         _performDeletion(transactionId);
       },
       background: Container(
@@ -342,7 +338,9 @@ class _TransactionCardState extends State<TransactionCard> {
       await apiService.deleteTransaction(transactionId);
       LoggerService.success('Transaction deleted successfully');
 
-      // Parent list already refreshed in onDismissed, just show success message
+      // Refresh the list after successful deletion
+      widget.onDeleted?.call();
+
       if (mounted && currentContext.mounted) {
         ScaffoldMessenger.of(currentContext).showSnackBar(
           SnackBar(

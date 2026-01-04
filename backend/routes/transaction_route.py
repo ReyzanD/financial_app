@@ -245,84 +245,65 @@ def delete_transaction(transaction_id):
         return jsonify({'message': 'Transaction deleted successfully'}), 200
         
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        error_msg = str(e)
+        print(f"❌ Error deleting transaction: {error_msg}")
+        import traceback
+        traceback.print_exc()
+        # Check if it's a MySQL error 3105 (trigger error)
+        if '3105' in error_msg or 'trigger' in error_msg.lower():
+            return jsonify({
+                'error': 'Gagal menghapus transaksi. Pastikan trigger database sudah diterapkan dengan benar.',
+                'details': error_msg
+            }), 500
+        return jsonify({'error': error_msg}), 500
 
 @transaction_bp.route('/analytics/summary', methods=['GET'])
 @jwt_required()
 def get_monthly_summary():
     try:
         user_id = get_jwt_identity()
-        
         year = request.args.get('year', datetime.now().year, type=int)
         month = request.args.get('month', datetime.now().month, type=int)
-        
-        safe_print(f"Fetching summary for user {user_id}, year={year}, month={month}")
-        
+
+        print(f"Fetching summary for user {user_id}, year={year}, month={month}")
+
         summary = TransactionModel.get_monthly_summary(user_id, year, month)
-        
-        safe_print(f"Raw summary from DB: {summary}")
-        
-        # Transform the summary data to match frontend expectations
+        print(f"Raw summary from DB: {summary}")
+
         transformed_summary = []
         for item in summary:
-            # Get the type and remove suffix if present
             transaction_type = item['type_232143']
             if isinstance(transaction_type, str) and transaction_type.endswith('_232143'):
                 transaction_type = transaction_type.replace('_232143', '')
-            
-            # Handle MySQL Decimal types - convert to float then string
-            total_amount = item['total_amount']
-            if hasattr(total_amount, '__float__'):
-                # Decimal or other numeric type
-                total_amount = float(total_amount)
-            elif isinstance(total_amount, (int, float)):
-                total_amount = float(total_amount)
-            else:
-                total_amount = float(str(total_amount))
-            
-            transformed_item = {
-                'type_232143': transaction_type,  # This will be 'income' or 'expense'
-                'total_amount_232143': str(total_amount),
-                'transaction_count': int(item['transaction_count'])
-            }
-            transformed_summary.append(transformed_item)
+
+            raw_amount = item['total_amount']
+            try:
+                total_amount = float(raw_amount) if raw_amount is not None else 0.0
+            except (TypeError, ValueError):
+                total_amount = 0.0
+
+            transaction_count = int(item.get('transaction_count') or 0)
+
+            transformed_summary.append({
+                'type_232143': transaction_type,
+                'total_amount_232143': total_amount,
+                'transaction_count': transaction_count,
+            })
 
         result = {
             'year': year,
             'month': month,
-            'summary': transformed_summary
+            'summary': transformed_summary,
         }
-        
-        safe_print(f"Transformed summary: {transformed_summary}")
-        safe_print(f"Returning summary: {result}")
-        
+        print(f"Returning summary result: {result}")
         return jsonify(result), 200
-        
+
     except Exception as e:
-        safe_print(f"Error in get_monthly_summary: {safe_str(e)}")
+        print(f"Error in get_monthly_summary: {safe_str(e)}")
         from utils.encoding_utils import safe_print_exc
         safe_print_exc()
         return jsonify({'error': safe_str(e)}), 500
 
-@transaction_bp.route('/analytics/categories', methods=['GET'])
-@jwt_required()
-def get_category_spending():
-    try:
-        user_id = get_jwt_identity()
-        
-        start_date = request.args.get('start_date', datetime.now().replace(day=1).date().isoformat())
-        end_date = request.args.get('end_date', datetime.now().date().isoformat())
-        
-        category_spending = TransactionModel.get_category_spending(user_id, start_date, end_date)
-        
-        return jsonify({
-            'start_date': start_date,
-            'end_date': end_date,
-            'category_spending': category_spending
-        }), 200
-        
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
 
 @transaction_bp.route('/recent', methods=['GET'])
 @jwt_required()
@@ -358,3 +339,90 @@ def get_ai_recommendations():
             'recommendation': 'Belum ada rekomendasi AI tersedia',
             'potential_savings': 0
         }), 200
+
+@transaction_bp.route('/categorize', methods=['POST'])
+@jwt_required()
+def categorize_transaction():
+    """Use AI to categorize a transaction based on description"""
+    try:
+        # Check if categorization is enabled
+        import config
+        if not config.Config.LLM_ENABLE_CATEGORIZATION:
+            return jsonify({
+                'error': 'AI categorization is disabled',
+                'category': None,
+                'confidence': 0.0,
+                'message': 'Fitur kategorisasi AI tidak tersedia saat ini'
+            }), 503
+        
+        user_id = get_jwt_identity()
+        data = request.get_json()
+        
+        if not data or 'description' not in data:
+            return jsonify({'error': 'Description is required'}), 400
+        
+        description = data['description']
+        amount = float(data.get('amount', 0))
+        date = data.get('date')
+        
+        from services.gemini_service import gemini_service
+        category_name, confidence, error = gemini_service.categorize_transaction(
+            description, amount, date
+        )
+        
+        if error:
+            return jsonify({
+                'error': error,
+                'category': None,
+                'confidence': 0.0
+            }), 500
+        
+        return jsonify({
+            'category': category_name,
+            'confidence': confidence,
+            'message': 'Success'
+        }), 200
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@transaction_bp.route('/summarize', methods=['POST'])
+@jwt_required()
+def summarize_transactions():
+    """Generate AI summary of transactions"""
+    try:
+        # Check if summarization is enabled
+        import config
+        if not config.Config.LLM_ENABLE_SUMMARIZATION:
+            return jsonify({
+                'error': 'AI summarization is disabled',
+                'summary': None,
+                'message': 'Fitur ringkasan AI tidak tersedia saat ini'
+            }), 503
+        
+        user_id = get_jwt_identity()
+        data = request.get_json()
+        
+        transactions = data.get('transactions', [])
+        
+        if not transactions:
+            # Get recent transactions if none provided
+            transactions = TransactionModel.get_recent_transactions(user_id, 30)
+        
+        from services.gemini_service import gemini_service
+        summary_text, error = gemini_service.generate_transaction_summary(transactions)
+        
+        if error:
+            return jsonify({
+                'error': error,
+                'summary': None
+            }), 500
+        
+        return jsonify({
+            'summary': summary_text,
+            'transaction_count': len(transactions),
+            'message': 'Success'
+        }), 200
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500

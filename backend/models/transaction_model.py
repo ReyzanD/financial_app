@@ -184,11 +184,10 @@ class TransactionModel:
                 COUNT(*) as transaction_count
             FROM transactions_232143 
             WHERE user_id_232143 = %s 
-                AND YEAR(transaction_date_232143) = %s
-                AND MONTH(transaction_date_232143) = %s
+                AND transaction_date_232143 BETWEEN %s AND %s
             GROUP BY type_232143
             """
-            cursor.execute(sql, (user_id, year, month))
+            cursor.execute(sql, (user_id, first_day, last_day))
             result = cursor.fetchall()
             
             # Debug: Print query result

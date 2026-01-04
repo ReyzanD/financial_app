@@ -13,6 +13,7 @@ from routes.goal_routes import goal_bp
 from routes.budget_routes import budget_bp
 from routes.data_routes import data_bp
 from routes.recurring_transactions_routes import recurring_bp
+from routes.chat_routes import chat_bp
 
 # Fix encoding issues on Windows
 if sys.platform == 'win32':
@@ -79,6 +80,7 @@ def create_app():
     app.register_blueprint(budget_bp, url_prefix=f"{config.Config.API_PREFIX}/budgets")
     app.register_blueprint(data_bp, url_prefix=f"{config.Config.API_PREFIX}/data")
     app.register_blueprint(recurring_bp, url_prefix=f"{config.Config.API_PREFIX}/recurring-transactions")
+    app.register_blueprint(chat_bp, url_prefix=f"{config.Config.API_PREFIX}/chat")
     
     # Health check route
     @app.route('/')

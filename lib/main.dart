@@ -11,6 +11,7 @@ import 'package:financial_app/Screen/pin_unlock_screen.dart';
 import 'package:financial_app/Screen/pin_change_screen.dart';
 import 'package:financial_app/Screen/auth_gate.dart';
 import 'package:financial_app/Screen/notification_center_screen.dart';
+import 'package:financial_app/Screen/chat_assistant_screen.dart';
 import 'package:financial_app/services/api_service.dart';
 import 'package:financial_app/services/data_service.dart';
 import 'package:financial_app/services/notification_service.dart';
@@ -140,6 +141,7 @@ class MyApp extends StatelessWidget {
             '/onboarding': (context) => const OnboardingScreen(),
             '/map': (context) => const MapScreen(),
             '/settings': (context) => const SettingsScreen(),
+            '/chat': (context) => const ChatAssistantScreen(),
           },
         );
       },

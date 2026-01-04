@@ -484,7 +484,73 @@ class ApiService {
 
   // AI Recommendations
   Future<dynamic> getAIRecommendations() async {
-    return await get('transactions_232143/recommendations');
+    try {
+      return await get('transactions_232143/recommendations', useCache: false);
+    } catch (e) {
+      LoggerService.warning('Failed to get AI recommendations, returning empty list', error: e);
+      // Return empty recommendations instead of throwing
+      return [];
+    }
+  }
+
+  // Chat Assistant
+  Future<Map<String, dynamic>> sendChatMessage(String message, {List<dynamic>? conversationHistory}) async {
+    try {
+      final data = {
+        'message': message,
+        if (conversationHistory != null) 'conversation_history': conversationHistory,
+      };
+      return await post('chat', data);
+    } catch (e) {
+      LoggerService.error('Failed to send chat message', error: e);
+      rethrow;
+    }
+  }
+
+  Future<List<dynamic>> getChatHistory() async {
+    try {
+      final response = await get('chat/history');
+      return response['history'] ?? [];
+    } catch (e) {
+      LoggerService.error('Failed to get chat history', error: e);
+      return [];
+    }
+  }
+
+  Future<void> clearChatHistory() async {
+    try {
+      await delete('chat/history');
+    } catch (e) {
+      LoggerService.error('Failed to clear chat history', error: e);
+      rethrow;
+    }
+  }
+
+  // Transaction Categorization & Summary
+  Future<Map<String, dynamic>> categorizeTransaction(String description, double amount, {String? date}) async {
+    try {
+      final data = {
+        'description': description,
+        'amount': amount,
+        if (date != null) 'date': date,
+      };
+      return await post('transactions_232143/categorize', data);
+    } catch (e) {
+      LoggerService.error('Failed to categorize transaction', error: e);
+      rethrow;
+    }
+  }
+
+  Future<Map<String, dynamic>> summarizeTransactions({List<dynamic>? transactions}) async {
+    try {
+      final data = {
+        if (transactions != null) 'transactions': transactions,
+      };
+      return await post('transactions_232143/summarize', data);
+    } catch (e) {
+      LoggerService.error('Failed to summarize transactions', error: e);
+      rethrow;
+    }
   }
 
   // Cache for categories (5 minutes)
@@ -618,7 +684,10 @@ class ApiService {
   }
 
   Future<Map<String, dynamic>> deleteGoal(String goalId) async {
-    return await GoalApi.deleteGoal(goalId);
+    final result = await GoalApi.deleteGoal(goalId);
+    // Clear cache to ensure fresh goal data
+    clearCache();
+    return result;
   }
 
   /// Add money to a goal (contribution)

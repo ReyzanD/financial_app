@@ -40,3 +40,19 @@ class Config:
     
     # Server Configuration
     PORT = int(os.getenv('PORT', 5000))
+    
+    # Google Gemini LLM Configuration
+    GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')
+    # Default to gemini-1.5-flash (faster, free tier) or use gemini-1.5-pro for better quality
+    GEMINI_MODEL = os.getenv('GEMINI_MODEL')
+    
+    # LLM Feature Flags - Control when LLM is used
+    # Set to 'false' to disable specific LLM features
+    LLM_ENHANCE_RECOMMENDATIONS = os.getenv('LLM_ENHANCE_RECOMMENDATIONS', 'true').lower() == 'true'
+    LLM_ENABLE_CHAT = os.getenv('LLM_ENABLE_CHAT', 'true').lower() == 'true'
+    LLM_ENABLE_CATEGORIZATION = os.getenv('LLM_ENABLE_CATEGORIZATION', 'true').lower() == 'true'
+    LLM_ENABLE_SUMMARIZATION = os.getenv('LLM_ENABLE_SUMMARIZATION', 'true').lower() == 'true'
+    LLM_ENABLE_BUDGET_EXPLANATION = os.getenv('LLM_ENABLE_BUDGET_EXPLANATION', 'true').lower() == 'true'
+    LLM_ENABLE_GOAL_STRATEGY = os.getenv('LLM_ENABLE_GOAL_STRATEGY', 'true').lower() == 'true'
+    # Allow non-financial questions in chat (default: true for better UX)
+    LLM_ALLOW_NON_FINANCIAL = os.getenv('LLM_ALLOW_NON_FINANCIAL', 'true').lower() == 'true'

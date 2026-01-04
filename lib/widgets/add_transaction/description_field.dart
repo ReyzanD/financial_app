@@ -4,13 +4,19 @@ import 'package:financial_app/utils/form_validators.dart';
 
 class DescriptionField extends StatelessWidget {
   final TextEditingController controller;
+  final ValueChanged<String>? onChanged;
 
-  const DescriptionField({super.key, required this.controller});
+  const DescriptionField({
+    super.key,
+    required this.controller,
+    this.onChanged,
+  });
 
   @override
   Widget build(BuildContext context) {
     return TextFormField(
       controller: controller,
+      onChanged: onChanged,
       style: GoogleFonts.poppins(color: Colors.white),
       decoration: InputDecoration(
         labelText: 'Deskripsi',

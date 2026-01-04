@@ -5,7 +5,7 @@ import config
 import os
 import time
 import threading
-from queue import Queue
+from queue import Queue, Empty as QueueEmpty, Full as QueueFull
 
 # Global connection pool
 _connection_pool = None
@@ -20,6 +20,7 @@ _conn_password = None
 _conn_database = None
 _conn_maxsize = None
 _conn_current_size = 0
+# Ensure these are always integers, never None after initialization
 
 def _get_connection_pool():
     """Initialize and return connection pool (thread-safe singleton)"""
@@ -158,13 +159,18 @@ def get_db():
                     # Try to get connection from pool (non-blocking)
                     try:
                         g.db = pool.get_nowait()
-                    except:
+                    except QueueEmpty:
                         # Pool is empty, create new connection if under max
-                        if _conn_current_size < _conn_maxsize:
-                            g.db = _create_connection()
-                            _conn_current_size += 1
+                        # Ensure both variables are initialized before comparison
+                        if _conn_maxsize is not None and _conn_current_size is not None:
+                            if _conn_current_size < _conn_maxsize:
+                                g.db = _create_connection()
+                                _conn_current_size += 1
+                            else:
+                                # Wait for a connection to become available
+                                g.db = pool.get(timeout=5)
                         else:
-                            # Wait for a connection to become available
+                            # Pool not fully initialized, wait for connection
                             g.db = pool.get(timeout=5)
                     
                     # Test connection is alive
@@ -238,10 +244,22 @@ def close_db(e=None):
             # Return connection to pool (reuse for next request)
             try:
                 pool.put_nowait(db)
-            except:
+            except QueueFull:
                 # Pool is full, close the connection
-                db.close()
-                _conn_current_size -= 1
+                try:
+                    db.close()
+                except:
+                    pass
+                if _conn_current_size is not None and _conn_current_size > 0:
+                    _conn_current_size -= 1
+            except Exception:
+                # Other error, close the connection
+                try:
+                    db.close()
+                except:
+                    pass
+                if _conn_current_size is not None and _conn_current_size > 0:
+                    _conn_current_size -= 1
         except Exception as e:
             # If pool is closed or error, just close the connection
             try:

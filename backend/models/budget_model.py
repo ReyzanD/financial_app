@@ -175,15 +175,26 @@ class BudgetModel:
         """Update an existing budget"""
         db = get_db()
         with db.cursor() as cursor:
+            # First, get current budget
+            current_budget = BudgetModel.get_budget_by_id(budget_id, user_id)
+            if not current_budget:
+                return False
+            
             set_clauses = []
             values = []
             
-            for field, value in update_data.items():
+            # Note: remaining_amount_232143 is a GENERATED column (amount_232143 - spent_amount_232143)
+            # so we cannot set it manually. It will be automatically calculated by MySQL.
+            # Remove it from update_data if it was included
+            filtered_update_data = {k: v for k, v in update_data.items() if k != 'remaining_amount_232143'}
+            
+            for field, value in filtered_update_data.items():
                 set_clauses.append(f"{field} = %s")
                 values.append(value)
             
-            if not set_clauses:
-                return False
+            # Always update updated_at_232143
+            set_clauses.append("updated_at_232143 = %s")
+            values.append(datetime.now())
             
             values.extend([budget_id, user_id])
             

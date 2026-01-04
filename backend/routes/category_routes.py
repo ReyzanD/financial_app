@@ -21,13 +21,21 @@ def get_categories():
         # Format categories with proper field names
         formatted_categories = []
         for cat in categories:
+            # Safely normalize budget_limit (avoid None)
+            raw_limit = cat.get('budget_limit_232143')
+
+            try:
+                budget_limit = float(raw_limit) if raw_limit is not None else 0.0
+            except (TypeError, ValueError):
+                budget_limit = 0.0
+
             formatted_categories.append({
                 'id': cat['category_id_232143'],
                 'name': cat['name_232143'],
                 'type': cat['type_232143'],
                 'color': cat.get('color_232143', '#3498db'),
                 'icon': cat.get('icon_232143', 'receipt'),
-                'budget_limit': float(cat['budget_limit_232143']) if cat.get('budget_limit_232143') else None,
+                'budget_limit': budget_limit,
                 'budget_period': cat.get('budget_period_232143', 'monthly'),
             })
         
@@ -41,6 +49,7 @@ def get_categories():
         import traceback
         traceback.print_exc()
         return jsonify({'error': str(e)}), 500
+
 
 @category_bp.route('', methods=['POST'])
 @jwt_required()

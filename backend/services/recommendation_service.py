@@ -48,14 +48,34 @@ class RecommendationService:
             
             # Sort by priority and return top recommendations
             recommendations.sort(key=lambda x: x['priority'], reverse=True)
-            
-            return recommendations[:limit] if recommendations else [{
+            top_recommendations = recommendations[:limit] if recommendations else [{
                 'type': 'info',
                 'title': 'Belum Ada Data',
                 'message': 'Tambahkan lebih banyak transaksi untuk mendapatkan rekomendasi AI',
                 'priority': 1,
                 'potential_savings': 0
             }]
+            
+            # Enhance with LLM if available and enabled
+            try:
+                import config
+                if config.Config.LLM_ENHANCE_RECOMMENDATIONS:
+                    from services.gemini_service import gemini_service
+                    if gemini_service.is_available:
+                        # Get user financial data for context
+                        user_data = {
+                            'recent_transactions': TransactionModel.get_recent_transactions(user_id, 10),
+                            'budgets': BudgetModel.get_user_budgets(user_id, active_only=True),
+                            'goals': GoalModel.get_user_goals(user_id, include_completed=False)
+                        }
+                        top_recommendations = gemini_service.enhance_recommendations(
+                            user_data, 
+                            top_recommendations
+                        )
+            except Exception as e:
+                print(f'⚠️ LLM enhancement failed, using base recommendations: {e}')
+            
+            return top_recommendations
             
         except Exception as e:
             print(f'❌ Error generating recommendations: {str(e)}')

@@ -196,10 +196,19 @@ class BudgetRecommendationService {
     // Check if optimalBudgets is empty (no spending patterns detected)
     final hasNoSpendingPatterns = optimalBudgets.isEmpty && categoryAverages.isEmpty;
     
-    // If no spending patterns detected, use template
-    if (hasNoSpendingPatterns) {
+    // Check if we have too few categories with spending (less than 3)
+    // If so, use template to show a complete budget recommendation
+    final categoriesWithSpending = categoryAverages.keys.where((cat) {
+      final avgSpending = categoryAverages[cat] ?? 0.0;
+      final optimal = optimalBudgets[cat] ?? (avgSpending * 1.1);
+      return optimal > 0 || avgSpending > 0;
+    }).length;
+    
+    // If no spending patterns detected or too few categories, use template
+    if (hasNoSpendingPatterns || categoriesWithSpending < 3) {
       LoggerService.debug(
-        'No spending patterns detected, using template budget',
+        'Using template budget: hasNoSpendingPatterns=$hasNoSpendingPatterns, '
+        'categoriesWithSpending=$categoriesWithSpending',
       );
       return await _generateTemplateBudgetRecommendation(
         income,
