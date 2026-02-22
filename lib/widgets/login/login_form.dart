@@ -31,16 +31,21 @@ class _LoginFormState extends State<LoginForm> {
     return Column(
       key: const ValueKey('login-form'),
       children: [
-        // Username Field
+        // Username Field (Email) - Light theme for visibility
         CustomTextField(
           controller: widget.emailController,
           label: 'Email',
           icon: Icons.person_outline_rounded,
           isPassword: false,
+          fillColor: Colors.white, // Light background
+          textColor: Colors.black, // High-contrast text
+          labelColor: Colors.black, // Visible label
+          fontSize: 16.0, // Slightly larger text
+          fontWeight: FontWeight.w500, // Bolder text
         ),
         const SizedBox(height: 20),
 
-        // Password Field
+        // Password Field - Light theme for visibility
         CustomTextField(
           controller: widget.passwordController,
           label: 'Password',
@@ -48,6 +53,11 @@ class _LoginFormState extends State<LoginForm> {
           isPassword: true,
           obscureText: widget.obscurePassword,
           onToggleObscure: widget.onToggleObscure,
+          fillColor: Colors.white, // Light background
+          textColor: Colors.black, // High-contrast text
+          labelColor: Colors.black, // Visible label
+          fontSize: 16.0, // Slightly larger text
+          fontWeight: FontWeight.w500, // Bolder text
         ),
         const SizedBox(height: 15),
 
@@ -110,25 +120,35 @@ class _RegisterFormState extends State<RegisterForm> {
     return Column(
       key: const ValueKey('register-form'),
       children: [
-        // Name Field
+        // Name Field (Username) - Light theme for visibility
         CustomTextField(
           controller: widget.nameController,
           label: 'Name',
           icon: Icons.person_add_outlined,
           isPassword: false,
+          fillColor: Colors.white, // Light background
+          textColor: Colors.black, // High-contrast text
+          labelColor: Colors.black, // Visible label
+          fontSize: 16.0, // Slightly larger text
+          fontWeight: FontWeight.w500, // Bolder text
         ),
         const SizedBox(height: 20),
 
-        // Email Field
+        // Email Field - Light theme for visibility
         CustomTextField(
           controller: widget.emailController,
           label: 'Email',
           icon: Icons.email_outlined,
           isPassword: false,
+          fillColor: Colors.white, // Light background
+          textColor: Colors.black, // High-contrast text
+          labelColor: Colors.black, // Visible label
+          fontSize: 16.0, // Slightly larger text
+          fontWeight: FontWeight.w500, // Bolder text
         ),
         const SizedBox(height: 20),
 
-        // Password Field
+        // Password Field - Light theme for visibility
         CustomTextField(
           controller: widget.passwordController,
           label: 'Password',
@@ -136,6 +156,11 @@ class _RegisterFormState extends State<RegisterForm> {
           isPassword: true,
           obscureText: widget.obscurePassword,
           onToggleObscure: widget.onToggleObscure,
+          fillColor: Colors.white, // Light background
+          textColor: Colors.black, // High-contrast text
+          labelColor: Colors.black, // Visible label
+          fontSize: 16.0, // Slightly larger text
+          fontWeight: FontWeight.w500, // Bolder text
         ),
         const SizedBox(height: 30),
 
