@@ -9,6 +9,7 @@ import 'package:financial_app/services/report_service.dart';
 import 'package:financial_app/services/api_service.dart';
 import 'package:financial_app/services/logger_service.dart';
 import 'package:financial_app/services/error_handler_service.dart';
+import 'package:financial_app/widgets/common/offline_indicator.dart';
 import 'package:financial_app/models/transaction_model.dart';
 import 'package:financial_app/l10n/app_localizations.dart';
 import 'dart:io';
@@ -338,8 +339,15 @@ class _ReportScreenState extends State<ReportScreen> {
             ),
           ),
         ),
-        body: const Center(
-          child: CircularProgressIndicator(color: Color(0xFF8B5FBF)),
+        body: Column(
+          children: [
+            const OfflineIndicator(),
+            const Expanded(
+              child: Center(
+                child: CircularProgressIndicator(color: Color(0xFF8B5FBF)),
+              ),
+            ),
+          ],
         ),
       );
     }
@@ -362,12 +370,16 @@ class _ReportScreenState extends State<ReportScreen> {
           ),
         ),
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            // Period Type Selection
+      body: Column(
+        children: [
+          const OfflineIndicator(),
+          Expanded(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  // Period Type Selection
             _buildSectionTitle('Jenis Periode'),
             const SizedBox(height: 12),
             Row(
@@ -499,7 +511,7 @@ class _ReportScreenState extends State<ReportScreen> {
                         ],
                       ),
             ),
-            const SizedBox(height: 16),
+          const SizedBox(height: 16),
 
             // Info Card
             Container(
@@ -545,8 +557,11 @@ class _ReportScreenState extends State<ReportScreen> {
                 ],
               ),
             ),
-          ],
-        ),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:financial_app/services/obligation_service.dart';
+import 'package:financial_app/services/logger_service.dart';
 import 'package:financial_app/widgets/obligations/obligation_view_tabs.dart';
 import 'package:financial_app/widgets/obligations/all_obligations_view.dart';
 import 'package:financial_app/widgets/obligations/upcoming_obligations_view.dart';
@@ -9,6 +10,7 @@ import 'package:financial_app/widgets/obligations/debts_view.dart';
 import 'package:financial_app/widgets/obligations/subscriptions_view.dart';
 import 'package:financial_app/widgets/obligations/obligation_helpers.dart';
 import 'package:financial_app/widgets/obligations/obligation_filters.dart';
+import 'package:financial_app/widgets/common/offline_indicator.dart';
 import 'package:financial_app/utils/responsive_helper.dart';
 import 'package:financial_app/l10n/app_localizations.dart';
 
@@ -93,6 +95,7 @@ class _FinancialObligationsScreenState
       ),
       body: Column(
         children: [
+          const OfflineIndicator(),
           // Summary Cards
           _buildSummaryCards(),
 
@@ -323,6 +326,7 @@ class _FinancialObligationsScreenState
 
       return {...summary, 'dueThisWeek': dueThisWeek, 'overdue': overdue};
     } catch (e) {
+      LoggerService.error('Error calculating obligations summary', error: e);
       return {
         'monthlyTotal': 0.0,
         'totalDebt': 0.0,

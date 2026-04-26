@@ -77,8 +77,7 @@ class ApiService {
   Future<Map<String, dynamic>> updateProfile(
     Map<String, dynamic> profileData,
   ) async {
-    // TODO: Implement update profile in LocalAuthService
-    throw Exception('Update profile not yet implemented in local database');
+    return await _localData.authService.updateProfile(profileData);
   }
 
   // Transactions - Using local database

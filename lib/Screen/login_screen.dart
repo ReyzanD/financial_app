@@ -4,6 +4,7 @@ import '../services/auth_service.dart';
 import '../services/pin_auth_service.dart';
 import '../services/error_handler_service.dart';
 import '../services/logger_service.dart';
+import '../widgets/common/offline_indicator.dart';
 import '../widgets/login/login_header.dart';
 import '../widgets/login/login_form.dart';
 import '../widgets/login/social_login.dart';
@@ -183,10 +184,14 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFF1A1A1A),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24.0),
-        child: Column(
-          children: [
+      body: Column(
+        children: [
+          const OfflineIndicator(),
+          Expanded(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(24.0),
+              child: Column(
+                children: [
             const SizedBox(height: 40),
 
             // Header dengan animasi
@@ -238,8 +243,11 @@ class _LoginScreenState extends State<LoginScreen> {
 
             // Toggle Auth Mode
             ToggleAuth(isLogin: _isLogin, onToggle: _toggleAuthMode),
-          ],
-        ),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

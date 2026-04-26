@@ -5,6 +5,7 @@ import 'package:financial_app/services/pin_auth_service.dart';
 import 'package:financial_app/services/error_handler_service.dart';
 import 'package:financial_app/services/logger_service.dart';
 import 'package:financial_app/widgets/auth/pin_pad.dart';
+import 'package:financial_app/widgets/common/offline_indicator.dart';
 
 class PinChangeScreen extends StatefulWidget {
   const PinChangeScreen({super.key});
@@ -226,16 +227,20 @@ class _PinChangeScreenState extends State<PinChangeScreen> {
           ),
         ),
       ),
-      body: SafeArea(
-        child:
-            _isLoading
-                ? const Center(
-                  child: CircularProgressIndicator(color: Color(0xFF8B5FBF)),
-                )
-                : SingleChildScrollView(
-                  padding: const EdgeInsets.all(24),
-                  child: Column(
-                    children: [
+      body: Column(
+        children: [
+          const OfflineIndicator(),
+          Expanded(
+            child: SafeArea(
+              child:
+                  _isLoading
+                      ? const Center(
+                          child: CircularProgressIndicator(color: Color(0xFF8B5FBF)),
+                        )
+                      : SingleChildScrollView(
+                          padding: const EdgeInsets.all(24),
+                          child: Column(
+                            children: [
                       const SizedBox(height: 20),
 
                       // Icon
@@ -329,6 +334,9 @@ class _PinChangeScreenState extends State<PinChangeScreen> {
                     ],
                   ),
                 ),
+            ),
+          ),
+        ],
       ),
     );
   }

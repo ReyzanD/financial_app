@@ -8,6 +8,7 @@ import 'package:financial_app/services/biometric_service.dart';
 import 'package:financial_app/services/error_handler_service.dart';
 import 'package:financial_app/services/logger_service.dart';
 import 'package:financial_app/widgets/auth/pin_pad.dart';
+import 'package:financial_app/widgets/common/offline_indicator.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:financial_app/l10n/app_localizations.dart';
 
@@ -71,6 +72,7 @@ class _PinUnlockScreenState extends State<PinUnlockScreen> {
         _tryBiometricAuth();
       }
     } catch (e) {
+      LoggerService.error('Error initializing PIN unlock', error: e);
       setState(() => _isLoading = false);
     }
   }
@@ -234,21 +236,32 @@ class _PinUnlockScreenState extends State<PinUnlockScreen> {
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
-      return const Scaffold(
+      return Scaffold(
         backgroundColor: Colors.black,
-        body: Center(
-          child: CircularProgressIndicator(color: Color(0xFF8B5FBF)),
+        body: Column(
+          children: [
+            const OfflineIndicator(),
+            const Expanded(
+              child: Center(
+                child: CircularProgressIndicator(color: Color(0xFF8B5FBF)),
+              ),
+            ),
+          ],
         ),
       );
     }
 
     return Scaffold(
       backgroundColor: Colors.black,
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            children: [
+      body: Column(
+        children: [
+          const OfflineIndicator(),
+          Expanded(
+            child: SafeArea(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  children: [
               const SizedBox(height: 60),
 
               // App Logo/Icon
@@ -411,6 +424,9 @@ class _PinUnlockScreenState extends State<PinUnlockScreen> {
             ],
           ),
         ),
+      ),
+          ),
+        ],
       ),
     );
   }

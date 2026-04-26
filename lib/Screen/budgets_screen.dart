@@ -7,6 +7,7 @@ import 'package:financial_app/widgets/budgets/add_budget_modal.dart';
 import 'package:financial_app/utils/formatters.dart';
 import 'package:financial_app/widgets/common/shimmer_loading.dart';
 import 'package:financial_app/widgets/common/empty_state.dart';
+import 'package:financial_app/widgets/common/offline_indicator.dart';
 import 'package:financial_app/utils/page_transitions.dart';
 import 'package:financial_app/utils/responsive_helper.dart';
 import 'package:financial_app/l10n/app_localizations.dart';
@@ -106,6 +107,7 @@ class _BudgetsScreenState extends State<BudgetsScreen> {
         child: Column(
           children: [
             _buildHeader(context),
+            const OfflineIndicator(),
             Expanded(
               child: RefreshIndicator(
                 color: const Color(0xFF8B5FBF),

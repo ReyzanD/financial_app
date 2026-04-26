@@ -4,6 +4,9 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:financial_app/services/backup_service.dart';
+import 'package:financial_app/services/error_handler_service.dart';
+import 'package:financial_app/services/logger_service.dart';
+import 'package:financial_app/widgets/common/offline_indicator.dart';
 import 'package:financial_app/l10n/app_localizations.dart';
 
 class BackupScreen extends StatefulWidget {
@@ -34,15 +37,13 @@ class _BackupScreenState extends State<BackupScreen> {
         _isLoading = false;
       });
     } catch (e) {
+      LoggerService.error('Error loading backups', error: e);
       setState(() => _isLoading = false);
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              '${AppLocalizations.of(context)!.failed_to_load_backup}: ${e.toString()}',
-            ),
-            backgroundColor: Colors.red,
-          ),
+        ErrorHandlerService.showErrorSnackbar(
+          context,
+          ErrorHandlerService.getUserFriendlyMessage(e),
+          onRetry: _loadBackups,
         );
       }
     }
@@ -337,18 +338,21 @@ class _BackupScreenState extends State<BackupScreen> {
           ),
         ],
       ),
-      body:
-          _isLoading
-              ? const Center(
-                child: CircularProgressIndicator(color: Color(0xFF8B5FBF)),
-              )
-              : SingleChildScrollView(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Info Card
-                    Container(
+      body: Column(
+        children: [
+          const OfflineIndicator(),
+          Expanded(
+            child: _isLoading
+                ? const Center(
+                    child: CircularProgressIndicator(color: Color(0xFF8B5FBF)),
+                  )
+                : SingleChildScrollView(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Info Card
+                        Container(
                       padding: const EdgeInsets.all(20),
                       decoration: BoxDecoration(
                         gradient: const LinearGradient(
@@ -511,7 +515,10 @@ class _BackupScreenState extends State<BackupScreen> {
                       ..._backups.map((file) => _buildBackupCard(file)),
                   ],
                 ),
-              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 

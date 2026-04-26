@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:financial_app/services/api_service.dart';
@@ -9,6 +8,7 @@ import 'package:financial_app/services/budget_recommendation_service.dart';
 import 'package:financial_app/widgets/budget_recommendation/budget_category_card.dart';
 import 'package:financial_app/widgets/budget_recommendation/budget_edit_dialog.dart';
 import 'package:financial_app/widgets/budget_recommendation/budget_tips_section.dart';
+import 'package:financial_app/widgets/common/offline_indicator.dart';
 import 'package:financial_app/utils/formatters.dart';
 
 class AIBudgetRecommendationScreen extends StatefulWidget {
@@ -51,10 +51,18 @@ class _AIBudgetRecommendationScreenState
         _isLoading = false;
       });
     } catch (e) {
+      LoggerService.error('Error loading budget recommendation', error: e);
       setState(() {
-        _error = 'Gagal memuat rekomendasi: $e';
+        _error = ErrorHandlerService.getUserFriendlyMessage(e);
         _isLoading = false;
       });
+      if (context.mounted) {
+        ErrorHandlerService.showErrorSnackbar(
+          context,
+          _error!,
+          onRetry: _loadBudgetRecommendation,
+        );
+      }
     }
   }
 
@@ -321,49 +329,52 @@ class _AIBudgetRecommendationScreenState
           ),
         ),
       ),
-      body:
-          _isLoading
-              ? const Center(
-                child: CircularProgressIndicator(color: Color(0xFF8B5FBF)),
-              )
-              : _error != null
-              ? Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(
-                      Iconsax.info_circle,
-                      color: Colors.red,
-                      size: 48,
-                    ),
-                    const SizedBox(height: 16),
-                    Text(
-                      _error!,
-                      style: GoogleFonts.poppins(color: Colors.white70),
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 16),
-                    ElevatedButton(
-                      onPressed: _loadBudgetRecommendation,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF8B5FBF),
-                      ),
-                      child: Text(
-                        'Coba Lagi',
-                        style: GoogleFonts.poppins(color: Colors.white),
-                      ),
-                    ),
-                  ],
-                ),
-              )
-              : SafeArea(
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Header Card
-                      Container(
+      body: Column(
+        children: [
+          const OfflineIndicator(),
+          Expanded(
+            child: _isLoading
+                ? const Center(
+                    child: CircularProgressIndicator(color: Color(0xFF8B5FBF)),
+                  )
+                : _error != null
+                    ? Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(
+                              Iconsax.info_circle,
+                              color: Colors.red,
+                              size: 48,
+                            ),
+                            const SizedBox(height: 16),
+                            Text(
+                              _error!,
+                              style: GoogleFonts.poppins(color: Colors.white70),
+                              textAlign: TextAlign.center,
+                            ),
+                            const SizedBox(height: 16),
+                            ElevatedButton(
+                              onPressed: _loadBudgetRecommendation,
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color(0xFF8B5FBF),
+                              ),
+                              child: Text(
+                                'Coba Lagi',
+                                style: GoogleFonts.poppins(color: Colors.white),
+                              ),
+                            ),
+                          ],
+                        ),
+                      )
+                    : SafeArea(
+                        child: SingleChildScrollView(
+                          padding: const EdgeInsets.all(16),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              // Header Card
+                              Container(
                         padding: const EdgeInsets.all(20),
                         decoration: BoxDecoration(
                           gradient: const LinearGradient(
@@ -632,6 +643,9 @@ class _AIBudgetRecommendationScreenState
                   ),
                 ),
               ),
+          ),
+        ],
+      ),
     );
   }
 }

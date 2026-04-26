@@ -4,6 +4,7 @@ import 'package:financial_app/widgets/goals/goals_header.dart';
 import 'package:financial_app/widgets/goals/progress_summary.dart';
 import 'package:financial_app/widgets/goals/goals_list.dart';
 import 'package:financial_app/widgets/goals/add_goal_modal.dart';
+import 'package:financial_app/widgets/common/offline_indicator.dart';
 
 class GoalsScreen extends StatefulWidget {
   const GoalsScreen({super.key});
@@ -31,6 +32,7 @@ class _GoalsScreenState extends State<GoalsScreen> {
           children: [
             // Header
             const GoalsHeader(),
+            const OfflineIndicator(),
 
             // Goals Progress Summary
             ProgressSummary(key: ValueKey('progress_$_refreshKey')),

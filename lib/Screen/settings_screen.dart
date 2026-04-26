@@ -8,6 +8,7 @@ import 'package:financial_app/services/api_service.dart';
 import 'package:financial_app/services/error_handler_service.dart';
 import 'package:financial_app/services/logger_service.dart';
 import 'package:financial_app/services/localization_service.dart';
+import 'package:financial_app/widgets/common/offline_indicator.dart';
 import 'package:financial_app/l10n/app_localizations.dart';
 import 'package:financial_app/Screen/profile_screen.dart';
 import 'package:financial_app/utils/biometric_helper.dart';
@@ -142,6 +143,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            const OfflineIndicator(),
             // Account Section
             _buildSectionHeader(localizations.account),
             _buildSettingTile(

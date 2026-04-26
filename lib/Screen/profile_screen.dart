@@ -4,6 +4,7 @@ import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:financial_app/services/api_service.dart';
 import 'package:financial_app/services/error_handler_service.dart';
 import 'package:financial_app/services/logger_service.dart';
+import 'package:financial_app/widgets/common/offline_indicator.dart';
 import 'package:financial_app/l10n/app_localizations.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -70,24 +71,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
         _isLoading = false;
       });
     } catch (e) {
+      LoggerService.error('Error loading profile', error: e);
       setState(() {
         _isLoading = false;
-        _errorMessage = _getErrorMessage(e);
+        _errorMessage = ErrorHandlerService.getUserFriendlyMessage(e);
       });
-    }
-  }
-
-  String _getErrorMessage(dynamic error) {
-    final errorStr = error.toString().toLowerCase();
-    if (errorStr.contains('timeout')) {
-      return 'Koneksi timeout. Cek koneksi internet Anda.';
-    } else if (errorStr.contains('connection') ||
-        errorStr.contains('network')) {
-      return 'Gagal terhubung ke server. Pastikan backend berjalan.';
-    } else if (errorStr.contains('unauthorized') || errorStr.contains('401')) {
-      return 'Sesi berakhir. Silakan login kembali.';
-    } else {
-      return 'Gagal memuat profil pengguna.';
+      if (context.mounted) {
+        ErrorHandlerService.showErrorSnackbar(
+          context,
+          _errorMessage!,
+          onRetry: _loadProfile,
+        );
+      }
     }
   }
 
@@ -170,14 +165,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
         ),
       ),
-      body:
-          _isLoading
-              ? const Center(
-                child: CircularProgressIndicator(color: Color(0xFF8B5FBF)),
-              )
-              : _errorMessage != null
-              ? _buildErrorState()
-              : _buildForm(),
+      body: Column(
+        children: [
+          const OfflineIndicator(),
+          Expanded(
+            child: _isLoading
+                ? const Center(
+                    child: CircularProgressIndicator(color: Color(0xFF8B5FBF)),
+                  )
+                : _errorMessage != null
+                    ? _buildErrorState()
+                    : _buildForm(),
+          ),
+        ],
+      ),
     );
   }
 

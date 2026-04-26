@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:financial_app/services/api_service.dart';
+import 'package:financial_app/services/error_handler_service.dart';
+import 'package:financial_app/services/logger_service.dart';
 import 'package:financial_app/utils/formatters.dart';
 
 class ProgressSummary extends StatefulWidget {
@@ -32,10 +34,18 @@ class _ProgressSummaryState extends State<ProgressSummary> {
         });
       }
     } catch (e) {
+      LoggerService.error('Error loading goals summary', error: e);
       if (mounted) {
         setState(() {
           _isLoading = false;
         });
+        if (context.mounted) {
+          ErrorHandlerService.showErrorSnackbar(
+            context,
+            ErrorHandlerService.getUserFriendlyMessage(e),
+            onRetry: _loadSummary,
+          );
+        }
       }
     }
   }

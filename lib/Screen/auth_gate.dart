@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:financial_app/services/auth_service.dart';
 import 'package:financial_app/services/pin_auth_service.dart';
 import 'package:financial_app/services/biometric_service.dart';
+import 'package:financial_app/services/logger_service.dart';
 import 'package:financial_app/Screen/login_screen.dart';
 import 'package:financial_app/Screen/pin_setup_screen.dart';
 import 'package:financial_app/Screen/pin_unlock_screen.dart';
@@ -81,6 +82,7 @@ class _AuthGateState extends State<AuthGate> {
         });
       }
     } catch (e) {
+      LoggerService.error('Error determining route', error: e);
       // On error, default to login
       setState(() {
         _targetScreen = const LoginScreen();

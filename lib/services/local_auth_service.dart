@@ -177,6 +177,102 @@ class LocalAuthService {
     }
   }
 
+  /// Update user profile
+  Future<Map<String, dynamic>> updateProfile(
+    Map<String, dynamic> profileData,
+  ) async {
+    try {
+      final userId = await getCurrentUserId();
+      if (userId == null) throw Exception('Not authenticated');
+
+      final db = await _dbService.database;
+      final now = DateTime.now().toIso8601String();
+
+      // Build update data map
+      final updateData = <String, dynamic>{
+        'updated_at_232143': now,
+      };
+
+      // Add fields that can be updated
+      if (profileData.containsKey('full_name')) {
+        updateData['full_name_232143'] = profileData['full_name'];
+      }
+      if (profileData.containsKey('phone_number')) {
+        updateData['phone_number_232143'] = profileData['phone_number'];
+      }
+      if (profileData.containsKey('date_of_birth')) {
+        updateData['date_of_birth_232143'] = profileData['date_of_birth'];
+      }
+      if (profileData.containsKey('occupation')) {
+        updateData['occupation_232143'] = profileData['occupation'];
+      }
+      if (profileData.containsKey('income_range')) {
+        updateData['income_range_232143'] = profileData['income_range'];
+      }
+      if (profileData.containsKey('family_size')) {
+        updateData['family_size_232143'] = profileData['family_size'];
+      }
+      if (profileData.containsKey('currency')) {
+        updateData['currency_232143'] = profileData['currency'];
+      }
+      if (profileData.containsKey('base_location')) {
+        updateData['base_location_232143'] = profileData['base_location'];
+      }
+      if (profileData.containsKey('financial_goals')) {
+        updateData['financial_goals_232143'] = profileData['financial_goals'];
+      }
+      if (profileData.containsKey('risk_tolerance')) {
+        updateData['risk_tolerance_232143'] = profileData['risk_tolerance'];
+      }
+      if (profileData.containsKey('notification_settings')) {
+        updateData['notification_settings_232143'] = profileData['notification_settings'];
+      }
+
+      // Update user in database
+      await db.update(
+        'users_232143',
+        updateData,
+        where: 'user_id_232143 = ?',
+        whereArgs: [userId],
+      );
+
+      // Get updated user
+      final users = await db.query(
+        'users_232143',
+        where: 'user_id_232143 = ?',
+        whereArgs: [userId],
+      );
+
+      if (users.isEmpty) {
+        throw Exception('User not found after update');
+      }
+
+      final updatedUser = users.first;
+      LoggerService.info('✅ User profile updated: $userId');
+
+      return {
+        'user': {
+          'user_id': updatedUser['user_id_232143'],
+          'email': updatedUser['email_232143'],
+          'full_name': updatedUser['full_name_232143'],
+          'phone_number': updatedUser['phone_number_232143'],
+          'date_of_birth': updatedUser['date_of_birth_232143'],
+          'occupation': updatedUser['occupation_232143'],
+          'income_range': updatedUser['income_range_232143'],
+          'family_size': updatedUser['family_size_232143'],
+          'currency': updatedUser['currency_232143'],
+          'base_location': updatedUser['base_location_232143'],
+          'financial_goals': updatedUser['financial_goals_232143'],
+          'risk_tolerance': updatedUser['risk_tolerance_232143'],
+          'notification_settings': updatedUser['notification_settings_232143'],
+        },
+      };
+    } catch (e) {
+      LoggerService.error('Profile update error', error: e);
+      rethrow;
+    }
+  }
+
   /// Logout user
   Future<void> logout() async {
     await _storage.delete(key: 'auth_token');

@@ -4,6 +4,7 @@ import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:financial_app/services/api_service.dart';
 import 'package:financial_app/services/error_handler_service.dart';
 import 'package:financial_app/services/logger_service.dart';
+import 'package:financial_app/widgets/common/offline_indicator.dart';
 import 'package:financial_app/utils/formatters.dart';
 import 'package:financial_app/l10n/app_localizations.dart';
 
@@ -240,14 +241,20 @@ class _RecurringTransactionsScreenState
           ),
         ],
       ),
-      body:
-          _isLoading
-              ? const Center(
-                child: CircularProgressIndicator(color: Color(0xFF8B5FBF)),
-              )
-              : _recurringTransactions.isEmpty
-              ? _buildEmptyState()
-              : _buildTransactionsList(),
+      body: Column(
+        children: [
+          const OfflineIndicator(),
+          Expanded(
+            child: _isLoading
+                ? const Center(
+                    child: CircularProgressIndicator(color: Color(0xFF8B5FBF)),
+                  )
+                : _recurringTransactions.isEmpty
+                    ? _buildEmptyState()
+                    : _buildTransactionsList(),
+          ),
+        ],
+      ),
       floatingActionButton: FloatingActionButton(
         heroTag: 'recurring_fab',
         onPressed: () {
