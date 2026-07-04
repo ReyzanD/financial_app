@@ -421,5 +421,8 @@
   "weekly": "Weekly",
   "welcome": "Welcome",
   "yearly": "Yearly",
-  "you_need_to_login_again": "You need to login again with email and password."
+  "you_need_to_login_again": "You need to login again with email and password.",
+  "subscription_cycle": "Cycle",
+  "total_amount": "Total Portfolio Value",
+  "type": "Type"
 }

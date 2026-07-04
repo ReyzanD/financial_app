@@ -423,7 +423,7 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.1),
+              color: Colors.white.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Row(
@@ -597,7 +597,7 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
                     color: const Color(0xFF1A1A1A),
                     borderRadius: BorderRadius.circular(8),
                     border: Border.all(
-                      color: const Color(0xFF8B5FBF).withOpacity(0.3),
+                      color: const Color(0xFF8B5FBF).withValues(alpha: 0.3),
                     ),
                   ),
                   child: DropdownButtonHideUnderline(
@@ -654,7 +654,7 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
             ],
           ),
           const SizedBox(height: 12),
-          Divider(color: Colors.grey.withOpacity(0.2)),
+          Divider(color: Colors.grey.withValues(alpha: 0.2)),
         ],
       ),
     );
@@ -676,7 +676,7 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
               color:
                   isSelected
                       ? const Color(0xFF8B5FBF)
-                      : Colors.grey.withOpacity(0.3),
+                      : Colors.grey.withValues(alpha: 0.3),
             ),
           ),
           child: Text(
@@ -755,7 +755,7 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
       decoration: BoxDecoration(
         color: const Color(0xFF1A1A1A),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: typeColor.withOpacity(0.2), width: 1),
+        border: Border.all(color: typeColor.withValues(alpha: 0.2), width: 1),
       ),
       child: Row(
         children: [
@@ -764,9 +764,9 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
             width: 52,
             height: 52,
             decoration: BoxDecoration(
-              color: typeColor.withOpacity(0.15),
+              color: typeColor.withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(14),
-              border: Border.all(color: typeColor.withOpacity(0.3), width: 1.5),
+              border: Border.all(color: typeColor.withValues(alpha: 0.3), width: 1.5),
             ),
             child: Icon(typeIcon, color: typeColor, size: 26),
           ),
@@ -795,7 +795,7 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
                         vertical: 2,
                       ),
                       decoration: BoxDecoration(
-                        color: typeColor.withOpacity(0.2),
+                        color: typeColor.withValues(alpha: 0.2),
                         borderRadius: BorderRadius.circular(4),
                       ),
                       child: Text(
@@ -824,7 +824,7 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
                     vertical: 4,
                   ),
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.05),
+                    color: Colors.white.withValues(alpha: 0.05),
                     borderRadius: BorderRadius.circular(6),
                   ),
                   child: Row(

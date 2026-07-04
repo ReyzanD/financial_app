@@ -184,7 +184,7 @@ class _ObligationDetailsModalState extends State<ObligationDetailsModal> {
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: color.withOpacity(0.2),
+                    color: color.withValues(alpha: 0.2),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Icon(_getObligationIcon(), color: color, size: 24),
@@ -223,10 +223,10 @@ class _ObligationDetailsModalState extends State<ObligationDetailsModal> {
                   end: Alignment.bottomRight,
                 ),
                 borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: color.withOpacity(0.3), width: 1.5),
+                border: Border.all(color: color.withValues(alpha: 0.3), width: 1.5),
                 boxShadow: [
                   BoxShadow(
-                    color: color.withOpacity(0.15),
+                    color: color.withValues(alpha: 0.15),
                     blurRadius: 12,
                     offset: const Offset(0, 4),
                   ),

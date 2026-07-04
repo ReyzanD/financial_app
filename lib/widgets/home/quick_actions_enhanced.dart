@@ -8,6 +8,7 @@ import 'package:financial_app/Screen/backup_screen.dart';
 import 'package:financial_app/Screen/ai_budget_recommendation_screen.dart';
 import 'package:financial_app/utils/responsive_helper.dart';
 import 'package:financial_app/services/quick_actions_analytics_service.dart';
+import 'package:financial_app/core/di/service_locator.dart';
 
 /// Enhanced Quick Actions dengan customization, analytics, swipe gestures, dan categories
 class QuickActionsEnhanced extends StatefulWidget {
@@ -18,9 +19,8 @@ class QuickActionsEnhanced extends StatefulWidget {
 }
 
 class _QuickActionsEnhancedState extends State<QuickActionsEnhanced> {
-  final QuickActionsAnalyticsService _analyticsService = QuickActionsAnalyticsService();
+  final QuickActionsAnalyticsService _analyticsService = getIt<QuickActionsAnalyticsService>();
   List<Map<String, dynamic>> _actions = [];
-  List<Map<String, dynamic>> _recentActions = [];
   bool _isLoading = true;
   String? _selectedCategory;
 
@@ -77,10 +77,6 @@ class _QuickActionsEnhancedState extends State<QuickActionsEnhanced> {
         _actions = defaultActions;
         await _analyticsService.savePreferences(_actions);
       }
-      
-      // Load recent actions
-      final mostUsed = await _analyticsService.getMostUsedActions(limit: 3);
-      _recentActions = mostUsed;
       
       setState(() => _isLoading = false);
     } catch (e) {
@@ -172,9 +168,6 @@ class _QuickActionsEnhancedState extends State<QuickActionsEnhanced> {
     
     // Execute action
     (action['onTap'] as VoidCallback)();
-    
-    // Refresh recent actions
-    _loadActions();
   }
 
   List<Map<String, dynamic>> get _filteredActions {
@@ -236,42 +229,6 @@ class _QuickActionsEnhancedState extends State<QuickActionsEnhanced> {
         ),
         SizedBox(height: ResponsiveHelper.verticalSpacing(context, 12)),
         
-        // Recent actions section
-        if (_recentActions.isNotEmpty) ...[
-          Text(
-            'Sering Digunakan',
-            style: GoogleFonts.poppins(
-              color: Colors.white70,
-              fontSize: ResponsiveHelper.fontSize(context, 12),
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          SizedBox(height: ResponsiveHelper.verticalSpacing(context, 8)),
-          SizedBox(
-            height: 80,
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              itemCount: _recentActions.length,
-              itemBuilder: (context, index) {
-                final recent = _recentActions[index];
-                final action = _actions.firstWhere(
-                  (a) => a['id'] == recent['id'],
-                  orElse: () => {},
-                );
-                if (action.isEmpty) return const SizedBox.shrink();
-                
-                return Padding(
-                  padding: EdgeInsets.only(
-                    right: ResponsiveHelper.horizontalSpacing(context, 12),
-                  ),
-                  child: _buildRecentActionItem(context, action, recent['count']),
-                );
-              },
-            ),
-          ),
-          SizedBox(height: ResponsiveHelper.verticalSpacing(context, 12)),
-        ],
-        
         // Main actions grid
         GridView.builder(
           shrinkWrap: true,
@@ -315,7 +272,7 @@ class _QuickActionsEnhancedState extends State<QuickActionsEnhanced> {
         ),
         decoration: BoxDecoration(
           color: isSelected 
-              ? const Color(0xFF8B5FBF).withOpacity(0.2)
+              ? const Color(0xFF8B5FBF).withValues(alpha: 0.2)
               : const Color(0xFF1A1A1A),
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
@@ -336,62 +293,6 @@ class _QuickActionsEnhancedState extends State<QuickActionsEnhanced> {
     );
   }
 
-  Widget _buildRecentActionItem(
-    BuildContext context,
-    Map<String, dynamic> action,
-    int count,
-  ) {
-    return GestureDetector(
-      onTap: () => _handleActionTap(action),
-      child: Container(
-        width: 120,
-        padding: ResponsiveHelper.padding(context, multiplier: 0.75),
-        decoration: BoxDecoration(
-          color: const Color(0xFF1A1A1A),
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: (action['color'] as Color).withOpacity(0.3),
-          ),
-        ),
-        child: Row(
-          children: [
-            Icon(
-              action['icon'] as IconData,
-              color: action['color'] as Color,
-              size: ResponsiveHelper.iconSize(context, 20),
-            ),
-            SizedBox(width: ResponsiveHelper.horizontalSpacing(context, 8)),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    action['label'] as String,
-                    style: GoogleFonts.poppins(
-                      color: Colors.white,
-                      fontSize: ResponsiveHelper.fontSize(context, 11),
-                      fontWeight: FontWeight.w600,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  Text(
-                    '${count}x',
-                    style: GoogleFonts.poppins(
-                      color: Colors.grey[500],
-                      fontSize: ResponsiveHelper.fontSize(context, 9),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   Widget _buildQuickActionItem({
     required BuildContext context,
     required Map<String, dynamic> action,
@@ -406,12 +307,12 @@ class _QuickActionsEnhancedState extends State<QuickActionsEnhanced> {
             width: iconSize,
             height: iconSize,
             decoration: BoxDecoration(
-              color: (action['color'] as Color).withOpacity(0.1),
+              color: (action['color'] as Color).withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(
                 ResponsiveHelper.borderRadius(context, 14),
               ),
               border: Border.all(
-                color: (action['color'] as Color).withOpacity(0.3),
+                color: (action['color'] as Color).withValues(alpha: 0.3),
               ),
             ),
             child: Icon(

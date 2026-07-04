@@ -45,8 +45,17 @@ class AuthService {
         fullName: fullName,
       );
 
-      LoggerService.info('Registration successful: $email');
+      // Auto-login: store auth token
+      final userId = result['user_id'] as String;
+      await _storage.write(key: 'auth_token', value: userId);
+      
+      // Also store in SharedPreferences for quick access
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('current_user_id', userId);
+
+      LoggerService.info('Registration successful and auto-logged in: $email');
       return {
+        'access_token': userId,
         'message': 'User registered successfully',
         'user': result,
       };

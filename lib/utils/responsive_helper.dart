@@ -100,11 +100,11 @@ class ResponsiveHelper {
     double? phoneMultiplier,
     double? tabletMultiplier,
   }) {
-    final textScaleFactor = MediaQuery.of(context).textScaleFactor;
+    final textScaler = MediaQuery.of(context).textScaler.scale(1.0);
     final phoneMult = phoneMultiplier ?? 1.0;
     final tabletMult = tabletMultiplier ?? 1.2;
     final deviceMult = isTablet(context) ? tabletMult : phoneMult;
-    return baseSize * deviceMult * textScaleFactor;
+    return baseSize * deviceMult * textScaler;
   }
 
   /// Get responsive vertical spacing

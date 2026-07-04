@@ -34,7 +34,7 @@ class RecentTransactions extends StatelessWidget {
             decoration: BoxDecoration(
               color: Color(
                 int.parse(transaction.categoryColor.replaceAll('#', '0xFF')),
-              ).withOpacity(0.2),
+              ).withValues(alpha: 0.2),
               borderRadius: BorderRadius.circular(
                 ResponsiveHelper.borderRadius(context, 10),
               ),

@@ -1135,7 +1135,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get subscription => 'Langganan';
 
   @override
-  String get subscription_cycle => 'Siklus Langganan';
+  String get subscription_cycle => 'Siklus';
 
   @override
   String get subscription_cycle_label => 'Siklus Langganan';
@@ -1183,7 +1183,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get today => 'Hari Ini';
 
   @override
-  String get total_amount => 'Total Jumlah';
+  String get total_amount => 'Total Nilai Portofolio';
 
   @override
   String get total_budget => 'Total Budget';

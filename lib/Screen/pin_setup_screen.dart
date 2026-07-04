@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:financial_app/services/pin_auth_service.dart';
 import 'package:financial_app/services/error_handler_service.dart';
 import 'package:financial_app/services/logger_service.dart';
@@ -72,8 +73,16 @@ class _PinSetupScreenState extends State<PinSetupScreen> {
           'PIN berhasil dibuat!',
         );
 
-        // Navigate to home screen
-        Navigator.of(context).pushReplacementNamed('/home');
+        // Check if onboarding is needed
+        final prefs = await SharedPreferences.getInstance();
+        final onboardingCompleted =
+            prefs.getBool('onboarding_completed') ?? false;
+
+        if (!onboardingCompleted) {
+          Navigator.of(context).pushReplacementNamed('/onboarding');
+        } else {
+          Navigator.of(context).pushReplacementNamed('/home');
+        }
       }
     } catch (e) {
       LoggerService.error('Error creating PIN', error: e);
@@ -136,7 +145,7 @@ class _PinSetupScreenState extends State<PinSetupScreen> {
                       Container(
                         padding: const EdgeInsets.all(20),
                         decoration: BoxDecoration(
-                          color: const Color(0xFF8B5FBF).withOpacity(0.2),
+                          color: const Color(0xFF8B5FBF).withValues(alpha: 0.2),
                           shape: BoxShape.circle,
                         ),
                         child: const Icon(

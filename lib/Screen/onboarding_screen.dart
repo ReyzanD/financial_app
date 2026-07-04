@@ -261,7 +261,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                 width: ResponsiveHelper.screenWidth(context) * 0.3,
                 height: ResponsiveHelper.screenWidth(context) * 0.3,
                 decoration: BoxDecoration(
-                  color: item.color.withOpacity(0.1),
+                  color: item.color.withValues(alpha: 0.1),
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
@@ -370,7 +370,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                 Container(
                   padding: ResponsiveHelper.padding(context, multiplier: 2.0),
                   decoration: BoxDecoration(
-                    color: DesignTokens.primaryColor.withOpacity(0.1),
+                    color: DesignTokens.primaryColor.withValues(alpha: 0.1),
                     shape: BoxShape.circle,
                   ),
                   child: Icon(
@@ -519,7 +519,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
       decoration: BoxDecoration(
         color: isActive
             ? DesignTokens.primaryColor
-            : Colors.grey[600]!.withOpacity(0.5),
+            : Colors.grey[600]!.withValues(alpha: 0.5),
         borderRadius: BorderRadius.circular(
           ResponsiveHelper.borderRadius(context, DesignTokens.radiusRound),
         ),

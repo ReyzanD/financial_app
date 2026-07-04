@@ -11,10 +11,33 @@ import 'package:financial_app/Screen/pin_unlock_screen.dart';
 import 'package:financial_app/Screen/pin_change_screen.dart';
 import 'package:financial_app/Screen/auth_gate.dart';
 import 'package:financial_app/Screen/notification_center_screen.dart';
-import 'package:financial_app/services/api_service.dart';
+import 'package:financial_app/Screen/budgets_screen.dart';
+import 'package:financial_app/Screen/analytics_screen.dart';
+import 'package:financial_app/Screen/goals_screen.dart';
+import 'package:financial_app/Screen/add_transaction_screen.dart';
+import 'package:financial_app/Screen/ai_budget_recommendation_screen.dart';
+import 'package:financial_app/Screen/report_screen.dart';
+import 'package:financial_app/Screen/backup_screen.dart';
+import 'package:financial_app/Screen/financial_obligations_screen.dart';
+import 'package:financial_app/Screen/recurring_transactions_screen.dart';
+import 'package:financial_app/Screen/profile_screen.dart';
+import 'package:financial_app/Screen/transaction_history_screen.dart';
+import 'package:financial_app/Screen/receipt_history_screen.dart';
+import 'package:financial_app/Screen/financial_insights_screen.dart';
+import 'package:financial_app/Screen/accounts_screen.dart';
+import 'package:financial_app/Screen/debts_screen.dart';
+import 'package:financial_app/Screen/subscriptions_screen.dart';
+import 'package:financial_app/Screen/investments_screen.dart';
+import 'package:financial_app/Screen/tags_screen.dart';
+import 'package:financial_app/Screen/splits_screen.dart';
+import 'package:financial_app/Screen/challenges_screen.dart';
+import 'package:financial_app/Screen/financial_calendar_screen.dart';
+import 'package:financial_app/Screen/net_worth_screen.dart';
+import 'package:financial_app/Screen/cash_flow_screen.dart';
+import 'package:financial_app/Screen/category_customization_screen.dart';
+import 'package:financial_app/Screen/templates_screen.dart';
 import 'package:financial_app/services/data_service.dart';
 import 'package:financial_app/services/notification_service.dart';
-import 'package:financial_app/services/network_service.dart';
 import 'package:financial_app/services/logger_service.dart';
 import 'package:financial_app/services/theme_service.dart';
 import 'package:financial_app/services/map_provider_service.dart';
@@ -23,6 +46,7 @@ import 'package:financial_app/services/local_database_service.dart';
 import 'package:financial_app/core/app_config.dart';
 import 'package:financial_app/l10n/app_localizations.dart';
 import 'package:financial_app/state/app_state.dart';
+import 'package:financial_app/core/di/service_locator.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
@@ -58,26 +82,19 @@ void main() async {
   // Setup global error handlers
   _setupErrorHandlers();
 
-  // Initialize services
-  final apiService = ApiService();
-  final dataService = DataService(apiService);
+  // Setup Service Locator (get_it DI)
+  await setupServiceLocator();
 
   // Initialize notifications
-  final notificationService = NotificationService();
-  await notificationService.initialize();
+  final notificationService = getIt<NotificationService>();
   await notificationService.requestPermissions();
-
-  // Initialize network monitoring
-  final networkService = NetworkService();
-  await networkService.initialize();
-
-  // Don't load data here - it will be loaded after login
-  // await dataService.refreshAllData();
 
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (context) => AppState(dataService)),
+        ChangeNotifierProvider(
+          create: (context) => AppState(getIt<DataService>()),
+        ),
         ChangeNotifierProvider(create: (context) => ThemeService()),
         ChangeNotifierProvider(create: (context) => LocalizationService()),
       ],
@@ -153,6 +170,34 @@ class MyApp extends StatelessWidget {
             '/onboarding': (context) => const OnboardingScreen(),
             '/map': (context) => const MapScreen(),
             '/settings': (context) => const SettingsScreen(),
+            '/budgets': (context) => const BudgetsScreen(),
+            '/analytics': (context) => const AnalyticsScreen(),
+            '/goals': (context) => const GoalsScreen(),
+            '/add-transaction': (context) => const AddTransactionScreen(),
+            '/ai-budget-recommendation': (context) =>
+                const AIBudgetRecommendationScreen(),
+            '/reports': (context) => const ReportScreen(),
+            '/backup': (context) => const BackupScreen(),
+            '/financial-obligations': (context) =>
+                const FinancialObligationsScreen(),
+            '/recurring-transactions': (context) =>
+                const RecurringTransactionsScreen(),
+            '/profile': (context) => const ProfileScreen(),
+            '/transaction-history': (context) => const TransactionHistoryScreen(),
+            '/receipt-history': (context) => const ReceiptHistoryScreen(),
+            '/financial-insights': (context) => const FinancialInsightsScreen(),
+            '/accounts': (context) => const AccountsScreen(),
+            '/debts': (context) => const DebtsScreen(),
+            '/subscriptions': (context) => const SubscriptionsScreen(),
+            '/investments': (context) => const InvestmentsScreen(),
+            '/tags': (context) => const TagsScreen(),
+            '/splits': (context) => const SplitsScreen(),
+            '/challenges': (context) => const ChallengesScreen(),
+            '/calendar': (context) => const FinancialCalendarScreen(),
+            '/net-worth': (context) => const NetWorthScreen(),
+            '/cash-flow': (context) => const CashFlowScreen(),
+            '/categories': (context) => const CategoryCustomizationScreen(),
+            '/templates': (context) => const TemplatesScreen(),
           },
         );
       },

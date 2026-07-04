@@ -371,7 +371,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Widget _buildDropdownField() {
     return DropdownButtonFormField<String>(
-      value: _incomeRange,
+      initialValue: _incomeRange,
       dropdownColor: const Color(0xFF1A1A1A),
       style: const TextStyle(color: Colors.white),
       decoration: InputDecoration(

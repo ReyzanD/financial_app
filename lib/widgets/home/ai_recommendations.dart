@@ -90,7 +90,7 @@ class _AIRecommendationsState extends State<AIRecommendations> {
         decoration: BoxDecoration(
           color: const Color(0xFF1A1A1A),
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: const Color(0xFF8B5FBF).withOpacity(0.3)),
+          border: Border.all(color: const Color(0xFF8B5FBF).withValues(alpha: 0.3)),
         ),
         child: const Center(
           child: CircularProgressIndicator(color: Color(0xFF8B5FBF)),
@@ -104,7 +104,7 @@ class _AIRecommendationsState extends State<AIRecommendations> {
         decoration: BoxDecoration(
           color: const Color(0xFF1A1A1A),
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: const Color(0xFF8B5FBF).withOpacity(0.3)),
+          border: Border.all(color: const Color(0xFF8B5FBF).withValues(alpha: 0.3)),
         ),
         child: Center(
           child: Text(
@@ -133,11 +133,11 @@ class _AIRecommendationsState extends State<AIRecommendations> {
       decoration: BoxDecoration(
         color: const Color(0xFF1A1A1A),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: priorityColor.withOpacity(0.3)),
+        border: Border.all(color: priorityColor.withValues(alpha: 0.3)),
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [priorityColor.withOpacity(0.05), Colors.transparent],
+          colors: [priorityColor.withValues(alpha: 0.05), Colors.transparent],
         ),
       ),
       child: Column(
@@ -148,10 +148,10 @@ class _AIRecommendationsState extends State<AIRecommendations> {
               Container(
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: priorityColor.withOpacity(0.15),
+                  color: priorityColor.withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
-                    color: priorityColor.withOpacity(0.3),
+                    color: priorityColor.withValues(alpha: 0.3),
                     width: 1,
                   ),
                 ),
@@ -188,7 +188,7 @@ class _AIRecommendationsState extends State<AIRecommendations> {
                     vertical: 4,
                   ),
                   decoration: BoxDecoration(
-                    color: priorityColor.withOpacity(0.2),
+                    color: priorityColor.withValues(alpha: 0.2),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
@@ -220,10 +220,10 @@ class _AIRecommendationsState extends State<AIRecommendations> {
             Container(
               padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(
-                color: Colors.green.withOpacity(0.12),
+                color: Colors.green.withValues(alpha: 0.12),
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
-                  color: Colors.green.withOpacity(0.4),
+                  color: Colors.green.withValues(alpha: 0.4),
                   width: 1.5,
                 ),
               ),

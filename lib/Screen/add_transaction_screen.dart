@@ -30,6 +30,7 @@
 ///
 /// Author: Financial App Team
 /// Last Updated: 2025
+library;
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -40,10 +41,13 @@ import 'package:financial_app/services/location_service.dart';
 import 'package:financial_app/services/error_handler_service.dart';
 import 'package:financial_app/services/logger_service.dart';
 import 'package:financial_app/services/receipt_scanning_service.dart';
+import 'package:financial_app/services/smart_categorization_service.dart';
 import 'package:financial_app/utils/formatters.dart';
+import 'package:financial_app/utils/design_tokens.dart';
 import 'package:financial_app/utils/app_refresh.dart';
 import 'package:financial_app/utils/responsive_helper.dart';
 import 'package:financial_app/widgets/maps/location_picker_map.dart';
+import 'package:financial_app/widgets/add_transaction/account_section.dart';
 import 'package:financial_app/widgets/add_transaction/amount_field.dart';
 import 'package:financial_app/widgets/add_transaction/type_selector.dart';
 import 'package:financial_app/widgets/add_transaction/category_section.dart';
@@ -56,6 +60,7 @@ import 'package:financial_app/widgets/add_transaction/additional_options.dart';
 import 'package:financial_app/widgets/add_transaction/notes_field.dart';
 import 'package:financial_app/utils/form_validators.dart';
 import 'package:financial_app/l10n/app_localizations.dart';
+import 'package:financial_app/Screen/receipt_history_screen.dart';
 
 class AddTransactionScreen extends StatefulWidget {
   final Map<String, dynamic>? transaction; // Optional for edit mode
@@ -76,10 +81,13 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
   final _notesController = TextEditingController();
   final ApiService _apiService = ApiService();
   final ReceiptScanningService _receiptService = ReceiptScanningService();
+  final SmartCategorizationService _categorizationService =
+      SmartCategorizationService();
 
   // Form state
   String _selectedType = 'expense';
-  String? _selectedCategory; // This will now store category_id (UUID)
+  String? _selectedCategory;
+  String? _selectedAccountId;
   String _selectedPaymentMethod = 'cash';
   DateTime _selectedDate = DateTime.now();
   TimeOfDay _selectedTime = TimeOfDay.now();
@@ -88,6 +96,8 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
   bool _isRecurring = false;
   bool _isSubmitting = false;
   bool _isScanningReceipt = false;
+  String? _receiptImagePath;
+  List<Map<String, dynamic>> _categorySuggestions = [];
 
   // Category data from API
   List<Map<String, dynamic>> _categories = [];
@@ -105,6 +115,8 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
     // Load categories from API
     _loadCategories();
 
+    _descriptionController.addListener(_onDescriptionChanged);
+
     // Auto-get location when screen opens (only for new expense transactions)
     // Income transactions don't need location
     if (!widget.isEditMode && _selectedType == 'expense') {
@@ -118,6 +130,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
     _descriptionController.text = transaction['description']?.toString() ?? '';
     _selectedType = transaction['type']?.toString() ?? 'expense';
     _selectedCategory = transaction['category_id']?.toString();
+    _selectedAccountId = transaction['account_id']?.toString();
     _selectedPaymentMethod =
         transaction['payment_method']?.toString() ?? 'cash';
 
@@ -175,6 +188,56 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
           );
         }
       }
+    }
+  }
+
+  void _onDescriptionChanged() {
+    final desc = _descriptionController.text.trim();
+    if (desc.length < 3) {
+      if (_categorySuggestions.isNotEmpty) {
+        setState(() => _categorySuggestions = []);
+      }
+      return;
+    }
+
+    _categorizationService
+        .suggestCategory(description: desc)
+        .then((suggestions) {
+          if (mounted && suggestions.isNotEmpty) {
+            final categoryIds = suggestions
+                .where((s) => s['confidence'] > 0.3)
+                .map((s) => _findCategoryId(s['category'] as String))
+                .where((id) => id != null)
+                .toList();
+
+            if (categoryIds.isNotEmpty) {
+              setState(() => _categorySuggestions = suggestions);
+            }
+          }
+        });
+  }
+
+  String? _findCategoryId(String categoryName) {
+    for (final cat in _categories) {
+      final name =
+          (cat['name']?.toString() ?? cat['name_232143']?.toString() ?? '')
+              .toLowerCase();
+      if (name.contains(categoryName.toLowerCase()) ||
+          categoryName.toLowerCase().contains(name)) {
+        return cat['category_id']?.toString() ??
+            cat['category_id_232143']?.toString();
+      }
+    }
+    return null;
+  }
+
+  void _selectSuggestedCategory(Map<String, dynamic> suggestion) {
+    final categoryId = _findCategoryId(suggestion['category'] as String);
+    if (categoryId != null) {
+      setState(() {
+        _selectedCategory = categoryId;
+        _categorySuggestions = [];
+      });
     }
   }
 
@@ -322,14 +385,12 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
     setState(() => _isScanningReceipt = true);
 
     try {
-      // Pick image
       final imageFile = await _receiptService.pickImage(fromCamera: fromCamera);
       if (imageFile == null) {
         setState(() => _isScanningReceipt = false);
         return;
       }
 
-      // Show scanning message
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -343,16 +404,18 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
         );
       }
 
-      // Scan receipt
-      final scanResult = await _receiptService.scanReceipt(imageFile);
+      final scanResult = await _receiptService.scanReceipt(
+        imageFile,
+        saveImage: true,
+      );
 
       if (scanResult != null && mounted) {
         final parsedData = scanResult['parsed_data'] as Map<String, dynamic>;
         final amount = (parsedData['total'] as num?)?.toDouble() ?? 0.0;
         final merchant = parsedData['merchant'] as String? ?? '';
         final dateStr = parsedData['date'] as String?;
+        final imagePath = parsedData['image_path'] as String?;
 
-        // Auto-populate form fields
         if (amount > 0) {
           _amountController.text = amount.toStringAsFixed(0);
         }
@@ -360,10 +423,8 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
           _descriptionController.text = merchant;
         }
 
-        // Parse and set date if available
         if (dateStr != null && dateStr.isNotEmpty) {
           try {
-            // Try to parse date (format: DD/MM/YYYY or DD-MM-YYYY)
             final dateParts = dateStr.split(RegExp(r'[/-]'));
             if (dateParts.length == 3) {
               final day = int.parse(dateParts[0]);
@@ -373,10 +434,8 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
               );
               final parsedDate = DateTime(year, month, day);
 
-              // Only set if date is valid and not in future (for expenses)
               if (_selectedType == 'expense' &&
                   parsedDate.isAfter(DateTime.now())) {
-                // Don't set future dates for expenses
               } else {
                 setState(() {
                   _selectedDate = parsedDate;
@@ -389,12 +448,13 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
           }
         }
 
-        // Set transaction type to expense (receipts are usually expenses)
         setState(() {
           _selectedType = 'expense';
+          if (imagePath != null) {
+            _receiptImagePath = imagePath;
+          }
         });
 
-        // Show success message
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
@@ -584,9 +644,9 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                     Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: Colors.red.withOpacity(0.1),
+                        color: Colors.red.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: Colors.red.withOpacity(0.3)),
+                        border: Border.all(color: Colors.red.withValues(alpha: 0.3)),
                       ),
                       child: Column(
                         children: [
@@ -621,9 +681,9 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                     Container(
                       padding: const EdgeInsets.all(10),
                       decoration: BoxDecoration(
-                        color: Colors.blue.withOpacity(0.1),
+                        color: Colors.blue.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: Colors.blue.withOpacity(0.3)),
+                        border: Border.all(color: Colors.blue.withValues(alpha: 0.3)),
                       ),
                       child: Row(
                         children: [
@@ -783,17 +843,19 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
         final transactionData = {
           'amount': double.parse(_amountController.text),
           'type': _selectedType,
-          'category_id': _selectedCategory, // Now sending category_id (UUID)
+          'category_id': _selectedCategory,
+          'account_id': _selectedAccountId,
           'description': _descriptionController.text,
           'notes': _notesController.text,
           'payment_method': _selectedPaymentMethod,
           'transaction_date':
               _selectedDate.toIso8601String().split(
                 'T',
-              )[0], // Just the date part
+              )[0],
           'time':
               '${_selectedTime.hour.toString().padLeft(2, '0')}:${_selectedTime.minute.toString().padLeft(2, '0')}',
-          // Add location fields at top level for database
+          if (_receiptImagePath != null)
+            'receipt_image_url': _receiptImagePath,
           if (_currentLocation != null)
             'location_name':
                 _currentLocation!.placeName ?? _currentLocation!.address ?? '',
@@ -801,15 +863,13 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
           if (_currentLocation != null)
             'longitude': _currentLocation!.longitude,
           if (_currentLocation != null) 'address': _currentLocation!.address,
-          'location_data':
-              _currentLocation != null
-                  ? {
-                    'latitude': _currentLocation?.latitude,
-                    'longitude': _currentLocation?.longitude,
-                    'place_name': _currentLocation?.placeName,
-                    'address': _currentLocation?.address,
-                  }
-                  : null,
+          if (_currentLocation != null)
+            'location_data': {
+              'latitude': _currentLocation?.latitude,
+              'longitude': _currentLocation?.longitude,
+              'place_name': _currentLocation?.placeName,
+              'address': _currentLocation?.address,
+            },
           'is_recurring': _isRecurring,
         };
 
@@ -898,6 +958,18 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                     : const Icon(Iconsax.scan_barcode, color: Colors.white),
             onPressed: _isScanningReceipt ? null : _showReceiptScanOptions,
           ),
+          IconButton(
+            icon: const Icon(Iconsax.book_saved, color: Colors.white),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const ReceiptHistoryScreen(),
+                ),
+              );
+            },
+            tooltip: 'Riwayat Struk',
+          ),
         ],
       ),
       body: Form(
@@ -942,8 +1014,69 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
               ),
               SizedBox(height: ResponsiveHelper.verticalSpacing(context, 20)),
 
+              // Account Selection
+              AccountSection(
+                selectedAccountId: _selectedAccountId,
+                onAccountSelected: (accountId) {
+                  setState(() => _selectedAccountId = accountId);
+                },
+              ),
+              SizedBox(height: ResponsiveHelper.verticalSpacing(context, 20)),
+
               // Description
               DescriptionField(controller: _descriptionController),
+              if (_categorySuggestions.isNotEmpty) ...[
+                const SizedBox(height: 12),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: _categorySuggestions.map((suggestion) {
+                    final confidence = suggestion['confidence'] as double;
+                    final category = suggestion['category'] as String;
+                    return Material(
+                      color: DesignTokens.primaryColor.withValues(alpha: 0.15),
+                      borderRadius: BorderRadius.circular(20),
+                      child: InkWell(
+                        onTap: () => _selectSuggestedCategory(suggestion),
+                        borderRadius: BorderRadius.circular(20),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 14,
+                            vertical: 8,
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                Iconsax.tag,
+                                size: 14,
+                                color: DesignTokens.primaryColor,
+                              ),
+                              const SizedBox(width: 6),
+                              Text(
+                                category,
+                                style: GoogleFonts.poppins(
+                                  color: DesignTokens.primaryColor,
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                '${(confidence * 100).toInt()}%',
+                                style: GoogleFonts.poppins(
+                                  color: DesignTokens.textTertiaryDark,
+                                  fontSize: 11,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    );
+                  }).toList(),
+                ),
+              ],
               SizedBox(height: ResponsiveHelper.verticalSpacing(context, 20)),
 
               // Location Section (only for expenses, not for income)

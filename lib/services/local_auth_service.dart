@@ -61,6 +61,9 @@ class LocalAuthService {
       // Create default categories for the user
       await _createDefaultCategories(db, userId);
 
+      // Create default accounts for the user
+      await _createDefaultAccounts(db, userId);
+
       LoggerService.info('✅ User registered: $email');
 
       return {
@@ -332,6 +335,59 @@ class LocalAuthService {
 
     await batch.commit(noResult: true);
     LoggerService.info('✅ Default categories created for user: $userId');
+  }
+
+  Future<void> _createDefaultAccounts(Database db, String userId) async {
+    final defaultAccounts = [
+      {
+        'name': 'Cash',
+        'type': 'cash',
+        'icon': 'wallet',
+        'color': '#4CAF50',
+        'is_default': 1,
+      },
+      {
+        'name': 'Bank Account',
+        'type': 'bank',
+        'icon': 'account_balance',
+        'color': '#2196F3',
+        'is_default': 0,
+      },
+      {
+        'name': 'E-Wallet',
+        'type': 'e_wallet',
+        'icon': 'phone_android',
+        'color': '#FF9800',
+        'is_default': 0,
+      },
+    ];
+
+    final now = DateTime.now().toIso8601String();
+    final batch = db.batch();
+
+    for (final account in defaultAccounts) {
+      final accountId = _uuid.v4();
+      batch.insert(
+        'accounts_232143',
+        {
+          'account_id_232143': accountId,
+          'user_id_232143': userId,
+          'name_232143': account['name'],
+          'type_232143': account['type'],
+          'icon_232143': account['icon'],
+          'color_232143': account['color'],
+          'balance_232143': 0.0,
+          'currency_232143': 'IDR',
+          'is_active_232143': 1,
+          'is_default_232143': account['is_default'],
+          'created_at_232143': now,
+          'updated_at_232143': now,
+        },
+      );
+    }
+
+    await batch.commit(noResult: true);
+    LoggerService.info('✅ Default accounts created for user: $userId');
   }
 }
 

@@ -30,7 +30,7 @@ class AdditionalOptions extends StatelessWidget {
             Switch(
               value: isRecurring,
               onChanged: onChanged,
-              activeColor: const Color(0xFF8B5FBF),
+              activeThumbColor: const Color(0xFF8B5FBF),
             ),
             const SizedBox(width: 8),
             Text(

@@ -147,7 +147,7 @@ class _BillAnalyticsViewState extends State<BillAnalyticsView> {
       decoration: BoxDecoration(
         color: const Color(0xFF1A1A1A),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: color.withOpacity(0.3)),
+        border: Border.all(color: color.withValues(alpha: 0.3)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -261,7 +261,7 @@ class _BillAnalyticsViewState extends State<BillAnalyticsView> {
                 ],
               ),
             );
-          }).toList(),
+          }),
         ],
       ),
     );
@@ -330,7 +330,7 @@ class _BillAnalyticsViewState extends State<BillAnalyticsView> {
                   ],
                 ),
               );
-            }).toList(),
+            }),
         ],
       ),
     );
@@ -410,9 +410,9 @@ class _BillAnalyticsViewState extends State<BillAnalyticsView> {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
           decoration: BoxDecoration(
-            color: color.withOpacity(0.2),
+            color: color.withValues(alpha: 0.2),
             borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: color.withOpacity(0.5)),
+            border: Border.all(color: color.withValues(alpha: 0.5)),
           ),
           child: Text(
             value,

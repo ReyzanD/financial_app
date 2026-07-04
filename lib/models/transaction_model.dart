@@ -12,6 +12,9 @@ class TransactionModel {
   final DateTime transactionDate;
   final DateTime createdAt;
   final Map<String, dynamic>? locationData;
+  final String? accountId;
+  final String? accountName;
+  final String? accountType;
 
   TransactionModel({
     required this.id,
@@ -25,6 +28,9 @@ class TransactionModel {
     required this.transactionDate,
     required this.createdAt,
     this.locationData,
+    this.accountId,
+    this.accountName,
+    this.accountType,
   });
 
   factory TransactionModel.fromJson(Map<String, dynamic> json) {
@@ -64,6 +70,9 @@ class TransactionModel {
               ? _parseDate(createdAtStr.toString())
               : DateTime.now(),
       locationData: _parseLocationData(json),
+      accountId: json['account_id_232143'] ?? json['account_id'],
+      accountName: json['account_name'],
+      accountType: json['account_type'],
     );
   }
 

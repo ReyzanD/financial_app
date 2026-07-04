@@ -46,7 +46,7 @@ class _HomeHeaderState extends State<HomeHeader> {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [Colors.black, Colors.black.withOpacity(0.8)],
+          colors: [Colors.black, Colors.black.withValues(alpha: 0.8)],
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
         ),

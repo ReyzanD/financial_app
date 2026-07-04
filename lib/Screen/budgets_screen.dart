@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:financial_app/services/api_service.dart';
 import 'package:financial_app/services/error_handler_service.dart';
 import 'package:financial_app/services/logger_service.dart';
+import 'package:financial_app/services/budget_predictor.dart';
 import 'package:financial_app/widgets/budgets/add_budget_modal.dart';
 import 'package:financial_app/utils/formatters.dart';
 import 'package:financial_app/widgets/common/shimmer_loading.dart';
@@ -165,7 +166,7 @@ class _BudgetsScreenState extends State<BudgetsScreen> {
               ),
               Switch(
                 value: _activeOnly,
-                activeColor: const Color(0xFF8B5FBF),
+                activeThumbColor: const Color(0xFF8B5FBF),
                 inactiveThumbColor: Colors.grey[600],
                 inactiveTrackColor: Colors.grey[800],
                 onChanged: (value) {
@@ -174,6 +175,11 @@ class _BudgetsScreenState extends State<BudgetsScreen> {
                   });
                   _loadData();
                 },
+              ),
+              IconButton(
+                icon: const Icon(Icons.auto_awesome, color: Color(0xFF8B5FBF)),
+                onPressed: _showSmartBudgetSuggestions,
+                tooltip: 'Saran Budget AI',
               ),
             ],
           ),
@@ -339,7 +345,7 @@ class _BudgetsScreenState extends State<BudgetsScreen> {
           ),
           border: Border.all(
             color:
-                isOverBudget ? Colors.red.withOpacity(0.4) : Colors.grey[800]!,
+                isOverBudget ? Colors.red.withValues(alpha: 0.4) : Colors.grey[800]!,
             width: isOverBudget ? 1.5 : 1,
           ),
         ),
@@ -359,12 +365,12 @@ class _BudgetsScreenState extends State<BudgetsScreen> {
                           multiplier: 0.375,
                         ),
                         decoration: BoxDecoration(
-                          color: displayColor.withOpacity(0.15),
+                          color: displayColor.withValues(alpha: 0.15),
                           borderRadius: BorderRadius.circular(
                             ResponsiveHelper.borderRadius(context, 8),
                           ),
                           border: Border.all(
-                            color: displayColor.withOpacity(0.3),
+                            color: displayColor.withValues(alpha: 0.3),
                             width: 1,
                           ),
                         ),
@@ -399,7 +405,7 @@ class _BudgetsScreenState extends State<BudgetsScreen> {
                             vertical: 2,
                           ),
                           decoration: BoxDecoration(
-                            color: Colors.red.withOpacity(0.2),
+                            color: Colors.red.withValues(alpha: 0.2),
                             borderRadius: BorderRadius.circular(
                               ResponsiveHelper.borderRadius(context, 8),
                             ),
@@ -546,6 +552,219 @@ class _BudgetsScreenState extends State<BudgetsScreen> {
       default:
         return const Color(0xFF8B5FBF);
     }
+  }
+
+  Future<void> _showSmartBudgetSuggestions() async {
+    try {
+      if (!mounted) return;
+      showDialog(
+        context: context,
+        builder: (context) => const Center(
+          child: CircularProgressIndicator(color: Color(0xFF8B5FBF)),
+        ),
+      );
+
+      final predictor = BudgetPredictor();
+      final suggestedBudgets = await predictor.suggestOptimalBudgets();
+      final risks = await predictor.assessOverspendingRisk();
+
+      if (!mounted) return;
+      Navigator.pop(context);
+
+      showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        backgroundColor: Colors.transparent,
+        builder: (context) => DraggableScrollableSheet(
+          initialChildSize: 0.6,
+          minChildSize: 0.4,
+          maxChildSize: 0.85,
+          expand: false,
+          builder: (context, scrollController) => Container(
+            decoration: const BoxDecoration(
+              color: Color(0xFF1A1A1A),
+              borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+            ),
+            padding: const EdgeInsets.all(20),
+            child: ListView(
+              controller: scrollController,
+              children: [
+                Center(
+                  child: Container(
+                    width: 40,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: Colors.grey[600],
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Row(
+                  children: [
+                    const Icon(
+                      Icons.auto_awesome,
+                      color: Color(0xFF8B5FBF),
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      'Saran Budget Optimal',
+                      style: GoogleFonts.poppins(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Berdasarkan rata-rata pengeluaran 3 bulan terakhir + buffer 10%',
+                  style: GoogleFonts.poppins(
+                    color: Colors.grey[400],
+                    fontSize: 12,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                if (suggestedBudgets.isNotEmpty) ...[
+                  ...suggestedBudgets.entries
+                      .map((e) => _buildSuggestionItem(e.key, e.value))
+                      ,
+                ] else
+                  Center(
+                    child: Text(
+                      'Belum ada data untuk rekomendasi',
+                      style: GoogleFonts.poppins(color: Colors.grey[500]),
+                    ),
+                  ),
+                if (risks.isNotEmpty) ...[
+                  const SizedBox(height: 20),
+                  Text(
+                    'Peringatan Budget',
+                    style: GoogleFonts.poppins(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  ...risks
+                      .where((r) =>
+                          r['risk_level'] == 'critical' ||
+                          r['risk_level'] == 'high')
+                      .map((risk) => _buildRiskItem(risk))
+                      ,
+                ],
+              ],
+            ),
+          ),
+        ),
+      );
+    } catch (e) {
+      if (mounted) {
+        Navigator.pop(context);
+        ErrorHandlerService.showErrorSnackbar(
+          context,
+          'Gagal memuat saran budget',
+        );
+      }
+    }
+  }
+
+  Widget _buildSuggestionItem(String category, double amount) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: const Color(0xFF2A2A2A),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: const Color(0xFF8B5FBF).withValues(alpha: 0.3)),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Expanded(
+            child: Text(
+              category,
+              style: GoogleFonts.poppins(
+                color: Colors.white,
+                fontSize: 14,
+              ),
+            ),
+          ),
+          Text(
+            CurrencyFormatter.formatRupiah(amount.toInt()),
+            style: GoogleFonts.poppins(
+              color: const Color(0xFF8B5FBF),
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildRiskItem(Map<String, dynamic> risk) {
+    final category = risk['category_name'] as String? ?? 'Tidak Diketahui';
+    final usagePercent = (risk['usage_percent'] as num?)?.toDouble() ?? 0.0;
+    final riskLevel = risk['risk_level'] as String? ?? 'unknown';
+    final remaining = (risk['remaining'] as num?)?.toDouble() ?? 0.0;
+
+    final color = riskLevel == 'critical' ? Colors.red[400] : Colors.orange[400];
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: color!.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: color.withValues(alpha: 0.3)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: Text(
+                  category,
+                  style: GoogleFonts.poppins(
+                    color: Colors.white,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: color,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Text(
+                  '${usagePercent.toInt()}%',
+                  style: GoogleFonts.poppins(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 4),
+          Text(
+            'Sisa: ${CurrencyFormatter.formatRupiah(remaining.toInt())}',
+            style: GoogleFonts.poppins(
+              color: Colors.grey[400],
+              fontSize: 12,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   Future<void> _showAddBudgetModal() async {

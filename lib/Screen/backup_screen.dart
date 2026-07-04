@@ -383,7 +383,7 @@ class _BackupScreenState extends State<BackupScreen> {
                           Text(
                             AppLocalizations.of(context)!.backup_description,
                             style: GoogleFonts.poppins(
-                              color: Colors.white.withOpacity(0.9),
+                              color: Colors.white.withValues(alpha: 0.9),
                               fontSize: 14,
                             ),
                           ),
@@ -538,7 +538,7 @@ class _BackupScreenState extends State<BackupScreen> {
         leading: Container(
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: const Color(0xFF8B5FBF).withOpacity(0.2),
+            color: const Color(0xFF8B5FBF).withValues(alpha: 0.2),
             borderRadius: BorderRadius.circular(12),
           ),
           child: const Icon(Iconsax.document, color: Color(0xFF8B5FBF)),

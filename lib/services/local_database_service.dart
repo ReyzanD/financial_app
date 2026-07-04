@@ -32,7 +32,7 @@ class LocalDatabaseService {
 
       return await openDatabase(
         path,
-        version: 1,
+        version: currentVersion,
         onCreate: _onCreate,
         onUpgrade: _onUpgrade,
       );
@@ -99,33 +99,35 @@ class LocalDatabaseService {
 
     // Transactions table
     await db.execute('''
-      CREATE TABLE IF NOT EXISTS transactions_232143 (
-        transaction_id_232143 TEXT PRIMARY KEY,
-        user_id_232143 TEXT NOT NULL,
-        amount_232143 REAL NOT NULL,
-        type_232143 TEXT NOT NULL CHECK (type_232143 IN ('income','expense','transfer')),
-        category_id_232143 TEXT,
-        description_232143 TEXT NOT NULL,
-        location_name_232143 TEXT,
-        latitude_232143 REAL,
-        longitude_232143 REAL,
-        location_data_232143 TEXT,
-        payment_method_232143 TEXT DEFAULT 'cash' CHECK (payment_method_232143 IN ('cash','debit_card','credit_card','e_wallet','bank_transfer')),
-        receipt_image_url_232143 TEXT,
-        is_recurring_232143 INTEGER DEFAULT 0,
-        recurring_pattern_232143 TEXT,
-        predicted_category_id_232143 TEXT,
-        confidence_score_232143 REAL,
-        is_verified_232143 INTEGER DEFAULT 1,
-        tags_232143 TEXT,
-        transaction_date_232143 TEXT NOT NULL,
-        transaction_time_232143 TEXT,
-        created_at_232143 TEXT DEFAULT CURRENT_TIMESTAMP,
-        updated_at_232143 TEXT DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (user_id_232143) REFERENCES users_232143(user_id_232143) ON DELETE CASCADE,
-        FOREIGN KEY (category_id_232143) REFERENCES categories_232143(category_id_232143),
-        FOREIGN KEY (predicted_category_id_232143) REFERENCES categories_232143(category_id_232143)
-      )
+       CREATE TABLE IF NOT EXISTS transactions_232143 (
+         transaction_id_232143 TEXT PRIMARY KEY,
+         user_id_232143 TEXT NOT NULL,
+         account_id_232143 TEXT,
+         amount_232143 REAL NOT NULL,
+         type_232143 TEXT NOT NULL CHECK (type_232143 IN ('income','expense','transfer')),
+         category_id_232143 TEXT,
+         description_232143 TEXT NOT NULL,
+         location_name_232143 TEXT,
+         latitude_232143 REAL,
+         longitude_232143 REAL,
+         location_data_232143 TEXT,
+         payment_method_232143 TEXT DEFAULT 'cash' CHECK (payment_method_232143 IN ('cash','debit_card','credit_card','e_wallet','bank_transfer')),
+         receipt_image_url_232143 TEXT,
+         is_recurring_232143 INTEGER DEFAULT 0,
+         recurring_pattern_232143 TEXT,
+         predicted_category_id_232143 TEXT,
+         confidence_score_232143 REAL,
+         is_verified_232143 INTEGER DEFAULT 1,
+         tags_232143 TEXT,
+         transaction_date_232143 TEXT NOT NULL,
+         transaction_time_232143 TEXT,
+         created_at_232143 TEXT DEFAULT CURRENT_TIMESTAMP,
+         updated_at_232143 TEXT DEFAULT CURRENT_TIMESTAMP,
+         FOREIGN KEY (user_id_232143) REFERENCES users_232143(user_id_232143) ON DELETE CASCADE,
+         FOREIGN KEY (category_id_232143) REFERENCES categories_232143(category_id_232143),
+         FOREIGN KEY (predicted_category_id_232143) REFERENCES categories_232143(category_id_232143),
+         FOREIGN KEY (account_id_232143) REFERENCES accounts_232143(account_id_232143)
+       )
     ''');
 
     // Budgets table
@@ -203,6 +205,243 @@ class LocalDatabaseService {
       )
     ''');
 
+    // Receipt scans table (for scan history)
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS receipt_scans_232143 (
+        receipt_id_232143 TEXT PRIMARY KEY,
+        user_id_232143 TEXT NOT NULL,
+        image_path_232143 TEXT,
+        merchant_232143 TEXT,
+        total_amount_232143 REAL DEFAULT 0.0,
+        receipt_date_232143 TEXT,
+        raw_text_232143 TEXT,
+        items_json_232143 TEXT,
+        category_id_232143 TEXT,
+        transaction_id_232143 TEXT,
+        is_processed_232143 INTEGER DEFAULT 0,
+        confidence_score_232143 REAL DEFAULT 0.0,
+        created_at_232143 TEXT DEFAULT CURRENT_TIMESTAMP,
+        updated_at_232143 TEXT DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id_232143) REFERENCES users_232143(user_id_232143) ON DELETE CASCADE,
+        FOREIGN KEY (category_id_232143) REFERENCES categories_232143(category_id_232143),
+        FOREIGN KEY (transaction_id_232143) REFERENCES transactions_232143(transaction_id_232143)
+      )
+    ''');
+
+    // Accounts table
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS accounts_232143 (
+        account_id_232143 TEXT PRIMARY KEY,
+        user_id_232143 TEXT NOT NULL,
+        name_232143 TEXT NOT NULL,
+        type_232143 TEXT NOT NULL CHECK (type_232143 IN ('cash','bank','e_wallet','credit_card','investment','other')),
+        icon_232143 TEXT DEFAULT 'wallet',
+        color_232143 TEXT DEFAULT '#8B5FBF',
+        balance_232143 REAL DEFAULT 0.0,
+        currency_232143 TEXT DEFAULT 'IDR',
+        account_number_232143 TEXT,
+        bank_name_232143 TEXT,
+        is_active_232143 INTEGER DEFAULT 1,
+        is_default_232143 INTEGER DEFAULT 0,
+        created_at_232143 TEXT DEFAULT CURRENT_TIMESTAMP,
+        updated_at_232143 TEXT DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id_232143) REFERENCES users_232143(user_id_232143) ON DELETE CASCADE
+      )
+    ''');
+
+    // Debts table
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS debts_232143 (
+        debt_id_232143 TEXT PRIMARY KEY,
+        user_id_232143 TEXT NOT NULL,
+        name_232143 TEXT NOT NULL,
+        original_amount_232143 REAL NOT NULL,
+        current_balance_232143 REAL NOT NULL,
+        interest_rate_232143 REAL DEFAULT 0.0,
+        type_232143 TEXT NOT NULL CHECK (type_232143 IN ('personal','mortgage','student','credit_card','car','business','other')),
+        start_date_232143 TEXT NOT NULL,
+        due_date_232143 TEXT,
+        monthly_payment_232143 REAL,
+        creditor_name_232143 TEXT,
+        notes_232143 TEXT,
+        created_at_232143 TEXT DEFAULT CURRENT_TIMESTAMP,
+        updated_at_232143 TEXT DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id_232143) REFERENCES users_232143(user_id_232143) ON DELETE CASCADE
+      )
+    ''');
+
+    // Debt payments table
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS debt_payments_232143 (
+        payment_id_232143 TEXT PRIMARY KEY,
+        debt_id_232143 TEXT NOT NULL,
+        user_id_232143 TEXT NOT NULL,
+        amount_232143 REAL NOT NULL,
+        payment_date_232143 TEXT NOT NULL,
+        balance_after_232143 REAL NOT NULL,
+        notes_232143 TEXT,
+        created_at_232143 TEXT DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (debt_id_232143) REFERENCES debts_232143(debt_id_232143) ON DELETE CASCADE,
+        FOREIGN KEY (user_id_232143) REFERENCES users_232143(user_id_232143) ON DELETE CASCADE
+      )
+    ''');
+
+    // Subscriptions table
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS subscriptions_232143 (
+        subscription_id_232143 TEXT PRIMARY KEY,
+        user_id_232143 TEXT NOT NULL,
+        name_232143 TEXT NOT NULL,
+        cost_232143 REAL NOT NULL,
+        cycle_232143 TEXT NOT NULL CHECK (cycle_232143 IN ('weekly','monthly','yearly')),
+        category_232143 TEXT DEFAULT 'general',
+        start_date_232143 TEXT NOT NULL,
+        next_renewal_232143 TEXT,
+        is_active_232143 INTEGER DEFAULT 1,
+        notes_232143 TEXT,
+        account_id_232143 TEXT,
+        created_at_232143 TEXT DEFAULT CURRENT_TIMESTAMP,
+        updated_at_232143 TEXT DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id_232143) REFERENCES users_232143(user_id_232143) ON DELETE CASCADE,
+        FOREIGN KEY (account_id_232143) REFERENCES accounts_232143(account_id_232143)
+      )
+    ''');
+
+    // Tags table
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS tags_232143 (
+        tag_id_232143 TEXT PRIMARY KEY,
+        user_id_232143 TEXT NOT NULL,
+        name_232143 TEXT NOT NULL,
+        color_232143 TEXT DEFAULT '#8B5FBF',
+        created_at_232143 TEXT DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id_232143) REFERENCES users_232143(user_id_232143) ON DELETE CASCADE
+      )
+    ''');
+
+    // Transaction-Tags mapping table
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS transaction_tags_232143 (
+        transaction_id_232143 TEXT NOT NULL,
+        tag_id_232143 TEXT NOT NULL,
+        PRIMARY KEY (transaction_id_232143, tag_id_232143),
+        FOREIGN KEY (transaction_id_232143) REFERENCES transactions_232143(transaction_id_232143) ON DELETE CASCADE,
+        FOREIGN KEY (tag_id_232143) REFERENCES tags_232143(tag_id_232143) ON DELETE CASCADE
+      )
+    ''');
+
+    // Expense splits table
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS expense_splits_232143 (
+        split_id_232143 TEXT PRIMARY KEY,
+        transaction_id_232143 TEXT,
+        user_id_232143 TEXT NOT NULL,
+        participant_name_232143 TEXT NOT NULL,
+        participant_phone_232143 TEXT,
+        amount_232143 REAL NOT NULL,
+        paid_amount_232143 REAL DEFAULT 0.0,
+        is_settled_232143 INTEGER DEFAULT 0,
+        notes_232143 TEXT,
+        created_at_232143 TEXT DEFAULT CURRENT_TIMESTAMP,
+        settled_at_232143 TEXT,
+        FOREIGN KEY (transaction_id_232143) REFERENCES transactions_232143(transaction_id_232143),
+        FOREIGN KEY (user_id_232143) REFERENCES users_232143(user_id_232143) ON DELETE CASCADE
+      )
+    ''');
+
+    // Challenges table
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS challenges_232143 (
+        challenge_id_232143 TEXT PRIMARY KEY,
+        user_id_232143 TEXT NOT NULL,
+        name_232143 TEXT NOT NULL,
+        description_232143 TEXT,
+        type_232143 TEXT NOT NULL CHECK (type_232143 IN ('no_spend','savings_target','budget_limit','custom')),
+        target_amount_232143 REAL,
+        current_amount_232143 REAL DEFAULT 0.0,
+        start_date_232143 TEXT NOT NULL,
+        end_date_232143 TEXT NOT NULL,
+        is_active_232143 INTEGER DEFAULT 1,
+        is_completed_232143 INTEGER DEFAULT 0,
+        completed_date_232143 TEXT,
+        streak_days_232143 INTEGER DEFAULT 0,
+        notes_232143 TEXT,
+        created_at_232143 TEXT DEFAULT CURRENT_TIMESTAMP,
+        updated_at_232143 TEXT DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id_232143) REFERENCES users_232143(user_id_232143) ON DELETE CASCADE
+      )
+    ''');
+
+    // Investments table
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS investments_232143 (
+        investment_id_232143 TEXT PRIMARY KEY,
+        user_id_232143 TEXT NOT NULL,
+        name_232143 TEXT NOT NULL,
+        type_232143 TEXT NOT NULL CHECK (type_232143 IN ('stock','mutual_fund','crypto','bond','gold','deposit','other')),
+        quantity_232143 REAL NOT NULL,
+        buy_price_232143 REAL NOT NULL,
+        current_price_232143 REAL NOT NULL,
+        buy_date_232143 TEXT NOT NULL,
+        ticker_232143 TEXT,
+        notes_232143 TEXT,
+        created_at_232143 TEXT DEFAULT CURRENT_TIMESTAMP,
+        updated_at_232143 TEXT DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id_232143) REFERENCES users_232143(user_id_232143) ON DELETE CASCADE
+      )
+    ''');
+
+    // Transaction templates table
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS transaction_templates_232143 (
+        template_id_232143 TEXT PRIMARY KEY,
+        user_id_232143 TEXT NOT NULL,
+        name_232143 TEXT NOT NULL,
+        amount_232143 REAL NOT NULL,
+        type_232143 TEXT NOT NULL CHECK (type_232143 IN ('income','expense','transfer')),
+        category_id_232143 TEXT,
+        description_232143 TEXT,
+        payment_method_232143 TEXT,
+        account_id_232143 TEXT,
+        is_recurring_232143 INTEGER DEFAULT 0,
+        recurrence_pattern_232143 TEXT,
+        tags_232143 TEXT,
+        created_at_232143 TEXT DEFAULT CURRENT_TIMESTAMP,
+        updated_at_232143 TEXT DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id_232143) REFERENCES users_232143(user_id_232143) ON DELETE CASCADE,
+        FOREIGN KEY (category_id_232143) REFERENCES categories_232143(category_id_232143),
+        FOREIGN KEY (account_id_232143) REFERENCES accounts_232143(account_id_232143)
+      )
+    ''');
+
+    // Net worth history table
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS net_worth_history_232143 (
+        snapshot_id_232143 TEXT PRIMARY KEY,
+        user_id_232143 TEXT NOT NULL,
+        snapshot_date_232143 TEXT NOT NULL,
+        net_worth_232143 REAL NOT NULL,
+        total_assets_232143 REAL NOT NULL,
+        total_liabilities_232143 REAL NOT NULL,
+        asset_breakdown_232143 TEXT,
+        liability_breakdown_232143 TEXT,
+        created_at_232143 TEXT DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id_232143) REFERENCES users_232143(user_id_232143) ON DELETE CASCADE
+      )
+    ''');
+
+    // Exchange rates table
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS exchange_rates_232143 (
+        rate_id_232143 TEXT PRIMARY KEY,
+        from_currency_232143 TEXT NOT NULL,
+        to_currency_232143 TEXT NOT NULL,
+        rate_232143 REAL NOT NULL,
+        last_updated_232143 TEXT NOT NULL,
+        UNIQUE(from_currency_232143, to_currency_232143)
+      )
+    ''');
+
     // Create indexes for better performance
     await db.execute(
       'CREATE INDEX IF NOT EXISTS idx_users_email ON users_232143(email_232143)',
@@ -225,16 +464,350 @@ class LocalDatabaseService {
     await db.execute(
       'CREATE INDEX IF NOT EXISTS idx_obligations_user ON financial_obligations_232143(user_id_232143)',
     );
+    await db.execute(
+      'CREATE INDEX IF NOT EXISTS idx_accounts_user ON accounts_232143(user_id_232143)',
+    );
+    await db.execute(
+      'CREATE INDEX IF NOT EXISTS idx_debts_user ON debts_232143(user_id_232143)',
+    );
+    await db.execute(
+      'CREATE INDEX IF NOT EXISTS idx_debt_payments_debt ON debt_payments_232143(debt_id_232143)',
+    );
+    await db.execute(
+      'CREATE INDEX IF NOT EXISTS idx_subscriptions_user ON subscriptions_232143(user_id_232143)',
+    );
+    await db.execute(
+      'CREATE INDEX IF NOT EXISTS idx_splits_user ON expense_splits_232143(user_id_232143)',
+    );
+    await db.execute(
+      'CREATE INDEX IF NOT EXISTS idx_investments_user ON investments_232143(user_id_232143)',
+    );
+    await db.execute(
+      'CREATE INDEX IF NOT EXISTS idx_challenges_user ON challenges_232143(user_id_232143)',
+    );
+    await db.execute(
+      'CREATE INDEX IF NOT EXISTS idx_net_worth_user_date ON net_worth_history_232143(user_id_232143, snapshot_date_232143)',
+    );
+
+    // Goal contributions table (tracks which account contributed to which goal)
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS goal_contributions_232143 (
+        contribution_id_232143 TEXT PRIMARY KEY,
+        goal_id_232143 TEXT NOT NULL,
+        account_id_232143 TEXT,
+        amount_232143 REAL NOT NULL,
+        contributed_at_232143 TEXT DEFAULT CURRENT_TIMESTAMP,
+        note_232143 TEXT,
+        FOREIGN KEY (goal_id_232143) REFERENCES financial_goals_232143(goal_id_232143) ON DELETE CASCADE,
+        FOREIGN KEY (account_id_232143) REFERENCES accounts_232143(account_id_232143) ON DELETE SET NULL
+      )
+    ''');
+
+    await db.execute(
+      'CREATE INDEX IF NOT EXISTS idx_goal_contributions_goal ON goal_contributions_232143(goal_id_232143)',
+    );
+    await db.execute(
+      'CREATE INDEX IF NOT EXISTS idx_goal_contributions_account ON goal_contributions_232143(account_id_232143)',
+    );
 
     LoggerService.info('✅ Database schema created successfully');
   }
+
+  /// Get current database version
+  static int get currentVersion => 5;
 
   /// Upgrade database schema
   Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
     LoggerService.info(
       '📱 Upgrading database from version $oldVersion to $newVersion',
     );
-    // Add migration logic here if needed
+
+    if (oldVersion < 2) {
+      await db.execute('''
+        CREATE TABLE IF NOT EXISTS receipt_scans_232143 (
+          receipt_id_232143 TEXT PRIMARY KEY,
+          user_id_232143 TEXT NOT NULL,
+          image_path_232143 TEXT,
+          merchant_232143 TEXT,
+          total_amount_232143 REAL DEFAULT 0.0,
+          receipt_date_232143 TEXT,
+          raw_text_232143 TEXT,
+          items_json_232143 TEXT,
+          category_id_232143 TEXT,
+          transaction_id_232143 TEXT,
+          is_processed_232143 INTEGER DEFAULT 0,
+          confidence_score_232143 REAL DEFAULT 0.0,
+          created_at_232143 TEXT DEFAULT CURRENT_TIMESTAMP,
+          updated_at_232143 TEXT DEFAULT CURRENT_TIMESTAMP,
+          FOREIGN KEY (user_id_232143) REFERENCES users_232143(user_id_232143) ON DELETE CASCADE,
+          FOREIGN KEY (category_id_232143) REFERENCES categories_232143(category_id_232143),
+          FOREIGN KEY (transaction_id_232143) REFERENCES transactions_232143(transaction_id_232143)
+        )
+      ''');
+      LoggerService.info('✅ Migrated to version 2: added receipt_scans table');
+    }
+
+    if (oldVersion < 3) {
+      await db.execute('''
+        CREATE TABLE IF NOT EXISTS accounts_232143 (
+          account_id_232143 TEXT PRIMARY KEY,
+          user_id_232143 TEXT NOT NULL,
+          name_232143 TEXT NOT NULL,
+          type_232143 TEXT NOT NULL CHECK (type_232143 IN ('cash','bank','e_wallet','credit_card','investment','other')),
+          icon_232143 TEXT DEFAULT 'wallet',
+          color_232143 TEXT DEFAULT '#8B5FBF',
+          balance_232143 REAL DEFAULT 0.0,
+          currency_232143 TEXT DEFAULT 'IDR',
+          account_number_232143 TEXT,
+          bank_name_232143 TEXT,
+          is_active_232143 INTEGER DEFAULT 1,
+          is_default_232143 INTEGER DEFAULT 0,
+          created_at_232143 TEXT DEFAULT CURRENT_TIMESTAMP,
+          updated_at_232143 TEXT DEFAULT CURRENT_TIMESTAMP,
+          FOREIGN KEY (user_id_232143) REFERENCES users_232143(user_id_232143) ON DELETE CASCADE
+        )
+      ''');
+
+      await db.execute('''
+        CREATE TABLE IF NOT EXISTS debts_232143 (
+          debt_id_232143 TEXT PRIMARY KEY,
+          user_id_232143 TEXT NOT NULL,
+          name_232143 TEXT NOT NULL,
+          original_amount_232143 REAL NOT NULL,
+          current_balance_232143 REAL NOT NULL,
+          interest_rate_232143 REAL DEFAULT 0.0,
+          type_232143 TEXT NOT NULL CHECK (type_232143 IN ('personal','mortgage','student','credit_card','car','business','other')),
+          start_date_232143 TEXT NOT NULL,
+          due_date_232143 TEXT,
+          monthly_payment_232143 REAL,
+          creditor_name_232143 TEXT,
+          notes_232143 TEXT,
+          created_at_232143 TEXT DEFAULT CURRENT_TIMESTAMP,
+          updated_at_232143 TEXT DEFAULT CURRENT_TIMESTAMP,
+          FOREIGN KEY (user_id_232143) REFERENCES users_232143(user_id_232143) ON DELETE CASCADE
+        )
+      ''');
+
+      await db.execute('''
+        CREATE TABLE IF NOT EXISTS debt_payments_232143 (
+          payment_id_232143 TEXT PRIMARY KEY,
+          debt_id_232143 TEXT NOT NULL,
+          user_id_232143 TEXT NOT NULL,
+          amount_232143 REAL NOT NULL,
+          payment_date_232143 TEXT NOT NULL,
+          balance_after_232143 REAL NOT NULL,
+          notes_232143 TEXT,
+          created_at_232143 TEXT DEFAULT CURRENT_TIMESTAMP,
+          FOREIGN KEY (debt_id_232143) REFERENCES debts_232143(debt_id_232143) ON DELETE CASCADE,
+          FOREIGN KEY (user_id_232143) REFERENCES users_232143(user_id_232143) ON DELETE CASCADE
+        )
+      ''');
+
+      await db.execute('''
+        CREATE TABLE IF NOT EXISTS subscriptions_232143 (
+          subscription_id_232143 TEXT PRIMARY KEY,
+          user_id_232143 TEXT NOT NULL,
+          name_232143 TEXT NOT NULL,
+          cost_232143 REAL NOT NULL,
+          cycle_232143 TEXT NOT NULL CHECK (cycle_232143 IN ('weekly','monthly','yearly')),
+          category_232143 TEXT DEFAULT 'general',
+          start_date_232143 TEXT NOT NULL,
+          next_renewal_232143 TEXT,
+          is_active_232143 INTEGER DEFAULT 1,
+          notes_232143 TEXT,
+          account_id_232143 TEXT,
+          created_at_232143 TEXT DEFAULT CURRENT_TIMESTAMP,
+          updated_at_232143 TEXT DEFAULT CURRENT_TIMESTAMP,
+          FOREIGN KEY (user_id_232143) REFERENCES users_232143(user_id_232143) ON DELETE CASCADE,
+          FOREIGN KEY (account_id_232143) REFERENCES accounts_232143(account_id_232143)
+        )
+      ''');
+
+      await db.execute('''
+        CREATE TABLE IF NOT EXISTS tags_232143 (
+          tag_id_232143 TEXT PRIMARY KEY,
+          user_id_232143 TEXT NOT NULL,
+          name_232143 TEXT NOT NULL,
+          color_232143 TEXT DEFAULT '#8B5FBF',
+          created_at_232143 TEXT DEFAULT CURRENT_TIMESTAMP,
+          FOREIGN KEY (user_id_232143) REFERENCES users_232143(user_id_232143) ON DELETE CASCADE
+        )
+      ''');
+
+      await db.execute('''
+        CREATE TABLE IF NOT EXISTS transaction_tags_232143 (
+          transaction_id_232143 TEXT NOT NULL,
+          tag_id_232143 TEXT NOT NULL,
+          PRIMARY KEY (transaction_id_232143, tag_id_232143),
+          FOREIGN KEY (transaction_id_232143) REFERENCES transactions_232143(transaction_id_232143) ON DELETE CASCADE,
+          FOREIGN KEY (tag_id_232143) REFERENCES tags_232143(tag_id_232143) ON DELETE CASCADE
+        )
+      ''');
+
+      await db.execute('''
+        CREATE TABLE IF NOT EXISTS expense_splits_232143 (
+          split_id_232143 TEXT PRIMARY KEY,
+          transaction_id_232143 TEXT,
+          user_id_232143 TEXT NOT NULL,
+          participant_name_232143 TEXT NOT NULL,
+          participant_phone_232143 TEXT,
+          amount_232143 REAL NOT NULL,
+          paid_amount_232143 REAL DEFAULT 0.0,
+          is_settled_232143 INTEGER DEFAULT 0,
+          notes_232143 TEXT,
+          created_at_232143 TEXT DEFAULT CURRENT_TIMESTAMP,
+          settled_at_232143 TEXT,
+          FOREIGN KEY (transaction_id_232143) REFERENCES transactions_232143(transaction_id_232143),
+          FOREIGN KEY (user_id_232143) REFERENCES users_232143(user_id_232143) ON DELETE CASCADE
+        )
+      ''');
+
+      await db.execute('''
+        CREATE TABLE IF NOT EXISTS challenges_232143 (
+          challenge_id_232143 TEXT PRIMARY KEY,
+          user_id_232143 TEXT NOT NULL,
+          name_232143 TEXT NOT NULL,
+          description_232143 TEXT,
+          type_232143 TEXT NOT NULL CHECK (type_232143 IN ('no_spend','savings_target','budget_limit','custom')),
+          target_amount_232143 REAL,
+          current_amount_232143 REAL DEFAULT 0.0,
+          start_date_232143 TEXT NOT NULL,
+          end_date_232143 TEXT NOT NULL,
+          is_active_232143 INTEGER DEFAULT 1,
+          is_completed_232143 INTEGER DEFAULT 0,
+          completed_date_232143 TEXT,
+          streak_days_232143 INTEGER DEFAULT 0,
+          notes_232143 TEXT,
+          created_at_232143 TEXT DEFAULT CURRENT_TIMESTAMP,
+          updated_at_232143 TEXT DEFAULT CURRENT_TIMESTAMP,
+          FOREIGN KEY (user_id_232143) REFERENCES users_232143(user_id_232143) ON DELETE CASCADE
+        )
+      ''');
+
+      await db.execute('''
+        CREATE TABLE IF NOT EXISTS investments_232143 (
+          investment_id_232143 TEXT PRIMARY KEY,
+          user_id_232143 TEXT NOT NULL,
+          name_232143 TEXT NOT NULL,
+          type_232143 TEXT NOT NULL CHECK (type_232143 IN ('stock','mutual_fund','crypto','bond','gold','deposit','other')),
+          quantity_232143 REAL NOT NULL,
+          buy_price_232143 REAL NOT NULL,
+          current_price_232143 REAL NOT NULL,
+          buy_date_232143 TEXT NOT NULL,
+          ticker_232143 TEXT,
+          notes_232143 TEXT,
+          created_at_232143 TEXT DEFAULT CURRENT_TIMESTAMP,
+          updated_at_232143 TEXT DEFAULT CURRENT_TIMESTAMP,
+          FOREIGN KEY (user_id_232143) REFERENCES users_232143(user_id_232143) ON DELETE CASCADE
+        )
+      ''');
+
+      await db.execute('''
+        CREATE TABLE IF NOT EXISTS transaction_templates_232143 (
+          template_id_232143 TEXT PRIMARY KEY,
+          user_id_232143 TEXT NOT NULL,
+          name_232143 TEXT NOT NULL,
+          amount_232143 REAL NOT NULL,
+          type_232143 TEXT NOT NULL CHECK (type_232143 IN ('income','expense','transfer')),
+          category_id_232143 TEXT,
+          description_232143 TEXT,
+          payment_method_232143 TEXT,
+          account_id_232143 TEXT,
+          is_recurring_232143 INTEGER DEFAULT 0,
+          recurrence_pattern_232143 TEXT,
+          tags_232143 TEXT,
+          created_at_232143 TEXT DEFAULT CURRENT_TIMESTAMP,
+          updated_at_232143 TEXT DEFAULT CURRENT_TIMESTAMP,
+          FOREIGN KEY (user_id_232143) REFERENCES users_232143(user_id_232143) ON DELETE CASCADE,
+          FOREIGN KEY (category_id_232143) REFERENCES categories_232143(category_id_232143),
+          FOREIGN KEY (account_id_232143) REFERENCES accounts_232143(account_id_232143)
+        )
+      ''');
+
+      await db.execute('''
+        CREATE TABLE IF NOT EXISTS net_worth_history_232143 (
+          snapshot_id_232143 TEXT PRIMARY KEY,
+          user_id_232143 TEXT NOT NULL,
+          snapshot_date_232143 TEXT NOT NULL,
+          net_worth_232143 REAL NOT NULL,
+          total_assets_232143 REAL NOT NULL,
+          total_liabilities_232143 REAL NOT NULL,
+          asset_breakdown_232143 TEXT,
+          liability_breakdown_232143 TEXT,
+          created_at_232143 TEXT DEFAULT CURRENT_TIMESTAMP,
+          FOREIGN KEY (user_id_232143) REFERENCES users_232143(user_id_232143) ON DELETE CASCADE
+        )
+      ''');
+
+      await db.execute('''
+        CREATE TABLE IF NOT EXISTS exchange_rates_232143 (
+          rate_id_232143 TEXT PRIMARY KEY,
+          from_currency_232143 TEXT NOT NULL,
+          to_currency_232143 TEXT NOT NULL,
+          rate_232143 REAL NOT NULL,
+          last_updated_232143 TEXT NOT NULL,
+          UNIQUE(from_currency_232143, to_currency_232143)
+        )
+      ''');
+
+      await db.execute(
+        'CREATE INDEX IF NOT EXISTS idx_accounts_user ON accounts_232143(user_id_232143)',
+      );
+      await db.execute(
+        'CREATE INDEX IF NOT EXISTS idx_debts_user ON debts_232143(user_id_232143)',
+      );
+      await db.execute(
+        'CREATE INDEX IF NOT EXISTS idx_debt_payments_debt ON debt_payments_232143(debt_id_232143)',
+      );
+      await db.execute(
+        'CREATE INDEX IF NOT EXISTS idx_subscriptions_user ON subscriptions_232143(user_id_232143)',
+      );
+      await db.execute(
+        'CREATE INDEX IF NOT EXISTS idx_splits_user ON expense_splits_232143(user_id_232143)',
+      );
+      await db.execute(
+        'CREATE INDEX IF NOT EXISTS idx_investments_user ON investments_232143(user_id_232143)',
+      );
+      await db.execute(
+        'CREATE INDEX IF NOT EXISTS idx_challenges_user ON challenges_232143(user_id_232143)',
+      );
+      await db.execute(
+        'CREATE INDEX IF NOT EXISTS idx_net_worth_user_date ON net_worth_history_232143(user_id_232143, snapshot_date_232143)',
+      );
+
+      LoggerService.info('✅ Migrated to version 3: added accounts, debts, subscriptions, tags, splits, challenges, investments, templates, net worth, exchange rates');
+    }
+
+    if (oldVersion < 4) {
+      await db.execute(
+        'ALTER TABLE transactions_232143 ADD COLUMN account_id_232143 TEXT',
+      );
+      LoggerService.info('✅ Migrated to version 4: added account_id to transactions');
+    }
+
+    if (oldVersion < 5) {
+      await db.execute('''
+        CREATE TABLE IF NOT EXISTS goal_contributions_232143 (
+          contribution_id_232143 TEXT PRIMARY KEY,
+          goal_id_232143 TEXT NOT NULL,
+          account_id_232143 TEXT,
+          amount_232143 REAL NOT NULL,
+          contributed_at_232143 TEXT DEFAULT CURRENT_TIMESTAMP,
+          note_232143 TEXT,
+          FOREIGN KEY (goal_id_232143) REFERENCES financial_goals_232143(goal_id_232143) ON DELETE CASCADE,
+          FOREIGN KEY (account_id_232143) REFERENCES accounts_232143(account_id_232143) ON DELETE SET NULL
+        )
+      ''');
+
+      await db.execute(
+        'CREATE INDEX IF NOT EXISTS idx_goal_contributions_goal ON goal_contributions_232143(goal_id_232143)',
+      );
+      await db.execute(
+        'CREATE INDEX IF NOT EXISTS idx_goal_contributions_account ON goal_contributions_232143(account_id_232143)',
+      );
+
+      LoggerService.info('✅ Migrated to version 5: added goal_contributions table');
+    }
   }
 
   /// Close database

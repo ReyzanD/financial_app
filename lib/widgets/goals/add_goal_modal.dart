@@ -23,6 +23,7 @@ class _AddGoalModalState extends State<AddGoalModal> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _targetAmountController = TextEditingController();
+  final TextEditingController _monthlyTargetController = TextEditingController();
 
   String _selectedType = 'emergency_fund';
   DateTime _targetDate = DateTime.now().add(const Duration(days: 365));
@@ -105,6 +106,11 @@ class _AddGoalModalState extends State<AddGoalModal> {
         _targetAmountController.text = targetAmount.toStringAsFixed(0);
       }
 
+      final monthlyTargetValue = initial['monthly_target'] ?? initial['monthly_target_232143'];
+      if (monthlyTargetValue != null) {
+        _monthlyTargetController.text = monthlyTargetValue.toString();
+      }
+
       final type = initial['type'] as String?;
       if (type != null && type.isNotEmpty) {
         _selectedType = type;
@@ -134,6 +140,7 @@ class _AddGoalModalState extends State<AddGoalModal> {
     _nameController.dispose();
     _descriptionController.dispose();
     _targetAmountController.dispose();
+    _monthlyTargetController.dispose();
     super.dispose();
   }
 
@@ -186,6 +193,8 @@ class _AddGoalModalState extends State<AddGoalModal> {
         'target_amount': double.parse(_targetAmountController.text),
         'target_date': DateFormat('yyyy-MM-dd').format(_targetDate),
         'priority': _priority,
+        if (_monthlyTargetController.text.isNotEmpty)
+          'monthly_target': double.tryParse(_monthlyTargetController.text) ?? 0,
       };
 
       if (_isEdit) {
@@ -304,7 +313,7 @@ class _AddGoalModalState extends State<AddGoalModal> {
 
               // Goal Type Dropdown
               DropdownButtonFormField<String>(
-                value: _selectedType,
+                initialValue: _selectedType,
                 dropdownColor: const Color(0xFF1A1A1A),
                 style: const TextStyle(color: Colors.white),
                 decoration: InputDecoration(
@@ -360,6 +369,24 @@ class _AddGoalModalState extends State<AddGoalModal> {
                   ),
                 ),
                 validator: (value) => FormValidators.validateAmount(value),
+              ),
+              const SizedBox(height: 16),
+
+              // Monthly Target (Optional)
+              TextFormField(
+                controller: _monthlyTargetController,
+                keyboardType: TextInputType.number,
+                style: const TextStyle(color: Colors.white),
+                decoration: InputDecoration(
+                  labelText: 'Target Bulanan (Rp) - Opsional',
+                  labelStyle: TextStyle(color: Colors.grey[400]),
+                  filled: true,
+                  fillColor: const Color(0xFF1A1A1A),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide.none,
+                  ),
+                ),
               ),
               const SizedBox(height: 16),
 

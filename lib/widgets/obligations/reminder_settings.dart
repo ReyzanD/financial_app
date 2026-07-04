@@ -154,7 +154,7 @@ class _ReminderSettingsState extends State<ReminderSettings> {
             ),
             value: _remindersEnabled,
             onChanged: _toggleReminders,
-            activeColor: const Color(0xFF8B5FBF),
+            activeThumbColor: const Color(0xFF8B5FBF),
           ),
 
           if (_remindersEnabled) ...[
@@ -227,7 +227,7 @@ class _ReminderSettingsState extends State<ReminderSettings> {
           decoration: BoxDecoration(
             color:
                 isSelected
-                    ? const Color(0xFF8B5FBF).withOpacity(0.2)
+                    ? const Color(0xFF8B5FBF).withValues(alpha: 0.2)
                     : Colors.grey[900],
             borderRadius: BorderRadius.circular(8),
             border: Border.all(

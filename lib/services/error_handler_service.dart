@@ -24,6 +24,11 @@ class ErrorHandlerService {
       return 'Sesi Anda telah berakhir. Silakan login kembali.';
     }
 
+    if (errorString.contains('not authenticated') ||
+        errorString.contains('login required')) {
+      return 'Silakan login terlebih dahulu untuk mengakses fitur ini.';
+    }
+
     if (errorString.contains('403') || errorString.contains('forbidden')) {
       return 'Anda tidak memiliki izin untuk melakukan aksi ini.';
     }

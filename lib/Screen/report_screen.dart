@@ -520,7 +520,7 @@ class _ReportScreenState extends State<ReportScreen> {
                 color: const Color(0xFF1A1A1A),
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
-                  color: const Color(0xFF8B5FBF).withOpacity(0.3),
+                  color: const Color(0xFF8B5FBF).withValues(alpha: 0.3),
                 ),
               ),
               child: Column(
@@ -590,14 +590,14 @@ class _ReportScreenState extends State<ReportScreen> {
         decoration: BoxDecoration(
           color:
               isSelected
-                  ? const Color(0xFF8B5FBF).withOpacity(0.2)
+                  ? const Color(0xFF8B5FBF).withValues(alpha: 0.2)
                   : const Color(0xFF1A1A1A),
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color:
                 isSelected
                     ? const Color(0xFF8B5FBF)
-                    : Colors.grey.withOpacity(0.3),
+                    : Colors.grey.withValues(alpha: 0.3),
             width: isSelected ? 2 : 1,
           ),
         ),
@@ -636,14 +636,14 @@ class _ReportScreenState extends State<ReportScreen> {
         decoration: BoxDecoration(
           color:
               isSelected
-                  ? const Color(0xFF8B5FBF).withOpacity(0.2)
+                  ? const Color(0xFF8B5FBF).withValues(alpha: 0.2)
                   : const Color(0xFF1A1A1A),
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color:
                 isSelected
                     ? const Color(0xFF8B5FBF)
-                    : Colors.grey.withOpacity(0.3),
+                    : Colors.grey.withValues(alpha: 0.3),
             width: isSelected ? 2 : 1,
           ),
         ),
@@ -682,7 +682,7 @@ class _ReportScreenState extends State<ReportScreen> {
         decoration: BoxDecoration(
           color: const Color(0xFF1A1A1A),
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: const Color(0xFF8B5FBF).withOpacity(0.3)),
+          border: Border.all(color: const Color(0xFF8B5FBF).withValues(alpha: 0.3)),
         ),
         child: Row(
           children: [
@@ -734,7 +734,7 @@ class _ReportScreenState extends State<ReportScreen> {
       decoration: BoxDecoration(
         color: const Color(0xFF1A1A1A),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFF8B5FBF).withOpacity(0.3)),
+        border: Border.all(color: const Color(0xFF8B5FBF).withValues(alpha: 0.3)),
       ),
       child: DropdownButtonHideUnderline(
         child: DropdownButton<String>(

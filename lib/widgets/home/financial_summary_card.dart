@@ -174,7 +174,7 @@ class _FinancialSummaryCardState extends State<FinancialSummaryCard>
           ),
           boxShadow: [
             BoxShadow(
-              color: const Color(0xFF8B5FBF).withOpacity(0.3),
+              color: const Color(0xFF8B5FBF).withValues(alpha: 0.3),
               blurRadius: 15,
               spreadRadius: 2,
             ),
@@ -203,7 +203,7 @@ class _FinancialSummaryCardState extends State<FinancialSummaryCard>
             ),
             boxShadow: [
               BoxShadow(
-                color: const Color(0xFF8B5FBF).withOpacity(0.3),
+                color: const Color(0xFF8B5FBF).withValues(alpha: 0.3),
                 blurRadius: 15,
                 spreadRadius: 2,
               ),
@@ -301,7 +301,7 @@ class _FinancialSummaryCardState extends State<FinancialSummaryCard>
           ),
           boxShadow: [
             BoxShadow(
-              color: const Color(0xFF8B5FBF).withOpacity(0.3),
+              color: const Color(0xFF8B5FBF).withValues(alpha: 0.3),
               blurRadius: 15,
               spreadRadius: 2,
             ),
@@ -329,11 +329,11 @@ class _FinancialSummaryCardState extends State<FinancialSummaryCard>
                       vertical: 6,
                     ),
                     decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.1),
+                      color: Colors.white.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(
                         ResponsiveHelper.borderRadius(context, 20),
                       ),
-                      border: Border.all(color: Colors.white.withOpacity(0.2)),
+                      border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
@@ -378,11 +378,11 @@ class _FinancialSummaryCardState extends State<FinancialSummaryCard>
                   vertical: 6,
                 ),
                 decoration: BoxDecoration(
-                  color: Colors.red.withOpacity(0.2),
+                  color: Colors.red.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(
                     ResponsiveHelper.borderRadius(context, 12),
                   ),
-                  border: Border.all(color: Colors.red.withOpacity(0.5)),
+                  border: Border.all(color: Colors.red.withValues(alpha: 0.5)),
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
@@ -461,7 +461,7 @@ class _FinancialSummaryCardState extends State<FinancialSummaryCard>
                   child: _buildMetricItem(
                     title: 'Skor Kesehatan',
                     value:
-                        '${(healthScore['score'] as double).toStringAsFixed(0)}',
+                        (healthScore['score'] as double).toStringAsFixed(0),
                     color:
                         (healthScore['score'] as double) >= 80
                             ? const Color(0xFF4CAF50)
@@ -510,11 +510,11 @@ class _FinancialSummaryCardState extends State<FinancialSummaryCard>
         vertical: 8,
       ),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.1),
+        color: Colors.white.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(
           ResponsiveHelper.borderRadius(context, 12),
         ),
-        border: Border.all(color: color.withOpacity(0.3)),
+        border: Border.all(color: color.withValues(alpha: 0.3)),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -564,18 +564,18 @@ class _FinancialSummaryCardState extends State<FinancialSummaryCard>
     return Container(
       padding: ResponsiveHelper.padding(context, multiplier: 0.75),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.08),
+        color: Colors.white.withValues(alpha: 0.08),
         borderRadius: BorderRadius.circular(
           ResponsiveHelper.borderRadius(context, 12),
         ),
-        border: Border.all(color: color.withOpacity(0.3), width: 1),
+        border: Border.all(color: color.withValues(alpha: 0.3), width: 1),
       ),
       child: Column(
         children: [
           Container(
             padding: ResponsiveHelper.padding(context, multiplier: 0.625),
             decoration: BoxDecoration(
-              color: color.withOpacity(0.15),
+              color: color.withValues(alpha: 0.15),
               shape: BoxShape.circle,
             ),
             child: Icon(

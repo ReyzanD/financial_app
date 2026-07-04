@@ -48,7 +48,7 @@ class EnhancedEmptyState extends StatelessWidget {
             Container(
               padding: ResponsiveHelper.padding(context, multiplier: 2.0),
               decoration: BoxDecoration(
-                color: effectiveIconColor.withOpacity(0.1),
+                color: effectiveIconColor.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
               child: Icon(

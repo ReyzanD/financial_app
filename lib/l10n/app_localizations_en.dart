@@ -1181,7 +1181,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get today => 'Today';
 
   @override
-  String get total_amount => 'Total Amount';
+  String get total_amount => 'Total Portfolio Value';
 
   @override
   String get total_budget => 'Total Budget';

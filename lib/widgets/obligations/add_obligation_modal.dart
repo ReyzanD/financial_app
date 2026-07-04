@@ -237,7 +237,7 @@ class _AddObligationModalState extends State<AddObligationModal> {
 
               // Type
               DropdownButtonFormField<String>(
-                value: _selectedType,
+                initialValue: _selectedType,
                 dropdownColor: const Color(0xFF1A1A1A),
                 style: const TextStyle(color: Colors.white),
                 decoration: InputDecoration(
@@ -276,7 +276,7 @@ class _AddObligationModalState extends State<AddObligationModal> {
 
               // Category
               DropdownButtonFormField<String>(
-                value: _selectedCategory,
+                initialValue: _selectedCategory,
                 dropdownColor: const Color(0xFF1A1A1A),
                 style: const TextStyle(color: Colors.white),
                 decoration: InputDecoration(
@@ -366,7 +366,7 @@ class _AddObligationModalState extends State<AddObligationModal> {
 
               // Due Day of Month
               DropdownButtonFormField<int>(
-                value: _dueDayOfMonth,
+                initialValue: _dueDayOfMonth,
                 dropdownColor: const Color(0xFF1A1A1A),
                 style: const TextStyle(color: Colors.white),
                 decoration: InputDecoration(
@@ -475,7 +475,7 @@ class _AddObligationModalState extends State<AddObligationModal> {
               // Show subscription cycle for subscription type
               if (_selectedType == 'subscription') ...[
                 DropdownButtonFormField<String>(
-                  value: _subscriptionCycle,
+                  initialValue: _subscriptionCycle,
                   dropdownColor: const Color(0xFF1A1A1A),
                   style: const TextStyle(color: Colors.white),
                   decoration: InputDecoration(

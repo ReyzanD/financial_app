@@ -421,5 +421,8 @@
   "weekly": "Mingguan",
   "welcome": "Selamat Datang!",
   "yearly": "Tahunan",
-  "you_need_to_login_again": "Anda perlu login kembali dengan email dan password."
+  "you_need_to_login_again": "Anda perlu login kembali dengan email dan password.",
+  "subscription_cycle": "Siklus",
+  "total_amount": "Total Nilai Portofolio",
+  "type": "Tipe"
 }

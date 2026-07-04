@@ -121,7 +121,7 @@ class _PermissionRequestCardState extends State<PermissionRequestCard> {
                 Container(
                   padding: ResponsiveHelper.padding(context, multiplier: 0.75),
                   decoration: BoxDecoration(
-                    color: widget.iconColor.withOpacity(0.1),
+                    color: widget.iconColor.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(
                       ResponsiveHelper.borderRadius(context, DesignTokens.radiusMedium),
                     ),
@@ -199,7 +199,7 @@ class _PermissionRequestCardState extends State<PermissionRequestCard> {
             Container(
               padding: ResponsiveHelper.padding(context, multiplier: 0.75),
               decoration: BoxDecoration(
-                color: DesignTokens.infoColor.withOpacity(0.1),
+                color: DesignTokens.infoColor.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(
                   ResponsiveHelper.borderRadius(context, DesignTokens.radiusSmall),
                 ),

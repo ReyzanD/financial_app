@@ -60,8 +60,9 @@ class SearchService {
               if (tDateStr != null) {
                 try {
                   final tDate = DateTime.parse(tDateStr);
-                  if (startDate != null && tDate.isBefore(startDate))
+                  if (startDate != null && tDate.isBefore(startDate)) {
                     return false;
+                  }
                   if (endDate != null && tDate.isAfter(endDate)) return false;
                 } catch (e) {
                   LoggerService.error('Error parsing date', error: e);

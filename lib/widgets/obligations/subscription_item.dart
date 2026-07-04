@@ -17,7 +17,7 @@ class SubscriptionItem extends StatelessWidget {
           width: 40,
           height: 40,
           decoration: BoxDecoration(
-            color: Colors.pink.withOpacity(0.2),
+            color: Colors.pink.withValues(alpha: 0.2),
             borderRadius: BorderRadius.circular(8),
           ),
           child: Icon(Icons.subscriptions, color: Colors.pink),

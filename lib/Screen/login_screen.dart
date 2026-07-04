@@ -155,16 +155,14 @@ class _LoginScreenState extends State<LoginScreen> {
       );
 
       if (result != null) {
-        ErrorHandlerService.showSuccessSnackbar(
-          context,
-          'Registrasi berhasil! Silakan login.',
-        );
-        _nameController.clear();
-        _emailController.clear();
-        _passwordController.clear();
-        setState(() {
-          _isLogin = true;
-        });
+        // Reset onboarding for new users
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setBool('onboarding_completed', false);
+
+        // Auto-login successful, redirect to PIN setup
+        if (mounted) {
+          Navigator.pushReplacementNamed(context, '/pin-setup');
+        }
       }
     } catch (e) {
       LoggerService.error('Error during registration', error: e);

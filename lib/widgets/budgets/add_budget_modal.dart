@@ -125,10 +125,26 @@ class _AddBudgetModalState extends State<AddBudgetModal> {
 
     try {
       final amount = double.parse(_amountController.text);
+      DateTime periodEnd;
+      switch (_selectedPeriod) {
+        case 'weekly':
+          periodEnd = _startDate.add(const Duration(days: 7));
+          break;
+        case 'monthly':
+          periodEnd = DateTime(_startDate.year, _startDate.month + 1, _startDate.day);
+          break;
+        case 'yearly':
+          periodEnd = DateTime(_startDate.year + 1, _startDate.month, _startDate.day);
+          break;
+        default:
+          periodEnd = _startDate.add(const Duration(days: 30));
+      }
+
       final data = <String, dynamic>{
         'amount': amount,
         'period': _selectedPeriod,
         'period_start': DateFormat('yyyy-MM-dd').format(_startDate),
+        'period_end': DateFormat('yyyy-MM-dd').format(periodEnd),
         'rollover_enabled': _rolloverEnabled,
         'alert_threshold': _alertThreshold.toInt(),
         'is_active': _isActive,
@@ -138,7 +154,8 @@ class _AddBudgetModalState extends State<AddBudgetModal> {
       }
 
       if (_isEdit) {
-        final id = widget.initialBudget?['id']?.toString();
+        final id = widget.initialBudget?['budget_id_232143']?.toString() ??
+            widget.initialBudget?['id']?.toString();
         if (id == null) {
           throw Exception('ID budget tidak valid');
         }
@@ -215,7 +232,7 @@ class _AddBudgetModalState extends State<AddBudgetModal> {
               ),
               const SizedBox(height: 24),
               DropdownButtonFormField<String?>(
-                value: _selectedCategoryId,
+                initialValue: _selectedCategoryId,
                 dropdownColor: const Color(0xFF1A1A1A),
                 style: const TextStyle(color: Colors.white),
                 decoration: InputDecoration(
@@ -265,7 +282,7 @@ class _AddBudgetModalState extends State<AddBudgetModal> {
               ),
               const SizedBox(height: 16),
               DropdownButtonFormField<String>(
-                value: _selectedPeriod,
+                initialValue: _selectedPeriod,
                 dropdownColor: const Color(0xFF1A1A1A),
                 style: const TextStyle(color: Colors.white),
                 decoration: InputDecoration(
@@ -326,7 +343,7 @@ class _AddBudgetModalState extends State<AddBudgetModal> {
                     _rolloverEnabled = value;
                   });
                 },
-                activeColor: const Color(0xFF8B5FBF),
+                activeThumbColor: const Color(0xFF8B5FBF),
                 title: Text(
                   'Rollover sisa ke periode berikutnya',
                   style: TextStyle(color: Colors.white),
@@ -364,7 +381,7 @@ class _AddBudgetModalState extends State<AddBudgetModal> {
                     _isActive = value;
                   });
                 },
-                activeColor: const Color(0xFF8B5FBF),
+                activeThumbColor: const Color(0xFF8B5FBF),
                 title: Text('Aktif', style: TextStyle(color: Colors.white)),
                 contentPadding: EdgeInsets.zero,
               ),

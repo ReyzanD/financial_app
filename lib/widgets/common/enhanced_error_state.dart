@@ -48,7 +48,7 @@ class EnhancedErrorState extends StatelessWidget {
             Container(
               padding: ResponsiveHelper.padding(context, multiplier: 1.5),
               decoration: BoxDecoration(
-                color: DesignTokens.errorColor.withOpacity(0.1),
+                color: DesignTokens.errorColor.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
               child: Icon(

@@ -271,7 +271,7 @@ class _NotificationCenterScreenState extends State<NotificationCenterScreen>
                 border: Border.all(
                   color:
                       isUnread
-                          ? const Color(0xFF8B5FBF).withOpacity(0.3)
+                          ? const Color(0xFF8B5FBF).withValues(alpha: 0.3)
                           : Colors.grey[900]!,
                 ),
               ),
@@ -283,7 +283,7 @@ class _NotificationCenterScreenState extends State<NotificationCenterScreen>
                     decoration: BoxDecoration(
                       color: Color(
                         _historyService.getColorForType(notification['type']),
-                      ).withOpacity(0.2),
+                      ).withValues(alpha: 0.2),
                       shape: BoxShape.circle,
                     ),
                     child: Center(
@@ -394,7 +394,7 @@ class _NotificationCenterScreenState extends State<NotificationCenterScreen>
                     width: 48,
                     height: 48,
                     decoration: BoxDecoration(
-                      color: const Color(0xFF8B5FBF).withOpacity(0.2),
+                      color: const Color(0xFF8B5FBF).withValues(alpha: 0.2),
                       shape: BoxShape.circle,
                     ),
                     child: const Center(
@@ -539,7 +539,7 @@ class _NotificationCenterScreenState extends State<NotificationCenterScreen>
           title: 'Ringkasan Harian',
           subtitle:
               _dailySummaryEnabled
-                  ? '${AppLocalizations.of(context)!.every_day_at} ${_dailySummaryHour}:00'
+                  ? '${AppLocalizations.of(context)!.every_day_at} $_dailySummaryHour:00'
                   : AppLocalizations.of(context)!.view_today_financial_activity,
           value: _dailySummaryEnabled,
           onChanged: (value) async {
@@ -713,7 +713,7 @@ class _NotificationCenterScreenState extends State<NotificationCenterScreen>
           Switch(
             value: value,
             onChanged: onChanged,
-            activeColor: const Color(0xFF8B5FBF),
+            activeThumbColor: const Color(0xFF8B5FBF),
           ),
         ],
       ),

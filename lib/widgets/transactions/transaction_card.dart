@@ -56,6 +56,7 @@ class _TransactionCardState extends State<TransactionCard> {
             : Colors.grey;
     final date = widget.transaction['date'] as String? ?? '';
     final location = widget.transaction['location'] as String? ?? '';
+    final accountName = widget.transaction['account_name'] as String?;
 
     return Dismissible(
       key: Key(widget.transaction['id']?.toString() ?? ''),
@@ -142,13 +143,13 @@ class _TransactionCardState extends State<TransactionCard> {
             border: Border.all(
               color:
                   isIncome
-                      ? Colors.green.withOpacity(0.2)
-                      : Colors.red.withOpacity(0.2),
+                      ? Colors.green.withValues(alpha: 0.2)
+                      : Colors.red.withValues(alpha: 0.2),
               width: 1,
             ),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.3),
+                color: Colors.black.withValues(alpha: 0.3),
                 blurRadius: 8,
                 offset: const Offset(0, 2),
               ),
@@ -161,12 +162,12 @@ class _TransactionCardState extends State<TransactionCard> {
                 width: ResponsiveHelper.iconSize(context, 52),
                 height: ResponsiveHelper.iconSize(context, 52),
                 decoration: BoxDecoration(
-                  color: categoryColor.withOpacity(0.15),
+                  color: categoryColor.withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(
                     ResponsiveHelper.borderRadius(context, 14),
                   ),
                   border: Border.all(
-                    color: categoryColor.withOpacity(0.3),
+                    color: categoryColor.withValues(alpha: 0.3),
                     width: 1.5,
                   ),
                 ),
@@ -197,7 +198,11 @@ class _TransactionCardState extends State<TransactionCard> {
                       height: ResponsiveHelper.verticalSpacing(context, 4),
                     ),
                     Text(
-                      '$category • $location',
+                      [
+                        category,
+                        if (accountName != null && accountName.isNotEmpty) accountName,
+                        if (location.isNotEmpty) location,
+                      ].join(' • '),
                       style: GoogleFonts.poppins(
                         color: Colors.grey[500],
                         fontSize: ResponsiveHelper.fontSize(context, 12),
@@ -241,14 +246,14 @@ class _TransactionCardState extends State<TransactionCard> {
                     decoration: BoxDecoration(
                       color:
                           isIncome
-                              ? Colors.green.withOpacity(0.15)
-                              : Colors.red.withOpacity(0.15),
+                              ? Colors.green.withValues(alpha: 0.15)
+                              : Colors.red.withValues(alpha: 0.15),
                       borderRadius: BorderRadius.circular(10),
                       border: Border.all(
                         color:
                             isIncome
-                                ? Colors.green.withOpacity(0.4)
-                                : Colors.red.withOpacity(0.4),
+                                ? Colors.green.withValues(alpha: 0.4)
+                                : Colors.red.withValues(alpha: 0.4),
                         width: 1,
                       ),
                     ),

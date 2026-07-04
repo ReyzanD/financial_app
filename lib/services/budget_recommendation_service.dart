@@ -4,12 +4,13 @@ import 'package:financial_app/services/logger_service.dart';
 import 'package:financial_app/services/budget_predictor.dart';
 import 'package:financial_app/services/spending_pattern_analyzer.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
+import 'package:financial_app/core/di/service_locator.dart';
 
 /// Service untuk generate AI budget recommendations with dynamic allocation
 class BudgetRecommendationService {
-  final ApiService _apiService = ApiService();
-  final BudgetPredictor _budgetPredictor = BudgetPredictor();
-  final SpendingPatternAnalyzer _patternAnalyzer = SpendingPatternAnalyzer();
+  final ApiService _apiService = getIt<ApiService>();
+  final BudgetPredictor _budgetPredictor = getIt<BudgetPredictor>();
+  final SpendingPatternAnalyzer _patternAnalyzer = getIt<SpendingPatternAnalyzer>();
 
   /// Generate budget recommendation berdasarkan income dan recurring expenses
   Future<Map<String, dynamic>> generateRecommendation() async {
@@ -158,7 +159,7 @@ class BudgetRecommendationService {
     }
 
     // Calculate average per month
-    final monthsCount = periodData.length > 0 ? periodData.length : 1;
+    final monthsCount = periodData.isNotEmpty ? periodData.length : 1;
     totalAverageExpense = totalAverageExpense / monthsCount;
     categoryAverages.forEach((category, total) {
       categoryAverages[category] = total / monthsCount;
@@ -397,21 +398,21 @@ class BudgetRecommendationService {
 
     // Fixed expenses (cannot be adjusted)
     final fixedCategories = ['Tagihan', 'Cicilan', 'Hutang'];
-    fixedCategories.forEach((cat) {
+    for (var cat in fixedCategories) {
       scores[cat] = 'fixed';
-    });
+    }
 
     // Essential but adjustable
     final essentialCategories = ['Makanan', 'Transportasi', 'Kebutuhan Pokok'];
-    essentialCategories.forEach((cat) {
+    for (var cat in essentialCategories) {
       scores[cat] = 'moderate';
-    });
+    }
 
     // Highly flexible
     final flexibleCategories = ['Hiburan', 'Shopping', 'Hobi', 'Lifestyle'];
-    flexibleCategories.forEach((cat) {
+    for (var cat in flexibleCategories) {
       scores[cat] = 'high';
-    });
+    }
 
     return scores;
   }

@@ -101,7 +101,7 @@ class _ProgressSummaryState extends State<ProgressSummary> {
                 child: CircularProgressIndicator(
                   value: avgProgress.clamp(0.0, 1.0),
                   strokeWidth: 8,
-                  backgroundColor: Colors.white.withOpacity(0.3),
+                  backgroundColor: Colors.white.withValues(alpha: 0.3),
                   color: Colors.white,
                 ),
               ),

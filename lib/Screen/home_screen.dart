@@ -14,6 +14,8 @@ import 'package:financial_app/widgets/common/offline_indicator.dart';
 import 'package:financial_app/services/logger_service.dart';
 import 'package:financial_app/utils/app_refresh.dart';
 import 'package:financial_app/utils/responsive_helper.dart';
+import 'package:financial_app/Screen/forecast_screen.dart';
+import 'package:financial_app/Screen/more_tab_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -101,8 +103,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       children: [
                         _buildDashboardTab(),
                         TabPlaceholders.buildTransactionsTab(),
-                        TabPlaceholders.buildGoalsTab(),
-                        TabPlaceholders.buildAnalyticsTab(),
+                        const ForecastScreen(),
+                        const MoreTabScreen(),
                       ],
                     ),
                   ),

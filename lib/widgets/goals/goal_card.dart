@@ -3,21 +3,48 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:financial_app/widgets/goals/goals_helpers.dart';
 import 'package:financial_app/services/api_service.dart';
+import 'package:financial_app/services/account_service.dart';
 import 'package:financial_app/services/error_handler_service.dart';
 import 'package:financial_app/services/logger_service.dart';
 import 'package:financial_app/widgets/goals/add_goal_modal.dart';
 import 'package:financial_app/widgets/goals/contribute_modal.dart';
 import 'package:financial_app/utils/responsive_helper.dart';
+import 'package:financial_app/utils/formatters.dart';
 
-class GoalCard extends StatelessWidget {
+class GoalCard extends StatefulWidget {
   final Map<String, dynamic> goal;
   final VoidCallback? onUpdated;
 
   const GoalCard({super.key, required this.goal, this.onUpdated});
 
   @override
+  State<GoalCard> createState() => _GoalCardState();
+}
+
+class _GoalCardState extends State<GoalCard> {
+  List<Map<String, dynamic>> _contributions = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadContributions();
+  }
+
+  Future<void> _loadContributions() async {
+    final goalId = (widget.goal['goal_id_232143'] ?? widget.goal['id']).toString();
+    if (goalId.isEmpty) return;
+    try {
+      final accountService = AccountService();
+      final contribs = await accountService.getGoalContributions(goalId);
+      if (mounted) setState(() => _contributions = contribs);
+    } catch (e) {
+      LoggerService.error('Error loading contributions', error: e);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    // Map database field names to UI field names
+    final goal = widget.goal;
     final targetAmount = goal['target_amount_232143'] ?? goal['target'];
     final currentAmount = goal['current_amount_232143'] ?? goal['saved'];
     final target = (targetAmount as num?)?.toDouble() ?? 0.0;
@@ -26,7 +53,6 @@ class GoalCard extends StatelessWidget {
     final deadline = goal['target_date_232143'] ?? goal['deadline'];
     final type = goal['goal_type_232143'] ?? goal['type'] ?? 'other';
 
-    // Handle priority - can be int or String from backend
     final priorityValue = goal['priority_232143'] ?? goal['priority'];
     final priority =
         priorityValue is int
@@ -50,14 +76,13 @@ class GoalCard extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Header
           Row(
             children: [
               Container(
                 width: ResponsiveHelper.iconSize(context, 40),
                 height: ResponsiveHelper.iconSize(context, 40),
                 decoration: BoxDecoration(
-                  color: getGoalTypeColor(type).withOpacity(0.2),
+                  color: getGoalTypeColor(type).withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(
                     ResponsiveHelper.borderRadius(context, 10),
                   ),
@@ -82,7 +107,7 @@ class GoalCard extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      'Target: Rp ${target.toStringAsFixed(0)}',
+                      'Target: ${CurrencyFormatter.formatRupiah(target.toInt())}',
                       style: GoogleFonts.poppins(
                         color: Colors.grey[500],
                         fontSize: ResponsiveHelper.fontSize(context, 12),
@@ -115,7 +140,7 @@ class GoalCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Rp ${saved.toStringAsFixed(0)}',
+                CurrencyFormatter.formatRupiah(saved.toInt()),
                 style: GoogleFonts.poppins(
                   color: Colors.white,
                   fontSize: ResponsiveHelper.fontSize(context, 14),
@@ -154,6 +179,15 @@ class GoalCard extends StatelessWidget {
                   onTap: () => _showContributeDialog(context),
                 ),
               ),
+              if (_contributions.isNotEmpty) ...[
+                SizedBox(width: ResponsiveHelper.horizontalSpacing(context, 8)),
+                _buildIconButton(
+                  context,
+                  icon: Iconsax.clock,
+                  color: Colors.amber,
+                  onTap: () => _showContributionsDialog(context),
+                ),
+              ],
               SizedBox(width: ResponsiveHelper.horizontalSpacing(context, 8)),
               _buildIconButton(
                 context,
@@ -175,6 +209,118 @@ class GoalCard extends StatelessWidget {
     );
   }
 
+  void _showContributionsDialog(BuildContext context) {
+    final goal = widget.goal;
+    final goalName = goal['name_232143'] ?? goal['name'] ?? 'Goal';
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: const Color(0xFF1A1A1A),
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (ctx) {
+        return Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: Container(
+                  width: 40, height: 4,
+                  decoration: BoxDecoration(
+                    color: Colors.grey[600],
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'Riwayat Kontribusi',
+                style: GoogleFonts.poppins(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                goalName,
+                style: GoogleFonts.poppins(color: Colors.grey[400], fontSize: 12),
+              ),
+              const SizedBox(height: 16),
+              if (_contributions.isEmpty)
+                Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: Center(
+                    child: Text(
+                      'Belum ada kontribusi',
+                      style: GoogleFonts.poppins(color: Colors.grey[500]),
+                    ),
+                  ),
+                )
+              else
+                Flexible(
+                  child: ListView.separated(
+                    shrinkWrap: true,
+                    itemCount: _contributions.length,
+                    separatorBuilder: (_, __) => const Divider(color: Color(0xFF2A2A2A)),
+                    itemBuilder: (_, i) {
+                      final c = _contributions[i];
+                      final amt = (c['amount_232143'] as num?)?.toDouble() ?? 0.0;
+                      final acctName = c['account_name']?.toString();
+                      final date = c['contributed_at_232143']?.toString() ?? '';
+                      final note = c['note_232143']?.toString();
+
+                      return ListTile(
+                        contentPadding: EdgeInsets.zero,
+                        leading: Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF8B5FBF).withValues(alpha: 0.2),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: const Icon(Iconsax.money_4, color: Color(0xFF8B5FBF), size: 20),
+                        ),
+                        title: Text(
+                          CurrencyFormatter.formatRupiah(amt.toInt()),
+                          style: GoogleFonts.poppins(
+                            color: Colors.white,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        subtitle: Text(
+                          '${acctName ?? 'Tanpa akun'}${note != null ? ' - $note' : ''}',
+                          style: GoogleFonts.poppins(color: Colors.grey[500], fontSize: 11),
+                        ),
+                        trailing: Text(
+                          _formatDate(date),
+                          style: GoogleFonts.poppins(color: Colors.grey[600], fontSize: 10),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              const SizedBox(height: 16),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  String _formatDate(String date) {
+    try {
+      final dt = DateTime.parse(date);
+      return '${dt.day}/${dt.month}/${dt.year}';
+    } catch (_) {
+      return date.length >= 10 ? date.substring(0, 10) : date;
+    }
+  }
+
   Widget _buildActionButton(
     BuildContext context, {
     required IconData icon,
@@ -190,20 +336,16 @@ class GoalCard extends StatelessWidget {
       child: Container(
         padding: ResponsiveHelper.verticalPadding(context, multiplier: 0.5),
         decoration: BoxDecoration(
-          color: color.withOpacity(0.1),
+          color: color.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(
             ResponsiveHelper.borderRadius(context, 8),
           ),
-          border: Border.all(color: color.withOpacity(0.3)),
+          border: Border.all(color: color.withValues(alpha: 0.3)),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              icon,
-              color: color,
-              size: ResponsiveHelper.iconSize(context, 16),
-            ),
+            Icon(icon, color: color, size: ResponsiveHelper.iconSize(context, 16)),
             SizedBox(width: ResponsiveHelper.horizontalSpacing(context, 6)),
             Text(
               label,
@@ -233,17 +375,13 @@ class GoalCard extends StatelessWidget {
       child: Container(
         padding: ResponsiveHelper.padding(context, multiplier: 0.5),
         decoration: BoxDecoration(
-          color: color.withOpacity(0.1),
+          color: color.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(
             ResponsiveHelper.borderRadius(context, 8),
           ),
-          border: Border.all(color: color.withOpacity(0.3)),
+          border: Border.all(color: color.withValues(alpha: 0.3)),
         ),
-        child: Icon(
-          icon,
-          color: color,
-          size: ResponsiveHelper.iconSize(context, 16),
-        ),
+        child: Icon(icon, color: color, size: ResponsiveHelper.iconSize(context, 16)),
       ),
     );
   }
@@ -257,13 +395,12 @@ class GoalCard extends StatelessWidget {
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (context) {
-        return ContributeModal(goal: goal);
+        return ContributeModal(goal: widget.goal);
       },
     );
-
-    // Refresh if contribution was successful
     if (result == true) {
-      onUpdated?.call();
+      _loadContributions();
+      widget.onUpdated?.call();
     }
   }
 
@@ -276,70 +413,55 @@ class GoalCard extends StatelessWidget {
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (context) {
-        return AddGoalModal(initialGoal: goal);
+        return AddGoalModal(initialGoal: widget.goal);
       },
     ).then((result) {
-      if (result == true) {
-        onUpdated?.call();
-      }
+      if (result == true) widget.onUpdated?.call();
     });
   }
 
   void _showDeleteDialog(BuildContext context) {
+    final goalName = widget.goal['name_232143'] ?? widget.goal['name'] ?? 'Goal';
     showDialog(
       context: context,
       builder: (BuildContext dialogContext) {
         return AlertDialog(
           backgroundColor: const Color(0xFF1A1A1A),
-          title: Text(
-            'Hapus Goal?',
-            style: GoogleFonts.poppins(color: Colors.white),
-          ),
+          title: Text('Hapus Goal?', style: GoogleFonts.poppins(color: Colors.white)),
           content: Text(
-            'Apakah Anda yakin ingin menghapus "${goal['name_232143'] ?? goal['name'] ?? 'Goal'}"?',
+            'Apakah Anda yakin ingin menghapus "$goalName"?',
             style: GoogleFonts.poppins(color: Colors.grey[400]),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(dialogContext).pop(),
-              child: Text(
-                'Batal',
-                style: GoogleFonts.poppins(color: Colors.grey),
-              ),
+              child: Text('Batal', style: GoogleFonts.poppins(color: Colors.grey)),
             ),
             TextButton(
               onPressed: () async {
                 try {
                   final apiService = ApiService();
                   await apiService.deleteGoal(
-                    goal['goal_id_232143'] ?? goal['id'],
+                    widget.goal['goal_id_232143'] ?? widget.goal['id'],
                   );
                   if (dialogContext.mounted) {
                     Navigator.of(dialogContext).pop();
                     if (context.mounted) {
-                      ErrorHandlerService.showSuccessSnackbar(
-                        context,
-                        'Goal berhasil dihapus',
-                      );
+                      ErrorHandlerService.showSuccessSnackbar(context, 'Goal berhasil dihapus');
                     }
-                    onUpdated?.call();
+                    widget.onUpdated?.call();
                   }
                 } catch (e) {
                   LoggerService.error('Error deleting goal', error: e);
-                  if (dialogContext.mounted) {
-                    if (context.mounted) {
-                      ErrorHandlerService.showErrorSnackbar(
-                        context,
-                        ErrorHandlerService.getUserFriendlyMessage(e),
-                      );
-                    }
+                  if (dialogContext.mounted && context.mounted) {
+                    ErrorHandlerService.showErrorSnackbar(
+                      context,
+                      ErrorHandlerService.getUserFriendlyMessage(e),
+                    );
                   }
                 }
               },
-              child: Text(
-                'Hapus',
-                style: GoogleFonts.poppins(color: Colors.red),
-              ),
+              child: Text('Hapus', style: GoogleFonts.poppins(color: Colors.red)),
             ),
           ],
         );
@@ -350,46 +472,21 @@ class GoalCard extends StatelessWidget {
   Widget _buildPriorityBadge(BuildContext context, int priority) {
     Color color;
     String text;
-
-    // Priority: 5=Very High, 4=High, 3=Medium, 2=Low, 1=Very Low
     switch (priority) {
-      case 5:
-        color = Colors.red;
-        text = 'Sangat Tinggi';
-        break;
-      case 4:
-        color = Colors.orange;
-        text = 'Tinggi';
-        break;
-      case 3:
-        color = Colors.blue;
-        text = 'Sedang';
-        break;
-      case 2:
-        color = Colors.green;
-        text = 'Rendah';
-        break;
-      case 1:
-        color = Colors.grey;
-        text = 'Sangat Rendah';
-        break;
-      default:
-        color = Colors.blue;
-        text = 'Sedang';
+      case 5: color = Colors.red; text = 'Sangat Tinggi'; break;
+      case 4: color = Colors.orange; text = 'Tinggi'; break;
+      case 3: color = Colors.blue; text = 'Sedang'; break;
+      case 2: color = Colors.green; text = 'Rendah'; break;
+      case 1: color = Colors.grey; text = 'Sangat Rendah'; break;
+      default: color = Colors.blue; text = 'Sedang';
     }
 
     return Container(
-      padding: ResponsiveHelper.symmetricPadding(
-        context,
-        horizontal: 8,
-        vertical: 4,
-      ),
+      padding: ResponsiveHelper.symmetricPadding(context, horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.2),
-        borderRadius: BorderRadius.circular(
-          ResponsiveHelper.borderRadius(context, 8),
-        ),
-        border: Border.all(color: color.withOpacity(0.5)),
+        color: color.withValues(alpha: 0.2),
+        borderRadius: BorderRadius.circular(ResponsiveHelper.borderRadius(context, 8)),
+        border: Border.all(color: color.withValues(alpha: 0.5)),
       ),
       child: Text(
         text,

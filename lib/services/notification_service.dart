@@ -345,6 +345,102 @@ class NotificationService {
     );
   }
 
+  /// Subscription Renewal Notification
+  Future<void> scheduleSubscriptionRenewal({
+    required String name,
+    required double cost,
+    required DateTime renewalDate,
+    required String cycle,
+  }) async {
+    final reminderDate = renewalDate.subtract(const Duration(days: 1));
+
+    if (reminderDate.isAfter(DateTime.now())) {
+      await scheduleNotification(
+        id: 'sub_renewal_$name'.hashCode,
+        title: '🔄 Subscription Renewal',
+        body: '$name renews tomorrow: Rp ${cost.toStringAsFixed(0)}/$cycle',
+        scheduledDate: reminderDate,
+        payload: 'subscription:$name',
+      );
+    }
+  }
+
+  /// Cancel subscription renewal notification
+  Future<void> cancelSubscriptionRenewal(String name) async {
+    await cancelNotification('sub_renewal_$name'.hashCode);
+  }
+
+  /// Challenge Deadline Notification
+  Future<void> scheduleChallengeReminder({
+    required String name,
+    required DateTime endDate,
+    required double progress,
+    required double target,
+  }) async {
+    final daysLeft = endDate.difference(DateTime.now()).inDays;
+
+    if (daysLeft > 0 && daysLeft <= 3) {
+      final percentage = target > 0 ? (progress / target * 100).toStringAsFixed(0) : '0';
+
+      await scheduleNotification(
+        id: 'challenge_$name'.hashCode,
+        title: '⏰ Challenge Ending',
+        body: '$name ends in $daysLeft days. Progress: $percentage%',
+        scheduledDate: DateTime.now().add(const Duration(hours: 1)),
+        payload: 'challenge:$name',
+      );
+    }
+  }
+
+  /// Challenge Completion Notification
+  Future<void> sendChallengeCompleted({
+    required String name,
+    required double progress,
+    required double target,
+  }) async {
+    await showNotification(
+      id: 'challenge_complete_$name'.hashCode,
+      title: '🏆 Challenge Complete!',
+      body: 'Congratulations! You completed "$name" with Rp ${progress.toStringAsFixed(0)} / Rp ${target.toStringAsFixed(0)}',
+      priority: NotificationPriority.max,
+      payload: 'challenge_complete:$name',
+    );
+  }
+
+  /// Debt Payment Reminder
+  Future<void> scheduleDebtPaymentReminder({
+    required String name,
+    required double amount,
+    required DateTime dueDate,
+  }) async {
+    final daysLeft = dueDate.difference(DateTime.now()).inDays;
+
+    if (daysLeft > 0 && daysLeft <= 7) {
+      await scheduleNotification(
+        id: 'debt_$name'.hashCode,
+        title: '💳 Debt Payment Reminder',
+        body: '$name payment due in $daysLeft days: Rp ${amount.toStringAsFixed(0)}',
+        scheduledDate: dueDate.subtract(const Duration(days: 1)),
+        payload: 'debt:$name',
+      );
+    }
+  }
+
+  /// Split Payment Reminder
+  Future<void> sendSplitPaymentReminder({
+    required String participantName,
+    required double amount,
+    required String description,
+  }) async {
+    await showNotification(
+      id: 'split_$participantName'.hashCode,
+      title: '💸 Split Payment Reminder',
+      body: '$participantName owes you Rp ${amount.toStringAsFixed(0)} for $description',
+      priority: NotificationPriority.medium,
+      payload: 'split:$participantName',
+    );
+  }
+
   /// Cancel specific notification
   Future<void> cancelNotification(int id) async {
     await _notifications.cancel(id);

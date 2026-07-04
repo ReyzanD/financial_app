@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:financial_app/utils/formatters.dart';
 import 'package:financial_app/services/api_service.dart';
+import 'package:financial_app/services/budget_recommendation_service.dart';
 import 'package:financial_app/services/logger_service.dart';
 import 'package:financial_app/Screen/budgets_screen.dart';
 import 'package:financial_app/utils/responsive_helper.dart';
@@ -16,6 +17,8 @@ class BudgetProgress extends StatefulWidget {
 class _BudgetProgressState extends State<BudgetProgress>
     with SingleTickerProviderStateMixin {
   final ApiService _apiService = ApiService();
+  final BudgetRecommendationService _recommendationService =
+      BudgetRecommendationService();
   List<Map<String, dynamic>> _budgets = [];
   Map<String, String> _categories = {};
   bool _isLoading = true;
@@ -23,6 +26,7 @@ class _BudgetProgressState extends State<BudgetProgress>
   int _retryCount = 0;
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
+  Map<String, dynamic>? _recommendation;
 
   @override
   void initState() {
@@ -92,11 +96,9 @@ class _BudgetProgressState extends State<BudgetProgress>
       if (mounted) {
         setState(() {
           _categories = categoryMap;
-          // Limit to top 3 budgets for home screen (sorted by percentage used)
           final budgetsList =
               budgets.map((b) => b as Map<String, dynamic>).toList();
           budgetsList.sort((a, b) {
-            // Support both old and new field names
             final spentA =
                 (a['spent_amount_232143'] ?? a['spent'] as num?)?.toDouble() ??
                 0.0;
@@ -109,14 +111,16 @@ class _BudgetProgressState extends State<BudgetProgress>
                 (b['amount_232143'] ?? b['amount'] as num?)?.toDouble() ?? 1.0;
             final percentageA = amountA > 0 ? spentA / amountA : 0.0;
             final percentageB = amountB > 0 ? spentB / amountB : 0.0;
-            return percentageB.compareTo(percentageA); // Sort descending
+            return percentageB.compareTo(percentageA);
           });
-          _budgets = budgetsList.take(3).toList(); // Show only top 3
+          _budgets = budgetsList.take(3).toList();
           _isLoading = false;
           _errorMessage = null;
           _retryCount = 0;
         });
         _animationController.forward();
+
+        _loadRecommendations();
       }
     } catch (e) {
       LoggerService.error('Error loading budgets', error: e);
@@ -157,6 +161,22 @@ class _BudgetProgressState extends State<BudgetProgress>
       return 'Sesi berakhir. Silakan login kembali.';
     } else {
       return 'Gagal memuat data. Tap untuk coba lagi.';
+    }
+  }
+
+  Future<void> _loadRecommendations() async {
+    try {
+      final recommendation = await _recommendationService.generateRecommendation();
+      if (mounted && recommendation['categories'] != null) {
+        final categories = recommendation['categories'] as List;
+        if (categories.isNotEmpty) {
+          setState(() {
+            _recommendation = recommendation;
+          });
+        }
+      }
+    } catch (e) {
+      LoggerService.debug('Budget recommendations not available: $e');
     }
   }
 
@@ -220,7 +240,7 @@ class _BudgetProgressState extends State<BudgetProgress>
                 borderRadius: BorderRadius.circular(
                   ResponsiveHelper.borderRadius(context, 16),
                 ),
-                border: Border.all(color: Colors.red.withOpacity(0.3)),
+                border: Border.all(color: Colors.red.withValues(alpha: 0.3)),
               ),
               child: Column(
                 children: [
@@ -261,7 +281,7 @@ class _BudgetProgressState extends State<BudgetProgress>
                       vertical: 8,
                     ),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF8B5FBF).withOpacity(0.2),
+                      color: const Color(0xFF8B5FBF).withValues(alpha: 0.2),
                       borderRadius: BorderRadius.circular(
                         ResponsiveHelper.borderRadius(context, 20),
                       ),
@@ -322,11 +342,107 @@ class _BudgetProgressState extends State<BudgetProgress>
           FadeTransition(
             opacity: _fadeAnimation,
             child: Column(
-              children:
-                  _budgets.map((budget) => _buildBudgetItem(budget)).toList(),
+              children: [
+                if (_recommendation != null)
+                  _buildRecommendationBanner(_recommendation!),
+                ..._budgets.map((budget) => _buildBudgetItem(budget)),
+              ],
             ),
           ),
       ],
+    );
+  }
+
+  Widget _buildRecommendationBanner(Map<String, dynamic> recommendation) {
+    final categories = recommendation['categories'] as List? ?? [];
+    if (categories.isEmpty) return const SizedBox.shrink();
+
+    final topRecommendation = categories.first;
+    final categoryName =
+        topRecommendation['category_name'] as String? ?? 'Umum';
+    final suggestedAmount =
+        (topRecommendation['recommended_amount'] as num?)?.toDouble() ?? 0.0;
+    final reason =
+        topRecommendation['reason'] as String? ??
+        'Berdasarkan pola pengeluaran Anda';
+
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const BudgetsScreen(),
+          ),
+        );
+      },
+      child: Container(
+        margin: EdgeInsets.only(
+          bottom: ResponsiveHelper.verticalSpacing(context, 12),
+        ),
+        padding: ResponsiveHelper.padding(context),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              const Color(0xFF8B5FBF).withValues(alpha: 0.2),
+              const Color(0xFF8B5FBF).withValues(alpha: 0.05),
+            ],
+          ),
+          borderRadius: BorderRadius.circular(
+            ResponsiveHelper.borderRadius(context, 16),
+          ),
+          border: Border.all(
+            color: const Color(0xFF8B5FBF).withValues(alpha: 0.3),
+          ),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(
+                  Icons.lightbulb_outline,
+                  color: const Color(0xFF8B5FBF),
+                  size: ResponsiveHelper.iconSize(context, 18),
+                ),
+                SizedBox(
+                  width: ResponsiveHelper.horizontalSpacing(context, 8),
+                ),
+                Text(
+                  'Saran Budget AI',
+                  style: GoogleFonts.poppins(
+                    color: const Color(0xFF8B5FBF),
+                    fontSize: ResponsiveHelper.fontSize(context, 13),
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const Spacer(),
+                Icon(
+                  Icons.arrow_forward_ios,
+                  color: const Color(0xFF8B5FBF),
+                  size: ResponsiveHelper.iconSize(context, 12),
+                ),
+              ],
+            ),
+            SizedBox(height: ResponsiveHelper.verticalSpacing(context, 8)),
+            Text(
+              '$categoryName: ${CurrencyFormatter.formatRupiah(suggestedAmount.toInt())}',
+              style: GoogleFonts.poppins(
+                color: Colors.white,
+                fontSize: ResponsiveHelper.fontSize(context, 14),
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            SizedBox(height: ResponsiveHelper.verticalSpacing(context, 4)),
+            Text(
+              reason,
+              style: GoogleFonts.poppins(
+                color: Colors.grey[400],
+                fontSize: ResponsiveHelper.fontSize(context, 11),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -378,14 +494,14 @@ class _BudgetProgressState extends State<BudgetProgress>
           ResponsiveHelper.borderRadius(context, 16),
         ),
         border: Border.all(
-          color: isOverBudget ? Colors.red.withOpacity(0.3) : Colors.grey[800]!,
+          color: isOverBudget ? Colors.red.withValues(alpha: 0.3) : Colors.grey[800]!,
           width: isOverBudget ? 1.5 : 1,
         ),
         boxShadow:
             isOverBudget
                 ? [
                   BoxShadow(
-                    color: Colors.red.withOpacity(0.1),
+                    color: Colors.red.withValues(alpha: 0.1),
                     blurRadius: 8,
                     spreadRadius: 1,
                   ),
@@ -402,7 +518,7 @@ class _BudgetProgressState extends State<BudgetProgress>
                   width: ResponsiveHelper.iconSize(context, 40),
                   height: ResponsiveHelper.iconSize(context, 40),
                   decoration: BoxDecoration(
-                    color: displayColor.withOpacity(0.2),
+                    color: displayColor.withValues(alpha: 0.2),
                     borderRadius: BorderRadius.circular(
                       ResponsiveHelper.borderRadius(context, 10),
                     ),
@@ -440,7 +556,7 @@ class _BudgetProgressState extends State<BudgetProgress>
                             vertical: 2,
                           ),
                           decoration: BoxDecoration(
-                            color: Colors.red.withOpacity(0.2),
+                            color: Colors.red.withValues(alpha: 0.2),
                             borderRadius: BorderRadius.circular(
                               ResponsiveHelper.borderRadius(context, 6),
                             ),

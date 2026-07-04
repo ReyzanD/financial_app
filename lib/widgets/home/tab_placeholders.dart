@@ -18,6 +18,6 @@ class TabPlaceholders {
   }
 
   static Widget buildBillsTab() {
-    return FinancialObligationsScreen();
+    return const FinancialObligationsScreen();
   }
 }

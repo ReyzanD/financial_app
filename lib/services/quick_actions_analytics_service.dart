@@ -111,7 +111,7 @@ class QuickActionsAnalyticsService {
         if (action.containsKey('color')) {
           final color = action['color'];
           if (color is Color) {
-            sanitized['colorHex'] = '#${color.value.toRadixString(16).padLeft(8, '0')}';
+            sanitized['colorHex'] = '#${color.toARGB32().toRadixString(16).padLeft(8, '0')}';
           } else if (color is String) {
             sanitized['colorHex'] = color;
           }

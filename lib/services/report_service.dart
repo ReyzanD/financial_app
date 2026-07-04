@@ -333,7 +333,7 @@ class ReportService {
     final directory = await getApplicationDocumentsDirectory();
     final timestamp = DateTime.now().toIso8601String().replaceAll(':', '-');
     final periodLabel = periodType == 'monthly'
-        ? '${DateFormat('MMM_yyyy', 'id_ID').format(startDate)}'
+        ? DateFormat('MMM_yyyy', 'id_ID').format(startDate)
         : '${startDate.year}';
     final filename = 'laporan_keuangan_${periodLabel}_$timestamp.pdf';
     final file = File('${directory.path}/$filename');

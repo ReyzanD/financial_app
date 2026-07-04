@@ -323,8 +323,8 @@ class _RecurringTransactionsScreenState
         border: Border.all(
           color:
               isActive
-                  ? typeColor.withOpacity(0.3)
-                  : Colors.grey.withOpacity(0.2),
+                  ? typeColor.withValues(alpha: 0.3)
+                  : Colors.grey.withValues(alpha: 0.2),
           width: 1,
         ),
       ),
@@ -337,7 +337,7 @@ class _RecurringTransactionsScreenState
                 width: 48,
                 height: 48,
                 decoration: BoxDecoration(
-                  color: typeColor.withOpacity(0.1),
+                  color: typeColor.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Icon(typeIcon, color: typeColor, size: 24),
@@ -369,7 +369,7 @@ class _RecurringTransactionsScreenState
                               vertical: 2,
                             ),
                             decoration: BoxDecoration(
-                              color: Colors.grey.withOpacity(0.2),
+                              color: Colors.grey.withValues(alpha: 0.2),
                               borderRadius: BorderRadius.circular(4),
                             ),
                             child: Text(
@@ -392,7 +392,7 @@ class _RecurringTransactionsScreenState
                             vertical: 2,
                           ),
                           decoration: BoxDecoration(
-                            color: const Color(0xFF8B5FBF).withOpacity(0.2),
+                            color: const Color(0xFF8B5FBF).withValues(alpha: 0.2),
                             borderRadius: BorderRadius.circular(4),
                           ),
                           child: Row(
@@ -512,9 +512,9 @@ class _RecurringTransactionsScreenState
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 8),
         decoration: BoxDecoration(
-          color: color.withOpacity(0.1),
+          color: color.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: color.withOpacity(0.3)),
+          border: Border.all(color: color.withValues(alpha: 0.3)),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,

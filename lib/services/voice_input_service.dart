@@ -59,10 +59,12 @@ class VoiceInputService {
           }
         },
         localeId: localeId,
-        listenMode: stt.ListenMode.confirmation,
         pauseFor: listenDuration ?? const Duration(seconds: 3),
-        cancelOnError: true,
-        partialResults: true,
+        listenOptions: stt.SpeechListenOptions(
+          listenMode: stt.ListenMode.confirmation,
+          cancelOnError: true,
+          partialResults: true,
+        ),
       );
 
       // Wait for result

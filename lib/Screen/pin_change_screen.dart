@@ -247,7 +247,7 @@ class _PinChangeScreenState extends State<PinChangeScreen> {
                       Container(
                         padding: const EdgeInsets.all(20),
                         decoration: BoxDecoration(
-                          color: const Color(0xFF8B5FBF).withOpacity(0.2),
+                          color: const Color(0xFF8B5FBF).withValues(alpha: 0.2),
                           shape: BoxShape.circle,
                         ),
                         child: Icon(

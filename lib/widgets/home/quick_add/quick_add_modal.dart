@@ -152,9 +152,9 @@ class _QuickAddModalState extends State<QuickAddModal> {
                     Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: Colors.red.withOpacity(0.1),
+                        color: Colors.red.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: Colors.red.withOpacity(0.3)),
+                        border: Border.all(color: Colors.red.withValues(alpha: 0.3)),
                       ),
                       child: Column(
                         children: [
@@ -189,9 +189,9 @@ class _QuickAddModalState extends State<QuickAddModal> {
                     Container(
                       padding: const EdgeInsets.all(10),
                       decoration: BoxDecoration(
-                        color: Colors.blue.withOpacity(0.1),
+                        color: Colors.blue.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: Colors.blue.withOpacity(0.3)),
+                        border: Border.all(color: Colors.blue.withValues(alpha: 0.3)),
                       ),
                       child: Row(
                         children: [
@@ -388,7 +388,7 @@ class _QuickAddModalState extends State<QuickAddModal> {
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: typeColor.withOpacity(0.2),
+                    color: typeColor.withValues(alpha: 0.2),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Icon(typeIcon, color: typeColor, size: 24),
@@ -471,9 +471,9 @@ class _QuickAddModalState extends State<QuickAddModal> {
                 ? Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: Colors.orange.withOpacity(0.1),
+                    color: Colors.orange.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: Colors.orange.withOpacity(0.3)),
+                    border: Border.all(color: Colors.orange.withValues(alpha: 0.3)),
                   ),
                   child: Row(
                     children: [
@@ -498,7 +498,7 @@ class _QuickAddModalState extends State<QuickAddModal> {
                   ),
                 )
                 : DropdownButtonFormField<String>(
-                  value: _selectedCategoryId,
+                  initialValue: _selectedCategoryId,
                   dropdownColor: const Color(0xFF1A1A1A),
                   style: GoogleFonts.poppins(color: Colors.white),
                   hint: Text(

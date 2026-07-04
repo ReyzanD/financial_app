@@ -108,9 +108,19 @@ class BudgetPredictor {
 
       for (var budget in budgets) {
         final budgetMap = budget as Map<String, dynamic>;
-        final budgetId = budgetMap['id']?.toString() ?? '';
-        final budgetLimit = (budgetMap['amount'] as num?)?.toDouble() ?? 0.0;
-        final currentSpent = (budgetMap['spent'] as num?)?.toDouble() ?? 0.0;
+        final budgetId =
+            budgetMap['budget_id_232143']?.toString() ??
+            budgetMap['id']?.toString() ??
+            '';
+        final budgetLimit =
+            (budgetMap['amount_232143'] ?? budgetMap['amount'] as num?)
+                    ?.toDouble() ??
+            0.0;
+        final currentSpent =
+            (budgetMap['spent_amount_232143'] ??
+                budgetMap['spent'] as num?)
+                    ?.toDouble() ??
+            0.0;
         final categoryName =
             budgetMap['category_name']?.toString() ?? 'Unknown';
 
@@ -128,13 +138,13 @@ class BudgetPredictor {
         // Calculate overall risk score (0-100)
         double riskScore = 0.0;
         if (usagePercent >= 90) {
-          riskScore = 90 + (usagePercent - 90); // 90-100
+          riskScore = 90.0 + (usagePercent - 90).toDouble();
         } else if (usagePercent >= 75) {
-          riskScore = 75 + ((usagePercent - 75) / 15) * 15; // 75-90
+          riskScore = 75.0 + ((usagePercent - 75).toDouble() / 15) * 15;
         } else if (usagePercent >= 50) {
-          riskScore = 50 + ((usagePercent - 50) / 25) * 25; // 50-75
+          riskScore = 50.0 + ((usagePercent - 50).toDouble() / 25) * 25;
         } else {
-          riskScore = usagePercent; // 0-50
+          riskScore = usagePercent.toDouble();
         }
 
         // Adjust risk score based on exhaustion prediction

@@ -19,6 +19,7 @@ class ObligationViewTabs extends StatelessWidget {
         children: [
           _buildViewTab(context, AppLocalizations.of(context)!.all, 'all'),
           _buildViewTab(context, AppLocalizations.of(context)!.upcoming, 'upcoming'),
+          _buildViewTab(context, AppLocalizations.of(context)!.overdue, 'overdue'),
           _buildViewTab(context, AppLocalizations.of(context)!.debt, 'debts'),
           _buildViewTab(context, AppLocalizations.of(context)!.subscription, 'subscriptions'),
         ],

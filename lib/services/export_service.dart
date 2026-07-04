@@ -7,12 +7,14 @@ import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:intl/intl.dart';
 import 'package:financial_app/services/api_service.dart';
+import 'package:financial_app/services/local_data_service.dart';
 import 'package:financial_app/services/logger_service.dart';
 import 'package:financial_app/utils/formatters.dart';
 
 /// Service untuk export/import data dengan multiple formats
 class ExportService {
   final ApiService _apiService = ApiService();
+  final LocalDataService _localData = LocalDataService();
   final DateFormat _dateTimeFormat = DateFormat('yyyy-MM-dd HH:mm:ss');
 
   /// Export transactions ke CSV
@@ -284,7 +286,7 @@ class ExportService {
                         ),
                       ],
                     );
-                  }).toList(),
+                  }),
                 ],
               ),
             ];
@@ -358,12 +360,52 @@ class ExportService {
             errors.add('Row ${i + 2}: Type tidak valid');
             continue;
           }
-          
-          // Create transaction
-          // Note: Ini perlu disesuaikan dengan API endpoint
-          // await _apiService.createTransaction(...);
-          
-          imported++;
+
+          final date = row[0].toString();
+          final category = row[2].toString();
+          final description = row[3].toString();
+          final amount = double.tryParse(row[4].toString()) ?? 0.0;
+
+          if (amount <= 0) {
+            failed++;
+            errors.add('Row ${i + 2}: Amount harus lebih dari 0');
+            continue;
+          }
+
+          String? categoryId;
+          if (category.isNotEmpty) {
+            final categories = await _apiService.getCategories();
+            for (final cat in categories) {
+              final catName =
+                  (cat['name']?.toString() ?? cat['name_232143']?.toString() ?? '')
+                      .toLowerCase();
+              if (catName.contains(category.toLowerCase()) ||
+                  category.toLowerCase().contains(catName)) {
+                categoryId = cat['category_id']?.toString() ??
+                    cat['category_id_232143']?.toString();
+                break;
+              }
+            }
+          }
+
+          final transactionData = {
+            'transaction_date_232143': date.isNotEmpty
+                ? date
+                : DateTime.now().toIso8601String(),
+            'type_232143': type,
+            'amount_232143': amount,
+            'description_232143': description.isEmpty ? 'Imported from CSV' : description,
+            'category_id_232143': categoryId,
+            'location_name': row.length > 5 ? row[5].toString() : '',
+          };
+
+          try {
+            await _localData.addTransaction(transactionData);
+            imported++;
+          } catch (e) {
+            failed++;
+            errors.add('Row ${i + 2}: ${e.toString()}');
+          }
         } catch (e) {
           failed++;
           errors.add('Row ${i + 2}: ${e.toString()}');

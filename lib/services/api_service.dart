@@ -1,6 +1,7 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:financial_app/services/logger_service.dart';
 import 'package:financial_app/services/local_data_service.dart';
+import 'package:financial_app/services/budget_recommendation_service.dart';
 
 /// API Service - Main facade for all API operations
 ///
@@ -176,11 +177,9 @@ class ApiService {
     Map<String, dynamic> budgetData,
   ) async {
     return await _localData.updateBudget(budgetId, budgetData);
-    // TODO: Implement update budget in LocalDataService
   }
 
   Future<Map<String, dynamic>> deleteBudget(String budgetId) async {
-    // TODO: Implement delete budget in LocalDataService
     return await _localData.deleteBudget(budgetId);
   }
 
@@ -250,10 +249,25 @@ class ApiService {
     };
   }
 
-  // AI Recommendations - TODO: Implement in local database
+  // AI Recommendations - Using BudgetRecommendationService for local data
   Future<dynamic> getAIRecommendations() async {
-    // TODO: Implement AI recommendations using local data
-    return {'recommendations': []};
+    try {
+      final recommendationService = BudgetRecommendationService();
+      final recommendations =
+          await recommendationService.generateRecommendation();
+      return {
+        'recommendations': recommendations,
+        'generated_at': DateTime.now().toIso8601String(),
+        'source': 'local_budget_recommendation_service',
+      };
+    } catch (e) {
+      LoggerService.warning('AI recommendations failed, returning empty',
+          error: e);
+      return {
+        'recommendations': [],
+        'error': e.toString(),
+      };
+    }
   }
 
   // Cache for categories (5 minutes)
@@ -393,23 +407,26 @@ class ApiService {
     String goalId,
     Map<String, dynamic> goalData,
   ) async {
-    // TODO: Implement update goal in LocalDataService
-    throw Exception('Update goal not yet implemented in local database');
+    return await _localData.updateGoal(goalId, goalData);
   }
 
   Future<Map<String, dynamic>> deleteGoal(String goalId) async {
-    // TODO: Implement delete goal in LocalDataService
-    throw Exception('Delete goal not yet implemented in local database');
+    return await _localData.deleteGoal(goalId);
   }
 
   /// Add money to a goal (contribution)
+  /// If [accountId] is provided, deducts from that account and creates a transaction
   Future<Map<String, dynamic>> addGoalContribution(
     String goalId,
-    double amount,
-  ) async {
-    // TODO: Implement add contribution in LocalDataService
-    throw Exception(
-      'Add goal contribution not yet implemented in local database',
+    double amount, {
+    String? accountId,
+    String? note,
+  }) async {
+    return await _localData.addGoalContribution(
+      goalId,
+      amount,
+      accountId: accountId,
+      note: note,
     );
   }
 

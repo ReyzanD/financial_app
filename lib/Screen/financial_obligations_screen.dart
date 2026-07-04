@@ -8,6 +8,7 @@ import 'package:financial_app/widgets/obligations/all_obligations_view.dart';
 import 'package:financial_app/widgets/obligations/upcoming_obligations_view.dart';
 import 'package:financial_app/widgets/obligations/debts_view.dart';
 import 'package:financial_app/widgets/obligations/subscriptions_view.dart';
+import 'package:financial_app/widgets/obligations/overdue_obligations_view.dart';
 import 'package:financial_app/widgets/obligations/obligation_helpers.dart';
 import 'package:financial_app/widgets/obligations/obligation_filters.dart';
 import 'package:financial_app/widgets/common/offline_indicator.dart';
@@ -107,12 +108,12 @@ class _FinancialObligationsScreenState
                 color: const Color(0xFF1F1F1F),
                 borderRadius: BorderRadius.circular(14),
                 border: Border.all(
-                  color: Colors.grey[800]!.withOpacity(0.5),
+                  color: Colors.grey[800]!.withValues(alpha: 0.5),
                   width: 1,
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
+                    color: Colors.black.withValues(alpha: 0.1),
                     blurRadius: 8,
                     offset: const Offset(0, 2),
                   ),
@@ -141,7 +142,7 @@ class _FinancialObligationsScreenState
                             icon: Container(
                               padding: const EdgeInsets.all(4),
                               decoration: BoxDecoration(
-                                color: Colors.grey[800]!.withOpacity(0.5),
+                                color: Colors.grey[800]!.withValues(alpha: 0.5),
                                 shape: BoxShape.circle,
                               ),
                               child: Icon(
@@ -190,7 +191,7 @@ class _FinancialObligationsScreenState
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: const Color(0xFF8B5FBF).withOpacity(0.4),
+              color: const Color(0xFF8B5FBF).withValues(alpha: 0.4),
               blurRadius: 12,
               offset: const Offset(0, 4),
             ),
@@ -281,11 +282,7 @@ class _FinancialObligationsScreenState
                   const SizedBox(width: 12),
                   Expanded(
                     child: GestureDetector(
-                      onTap: () {
-                        // Filter to show overdue
-                        setState(() => _selectedView = 'all');
-                        // TODO: Add filter for overdue
-                      },
+                      onTap: () => setState(() => _selectedView = 'overdue'),
                       child: _buildSummaryCard(
                         AppLocalizations.of(context)!.overdue_count,
                         '${summary['overdue'] ?? 0} ${AppLocalizations.of(context)!.obligations_count}',
@@ -348,6 +345,11 @@ class _FinancialObligationsScreenState
           key: ValueKey('upcoming_$_refreshKey'),
           searchQuery: _searchQuery,
         );
+      case 'overdue':
+        return OverdueObligationsView(
+          key: ValueKey('overdue_$_refreshKey'),
+          searchQuery: _searchQuery,
+        );
       case 'debts':
         return DebtsView(
           key: ValueKey('debts_$_refreshKey'),
@@ -382,10 +384,10 @@ class _FinancialObligationsScreenState
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: color.withOpacity(0.25), width: 1.5),
+        border: Border.all(color: color.withValues(alpha: 0.25), width: 1.5),
         boxShadow: [
           BoxShadow(
-            color: color.withOpacity(0.15),
+            color: color.withValues(alpha: 0.15),
             blurRadius: 12,
             spreadRadius: 0,
             offset: const Offset(0, 4),
@@ -402,12 +404,12 @@ class _FinancialObligationsScreenState
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
-                    colors: [color.withOpacity(0.3), color.withOpacity(0.15)],
+                    colors: [color.withValues(alpha: 0.3), color.withValues(alpha: 0.15)],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: color.withOpacity(0.3), width: 1),
+                  border: Border.all(color: color.withValues(alpha: 0.3), width: 1),
                 ),
                 child: Icon(icon, color: color, size: 22),
               ),
@@ -419,10 +421,10 @@ class _FinancialObligationsScreenState
                   ),
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
-                      colors: [color.withOpacity(0.2), color.withOpacity(0.3)],
+                      colors: [color.withValues(alpha: 0.2), color.withValues(alpha: 0.3)],
                     ),
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: color.withOpacity(0.4), width: 1),
+                    border: Border.all(color: color.withValues(alpha: 0.4), width: 1),
                   ),
                   child: Text(
                     amount.split(' ')[0],

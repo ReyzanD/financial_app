@@ -21,23 +21,31 @@ class CategorySection extends StatelessWidget {
   // Map category names to icons (fallback for display)
   IconData _getCategoryIcon(String name) {
     final nameLower = name.toLowerCase();
-    if (nameLower.contains('food') || nameLower.contains('makanan'))
+    if (nameLower.contains('food') || nameLower.contains('makanan')) {
       return Iconsax.shop;
-    if (nameLower.contains('transport') || nameLower.contains('transportasi'))
+    }
+    if (nameLower.contains('transport') || nameLower.contains('transportasi')) {
       return Iconsax.car;
-    if (nameLower.contains('shop') || nameLower.contains('belanja'))
+    }
+    if (nameLower.contains('shop') || nameLower.contains('belanja')) {
       return Iconsax.shopping_cart;
-    if (nameLower.contains('entertain') || nameLower.contains('hiburan'))
+    }
+    if (nameLower.contains('entertain') || nameLower.contains('hiburan')) {
       return Iconsax.game;
-    if (nameLower.contains('bill') || nameLower.contains('tagihan'))
+    }
+    if (nameLower.contains('bill') || nameLower.contains('tagihan')) {
       return Iconsax.receipt;
-    if (nameLower.contains('health') || nameLower.contains('kesehatan'))
+    }
+    if (nameLower.contains('health') || nameLower.contains('kesehatan')) {
       return Iconsax.health;
-    if (nameLower.contains('salary') || nameLower.contains('gaji'))
+    }
+    if (nameLower.contains('salary') || nameLower.contains('gaji')) {
       return Iconsax.wallet;
+    }
     if (nameLower.contains('freelance')) return Iconsax.code;
-    if (nameLower.contains('invest') || nameLower.contains('investasi'))
+    if (nameLower.contains('invest') || nameLower.contains('investasi')) {
       return Iconsax.chart;
+    }
     if (nameLower.contains('bonus')) return Iconsax.gift;
     return Iconsax.receipt; // default icon
   }
@@ -130,7 +138,7 @@ class CategorySection extends StatelessWidget {
                       decoration: BoxDecoration(
                         color:
                             isSelected
-                                ? categoryColor.withOpacity(0.2)
+                                ? categoryColor.withValues(alpha: 0.2)
                                 : const Color(0xFF1A1A1A),
                         borderRadius: BorderRadius.circular(20),
                         border: Border.all(

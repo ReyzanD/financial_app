@@ -180,7 +180,7 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
                 width: 56,
                 height: 56,
                 decoration: BoxDecoration(
-                  color: getCategoryColor(category).withOpacity(0.2),
+                  color: getCategoryColor(category).withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(14),
                 ),
                 child: Icon(
@@ -233,8 +233,8 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
                     decoration: BoxDecoration(
                       color:
                           isIncome
-                              ? Colors.green.withOpacity(0.2)
-                              : Colors.red.withOpacity(0.2),
+                              ? Colors.green.withValues(alpha: 0.2)
+                              : Colors.red.withValues(alpha: 0.2),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Text(

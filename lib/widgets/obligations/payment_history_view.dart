@@ -55,7 +55,7 @@ class _PaymentHistoryViewState extends State<PaymentHistoryView> {
     }
   }
 
-  Future<void> _delete_payment(String paymentId) async {
+  Future<void> _deletePayment(String paymentId) async {
     final confirmed = await showDialog<bool>(
       context: context,
       builder:
@@ -135,7 +135,7 @@ class _PaymentHistoryViewState extends State<PaymentHistoryView> {
               color: const Color(0xFF1A1A1A),
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
-                color: const Color(0xFF8B5FBF).withOpacity(0.3),
+                color: const Color(0xFF8B5FBF).withValues(alpha: 0.3),
               ),
             ),
             child: Column(
@@ -278,9 +278,9 @@ class _PaymentHistoryViewState extends State<PaymentHistoryView> {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: color.withOpacity(0.3)),
+        border: Border.all(color: color.withValues(alpha: 0.3)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -343,8 +343,8 @@ class _PaymentHistoryViewState extends State<PaymentHistoryView> {
         border: Border.all(
           color:
               wasOnTime
-                  ? Colors.green.withOpacity(0.3)
-                  : Colors.red.withOpacity(0.3),
+                  ? Colors.green.withValues(alpha: 0.3)
+                  : Colors.red.withValues(alpha: 0.3),
         ),
       ),
       child: Row(
@@ -355,8 +355,8 @@ class _PaymentHistoryViewState extends State<PaymentHistoryView> {
             decoration: BoxDecoration(
               color:
                   wasOnTime
-                      ? Colors.green.withOpacity(0.2)
-                      : Colors.red.withOpacity(0.2),
+                      ? Colors.green.withValues(alpha: 0.2)
+                      : Colors.red.withValues(alpha: 0.2),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Icon(
@@ -404,8 +404,8 @@ class _PaymentHistoryViewState extends State<PaymentHistoryView> {
                       decoration: BoxDecoration(
                         color:
                             wasOnTime
-                                ? Colors.green.withOpacity(0.2)
-                                : Colors.red.withOpacity(0.2),
+                                ? Colors.green.withValues(alpha: 0.2)
+                                : Colors.red.withValues(alpha: 0.2),
                         borderRadius: BorderRadius.circular(4),
                       ),
                       child: Text(
@@ -436,7 +436,7 @@ class _PaymentHistoryViewState extends State<PaymentHistoryView> {
           ),
           IconButton(
             icon: const Icon(Iconsax.trash, color: Colors.red, size: 20),
-            onPressed: () => _delete_payment(payment['id']?.toString() ?? ''),
+            onPressed: () => _deletePayment(payment['id']?.toString() ?? ''),
           ),
         ],
       ),

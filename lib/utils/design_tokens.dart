@@ -79,7 +79,7 @@ class DesignTokens {
   }) {
     return [
       BoxShadow(
-        color: (color ?? primaryColor).withOpacity(0.3),
+        color: (color ?? primaryColor).withValues(alpha: 0.3),
         blurRadius: blurRadius,
         spreadRadius: spreadRadius,
         offset: const Offset(0, 4),

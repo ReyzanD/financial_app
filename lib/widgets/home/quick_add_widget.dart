@@ -125,7 +125,7 @@ class _QuickAddWidgetState extends State<QuickAddWidget> {
         borderRadius: BorderRadius.circular(
           ResponsiveHelper.borderRadius(context, 16),
         ),
-        border: Border.all(color: const Color(0xFF8B5FBF).withOpacity(0.3)),
+        border: Border.all(color: const Color(0xFF8B5FBF).withValues(alpha: 0.3)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -221,7 +221,7 @@ class _QuickAddWidgetState extends State<QuickAddWidget> {
             Container(
               padding: ResponsiveHelper.padding(context, multiplier: 0.75),
               decoration: BoxDecoration(
-                color: Colors.grey.withOpacity(0.1),
+                color: Colors.grey.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(
                   ResponsiveHelper.borderRadius(context, 12),
                 ),
@@ -260,11 +260,11 @@ class _QuickAddWidgetState extends State<QuickAddWidget> {
       child: Container(
         padding: ResponsiveHelper.verticalPadding(context, multiplier: 1.0),
         decoration: BoxDecoration(
-          color: color.withOpacity(0.1),
+          color: color.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(
             ResponsiveHelper.borderRadius(context, 12),
           ),
-          border: Border.all(color: color.withOpacity(0.3)),
+          border: Border.all(color: color.withValues(alpha: 0.3)),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -299,11 +299,11 @@ class _QuickAddWidgetState extends State<QuickAddWidget> {
           vertical: 8,
         ),
         decoration: BoxDecoration(
-          color: const Color(0xFF8B5FBF).withOpacity(0.2),
+          color: const Color(0xFF8B5FBF).withValues(alpha: 0.2),
           borderRadius: BorderRadius.circular(
             ResponsiveHelper.borderRadius(context, 20),
           ),
-          border: Border.all(color: const Color(0xFF8B5FBF).withOpacity(0.5)),
+          border: Border.all(color: const Color(0xFF8B5FBF).withValues(alpha: 0.5)),
         ),
         child: Text(
           CurrencyFormatter.formatRupiah(amount),
@@ -334,11 +334,11 @@ class _QuickAddWidgetState extends State<QuickAddWidget> {
           vertical: 8,
         ),
         decoration: BoxDecoration(
-          color: Colors.blue.withOpacity(0.2),
+          color: Colors.blue.withValues(alpha: 0.2),
           borderRadius: BorderRadius.circular(
             ResponsiveHelper.borderRadius(context, 20),
           ),
-          border: Border.all(color: Colors.blue.withOpacity(0.5)),
+          border: Border.all(color: Colors.blue.withValues(alpha: 0.5)),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,

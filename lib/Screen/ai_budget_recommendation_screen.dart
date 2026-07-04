@@ -10,6 +10,7 @@ import 'package:financial_app/widgets/budget_recommendation/budget_edit_dialog.d
 import 'package:financial_app/widgets/budget_recommendation/budget_tips_section.dart';
 import 'package:financial_app/widgets/common/offline_indicator.dart';
 import 'package:financial_app/utils/formatters.dart';
+import 'package:financial_app/core/di/service_locator.dart';
 
 class AIBudgetRecommendationScreen extends StatefulWidget {
   const AIBudgetRecommendationScreen({super.key});
@@ -21,13 +22,14 @@ class AIBudgetRecommendationScreen extends StatefulWidget {
 
 class _AIBudgetRecommendationScreenState
     extends State<AIBudgetRecommendationScreen> {
-  final ApiService _apiService = ApiService();
+  final ApiService _apiService = getIt<ApiService>();
   final BudgetRecommendationService _budgetService =
-      BudgetRecommendationService();
+      getIt<BudgetRecommendationService>();
   bool _isLoading = true;
   bool _isApplying = false;
   Map<String, dynamic>? _budgetRecommendation;
-  Map<String, double> _editedPercentages = {};
+  final Map<String, double> _editedPercentages = {};
+  double? _editedIncome;
   String? _error;
 
   @override
@@ -75,7 +77,7 @@ class _AIBudgetRecommendationScreenState
       final categories = await _apiService.getCategories();
       final existingBudgets =
           await _apiService.getBudgets(); // Fetch existing budgets
-      final income = _budgetRecommendation!['total_income'] as double;
+      final income = _editedIncome ?? (_budgetRecommendation!['total_income'] as double);
       final recommendedCategories =
           _budgetRecommendation!['categories'] as List;
 
@@ -310,6 +312,112 @@ class _AIBudgetRecommendationScreenState
     }
   }
 
+  Future<void> _showIncomeEditDialog() async {
+    final currentIncome = _editedIncome ??
+        (_budgetRecommendation!['total_income'] as num?)?.toDouble() ?? 0;
+    final controller = TextEditingController(
+      text: currentIncome.toStringAsFixed(0),
+    );
+
+    final newIncome = await showDialog<double>(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: const Color(0xFF1A1A1A),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        title: Text(
+          'Edit Total Budget',
+          style: GoogleFonts.poppins(color: Colors.white),
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Masukkan total pendapatan bulanan Anda',
+              style: GoogleFonts.poppins(
+                color: Colors.white70,
+                fontSize: 14,
+              ),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: controller,
+              keyboardType: TextInputType.number,
+              style: GoogleFonts.poppins(color: Colors.white),
+              decoration: InputDecoration(
+                labelText: 'Total Pendapatan',
+                labelStyle: GoogleFonts.poppins(color: Colors.grey),
+                prefixText: 'Rp ',
+                prefixStyle: GoogleFonts.poppins(color: Colors.white70),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: BorderSide(color: Colors.grey[700]!),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: const BorderSide(color: Color(0xFF8B5FBF)),
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              '💡 Jumlah ini akan digunakan untuk menghitung ulang alokasi budget per kategori',
+              style: GoogleFonts.poppins(
+                color: Colors.orange,
+                fontSize: 11,
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(
+              'Batal',
+              style: GoogleFonts.poppins(color: Colors.grey),
+            ),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              final value = double.tryParse(controller.text.replaceAll(',', ''));
+              if (value != null && value > 0) {
+                Navigator.pop(context, value);
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      'Masukkan jumlah yang valid',
+                      style: GoogleFonts.poppins(),
+                    ),
+                    backgroundColor: Colors.red,
+                  ),
+                );
+              }
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF8B5FBF),
+            ),
+            child: Text(
+              'Simpan',
+              style: GoogleFonts.poppins(color: Colors.white),
+            ),
+          ),
+        ],
+      ),
+    );
+
+    if (newIncome != null && newIncome > 0) {
+      setState(() {
+        _editedIncome = newIncome;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -406,23 +514,84 @@ class _AIBudgetRecommendationScreenState
                               ],
                             ),
                             const SizedBox(height: 12),
-                            Text(
-                              'Pendapatan Bulanan',
-                              style: GoogleFonts.poppins(
-                                color: Colors.white70,
-                                fontSize: 12,
-                              ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  'Pendapatan Bulanan',
+                                  style: GoogleFonts.poppins(
+                                    color: Colors.white70,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                                GestureDetector(
+                                  onTap: _showIncomeEditDialog,
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 10,
+                                      vertical: 4,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white.withValues(alpha: 0.2),
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        const Icon(
+                                          Iconsax.edit,
+                                          color: Colors.white,
+                                          size: 14,
+                                        ),
+                                        const SizedBox(width: 4),
+                                        Text(
+                                          'Edit',
+                                          style: GoogleFonts.poppins(
+                                            color: Colors.white,
+                                            fontSize: 11,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
                             const SizedBox(height: 4),
-                            Text(
-                              CurrencyFormatter.formatRupiah(
-                                _budgetRecommendation!['total_income'],
-                              ),
-                              style: GoogleFonts.poppins(
-                                color: Colors.white,
-                                fontSize: 28,
-                                fontWeight: FontWeight.bold,
-                              ),
+                            Row(
+                              children: [
+                                Text(
+                                  CurrencyFormatter.formatRupiah(
+                                    _editedIncome ??
+                                        _budgetRecommendation!['total_income'],
+                                  ),
+                                  style: GoogleFonts.poppins(
+                                    color: Colors.white,
+                                    fontSize: 28,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                if (_editedIncome != null) ...[
+                                  const SizedBox(width: 8),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 6,
+                                      vertical: 2,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: Colors.green.withValues(alpha: 0.3),
+                                      borderRadius: BorderRadius.circular(4),
+                                    ),
+                                    child: Text(
+                                      'Diedit',
+                                      style: GoogleFonts.poppins(
+                                        color: Colors.green[300],
+                                        fontSize: 9,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ],
                             ),
                             const SizedBox(height: 12),
                             Container(
@@ -431,7 +600,7 @@ class _AIBudgetRecommendationScreenState
                                 vertical: 6,
                               ),
                               decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(0.2),
+                                color: Colors.white.withValues(alpha: 0.2),
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               child: Text(
@@ -450,10 +619,10 @@ class _AIBudgetRecommendationScreenState
                               Container(
                                 padding: const EdgeInsets.all(12),
                                 decoration: BoxDecoration(
-                                  color: Colors.white.withOpacity(0.1),
+                                  color: Colors.white.withValues(alpha: 0.1),
                                   borderRadius: BorderRadius.circular(8),
                                   border: Border.all(
-                                    color: Colors.white.withOpacity(0.2),
+                                    color: Colors.white.withValues(alpha: 0.2),
                                   ),
                                 ),
                                 child: Row(
@@ -502,8 +671,9 @@ class _AIBudgetRecommendationScreenState
                               category: category,
                               editedPercentages: _editedPercentages,
                               totalIncome:
-                                  _budgetRecommendation!['total_income']
-                                      as double,
+                                  _editedIncome ??
+                                      (_budgetRecommendation!['total_income']
+                                          as double),
                               onEdit: () {
                                 final categoryName = category['name'] as String;
                                 final currentPercentage =
@@ -518,7 +688,7 @@ class _AIBudgetRecommendationScreenState
                               },
                             ),
                           )
-                          .toList(),
+                          ,
 
                       const SizedBox(height: 24),
 

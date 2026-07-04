@@ -47,7 +47,7 @@ class ObligationItem extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.2),
+                color: Colors.white.withValues(alpha: 0.2),
                 shape: BoxShape.circle,
               ),
               child: const Icon(
@@ -95,7 +95,7 @@ class ObligationItem extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.2),
+                color: Colors.white.withValues(alpha: 0.2),
                 shape: BoxShape.circle,
               ),
               child: const Icon(
@@ -156,14 +156,14 @@ class ObligationItem extends StatelessWidget {
           color: const Color(0xFF1F1F1F),
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: urgencyColor.withOpacity(
-              isOverdue || isDueSoon ? 0.4 : 0.15,
+            color: urgencyColor.withValues(
+              alpha: isOverdue || isDueSoon ? 0.4 : 0.15,
             ),
             width: isOverdue || isDueSoon ? 1.5 : 1,
           ),
           boxShadow: [
             BoxShadow(
-              color: urgencyColor.withOpacity(0.1),
+              color: urgencyColor.withValues(alpha: 0.1),
               blurRadius: 8,
               offset: const Offset(0, 2),
             ),
@@ -178,15 +178,15 @@ class ObligationItem extends StatelessWidget {
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     colors: [
-                      _getObligationColor(obligation).withOpacity(0.3),
-                      _getObligationColor(obligation).withOpacity(0.15),
+                      _getObligationColor(obligation).withValues(alpha: 0.3),
+                      _getObligationColor(obligation).withValues(alpha: 0.15),
                     ],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
                   borderRadius: BorderRadius.circular(14),
                   border: Border.all(
-                    color: _getObligationColor(obligation).withOpacity(0.3),
+                    color: _getObligationColor(obligation).withValues(alpha: 0.3),
                     width: 1,
                   ),
                 ),
@@ -217,13 +217,13 @@ class ObligationItem extends StatelessWidget {
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
                           colors: [
-                            Colors.red.shade400.withOpacity(0.2),
-                            Colors.red.shade600.withOpacity(0.2),
+                            Colors.red.shade400.withValues(alpha: 0.2),
+                            Colors.red.shade600.withValues(alpha: 0.2),
                           ],
                         ),
                         borderRadius: BorderRadius.circular(10),
                         border: Border.all(
-                          color: Colors.red.withOpacity(0.3),
+                          color: Colors.red.withValues(alpha: 0.3),
                           width: 1,
                         ),
                       ),
@@ -257,13 +257,13 @@ class ObligationItem extends StatelessWidget {
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
                           colors: [
-                            Colors.orange.shade400.withOpacity(0.2),
-                            Colors.orange.shade600.withOpacity(0.2),
+                            Colors.orange.shade400.withValues(alpha: 0.2),
+                            Colors.orange.shade600.withValues(alpha: 0.2),
                           ],
                         ),
                         borderRadius: BorderRadius.circular(10),
                         border: Border.all(
-                          color: Colors.orange.withOpacity(0.3),
+                          color: Colors.orange.withValues(alpha: 0.3),
                           width: 1,
                         ),
                       ),
@@ -387,13 +387,13 @@ class ObligationItem extends StatelessWidget {
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
                         colors: [
-                          urgencyColor.withOpacity(0.15),
-                          urgencyColor.withOpacity(0.25),
+                          urgencyColor.withValues(alpha: 0.15),
+                          urgencyColor.withValues(alpha: 0.25),
                         ],
                       ),
                       borderRadius: BorderRadius.circular(10),
                       border: Border.all(
-                        color: urgencyColor.withOpacity(0.3),
+                        color: urgencyColor.withValues(alpha: 0.3),
                         width: 1,
                       ),
                     ),
@@ -401,7 +401,7 @@ class ObligationItem extends StatelessWidget {
                       isOverdue
                           ? '${daysUntilDue.abs()} ${AppLocalizations.of(context)!.days_late}'
                           : isDueSoon
-                          ? '${daysUntilDue} ${AppLocalizations.of(context)!.days_left}'
+                          ? '$daysUntilDue ${AppLocalizations.of(context)!.days_left}'
                           : '${obligation.dueDate.day} ${AppLocalizations.of(context)!.every_month}',
                       style: GoogleFonts.poppins(
                         color: urgencyColor,
@@ -420,7 +420,7 @@ class ObligationItem extends StatelessWidget {
               margin: const EdgeInsets.fromLTRB(16, 8, 16, 16),
               padding: const EdgeInsets.all(4),
               decoration: BoxDecoration(
-                color: Colors.grey[900]!.withOpacity(0.5),
+                color: Colors.grey[900]!.withValues(alpha: 0.5),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Row(
@@ -492,7 +492,7 @@ class ObligationItem extends StatelessWidget {
               borderRadius: BorderRadius.circular(10),
               boxShadow: [
                 BoxShadow(
-                  color: color.withOpacity(0.3),
+                  color: color.withValues(alpha: 0.3),
                   blurRadius: 8,
                   offset: const Offset(0, 2),
                 ),
@@ -525,9 +525,9 @@ class ObligationItem extends StatelessWidget {
           child: Container(
             padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
             decoration: BoxDecoration(
-              color: color.withOpacity(0.1),
+              color: color.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: color.withOpacity(0.3), width: 1),
+              border: Border.all(color: color.withValues(alpha: 0.3), width: 1),
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,

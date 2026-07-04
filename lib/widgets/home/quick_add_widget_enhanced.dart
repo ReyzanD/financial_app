@@ -300,7 +300,7 @@ class _QuickAddWidgetEnhancedState extends State<QuickAddWidgetEnhanced> {
         borderRadius: BorderRadius.circular(
           ResponsiveHelper.borderRadius(context, 16),
         ),
-        border: Border.all(color: const Color(0xFF8B5FBF).withOpacity(0.3)),
+        border: Border.all(color: const Color(0xFF8B5FBF).withValues(alpha: 0.3)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -446,7 +446,7 @@ class _QuickAddWidgetEnhancedState extends State<QuickAddWidgetEnhanced> {
             Container(
               padding: ResponsiveHelper.padding(context, multiplier: 0.75),
               decoration: BoxDecoration(
-                color: Colors.grey.withOpacity(0.1),
+                color: Colors.grey.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(
                   ResponsiveHelper.borderRadius(context, 12),
                 ),
@@ -485,11 +485,11 @@ class _QuickAddWidgetEnhancedState extends State<QuickAddWidgetEnhanced> {
       child: Container(
         padding: ResponsiveHelper.verticalPadding(context, multiplier: 1.0),
         decoration: BoxDecoration(
-          color: color.withOpacity(0.1),
+          color: color.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(
             ResponsiveHelper.borderRadius(context, 12),
           ),
-          border: Border.all(color: color.withOpacity(0.3)),
+          border: Border.all(color: color.withValues(alpha: 0.3)),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -530,11 +530,11 @@ class _QuickAddWidgetEnhancedState extends State<QuickAddWidgetEnhanced> {
       child: Container(
         padding: ResponsiveHelper.verticalPadding(context, multiplier: 1.0),
         decoration: BoxDecoration(
-          color: color.withOpacity(0.1),
+          color: color.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(
             ResponsiveHelper.borderRadius(context, 12),
           ),
-          border: Border.all(color: color.withOpacity(0.3)),
+          border: Border.all(color: color.withValues(alpha: 0.3)),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -580,11 +580,11 @@ class _QuickAddWidgetEnhancedState extends State<QuickAddWidgetEnhanced> {
           vertical: 8,
         ),
         decoration: BoxDecoration(
-          color: Colors.purple.withOpacity(0.2),
+          color: Colors.purple.withValues(alpha: 0.2),
           borderRadius: BorderRadius.circular(
             ResponsiveHelper.borderRadius(context, 20),
           ),
-          border: Border.all(color: Colors.purple.withOpacity(0.5)),
+          border: Border.all(color: Colors.purple.withValues(alpha: 0.5)),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
@@ -619,11 +619,11 @@ class _QuickAddWidgetEnhancedState extends State<QuickAddWidgetEnhanced> {
           vertical: 8,
         ),
         decoration: BoxDecoration(
-          color: const Color(0xFF8B5FBF).withOpacity(0.2),
+          color: const Color(0xFF8B5FBF).withValues(alpha: 0.2),
           borderRadius: BorderRadius.circular(
             ResponsiveHelper.borderRadius(context, 20),
           ),
-          border: Border.all(color: const Color(0xFF8B5FBF).withOpacity(0.5)),
+          border: Border.all(color: const Color(0xFF8B5FBF).withValues(alpha: 0.5)),
         ),
         child: Text(
           CurrencyFormatter.formatRupiah(amount),
@@ -654,11 +654,11 @@ class _QuickAddWidgetEnhancedState extends State<QuickAddWidgetEnhanced> {
           vertical: 8,
         ),
         decoration: BoxDecoration(
-          color: Colors.blue.withOpacity(0.2),
+          color: Colors.blue.withValues(alpha: 0.2),
           borderRadius: BorderRadius.circular(
             ResponsiveHelper.borderRadius(context, 20),
           ),
-          border: Border.all(color: Colors.blue.withOpacity(0.5)),
+          border: Border.all(color: Colors.blue.withValues(alpha: 0.5)),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,

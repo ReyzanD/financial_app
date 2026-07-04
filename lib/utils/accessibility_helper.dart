@@ -102,9 +102,9 @@ class AccessibilityHelper {
 
   // Calculate relative luminance (for contrast calculation)
   static double _getLuminance(Color color) {
-    final r = _linearize(color.red / 255.0);
-    final g = _linearize(color.green / 255.0);
-    final b = _linearize(color.blue / 255.0);
+    final r = _linearize(color.r);
+    final g = _linearize(color.g);
+    final b = _linearize(color.b);
     return 0.2126 * r + 0.7152 * g + 0.0722 * b;
   }
 
@@ -220,8 +220,6 @@ class AccessibilityHelper {
 
   // Announce changes untuk screen readers
   static void announce(BuildContext context, String message, {bool polite = true}) {
-    // Use SemanticsService for screen reader announcements
-    // Note: SemanticsService is available in Flutter framework
     SemanticsService.announce(
       message,
       TextDirection.ltr,
@@ -230,7 +228,7 @@ class AccessibilityHelper {
 
   // Get text scale factor dari MediaQuery
   static double getTextScaleFactor(BuildContext context) {
-    return MediaQuery.of(context).textScaleFactor;
+    return MediaQuery.of(context).textScaler.scale(1.0);
   }
 
   // Check if user has large text enabled

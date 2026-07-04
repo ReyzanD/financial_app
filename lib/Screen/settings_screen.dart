@@ -12,6 +12,8 @@ import 'package:financial_app/widgets/common/offline_indicator.dart';
 import 'package:financial_app/l10n/app_localizations.dart';
 import 'package:financial_app/Screen/profile_screen.dart';
 import 'package:financial_app/utils/biometric_helper.dart';
+import 'package:financial_app/services/export_service.dart';
+import 'package:file_picker/file_picker.dart';
 import 'dart:convert';
 
 class SettingsScreen extends StatefulWidget {
@@ -450,7 +452,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           value: value,
           onChanged: onChanged,
           activeThumbColor: const Color(0xFF8B5FBF),
-          activeTrackColor: const Color(0xFF8B5FBF).withOpacity(0.3),
+          activeTrackColor: const Color(0xFF8B5FBF).withValues(alpha: 0.3),
         ),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
@@ -905,31 +907,92 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   void _showImportInfo() {
-    final localizations = AppLocalizations.of(context)!;
-    showDialog(
-      context: context,
-      builder:
-          (context) => AlertDialog(
-            backgroundColor: const Color(0xFF1A1A1A),
-            title: Text(
-              localizations.import_data_title,
-              style: GoogleFonts.poppins(color: Colors.white),
-            ),
-            content: Text(
-              localizations.import_data_description,
-              style: GoogleFonts.poppins(color: Colors.grey[400]),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: Text(
-                  localizations.close,
-                  style: GoogleFonts.poppins(color: const Color(0xFF8B5FBF)),
-                ),
+    _pickAndImportCSV();
+  }
+
+  Future<void> _pickAndImportCSV() async {
+    try {
+      final result = await FilePicker.platform.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: ['csv'],
+      );
+
+      if (result == null || result.files.isEmpty) return;
+
+      final filePath = result.files.single.path;
+      if (filePath == null) return;
+
+      if (!mounted) return;
+
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => const Center(
+          child: CircularProgressIndicator(color: Color(0xFF8B5FBF)),
+        ),
+      );
+
+      final exportService = ExportService();
+      final importResult = await exportService.importTransactionsFromCSV(filePath);
+
+      if (!mounted) return;
+      Navigator.pop(context);
+
+      final imported = importResult['imported'] as int;
+      final failed = importResult['failed'] as int;
+      final errors = (importResult['errors'] as List?) ?? [];
+
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          backgroundColor: const Color(0xFF1A1A1A),
+          title: Text(
+            importResult['success'] == true ? 'Import Berhasil' : 'Import Selesai',
+            style: GoogleFonts.poppins(color: Colors.white),
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                'Berhasil: $imported transaksi',
+                style: GoogleFonts.poppins(color: Colors.green[400], fontSize: 16, fontWeight: FontWeight.w600),
               ),
+              if (failed > 0) ...[
+                const SizedBox(height: 8),
+                Text(
+                  'Gagal: $failed transaksi',
+                  style: GoogleFonts.poppins(color: Colors.red[400], fontSize: 16, fontWeight: FontWeight.w600),
+                ),
+              ],
+              if (errors.isNotEmpty && errors.length <= 5) ...[
+                const SizedBox(height: 12),
+                ...errors.map((e) => Padding(
+                  padding: const EdgeInsets.only(bottom: 4),
+                  child: Text(e, style: GoogleFonts.poppins(color: Colors.red[300], fontSize: 12)),
+                )),
+              ],
+              if (errors.length > 5) ...[
+                const SizedBox(height: 8),
+                Text('...dan ${errors.length - 5} error lainnya', style: GoogleFonts.poppins(color: Colors.grey[400], fontSize: 12)),
+              ],
             ],
           ),
-    );
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text('Tutup', style: GoogleFonts.poppins(color: const Color(0xFF8B5FBF))),
+            ),
+          ],
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      Navigator.of(context).pop();
+      ErrorHandlerService.showErrorSnackbar(
+        context,
+        'Gagal mengimpor file: ${e.toString()}',
+      );
+    }
   }
 
   void _showAboutDialog() {

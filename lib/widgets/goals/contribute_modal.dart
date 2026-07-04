@@ -3,6 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:financial_app/services/api_service.dart';
+import 'package:financial_app/services/account_service.dart';
+import 'package:financial_app/models/account_model.dart';
 import 'package:financial_app/services/error_handler_service.dart';
 import 'package:financial_app/services/logger_service.dart';
 import 'package:financial_app/utils/formatters.dart';
@@ -20,9 +22,51 @@ class _ContributeModalState extends State<ContributeModal> {
   final TextEditingController _amountController = TextEditingController();
   final TextEditingController _noteController = TextEditingController();
   final ApiService _apiService = ApiService();
+  final AccountService _accountService = AccountService();
   bool _isLoading = false;
 
+  List<AccountModel> _accounts = [];
+  AccountModel? _selectedAccount;
+  double _totalBalance = 0.0;
+  double _totalGoals = 0.0;
+  double _availableBalance = 0.0;
+  bool _isLoadingAccounts = true;
+
   final List<double> _quickAmounts = [50000, 100000, 250000, 500000, 1000000];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadAccounts();
+  }
+
+  Future<void> _loadAccounts() async {
+    try {
+      final accounts = await _accountService.getAccounts(activeOnly: true);
+      final totalBalance = await _accountService.getTotalBalance();
+      final totalGoals = await _accountService.getAvailableBalance();
+
+      if (!mounted) return;
+
+      setState(() {
+        _accounts = accounts;
+        _totalBalance = totalBalance;
+        _totalGoals = totalBalance - totalGoals;
+        _availableBalance = totalGoals;
+        _isLoadingAccounts = false;
+
+        if (_accounts.isNotEmpty) {
+          final defaultAcc =
+              _accounts.where((a) => a.isDefault).firstOrNull;
+          _selectedAccount = defaultAcc ?? _accounts.first;
+        }
+      });
+    } catch (e) {
+      LoggerService.error('Error loading accounts', error: e);
+      if (!mounted) return;
+      setState(() => _isLoadingAccounts = false);
+    }
+  }
 
   @override
   void dispose() {
@@ -50,12 +94,22 @@ class _ContributeModalState extends State<ContributeModal> {
       return;
     }
 
+    if (_selectedAccount != null && amount > _selectedAccount!.balance) {
+      ErrorHandlerService.showWarningSnackbar(
+        context,
+        'Saldo ${_selectedAccount!.name} tidak mencukupi (${CurrencyFormatter.formatRupiah(_selectedAccount!.balance.toInt())})',
+      );
+      return;
+    }
+
     setState(() => _isLoading = true);
 
     try {
       await _apiService.addGoalContribution(
         (widget.goal['goal_id_232143'] ?? widget.goal['id']).toString(),
         amount,
+        accountId: _selectedAccount?.id,
+        note: _noteController.text.isNotEmpty ? _noteController.text : null,
       );
 
       if (!mounted) return;
@@ -65,7 +119,7 @@ class _ContributeModalState extends State<ContributeModal> {
       if (context.mounted) {
         ErrorHandlerService.showSuccessSnackbar(
           context,
-          'Berhasil menambah ${CurrencyFormatter.formatRupiah(amount)}',
+          'Berhasil menambah ${CurrencyFormatter.formatRupiah(amount)}${_selectedAccount != null ? ' dari ${_selectedAccount!.name}' : ''}',
         );
       }
     } catch (e) {
@@ -142,7 +196,7 @@ class _ContributeModalState extends State<ContributeModal> {
                 color: const Color(0xFF1A1A1A),
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
-                  color: const Color(0xFF8B5FBF).withOpacity(0.3),
+                  color: const Color(0xFF8B5FBF).withValues(alpha: 0.3),
                 ),
               ),
               child: Column(
@@ -207,6 +261,147 @@ class _ContributeModalState extends State<ContributeModal> {
             ),
             const SizedBox(height: 20),
 
+            // Account Selector
+            if (!_isLoadingAccounts) ...[
+              Text(
+                'Sumber Dana',
+                style: GoogleFonts.poppins(
+                  color: Colors.white,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF1A1A1A),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: Colors.grey[800]!),
+                ),
+                child: DropdownButtonHideUnderline(
+                  child: DropdownButton<AccountModel>(
+                    value: _selectedAccount,
+                    isExpanded: true,
+                    dropdownColor: const Color(0xFF1A1A1A),
+                    hint: Text(
+                      'Pilih akun',
+                      style: GoogleFonts.poppins(color: Colors.grey[600]),
+                    ),
+                    items: _accounts.map((account) {
+                      return DropdownMenuItem<AccountModel>(
+                        value: account,
+                        child: Row(
+                          children: [
+                            Icon(
+                              _getAccountIcon(account.icon),
+                              size: 18,
+                              color: const Color(0xFF8B5FBF),
+                            ),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                account.name,
+                                style: GoogleFonts.poppins(
+                                  color: Colors.white,
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ),
+                            Text(
+                              CurrencyFormatter.formatRupiah(account.balance.toInt()),
+                              style: GoogleFonts.poppins(
+                                color: Colors.grey[400],
+                                fontSize: 12,
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    }).toList(),
+                    onChanged: (account) {
+                      if (account != null) {
+                        setState(() => _selectedAccount = account);
+                      }
+                    },
+                  ),
+                ),
+              ),
+              const SizedBox(height: 8),
+
+              // Available Balance Info
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF8B5FBF).withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(
+                    color: const Color(0xFF8B5FBF).withValues(alpha: 0.2),
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(
+                      Iconsax.info_circle,
+                      size: 16,
+                      color: Color(0xFF8B5FBF),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: RichText(
+                        text: TextSpan(
+                          style: GoogleFonts.poppins(fontSize: 11, color: Colors.grey[400]),
+                          children: [
+                            const TextSpan(text: 'Saldo tersedia: '),
+                            TextSpan(
+                              text: CurrencyFormatter.formatRupiah(_availableBalance.toInt()),
+                              style: GoogleFonts.poppins(
+                                fontWeight: FontWeight.w600,
+                                color: Colors.white,
+                              ),
+                            ),
+                            TextSpan(
+                              text: ' (dari total ${CurrencyFormatter.formatRupiah(_totalBalance.toInt())} - ${CurrencyFormatter.formatRupiah(_totalGoals.toInt())} dialokasikan ke goal)',
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              if (_selectedAccount != null) ...[
+                const SizedBox(height: 4),
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.grey[900],
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(
+                        Iconsax.wallet,
+                        size: 16,
+                        color: Colors.grey,
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          '${_selectedAccount!.name}: ${CurrencyFormatter.formatRupiah(_selectedAccount!.balance.toInt())}',
+                          style: GoogleFonts.poppins(
+                            fontSize: 11,
+                            color: Colors.grey[400],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+              const SizedBox(height: 16),
+            ],
+
             // Quick Amount Buttons
             Text(
               'Nominal Cepat',
@@ -230,10 +425,10 @@ class _ContributeModalState extends State<ContributeModal> {
                           vertical: 10,
                         ),
                         decoration: BoxDecoration(
-                          color: const Color(0xFF8B5FBF).withOpacity(0.2),
+                          color: const Color(0xFF8B5FBF).withValues(alpha: 0.2),
                           borderRadius: BorderRadius.circular(20),
                           border: Border.all(
-                            color: const Color(0xFF8B5FBF).withOpacity(0.5),
+                            color: const Color(0xFF8B5FBF).withValues(alpha: 0.5),
                           ),
                         ),
                         child: Text(
@@ -361,5 +556,18 @@ class _ContributeModalState extends State<ContributeModal> {
         ),
       ),
     );
+  }
+
+  IconData _getAccountIcon(String? icon) {
+    switch (icon) {
+      case 'wallet':
+        return Iconsax.wallet;
+      case 'account_balance':
+        return Iconsax.bank;
+      case 'phone_android':
+        return Iconsax.mobile;
+      default:
+        return Iconsax.wallet;
+    }
   }
 }

@@ -237,10 +237,10 @@ class _LocationPickerMapState extends State<LocationPickerMap> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
         decoration: BoxDecoration(
-          color: const Color(0xFF8B5FBF).withOpacity(0.2),
+          color: const Color(0xFF8B5FBF).withValues(alpha: 0.2),
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: const Color(0xFF8B5FBF).withOpacity(0.5),
+            color: const Color(0xFF8B5FBF).withValues(alpha: 0.5),
             width: 1,
           ),
         ),
@@ -280,7 +280,7 @@ class _LocationPickerMapState extends State<LocationPickerMap> {
           height: 40,
           child: Container(
             decoration: BoxDecoration(
-              color: Colors.blue.withOpacity(0.3),
+              color: Colors.blue.withValues(alpha: 0.3),
               shape: BoxShape.circle,
               border: Border.all(color: Colors.blue, width: 2),
             ),
@@ -366,7 +366,7 @@ class _LocationPickerMapState extends State<LocationPickerMap> {
                         borderRadius: BorderRadius.circular(12),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.3),
+                            color: Colors.black.withValues(alpha: 0.3),
                             blurRadius: 10,
                             spreadRadius: 2,
                           ),
@@ -433,7 +433,7 @@ class _LocationPickerMapState extends State<LocationPickerMap> {
                       child: Container(
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          color: const Color(0xFF1A1A1A).withOpacity(0.95),
+                          color: const Color(0xFF1A1A1A).withValues(alpha: 0.95),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Column(
@@ -477,7 +477,7 @@ class _LocationPickerMapState extends State<LocationPickerMap> {
                           borderRadius: BorderRadius.circular(12),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withOpacity(0.5),
+                              color: Colors.black.withValues(alpha: 0.5),
                               blurRadius: 15,
                               spreadRadius: 3,
                             ),
@@ -566,7 +566,7 @@ class _LocationPickerMapState extends State<LocationPickerMap> {
                                       decoration: BoxDecoration(
                                         border: Border(
                                           bottom: BorderSide(
-                                            color: Colors.grey.withOpacity(0.1),
+                                            color: Colors.grey.withValues(alpha: 0.1),
                                             width: 1,
                                           ),
                                         ),
@@ -578,7 +578,7 @@ class _LocationPickerMapState extends State<LocationPickerMap> {
                                             decoration: BoxDecoration(
                                               color: const Color(
                                                 0xFF8B5FBF,
-                                              ).withOpacity(0.2),
+                                              ).withValues(alpha: 0.2),
                                               borderRadius:
                                                   BorderRadius.circular(8),
                                             ),
@@ -651,7 +651,7 @@ class _LocationPickerMapState extends State<LocationPickerMap> {
                           borderRadius: BorderRadius.circular(12),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withOpacity(0.3),
+                              color: Colors.black.withValues(alpha: 0.3),
                               blurRadius: 10,
                               spreadRadius: 2,
                             ),

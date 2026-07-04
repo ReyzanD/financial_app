@@ -37,8 +37,8 @@ class EmptyState extends StatelessWidget {
                 shape: BoxShape.circle,
                 gradient: LinearGradient(
                   colors: [
-                    (iconColor ?? const Color(0xFF8B5FBF)).withOpacity(0.2),
-                    (iconColor ?? const Color(0xFF8B5FBF)).withOpacity(0.05),
+                    (iconColor ?? const Color(0xFF8B5FBF)).withValues(alpha: 0.2),
+                    (iconColor ?? const Color(0xFF8B5FBF)).withValues(alpha: 0.05),
                   ],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,

@@ -1118,7 +1118,7 @@ class AIService {
       if (projectedMonthEnd > totalIncome * 0.9) {
         contextualRecs.add({
           'recommendation':
-              '📅 Akhir bulan mendekat! Berdasarkan pola pengeluaran, Anda diperkirakan menghabiskan ${projectedMonthEnd.toInt()} dari ${totalIncome.toInt()} bulan ini. Pertimbangkan untuk mengurangi pengeluaran di ${remainingDays} hari tersisa.',
+              '📅 Akhir bulan mendekat! Berdasarkan pola pengeluaran, Anda diperkirakan menghabiskan ${projectedMonthEnd.toInt()} dari ${totalIncome.toInt()} bulan ini. Pertimbangkan untuk mengurangi pengeluaran di $remainingDays hari tersisa.',
           'potential_savings': projectedMonthEnd - totalIncome,
           'priority': 'high',
           'category': 'month_end_alert',

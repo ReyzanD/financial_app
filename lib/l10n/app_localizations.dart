@@ -2375,7 +2375,7 @@ abstract class AppLocalizations {
   /// No description provided for @total_amount.
   ///
   /// In en, this message translates to:
-  /// **'Total Amount'**
+  /// **'Total Portfolio Value'**
   String get total_amount;
 
   /// No description provided for @total_budget.

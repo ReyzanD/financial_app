@@ -155,7 +155,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
               borderRadius: BorderRadius.circular(
                 ResponsiveHelper.borderRadius(context, 16),
               ),
-              border: Border.all(color: Colors.red.withOpacity(0.3)),
+              border: Border.all(color: Colors.red.withValues(alpha: 0.3)),
             ),
             child: Column(
               children: [

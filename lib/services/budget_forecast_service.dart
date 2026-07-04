@@ -193,7 +193,7 @@ class BudgetForecastService {
           'Pengeluaran: ${spent.toStringAsFixed(0)} dari ${amount.toStringAsFixed(0)} (${percentage.toStringAsFixed(0)}%)';
 
       await _notificationService.showNotification(
-        id: 'budget_${categoryId}_${level}'.hashCode,
+        id: 'budget_${categoryId}_$level'.hashCode,
         title: '$emoji $title',
         body: body,
         priority:
