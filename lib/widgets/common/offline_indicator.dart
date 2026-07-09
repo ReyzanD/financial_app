@@ -47,11 +47,7 @@ class _OfflineIndicatorState extends State<OfflineIndicator> {
       color: Colors.orange[700],
       child: Row(
         children: [
-          const Icon(
-            Icons.wifi_off_rounded,
-            color: Colors.white,
-            size: 20,
-          ),
+          const Icon(Icons.wifi_off_rounded, color: Colors.white, size: 20),
           const SizedBox(width: 8),
           Expanded(
             child: Text(
@@ -68,4 +64,3 @@ class _OfflineIndicatorState extends State<OfflineIndicator> {
     );
   }
 }
-

@@ -114,7 +114,8 @@ class ResponsiveHelper {
     double? multiplier,
   }) {
     final mult = multiplier ?? 1.0;
-    final spacing = isTablet(context) ? baseSpacing * 1.5 * mult : baseSpacing * mult;
+    final spacing =
+        isTablet(context) ? baseSpacing * 1.5 * mult : baseSpacing * mult;
     return spacing;
   }
 
@@ -125,7 +126,8 @@ class ResponsiveHelper {
     double? multiplier,
   }) {
     final mult = multiplier ?? 1.0;
-    final spacing = isTablet(context) ? baseSpacing * 1.5 * mult : baseSpacing * mult;
+    final spacing =
+        isTablet(context) ? baseSpacing * 1.5 * mult : baseSpacing * mult;
     return spacing;
   }
 
@@ -282,4 +284,3 @@ class ResponsiveHelper {
     return 'phone';
   }
 }
-

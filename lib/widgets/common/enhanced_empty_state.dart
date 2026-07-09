@@ -53,16 +53,11 @@ class EnhancedEmptyState extends StatelessWidget {
               ),
               child: Icon(
                 icon,
-                size: ResponsiveHelper.iconSize(
-                  context,
-                  isCompact ? 48 : 64,
-                ),
+                size: ResponsiveHelper.iconSize(context, isCompact ? 48 : 64),
                 color: effectiveIconColor,
               ),
             ),
-            SizedBox(
-              height: ResponsiveHelper.verticalSpacing(context, 24),
-            ),
+            SizedBox(height: ResponsiveHelper.verticalSpacing(context, 24)),
 
             // Title
             AccessibilityHelper.createAccessibleText(
@@ -79,9 +74,7 @@ class EnhancedEmptyState extends StatelessWidget {
                 fontWeight: DesignTokens.weightBold,
               ),
             ),
-            SizedBox(
-              height: ResponsiveHelper.verticalSpacing(context, 12),
-            ),
+            SizedBox(height: ResponsiveHelper.verticalSpacing(context, 12)),
 
             // Description
             AccessibilityHelper.createAccessibleText(
@@ -100,9 +93,7 @@ class EnhancedEmptyState extends StatelessWidget {
 
             // Action Button
             if (actionLabel != null && onAction != null) ...[
-              SizedBox(
-                height: ResponsiveHelper.verticalSpacing(context, 24),
-              ),
+              SizedBox(height: ResponsiveHelper.verticalSpacing(context, 24)),
               AccessibilityHelper.createAccessibleButton(
                 context: context,
                 label: actionLabel!,
@@ -122,7 +113,8 @@ class EnhancedEmptyState extends StatelessWidget {
     return EnhancedEmptyState(
       icon: Iconsax.receipt_2,
       title: 'Belum Ada Transaksi',
-      description: 'Mulai catat transaksi pertama Anda untuk melihat ringkasan keuangan',
+      description:
+          'Mulai catat transaksi pertama Anda untuk melihat ringkasan keuangan',
       actionLabel: 'Tambah Transaksi',
       onAction: onAdd,
     );
@@ -132,7 +124,8 @@ class EnhancedEmptyState extends StatelessWidget {
     return EnhancedEmptyState(
       icon: Iconsax.wallet_3,
       title: 'Belum Ada Budget',
-      description: 'Buat budget untuk mengontrol pengeluaran dan mencapai tujuan keuangan',
+      description:
+          'Buat budget untuk mengontrol pengeluaran dan mencapai tujuan keuangan',
       actionLabel: 'Buat Budget',
       onAction: onAdd,
     );
@@ -142,7 +135,8 @@ class EnhancedEmptyState extends StatelessWidget {
     return EnhancedEmptyState(
       icon: Iconsax.flag,
       title: 'Belum Ada Tujuan',
-      description: 'Tetapkan tujuan keuangan untuk memotivasi menabung dan merencanakan masa depan',
+      description:
+          'Tetapkan tujuan keuangan untuk memotivasi menabung dan merencanakan masa depan',
       actionLabel: 'Buat Tujuan',
       onAction: onAdd,
     );
@@ -167,11 +161,11 @@ class EnhancedEmptyState extends StatelessWidget {
     return EnhancedEmptyState(
       icon: Iconsax.search_normal,
       title: 'Tidak Ada Hasil',
-      description: query != null
-          ? 'Tidak ada hasil untuk "$query". Coba kata kunci lain.'
-          : 'Mulai ketik untuk mencari transaksi, budget, atau tujuan',
+      description:
+          query != null
+              ? 'Tidak ada hasil untuk "$query". Coba kata kunci lain.'
+              : 'Mulai ketik untuk mencari transaksi, budget, atau tujuan',
       isCompact: true,
     );
   }
 }
-

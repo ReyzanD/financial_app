@@ -5,6 +5,7 @@ import 'package:financial_app/services/location_service.dart';
 import 'package:financial_app/services/api_service.dart';
 import 'package:financial_app/services/map_provider_service.dart';
 import 'package:financial_app/services/logger_service.dart';
+import 'package:financial_app/services/error_handler_service.dart';
 import 'package:financial_app/widgets/common/offline_indicator.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
@@ -21,6 +22,7 @@ class _MapScreenState extends State<MapScreen> {
   LatLng? _currentPosition;
   final List<Marker> _markers = [];
   bool _isLoading = true;
+  String? _errorMessage;
   final ApiService _apiService = ApiService();
 
   @override
@@ -31,35 +33,43 @@ class _MapScreenState extends State<MapScreen> {
   }
 
   Future<void> _initializeLocation() async {
-    final position = await LocationService.getCurrentLatLng();
-    if (position != null) {
-      final latLng = LatLng(position.latitude, position.longitude);
-      setState(() {
-        _currentPosition = latLng;
-        _markers.add(
-          Marker(
-            point: latLng,
-            width: 80,
-            height: 80,
-            child: GestureDetector(
-              onTap: () {
-                _showMarkerInfo('Your Location', 'Current position');
-              },
-              child: const Icon(
-                Icons.location_on,
-                color: Colors.blue,
-                size: 40,
+    try {
+      final position = await LocationService.getCurrentLatLng();
+      if (position != null) {
+        final latLng = LatLng(position.latitude, position.longitude);
+        setState(() {
+          _currentPosition = latLng;
+          _markers.add(
+            Marker(
+              point: latLng,
+              width: 80,
+              height: 80,
+              child: GestureDetector(
+                onTap: () {
+                  _showMarkerInfo('Your Location', 'Current position');
+                },
+                child: const Icon(
+                  Icons.location_on,
+                  color: Colors.blue,
+                  size: 40,
+                ),
               ),
             ),
-          ),
-        );
-        _isLoading = false;
-      });
-    } else {
+          );
+          _isLoading = false;
+        });
+      } else {
+        setState(() {
+          _isLoading = false;
+        });
+        _showLocationError();
+      }
+    } catch (e) {
+      LoggerService.error('Error initializing location', error: e);
       setState(() {
+        _errorMessage = ErrorHandlerService.getUserFriendlyMessage(e);
         _isLoading = false;
       });
-      _showLocationError();
     }
   }
 
@@ -70,6 +80,52 @@ class _MapScreenState extends State<MapScreen> {
           'Unable to get current location. Please check permissions.',
         ),
         backgroundColor: Colors.red,
+      ),
+    );
+  }
+
+  Widget _buildErrorState() {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.error_outline_rounded, size: 64, color: Colors.red[400]),
+            const SizedBox(height: 16),
+            const Text(
+              'Gagal Memuat Data',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+                color: Colors.white,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              _errorMessage ?? '',
+              textAlign: TextAlign.center,
+              style: const TextStyle(color: Colors.grey, fontSize: 14),
+            ),
+            const SizedBox(height: 24),
+            ElevatedButton.icon(
+              onPressed: () {
+                setState(() {
+                  _errorMessage = null;
+                  _markers.clear();
+                  _isLoading = true;
+                });
+                _initializeLocation();
+                _loadTransactionMarkers();
+              },
+              icon: const Icon(Icons.refresh),
+              label: const Text('Coba Lagi'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF8B5FBF),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -123,6 +179,11 @@ class _MapScreenState extends State<MapScreen> {
       }
     } catch (e) {
       LoggerService.error('Error loading transaction markers', error: e);
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
     }
   }
 
@@ -334,29 +395,32 @@ class _MapScreenState extends State<MapScreen> {
         children: [
           const OfflineIndicator(),
           Expanded(
-            child: _isLoading
-                ? const Center(child: CircularProgressIndicator())
-                : FlutterMap(
-                mapController: _mapController,
-                options: MapOptions(
-                  initialCenter:
-                      _currentPosition ??
-                      const LatLng(
-                        -5.1477,
-                        119.4327,
-                      ), // Makassar, Sulawesi Selatan
-                  initialZoom: 15.0,
-                  minZoom: 5.0,
-                  maxZoom: 18.0,
-                ),
-                children: [
-                  TileLayer(
-                    urlTemplate: MapProviderService.getTileUrlTemplate(),
-                    userAgentPackageName: 'com.example.financial_app',
-                  ),
-                  MarkerLayer(markers: _markers),
-                ],
-              ),
+            child:
+                _isLoading
+                    ? const Center(child: CircularProgressIndicator())
+                    : _errorMessage != null
+                    ? _buildErrorState()
+                    : FlutterMap(
+                      mapController: _mapController,
+                      options: MapOptions(
+                        initialCenter:
+                            _currentPosition ??
+                            const LatLng(
+                              -5.1477,
+                              119.4327,
+                            ), // Makassar, Sulawesi Selatan
+                        initialZoom: 15.0,
+                        minZoom: 5.0,
+                        maxZoom: 18.0,
+                      ),
+                      children: [
+                        TileLayer(
+                          urlTemplate: MapProviderService.getTileUrlTemplate(),
+                          userAgentPackageName: 'com.example.financial_app',
+                        ),
+                        MarkerLayer(markers: _markers),
+                      ],
+                    ),
           ),
         ],
       ),

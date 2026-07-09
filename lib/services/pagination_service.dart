@@ -4,7 +4,7 @@ import 'package:financial_app/services/logger_service.dart';
 class PaginationService<T> {
   final Future<List<T>> Function(int page, int limit) _fetchFunction;
   final int _pageSize;
-  
+
   int _currentPage = 1;
   bool _hasMore = true;
   bool _isLoading = false;
@@ -14,21 +14,21 @@ class PaginationService<T> {
   PaginationService({
     required Future<List<T>> Function(int page, int limit) fetchFunction,
     int pageSize = 20,
-  })  : _fetchFunction = fetchFunction,
-        _pageSize = pageSize;
+  }) : _fetchFunction = fetchFunction,
+       _pageSize = pageSize;
 
   /// Get current items
   List<T> get items => List.unmodifiable(_allItems);
-  
+
   /// Check if has more pages
   bool get hasMore => _hasMore;
-  
+
   /// Check if currently loading
   bool get isLoading => _isLoading;
-  
+
   /// Get current page
   int get currentPage => _currentPage;
-  
+
   /// Get error if any
   String? get error => _error;
 
@@ -63,7 +63,7 @@ class PaginationService<T> {
       } else {
         _allItems.addAll(newItems);
         _currentPage++;
-        
+
         // If returned items less than page size, no more pages
         if (newItems.length < _pageSize) {
           _hasMore = false;
@@ -119,4 +119,3 @@ class PaginationService<T> {
   /// Get total count (if available)
   int get totalCount => _allItems.length;
 }
-

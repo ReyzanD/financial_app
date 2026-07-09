@@ -95,8 +95,10 @@ class _NetWorthScreenState extends State<NetWorthScreen> {
 
   Widget _buildHeader(BuildContext context, AppLocalizations? l10n) {
     final netWorth = (_netWorthData['net_worth'] as num?)?.toDouble() ?? 0.0;
-    final totalAssets = (_netWorthData['total_assets'] as num?)?.toDouble() ?? 0.0;
-    final totalLiabilities = (_netWorthData['total_liabilities'] as num?)?.toDouble() ?? 0.0;
+    final totalAssets =
+        (_netWorthData['total_assets'] as num?)?.toDouble() ?? 0.0;
+    final totalLiabilities =
+        (_netWorthData['total_liabilities'] as num?)?.toDouble() ?? 0.0;
     final trend = _trend['trend'] ?? 'neutral';
     final change = (_trend['change'] as num?)?.toDouble() ?? 0.0;
     final isPositive = trend == 'up' || change > 0;
@@ -109,7 +111,10 @@ class _NetWorthScreenState extends State<NetWorthScreen> {
           Row(
             children: [
               IconButton(
-                icon: const Icon(Iconsax.arrow_left, color: DesignTokens.textPrimaryDark),
+                icon: const Icon(
+                  Iconsax.arrow_left,
+                  color: DesignTokens.textPrimaryDark,
+                ),
                 onPressed: () => Navigator.pop(context),
               ),
               const SizedBox(width: 8),
@@ -123,9 +128,15 @@ class _NetWorthScreenState extends State<NetWorthScreen> {
               ),
               const Spacer(),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 6,
+                ),
                 decoration: BoxDecoration(
-                  color: (isPositive ? DesignTokens.successColor : DesignTokens.errorColor).withValues(alpha: 0.15),
+                  color: (isPositive
+                          ? DesignTokens.successColor
+                          : DesignTokens.errorColor)
+                      .withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(DesignTokens.radiusSmall),
                 ),
                 child: Row(
@@ -133,14 +144,20 @@ class _NetWorthScreenState extends State<NetWorthScreen> {
                   children: [
                     Icon(
                       isPositive ? Iconsax.arrow_up_1 : Iconsax.arrow_down,
-                      color: isPositive ? DesignTokens.successColor : DesignTokens.errorColor,
+                      color:
+                          isPositive
+                              ? DesignTokens.successColor
+                              : DesignTokens.errorColor,
                       size: 14,
                     ),
                     const SizedBox(width: 4),
                     Text(
                       '${change.toStringAsFixed(1)}%',
                       style: GoogleFonts.poppins(
-                        color: isPositive ? DesignTokens.successColor : DesignTokens.errorColor,
+                        color:
+                            isPositive
+                                ? DesignTokens.successColor
+                                : DesignTokens.errorColor,
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
                       ),
@@ -172,7 +189,10 @@ class _NetWorthScreenState extends State<NetWorthScreen> {
                 Text(
                   CurrencyFormatter.formatRupiah(netWorth.toInt()),
                   style: GoogleFonts.poppins(
-                    color: netWorth >= 0 ? DesignTokens.successColor : DesignTokens.errorColor,
+                    color:
+                        netWorth >= 0
+                            ? DesignTokens.successColor
+                            : DesignTokens.errorColor,
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
                   ),
@@ -214,7 +234,9 @@ class _NetWorthScreenState extends State<NetWorthScreen> {
                             ),
                           ),
                           Text(
-                            CurrencyFormatter.formatRupiah(totalLiabilities.toInt()),
+                            CurrencyFormatter.formatRupiah(
+                              totalLiabilities.toInt(),
+                            ),
                             style: GoogleFonts.poppins(
                               color: DesignTokens.errorColor,
                               fontSize: 14,
@@ -256,8 +278,13 @@ class _NetWorthScreenState extends State<NetWorthScreen> {
   }
 
   Widget _buildBreakdown(BuildContext context, AppLocalizations? l10n) {
-    final assetBreakdown = (_netWorthData['asset_breakdown'] as Map?)?.cast<String, double>() ?? {};
-    final liabilityBreakdown = (_netWorthData['liability_breakdown'] as Map?)?.cast<String, double>() ?? {};
+    final assetBreakdown =
+        (_netWorthData['asset_breakdown'] as Map?)?.cast<String, double>() ??
+        {};
+    final liabilityBreakdown =
+        (_netWorthData['liability_breakdown'] as Map?)
+            ?.cast<String, double>() ??
+        {};
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -383,38 +410,46 @@ class _NetWorthScreenState extends State<NetWorthScreen> {
             border: Border.all(color: DesignTokens.borderDark),
           ),
           child: Column(
-            children: _history.take(7).map((snapshot) {
-              final date = snapshot['snapshot_date'] ?? '';
-              final netWorth = (snapshot['net_worth'] as num?)?.toDouble() ?? 0.0;
-              return Container(
-                padding: const EdgeInsets.symmetric(vertical: 8),
-                decoration: BoxDecoration(
-                  border: Border(
-                    bottom: BorderSide(color: DesignTokens.borderDark, width: 0.5),
-                  ),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      date,
-                      style: GoogleFonts.poppins(
-                        color: DesignTokens.textSecondaryDark,
-                        fontSize: 12,
+            children:
+                _history.take(7).map((snapshot) {
+                  final date = snapshot['snapshot_date'] ?? '';
+                  final netWorth =
+                      (snapshot['net_worth'] as num?)?.toDouble() ?? 0.0;
+                  return Container(
+                    padding: const EdgeInsets.symmetric(vertical: 8),
+                    decoration: BoxDecoration(
+                      border: Border(
+                        bottom: BorderSide(
+                          color: DesignTokens.borderDark,
+                          width: 0.5,
+                        ),
                       ),
                     ),
-                    Text(
-                      CurrencyFormatter.formatRupiah(netWorth.toInt()),
-                      style: GoogleFonts.poppins(
-                        color: netWorth >= 0 ? DesignTokens.successColor : DesignTokens.errorColor,
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
-                      ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          date,
+                          style: GoogleFonts.poppins(
+                            color: DesignTokens.textSecondaryDark,
+                            fontSize: 12,
+                          ),
+                        ),
+                        Text(
+                          CurrencyFormatter.formatRupiah(netWorth.toInt()),
+                          style: GoogleFonts.poppins(
+                            color:
+                                netWorth >= 0
+                                    ? DesignTokens.successColor
+                                    : DesignTokens.errorColor,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-              );
-            }).toList(),
+                  );
+                }).toList(),
           ),
         ),
       ],
@@ -458,11 +493,7 @@ class _NetWorthScreenState extends State<NetWorthScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            Iconsax.warning_2,
-            size: 64,
-            color: DesignTokens.errorColor,
-          ),
+          Icon(Iconsax.warning_2, size: 64, color: DesignTokens.errorColor),
           const SizedBox(height: 16),
           Text(
             l10n?.error ?? 'Terjadi kesalahan',

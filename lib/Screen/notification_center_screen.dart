@@ -7,6 +7,8 @@ import 'package:financial_app/services/notification_history_service.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:intl/intl.dart';
 import 'package:financial_app/l10n/app_localizations.dart';
+import 'package:financial_app/services/logger_service.dart';
+import 'package:financial_app/widgets/common/offline_indicator.dart';
 
 class NotificationCenterScreen extends StatefulWidget {
   const NotificationCenterScreen({super.key});
@@ -26,6 +28,7 @@ class _NotificationCenterScreenState extends State<NotificationCenterScreen>
   List<Map<String, dynamic>> _history = [];
   int _unreadCount = 0;
   bool _isLoading = true;
+  String? _errorMessage;
 
   // Settings
   bool _budgetAlertsEnabled = true;
@@ -50,17 +53,28 @@ class _NotificationCenterScreenState extends State<NotificationCenterScreen>
   }
 
   Future<void> _loadData() async {
-    setState(() => _isLoading = true);
-
-    final history = await _historyService.getHistory();
-    final unread = await _historyService.getUnreadCount();
-    await _loadSettings();
-
     setState(() {
-      _history = history;
-      _unreadCount = unread;
-      _isLoading = false;
+      _isLoading = true;
+      _errorMessage = null;
     });
+
+    try {
+      final history = await _historyService.getHistory();
+      final unread = await _historyService.getUnreadCount();
+      await _loadSettings();
+
+      setState(() {
+        _history = history;
+        _unreadCount = unread;
+        _isLoading = false;
+      });
+    } catch (e) {
+      LoggerService.error('Error loading notifications', error: e);
+      setState(() {
+        _errorMessage = e.toString();
+        _isLoading = false;
+      });
+    }
   }
 
   Future<void> _loadSettings() async {
@@ -154,19 +168,68 @@ class _NotificationCenterScreenState extends State<NotificationCenterScreen>
           ],
         ),
       ),
-      body:
-          _isLoading
-              ? const Center(
-                child: CircularProgressIndicator(color: Color(0xFF8B5FBF)),
-              )
-              : TabBarView(
-                controller: _tabController,
-                children: [
-                  _buildHistoryTab(),
-                  _buildPendingTab(),
-                  _buildSettingsTab(),
-                ],
+      body: Column(
+        children: [
+          const OfflineIndicator(),
+          Expanded(
+            child:
+                _isLoading
+                    ? const Center(
+                      child: CircularProgressIndicator(
+                        color: Color(0xFF8B5FBF),
+                      ),
+                    )
+                    : _errorMessage != null
+                    ? _buildErrorState()
+                    : TabBarView(
+                      controller: _tabController,
+                      children: [
+                        _buildHistoryTab(),
+                        _buildPendingTab(),
+                        _buildSettingsTab(),
+                      ],
+                    ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildErrorState() {
+    final l10n = AppLocalizations.of(context);
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.error_outline_rounded, size: 64, color: Colors.red[400]),
+            const SizedBox(height: 16),
+            Text(
+              l10n?.error ?? 'Terjadi kesalahan',
+              style: GoogleFonts.poppins(
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+                color: Colors.white,
               ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              _errorMessage ?? '',
+              textAlign: TextAlign.center,
+              style: GoogleFonts.poppins(color: Colors.grey[600]),
+            ),
+            const SizedBox(height: 24),
+            ElevatedButton(
+              onPressed: _loadData,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF8B5FBF),
+              ),
+              child: Text(l10n?.retry ?? 'Coba Lagi'),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -226,30 +289,28 @@ class _NotificationCenterScreenState extends State<NotificationCenterScreen>
             _historyService
                 .deleteNotification(notificationId)
                 .then((_) {
-                  if (mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                          AppLocalizations.of(context)!.notification_deleted,
-                        ),
-                        duration: const Duration(seconds: 2),
+                  if (!context.mounted) return;
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        AppLocalizations.of(context)!.notification_deleted,
                       ),
-                    );
-                  }
+                      duration: const Duration(seconds: 2),
+                    ),
+                  );
                 })
                 .catchError((e) {
-                  // If delete fails, reload to restore the item
-                  if (mounted) {
-                    _loadData();
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                          '${AppLocalizations.of(context)!.failed_to_delete_notification}: $e',
-                        ),
-                        backgroundColor: Colors.red,
+                  if (!context.mounted) return;
+                  _loadData();
+                  if (!context.mounted) return;
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        '${AppLocalizations.of(context)!.failed_to_delete_notification}: $e',
                       ),
-                    );
-                  }
+                      backgroundColor: Colors.red,
+                    ),
+                  );
                 });
           },
           child: InkWell(
@@ -448,6 +509,7 @@ class _NotificationCenterScreenState extends State<NotificationCenterScreen>
                       await _notificationService.cancelNotification(
                         notification.id,
                       );
+                      if (!context.mounted) return;
                       setState(() {});
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(

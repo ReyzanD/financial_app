@@ -25,7 +25,10 @@ class BiometricService {
       LoggerService.debug('[BiometricService] Device supported: $isSupported');
       return isSupported;
     } catch (e) {
-      LoggerService.error('[BiometricService] Error checking device support', error: e);
+      LoggerService.error(
+        '[BiometricService] Error checking device support',
+        error: e,
+      );
       return false;
     }
   }
@@ -39,7 +42,10 @@ class BiometricService {
       LoggerService.debug('[BiometricService] Biometric available: $available');
       return available;
     } catch (e) {
-      LoggerService.error('[BiometricService] Error checking availability', error: e);
+      LoggerService.error(
+        '[BiometricService] Error checking availability',
+        error: e,
+      );
       return false;
     }
   }
@@ -48,10 +54,15 @@ class BiometricService {
   Future<List<BiometricType>> getAvailableBiometrics() async {
     try {
       final biometrics = await _localAuth.getAvailableBiometrics();
-      LoggerService.debug('[BiometricService] Available biometrics: $biometrics');
+      LoggerService.debug(
+        '[BiometricService] Available biometrics: $biometrics',
+      );
       return biometrics;
     } catch (e) {
-      LoggerService.error('[BiometricService] Error getting biometrics', error: e);
+      LoggerService.error(
+        '[BiometricService] Error getting biometrics',
+        error: e,
+      );
       return [];
     }
   }
@@ -62,7 +73,10 @@ class BiometricService {
       final prefs = await SharedPreferences.getInstance();
       return prefs.getBool(_biometricEnabledKey) ?? false;
     } catch (e) {
-      LoggerService.error('[BiometricService] Error checking enabled status', error: e);
+      LoggerService.error(
+        '[BiometricService] Error checking enabled status',
+        error: e,
+      );
       return false;
     }
   }
@@ -72,9 +86,14 @@ class BiometricService {
     try {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setBool(_biometricEnabledKey, enabled);
-      LoggerService.info('[BiometricService] Biometric ${enabled ? 'enabled' : 'disabled'}');
+      LoggerService.info(
+        '[BiometricService] Biometric ${enabled ? 'enabled' : 'disabled'}',
+      );
     } catch (e) {
-      LoggerService.error('[BiometricService] Error setting enabled status', error: e);
+      LoggerService.error(
+        '[BiometricService] Error setting enabled status',
+        error: e,
+      );
       rethrow;
     }
   }
@@ -111,15 +130,23 @@ class BiometricService {
         await _updateLastUnlockTime();
         LoggerService.success('[BiometricService] Authentication successful');
       } else {
-        LoggerService.warning('[BiometricService] Authentication failed or cancelled');
+        LoggerService.warning(
+          '[BiometricService] Authentication failed or cancelled',
+        );
       }
 
       return didAuthenticate;
     } on PlatformException catch (e) {
-      LoggerService.error('[BiometricService] Platform exception during authentication', error: e);
+      LoggerService.error(
+        '[BiometricService] Platform exception during authentication',
+        error: e,
+      );
       return false;
     } catch (e) {
-      LoggerService.error('[BiometricService] Error during authentication', error: e);
+      LoggerService.error(
+        '[BiometricService] Error during authentication',
+        error: e,
+      );
       return false;
     }
   }
@@ -130,7 +157,10 @@ class BiometricService {
       final prefs = await SharedPreferences.getInstance();
       return prefs.getBool(_autoLockEnabledKey) ?? false;
     } catch (e) {
-      LoggerService.error('[BiometricService] Error checking auto-lock status', error: e);
+      LoggerService.error(
+        '[BiometricService] Error checking auto-lock status',
+        error: e,
+      );
       return false;
     }
   }
@@ -140,9 +170,14 @@ class BiometricService {
     try {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setBool(_autoLockEnabledKey, enabled);
-      LoggerService.info('[BiometricService] Auto-lock ${enabled ? 'enabled' : 'disabled'}');
+      LoggerService.info(
+        '[BiometricService] Auto-lock ${enabled ? 'enabled' : 'disabled'}',
+      );
     } catch (e) {
-      LoggerService.error('[BiometricService] Error setting auto-lock status', error: e);
+      LoggerService.error(
+        '[BiometricService] Error setting auto-lock status',
+        error: e,
+      );
       rethrow;
     }
   }
@@ -153,7 +188,10 @@ class BiometricService {
       final prefs = await SharedPreferences.getInstance();
       return prefs.getInt(_autoLockTimeoutKey) ?? _defaultAutoLockTimeout;
     } catch (e) {
-      LoggerService.error('[BiometricService] Error getting auto-lock timeout', error: e);
+      LoggerService.error(
+        '[BiometricService] Error getting auto-lock timeout',
+        error: e,
+      );
       return _defaultAutoLockTimeout;
     }
   }
@@ -163,9 +201,14 @@ class BiometricService {
     try {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setInt(_autoLockTimeoutKey, seconds);
-      LoggerService.info('[BiometricService] Auto-lock timeout set to $seconds seconds');
+      LoggerService.info(
+        '[BiometricService] Auto-lock timeout set to $seconds seconds',
+      );
     } catch (e) {
-      LoggerService.error('[BiometricService] Error setting auto-lock timeout', error: e);
+      LoggerService.error(
+        '[BiometricService] Error setting auto-lock timeout',
+        error: e,
+      );
       rethrow;
     }
   }
@@ -189,7 +232,10 @@ class BiometricService {
 
       return difference >= timeout;
     } catch (e) {
-      LoggerService.error('[BiometricService] Error checking lock status', error: e);
+      LoggerService.error(
+        '[BiometricService] Error checking lock status',
+        error: e,
+      );
       return true; // Default to locked on error
     }
   }
@@ -198,9 +244,15 @@ class BiometricService {
   Future<void> _updateLastUnlockTime() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      await prefs.setInt(_lastUnlockTimeKey, DateTime.now().millisecondsSinceEpoch);
+      await prefs.setInt(
+        _lastUnlockTimeKey,
+        DateTime.now().millisecondsSinceEpoch,
+      );
     } catch (e) {
-      LoggerService.error('[BiometricService] Error updating unlock time', error: e);
+      LoggerService.error(
+        '[BiometricService] Error updating unlock time',
+        error: e,
+      );
     }
   }
 
@@ -214,7 +266,10 @@ class BiometricService {
       }
       return DateTime.fromMillisecondsSinceEpoch(timestamp);
     } catch (e) {
-      LoggerService.error('[BiometricService] Error getting unlock time', error: e);
+      LoggerService.error(
+        '[BiometricService] Error getting unlock time',
+        error: e,
+      );
       return null;
     }
   }
@@ -226,7 +281,10 @@ class BiometricService {
       await prefs.remove(_lastUnlockTimeKey);
       LoggerService.info('[BiometricService] Unlock time cleared');
     } catch (e) {
-      LoggerService.error('[BiometricService] Error clearing unlock time', error: e);
+      LoggerService.error(
+        '[BiometricService] Error clearing unlock time',
+        error: e,
+      );
     }
   }
 
@@ -236,8 +294,10 @@ class BiometricService {
       await _localAuth.stopAuthentication();
       LoggerService.debug('[BiometricService] Authentication stopped');
     } catch (e) {
-      LoggerService.error('[BiometricService] Error stopping authentication', error: e);
+      LoggerService.error(
+        '[BiometricService] Error stopping authentication',
+        error: e,
+      );
     }
   }
 }
-

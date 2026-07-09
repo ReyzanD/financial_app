@@ -14,14 +14,26 @@ class ObligationViewTabs extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Row(
         children: [
           _buildViewTab(context, AppLocalizations.of(context)!.all, 'all'),
-          _buildViewTab(context, AppLocalizations.of(context)!.upcoming, 'upcoming'),
-          _buildViewTab(context, AppLocalizations.of(context)!.overdue, 'overdue'),
+          _buildViewTab(
+            context,
+            AppLocalizations.of(context)!.upcoming,
+            'upcoming',
+          ),
+          _buildViewTab(
+            context,
+            AppLocalizations.of(context)!.overdue,
+            'overdue',
+          ),
           _buildViewTab(context, AppLocalizations.of(context)!.debt, 'debts'),
-          _buildViewTab(context, AppLocalizations.of(context)!.subscription, 'subscriptions'),
+          _buildViewTab(
+            context,
+            AppLocalizations.of(context)!.subscription,
+            'subscriptions',
+          ),
         ],
       ),
     );
@@ -34,7 +46,7 @@ class ObligationViewTabs extends StatelessWidget {
       child: GestureDetector(
         onTap: () => onViewChanged(value),
         child: Container(
-          padding: EdgeInsets.symmetric(vertical: 12),
+          padding: const EdgeInsets.symmetric(vertical: 12),
           decoration: BoxDecoration(
             border: Border(
               bottom: BorderSide(

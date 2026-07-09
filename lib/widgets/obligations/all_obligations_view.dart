@@ -15,6 +15,31 @@ class AllObligationsView extends StatefulWidget {
   State<AllObligationsView> createState() => _AllObligationsViewState();
 }
 
+/// Lightweight item model for flat lazy list
+enum _SectionItemType { header, obligation, spacing }
+
+class _SectionItem {
+  final _SectionItemType type;
+  final FinancialObligation? obligation;
+  final String? title;
+  final int? count;
+
+  const _SectionItem.header(this.title, this.count)
+    : type = _SectionItemType.header,
+      obligation = null;
+
+  const _SectionItem.obligation(this.obligation)
+    : type = _SectionItemType.obligation,
+      title = null,
+      count = null;
+
+  const _SectionItem.spacing()
+    : type = _SectionItemType.spacing,
+      obligation = null,
+      title = null,
+      count = null;
+}
+
 class _AllObligationsViewState extends State<AllObligationsView> {
   int _refreshKey = 0;
 
@@ -22,6 +47,36 @@ class _AllObligationsViewState extends State<AllObligationsView> {
     setState(() {
       _refreshKey++;
     });
+  }
+
+  /// Build a flat list of section items for lazy rendering
+  List<_SectionItem> _buildSectionItems(
+    List<FinancialObligation> bills,
+    List<FinancialObligation> subscriptions,
+    List<FinancialObligation> debts,
+  ) {
+    final items = <_SectionItem>[];
+
+    void addSection(String title, List<FinancialObligation> list) {
+      items.add(_SectionItem.header(title, list.length));
+      items.add(const _SectionItem.spacing());
+      for (final obligation in list) {
+        items.add(_SectionItem.obligation(obligation));
+      }
+      items.add(const _SectionItem.spacing());
+    }
+
+    if (bills.isNotEmpty) {
+      addSection(AppLocalizations.of(context)!.bill, bills);
+    }
+    if (subscriptions.isNotEmpty) {
+      addSection(AppLocalizations.of(context)!.subscription, subscriptions);
+    }
+    if (debts.isNotEmpty) {
+      addSection(AppLocalizations.of(context)!.debt, debts);
+    }
+
+    return items;
   }
 
   @override
@@ -70,87 +125,40 @@ class _AllObligationsViewState extends State<AllObligationsView> {
         // Group obligations by type
         final bills =
             obligations.where((o) => o.type == ObligationType.bill).toList();
-        final debts =
-            obligations.where((o) => o.type == ObligationType.debt).toList();
         final subscriptions =
             obligations
                 .where((o) => o.type == ObligationType.subscription)
                 .toList();
+        final debts =
+            obligations.where((o) => o.type == ObligationType.debt).toList();
 
-        return ListView(
+        final items = _buildSectionItems(bills, subscriptions, debts);
+
+        return ListView.builder(
           padding: const EdgeInsets.all(16),
-          children: [
-            // Bills Section
-            if (bills.isNotEmpty) ...[
-              _buildSectionHeader(
-                AppLocalizations.of(context)!.bill,
-                bills.length,
-              ),
-              const SizedBox(height: 8),
-              ...bills.map(
-                (obligation) => Padding(
-                  padding: const EdgeInsets.only(bottom: 12),
+          itemCount: items.length,
+          itemBuilder: (context, index) {
+            final item = items[index];
+            switch (item.type) {
+              case _SectionItemType.header:
+                return _buildSectionHeader(item.title!, item.count!);
+              case _SectionItemType.spacing:
+                return const SizedBox(height: 12);
+              case _SectionItemType.obligation:
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 4),
                   child: ObligationItem(
-                    obligation: obligation,
+                    obligation: item.obligation!,
                     onTap:
                         () => ObligationHelpers.showObligationDetails(
                           context,
-                          obligation,
+                          item.obligation!,
                         ),
                     onPaymentRecorded: _refreshData,
                   ),
-                ),
-              ),
-              const SizedBox(height: 16),
-            ],
-
-            // Subscriptions Section
-            if (subscriptions.isNotEmpty) ...[
-              _buildSectionHeader(
-                AppLocalizations.of(context)!.subscription,
-                subscriptions.length,
-              ),
-              const SizedBox(height: 8),
-              ...subscriptions.map(
-                (obligation) => Padding(
-                  padding: const EdgeInsets.only(bottom: 12),
-                  child: ObligationItem(
-                    obligation: obligation,
-                    onTap:
-                        () => ObligationHelpers.showObligationDetails(
-                          context,
-                          obligation,
-                        ),
-                    onPaymentRecorded: _refreshData,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16),
-            ],
-
-            // Debts Section
-            if (debts.isNotEmpty) ...[
-              _buildSectionHeader(
-                AppLocalizations.of(context)!.debt,
-                debts.length,
-              ),
-              const SizedBox(height: 8),
-              ...debts.map(
-                (obligation) => Padding(
-                  padding: const EdgeInsets.only(bottom: 12),
-                  child: ObligationItem(
-                    obligation: obligation,
-                    onTap:
-                        () => ObligationHelpers.showObligationDetails(
-                          context,
-                          obligation,
-                        ),
-                    onPaymentRecorded: _refreshData,
-                  ),
-                ),
-              ),
-            ],
-          ],
+                );
+            }
+          },
         );
       },
     );

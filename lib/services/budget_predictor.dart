@@ -114,12 +114,11 @@ class BudgetPredictor {
             '';
         final budgetLimit =
             (budgetMap['amount_232143'] ?? budgetMap['amount'] as num?)
-                    ?.toDouble() ??
+                ?.toDouble() ??
             0.0;
         final currentSpent =
-            (budgetMap['spent_amount_232143'] ??
-                budgetMap['spent'] as num?)
-                    ?.toDouble() ??
+            (budgetMap['spent_amount_232143'] ?? budgetMap['spent'] as num?)
+                ?.toDouble() ??
             0.0;
         final categoryName =
             budgetMap['category_name']?.toString() ?? 'Unknown';

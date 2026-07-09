@@ -223,7 +223,10 @@ class _ObligationDetailsModalState extends State<ObligationDetailsModal> {
                   end: Alignment.bottomRight,
                 ),
                 borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: color.withValues(alpha: 0.3), width: 1.5),
+                border: Border.all(
+                  color: color.withValues(alpha: 0.3),
+                  width: 1.5,
+                ),
                 boxShadow: [
                   BoxShadow(
                     color: color.withValues(alpha: 0.15),

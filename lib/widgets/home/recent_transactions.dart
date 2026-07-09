@@ -11,7 +11,10 @@ import 'package:financial_app/utils/responsive_helper.dart';
 class RecentTransactions extends StatelessWidget {
   const RecentTransactions({super.key});
 
-  Widget _buildTransactionItem(TransactionModel transaction, BuildContext context) {
+  Widget _buildTransactionItem(
+    TransactionModel transaction,
+    BuildContext context,
+  ) {
     final isIncome = transaction.type == 'income';
 
     return Container(
@@ -201,7 +204,8 @@ class RecentTransactions extends StatelessWidget {
                   children:
                       recentTransactions
                           .map(
-                            (transaction) => _buildTransactionItem(transaction, context),
+                            (transaction) =>
+                                _buildTransactionItem(transaction, context),
                           )
                           .toList(),
                 ),

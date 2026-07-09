@@ -56,38 +56,39 @@ class FinancialOverview {
   /// Create from JSON (for cache retrieval)
   factory FinancialOverview.fromJson(Map<String, dynamic> json) {
     return FinancialOverview(
-      balance: Money.fromInt(
-        json['balance'] as int? ?? 0,
-        isoCode: 'IDR',
-      ),
+      balance: Money.fromInt(json['balance'] as int? ?? 0, isoCode: 'IDR'),
       savingsRate: (json['savingsRate'] as num?)?.toDouble() ?? 0.0,
       healthScore: (json['healthScore'] as num?)?.toDouble() ?? 0.0,
       healthLevel: json['healthLevel'] as String? ?? 'Needs Improvement',
-      expenseBreakdown: (json['expenseBreakdown'] as Map<String, dynamic>? ?? {}).map(
-        (key, value) => MapEntry(
-          key,
-          Money.fromInt(value as int? ?? 0, isoCode: 'IDR'),
-        ),
-      ),
-      incomeBreakdown: (json['incomeBreakdown'] as Map<String, dynamic>? ?? {}).map(
-        (key, value) => MapEntry(
-          key,
-          Money.fromInt(value as int? ?? 0, isoCode: 'IDR'),
-        ),
-      ),
+      expenseBreakdown:
+          (json['expenseBreakdown'] as Map<String, dynamic>? ?? {}).map(
+            (key, value) => MapEntry(
+              key,
+              Money.fromInt(value as int? ?? 0, isoCode: 'IDR'),
+            ),
+          ),
+      incomeBreakdown: (json['incomeBreakdown'] as Map<String, dynamic>? ?? {})
+          .map(
+            (key, value) => MapEntry(
+              key,
+              Money.fromInt(value as int? ?? 0, isoCode: 'IDR'),
+            ),
+          ),
       forecast: json['forecast'] as Map<String, dynamic>?,
       recommendations: json['recommendations'] as List<Map<String, dynamic>>?,
       budgetStatus: json['budgetStatus'] as Map<String, dynamic>?,
-      afterTaxIncome: json['afterTaxIncome'] != null
-          ? Money.fromInt(json['afterTaxIncome'] as int, isoCode: 'IDR')
-          : null,
-      realSavings: json['realSavings'] != null
-          ? Money.fromInt(json['realSavings'] as int, isoCode: 'IDR')
-          : null,
-      timestamp: json['timestamp'] != null
-          ? DateTime.parse(json['timestamp'] as String)
-          : null,
+      afterTaxIncome:
+          json['afterTaxIncome'] != null
+              ? Money.fromInt(json['afterTaxIncome'] as int, isoCode: 'IDR')
+              : null,
+      realSavings:
+          json['realSavings'] != null
+              ? Money.fromInt(json['realSavings'] as int, isoCode: 'IDR')
+              : null,
+      timestamp:
+          json['timestamp'] != null
+              ? DateTime.parse(json['timestamp'] as String)
+              : null,
     );
   }
 }
-

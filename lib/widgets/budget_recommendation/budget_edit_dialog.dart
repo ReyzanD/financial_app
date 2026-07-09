@@ -22,14 +22,15 @@ class BudgetEditDialog extends StatelessWidget {
     double? result;
     await showDialog(
       context: context,
-      builder: (context) => BudgetEditDialog(
-        categoryName: categoryName,
-        currentPercentage: currentPercentage,
-        onSave: (value) {
-          result = value;
-          Navigator.pop(context);
-        },
-      ),
+      builder:
+          (context) => BudgetEditDialog(
+            categoryName: categoryName,
+            currentPercentage: currentPercentage,
+            onSave: (value) {
+              result = value;
+              Navigator.pop(context);
+            },
+          ),
     );
     return result;
   }
@@ -42,9 +43,7 @@ class BudgetEditDialog extends StatelessWidget {
 
     return AlertDialog(
       backgroundColor: const Color(0xFF1A1A1A),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       title: Text(
         'Edit Persentase',
         style: GoogleFonts.poppins(color: Colors.white),
@@ -55,10 +54,7 @@ class BudgetEditDialog extends StatelessWidget {
         children: [
           Text(
             categoryName,
-            style: GoogleFonts.poppins(
-              color: Colors.white70,
-              fontSize: 14,
-            ),
+            style: GoogleFonts.poppins(color: Colors.white70, fontSize: 14),
           ),
           const SizedBox(height: 16),
           TextField(
@@ -84,20 +80,14 @@ class BudgetEditDialog extends StatelessWidget {
           const SizedBox(height: 12),
           Text(
             '💡 Pastikan total semua persentase = 100%',
-            style: GoogleFonts.poppins(
-              color: Colors.orange,
-              fontSize: 11,
-            ),
+            style: GoogleFonts.poppins(color: Colors.orange, fontSize: 11),
           ),
         ],
       ),
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: Text(
-            'Batal',
-            style: GoogleFonts.poppins(color: Colors.grey),
-          ),
+          child: Text('Batal', style: GoogleFonts.poppins(color: Colors.grey)),
         ),
         ElevatedButton(
           onPressed: () {
@@ -130,4 +120,3 @@ class BudgetEditDialog extends StatelessWidget {
     );
   }
 }
-

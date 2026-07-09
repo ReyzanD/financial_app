@@ -10,7 +10,8 @@ import 'package:financial_app/core/di/service_locator.dart';
 class BudgetRecommendationService {
   final ApiService _apiService = getIt<ApiService>();
   final BudgetPredictor _budgetPredictor = getIt<BudgetPredictor>();
-  final SpendingPatternAnalyzer _patternAnalyzer = getIt<SpendingPatternAnalyzer>();
+  final SpendingPatternAnalyzer _patternAnalyzer =
+      getIt<SpendingPatternAnalyzer>();
 
   /// Generate budget recommendation berdasarkan income dan recurring expenses
   Future<Map<String, dynamic>> generateRecommendation() async {
@@ -97,15 +98,16 @@ class BudgetRecommendationService {
     // Check if user is new (no transactions or very few transactions)
     final isNewUser = transactions.isEmpty;
     final hasVeryFewTransactions = transactions.length < 3;
-    
+
     // Count expense transactions
-    final expenseTransactions = transactions.where((t) {
-      final type = t['type']?.toString().toLowerCase() ?? '';
-      return type == 'expense';
-    }).toList();
-    
+    final expenseTransactions =
+        transactions.where((t) {
+          final type = t['type']?.toString().toLowerCase() ?? '';
+          return type == 'expense';
+        }).toList();
+
     final hasNoExpenseTransactions = expenseTransactions.isEmpty;
-    
+
     // If new user or very few transactions or no expense transactions, use template
     if (isNewUser || hasVeryFewTransactions || hasNoExpenseTransactions) {
       LoggerService.debug(
@@ -119,7 +121,7 @@ class BudgetRecommendationService {
         goals,
       );
     }
-    
+
     // Analyze 3-6 months of historical spending
     final multiPeriodAnalysis = _patternAnalyzer.analyzeMultiPeriod(
       transactions: transactions,
@@ -129,7 +131,7 @@ class BudgetRecommendationService {
     final periodData =
         multiPeriodAnalysis['period_data'] as Map<String, dynamic>? ?? {};
     final trends = multiPeriodAnalysis['trends'] as Map<String, dynamic>? ?? {};
-    
+
     // Check if periodData is empty (no spending history)
     if (periodData.isEmpty) {
       LoggerService.debug('Period data is empty, using template budget');
@@ -170,8 +172,9 @@ class BudgetRecommendationService {
     });
 
     // Check if user has no expenses at all (only income transactions)
-    final hasNoExpenses = totalAverageExpense == 0.0 && categoryAverages.isEmpty;
-    
+    final hasNoExpenses =
+        totalAverageExpense == 0.0 && categoryAverages.isEmpty;
+
     // If user has transactions but no expenses, use template with income-based allocation
     if (hasNoExpenses) {
       LoggerService.debug(
@@ -193,10 +196,11 @@ class BudgetRecommendationService {
     final optimalBudgets = await _budgetPredictor.suggestOptimalBudgets(
       monthsToAnalyze: 6,
     );
-    
+
     // Check if optimalBudgets is empty (no spending patterns detected)
-    final hasNoSpendingPatterns = optimalBudgets.isEmpty && categoryAverages.isEmpty;
-    
+    final hasNoSpendingPatterns =
+        optimalBudgets.isEmpty && categoryAverages.isEmpty;
+
     // If no spending patterns detected, use template
     if (hasNoSpendingPatterns) {
       LoggerService.debug(
@@ -514,33 +518,35 @@ class BudgetRecommendationService {
     List<dynamic> goals,
   ) async {
     final recommendedCategories = <Map<String, dynamic>>[];
-    final availableIncome = income > monthlyRecurringExpenses
-        ? income - monthlyRecurringExpenses
-        : 0.0;
+    final availableIncome =
+        income > monthlyRecurringExpenses
+            ? income - monthlyRecurringExpenses
+            : 0.0;
     final recurringPercentage =
         income > 0 ? (monthlyRecurringExpenses / income) * 100 : 0;
-    
+
     // If income is 0 or very small, show minimal template
     if (income <= 0) {
       return {
         'total_income': 0.0,
         'monthly_recurring_expenses': monthlyRecurringExpenses,
         'available_income': 0.0,
-        'categories': monthlyRecurringExpenses > 0
-            ? [
-                {
-                  'name': 'Tagihan & Langganan Rutin',
-                  'percentage': 100.0,
-                  'amount': monthlyRecurringExpenses,
-                  'icon': Iconsax.receipt_2,
-                  'color': const Color(0xFFFF5252),
-                  'description': '⚡ Dari tagihan & langganan Anda yang aktif',
-                  'flexibility': 'fixed',
-                  'is_recurring': true,
-                  'subcategories': <dynamic>[],
-                },
-              ]
-            : [],
+        'categories':
+            monthlyRecurringExpenses > 0
+                ? [
+                  {
+                    'name': 'Tagihan & Langganan Rutin',
+                    'percentage': 100.0,
+                    'amount': monthlyRecurringExpenses,
+                    'icon': Iconsax.receipt_2,
+                    'color': const Color(0xFFFF5252),
+                    'description': '⚡ Dari tagihan & langganan Anda yang aktif',
+                    'flexibility': 'fixed',
+                    'is_recurring': true,
+                    'subcategories': <dynamic>[],
+                  },
+                ]
+                : [],
         'allocation_method': 'template',
         'months_analyzed': 0,
         'historical_average_expense': 0.0,
@@ -582,7 +588,8 @@ class BudgetRecommendationService {
         'amount': catAmount,
         'icon': cat['icon'],
         'color': _getCategoryColor(cat['name'] as String),
-        'description': '💡 Rekomendasi awal untuk user baru (dapat disesuaikan)',
+        'description':
+            '💡 Rekomendasi awal untuk user baru (dapat disesuaikan)',
         'flexibility': 'moderate',
         'is_template': true,
         'subcategories': <dynamic>[],
@@ -617,7 +624,8 @@ class BudgetRecommendationService {
     final goalSavingsAdjustment = goalAdjustments['savings'] as double? ?? 0.0;
 
     final savingsAmount =
-        (availableIncome * (baseSavingsPercentage / 100)) + goalSavingsAdjustment;
+        (availableIncome * (baseSavingsPercentage / 100)) +
+        goalSavingsAdjustment;
     final savingsPercentage = income > 0 ? (savingsAmount / income) * 100 : 0;
 
     recommendedCategories.add({
@@ -626,9 +634,10 @@ class BudgetRecommendationService {
       'amount': savingsAmount,
       'icon': Iconsax.chart,
       'color': const Color(0xFF2196F3),
-      'description': goalSavingsAdjustment > 0
-          ? 'Target: ${baseSavingsPercentage.toStringAsFixed(0)}% + penyesuaian untuk goals Anda'
-          : 'Target: ${baseSavingsPercentage.toStringAsFixed(0)}% dari pendapatan (rekomendasi standar)',
+      'description':
+          goalSavingsAdjustment > 0
+              ? 'Target: ${baseSavingsPercentage.toStringAsFixed(0)}% + penyesuaian untuk goals Anda'
+              : 'Target: ${baseSavingsPercentage.toStringAsFixed(0)}% dari pendapatan (rekomendasi standar)',
       'flexibility': 'low',
       'target_rate': baseSavingsPercentage,
       'goal_adjusted': goalSavingsAdjustment > 0,

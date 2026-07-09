@@ -19,7 +19,8 @@ class QuickActionsEnhanced extends StatefulWidget {
 }
 
 class _QuickActionsEnhancedState extends State<QuickActionsEnhanced> {
-  final QuickActionsAnalyticsService _analyticsService = getIt<QuickActionsAnalyticsService>();
+  final QuickActionsAnalyticsService _analyticsService =
+      getIt<QuickActionsAnalyticsService>();
   List<Map<String, dynamic>> _actions = [];
   bool _isLoading = true;
   String? _selectedCategory;
@@ -32,39 +33,45 @@ class _QuickActionsEnhancedState extends State<QuickActionsEnhanced> {
 
   Future<void> _loadActions() async {
     setState(() => _isLoading = true);
-    
+
     try {
       // Get default actions first (contains icon, color, onTap)
       final defaultActions = _getDefaultActions();
-      
+
       // Load saved preferences (only contains encodable fields)
       final preferences = await _analyticsService.getPreferences();
-      
+
       if (preferences.isNotEmpty) {
         // Merge saved preferences with defaults to restore icon, color, onTap
-        _actions = preferences.map((pref) {
-          // Find matching default action by id
-          final defaultAction = defaultActions.firstWhere(
-            (action) => action['id'] == pref['id'],
-            orElse: () => <String, dynamic>{},
-          );
-          
-          // Merge: use saved preferences for visible/order, defaults for icon/color/onTap
-          return {
-            'id': pref['id'] ?? defaultAction['id'],
-            'label': pref['label'] ?? defaultAction['label'],
-            'category': pref['category'] ?? defaultAction['category'],
-            'visible': pref['visible'] ?? defaultAction['visible'] ?? true,
-            'order': pref['order'] ?? defaultAction['order'] ?? 0,
-            // Restore non-encodable fields from defaults
-            'icon': defaultAction['icon'],
-            'color': pref['colorHex'] != null 
-                ? Color(int.parse(pref['colorHex'].toString().replaceFirst('#', '0x')))
-                : defaultAction['color'],
-            'onTap': defaultAction['onTap'],
-          };
-        }).toList();
-        
+        _actions =
+            preferences.map((pref) {
+              // Find matching default action by id
+              final defaultAction = defaultActions.firstWhere(
+                (action) => action['id'] == pref['id'],
+                orElse: () => <String, dynamic>{},
+              );
+
+              // Merge: use saved preferences for visible/order, defaults for icon/color/onTap
+              return {
+                'id': pref['id'] ?? defaultAction['id'],
+                'label': pref['label'] ?? defaultAction['label'],
+                'category': pref['category'] ?? defaultAction['category'],
+                'visible': pref['visible'] ?? defaultAction['visible'] ?? true,
+                'order': pref['order'] ?? defaultAction['order'] ?? 0,
+                // Restore non-encodable fields from defaults
+                'icon': defaultAction['icon'],
+                'color':
+                    pref['colorHex'] != null
+                        ? Color(
+                          int.parse(
+                            pref['colorHex'].toString().replaceFirst('#', '0x'),
+                          ),
+                        )
+                        : defaultAction['color'],
+                'onTap': defaultAction['onTap'],
+              };
+            }).toList();
+
         // Add any new default actions that weren't in preferences
         final savedIds = preferences.map((p) => p['id']).toSet();
         for (var defaultAction in defaultActions) {
@@ -77,7 +84,7 @@ class _QuickActionsEnhancedState extends State<QuickActionsEnhanced> {
         _actions = defaultActions;
         await _analyticsService.savePreferences(_actions);
       }
-      
+
       setState(() => _isLoading = false);
     } catch (e) {
       setState(() => _isLoading = false);
@@ -94,12 +101,13 @@ class _QuickActionsEnhancedState extends State<QuickActionsEnhanced> {
         'category': 'Analytics',
         'visible': true,
         'order': 0,
-        'onTap': () => Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => const AIBudgetRecommendationScreen(),
-          ),
-        ),
+        'onTap':
+            () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const AIBudgetRecommendationScreen(),
+              ),
+            ),
       },
       {
         'id': 'riwayat',
@@ -109,12 +117,13 @@ class _QuickActionsEnhancedState extends State<QuickActionsEnhanced> {
         'category': 'Transactions',
         'visible': true,
         'order': 1,
-        'onTap': () => Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => const TransactionHistoryScreen(),
-          ),
-        ),
+        'onTap':
+            () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const TransactionHistoryScreen(),
+              ),
+            ),
       },
       {
         'id': 'tagihan',
@@ -124,12 +133,13 @@ class _QuickActionsEnhancedState extends State<QuickActionsEnhanced> {
         'category': 'Transactions',
         'visible': true,
         'order': 2,
-        'onTap': () => Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => const FinancialObligationsScreen(),
-          ),
-        ),
+        'onTap':
+            () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const FinancialObligationsScreen(),
+              ),
+            ),
       },
       {
         'id': 'backup',
@@ -139,10 +149,11 @@ class _QuickActionsEnhancedState extends State<QuickActionsEnhanced> {
         'category': 'Settings',
         'visible': true,
         'order': 3,
-        'onTap': () => Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => const BackupScreen()),
-        ),
+        'onTap':
+            () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const BackupScreen()),
+            ),
       },
       {
         'id': 'berulang',
@@ -152,12 +163,13 @@ class _QuickActionsEnhancedState extends State<QuickActionsEnhanced> {
         'category': 'Transactions',
         'visible': true,
         'order': 4,
-        'onTap': () => Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => const RecurringTransactionsScreen(),
-          ),
-        ),
+        'onTap':
+            () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const RecurringTransactionsScreen(),
+              ),
+            ),
       },
     ];
   }
@@ -165,7 +177,7 @@ class _QuickActionsEnhancedState extends State<QuickActionsEnhanced> {
   Future<void> _handleActionTap(Map<String, dynamic> action) async {
     // Track usage
     await _analyticsService.trackAction(action['id']);
-    
+
     // Execute action
     (action['onTap'] as VoidCallback)();
   }
@@ -174,9 +186,11 @@ class _QuickActionsEnhancedState extends State<QuickActionsEnhanced> {
     if (_selectedCategory == null) {
       return _actions.where((a) => a['visible'] == true).toList();
     }
-    return _actions.where((a) => 
-      a['visible'] == true && a['category'] == _selectedCategory
-    ).toList();
+    return _actions
+        .where(
+          (a) => a['visible'] == true && a['category'] == _selectedCategory,
+        )
+        .toList();
   }
 
   @override
@@ -208,7 +222,7 @@ class _QuickActionsEnhancedState extends State<QuickActionsEnhanced> {
           ],
         ),
         SizedBox(height: ResponsiveHelper.verticalSpacing(context, 8)),
-        
+
         // Category filter chips
         SingleChildScrollView(
           scrollDirection: Axis.horizontal,
@@ -228,7 +242,7 @@ class _QuickActionsEnhancedState extends State<QuickActionsEnhanced> {
           ),
         ),
         SizedBox(height: ResponsiveHelper.verticalSpacing(context, 12)),
-        
+
         // Main actions grid
         GridView.builder(
           shrinkWrap: true,
@@ -246,10 +260,7 @@ class _QuickActionsEnhancedState extends State<QuickActionsEnhanced> {
           itemCount: _filteredActions.length,
           itemBuilder: (context, index) {
             final action = _filteredActions[index];
-            return _buildQuickActionItem(
-              context: context,
-              action: action,
-            );
+            return _buildQuickActionItem(context: context, action: action);
           },
         ),
       ],
@@ -271,14 +282,13 @@ class _QuickActionsEnhancedState extends State<QuickActionsEnhanced> {
           vertical: 6,
         ),
         decoration: BoxDecoration(
-          color: isSelected 
-              ? const Color(0xFF8B5FBF).withValues(alpha: 0.2)
-              : const Color(0xFF1A1A1A),
+          color:
+              isSelected
+                  ? const Color(0xFF8B5FBF).withValues(alpha: 0.2)
+                  : const Color(0xFF1A1A1A),
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
-            color: isSelected 
-                ? const Color(0xFF8B5FBF)
-                : Colors.grey[800]!,
+            color: isSelected ? const Color(0xFF8B5FBF) : Colors.grey[800]!,
           ),
         ),
         child: Text(
@@ -342,46 +352,46 @@ class _QuickActionsEnhancedState extends State<QuickActionsEnhanced> {
   void _showCustomizationDialog() {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: const Color(0xFF1A1A1A),
-        title: Text(
-          'Customize Quick Actions',
-          style: GoogleFonts.poppins(color: Colors.white),
-        ),
-        content: SizedBox(
-          width: double.maxFinite,
-          child: ListView.builder(
-            shrinkWrap: true,
-            itemCount: _actions.length,
-            itemBuilder: (context, index) {
-              final action = _actions[index];
-              return CheckboxListTile(
-                title: Text(
-                  action['label'] as String,
-                  style: GoogleFonts.poppins(color: Colors.white),
-                ),
-                value: action['visible'] as bool,
-                onChanged: (value) {
-                  setState(() {
-                    action['visible'] = value ?? true;
-                  });
-                  _analyticsService.savePreferences(_actions);
-                },
-              );
-            },
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(
-              'Done',
-              style: GoogleFonts.poppins(color: const Color(0xFF8B5FBF)),
+      builder:
+          (context) => AlertDialog(
+            backgroundColor: const Color(0xFF1A1A1A),
+            title: Text(
+              'Customize Quick Actions',
+              style: GoogleFonts.poppins(color: Colors.white),
             ),
+            content: SizedBox(
+              width: double.maxFinite,
+              child: ListView.builder(
+                shrinkWrap: true,
+                itemCount: _actions.length,
+                itemBuilder: (context, index) {
+                  final action = _actions[index];
+                  return CheckboxListTile(
+                    title: Text(
+                      action['label'] as String,
+                      style: GoogleFonts.poppins(color: Colors.white),
+                    ),
+                    value: action['visible'] as bool,
+                    onChanged: (value) {
+                      setState(() {
+                        action['visible'] = value ?? true;
+                      });
+                      _analyticsService.savePreferences(_actions);
+                    },
+                  );
+                },
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text(
+                  'Done',
+                  style: GoogleFonts.poppins(color: const Color(0xFF8B5FBF)),
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
     );
   }
 }
-

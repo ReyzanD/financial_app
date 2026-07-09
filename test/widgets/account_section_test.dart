@@ -45,9 +45,12 @@ class _MockAccountSectionState extends State<MockAccountSection> {
               ),
             ),
             ...widget.accounts.map((account) {
-              final isSelected = widget.selectedAccountId == account['account_id_232143'];
+              final isSelected =
+                  widget.selectedAccountId == account['account_id_232143'];
               return GestureDetector(
-                onTap: () => widget.onAccountSelected(account['account_id_232143']),
+                onTap:
+                    () =>
+                        widget.onAccountSelected(account['account_id_232143']),
                 child: Container(
                   key: ValueKey(account['account_id_232143']),
                   child: Text(account['name_232143'] as String),
@@ -83,10 +86,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
-            body: MockAccountSection(
-              onAccountSelected: (_) {},
-              accounts: [],
-            ),
+            body: MockAccountSection(onAccountSelected: (_) {}, accounts: []),
           ),
         ),
       );
@@ -96,8 +96,16 @@ void main() {
 
     testWidgets('displays all accounts', (tester) async {
       final accounts = [
-        {'account_id_232143': 'acc_1', 'name_232143': 'Cash', 'type_232143': 'cash'},
-        {'account_id_232143': 'acc_2', 'name_232143': 'BCA', 'type_232143': 'bank'},
+        {
+          'account_id_232143': 'acc_1',
+          'name_232143': 'Cash',
+          'type_232143': 'cash',
+        },
+        {
+          'account_id_232143': 'acc_2',
+          'name_232143': 'BCA',
+          'type_232143': 'bank',
+        },
       ];
 
       await tester.pumpWidget(
@@ -116,7 +124,9 @@ void main() {
       expect(find.byKey(const ValueKey('all_accounts')), findsOneWidget);
     });
 
-    testWidgets('calls onAccountSelected with null when "Semua" is tapped', (tester) async {
+    testWidgets('calls onAccountSelected with null when "Semua" is tapped', (
+      tester,
+    ) async {
       String? selectedId = 'acc_1';
 
       await tester.pumpWidget(
@@ -126,7 +136,11 @@ void main() {
               selectedAccountId: selectedId,
               onAccountSelected: (id) => selectedId = id,
               accounts: [
-                {'account_id_232143': 'acc_1', 'name_232143': 'Cash', 'type_232143': 'cash'},
+                {
+                  'account_id_232143': 'acc_1',
+                  'name_232143': 'Cash',
+                  'type_232143': 'cash',
+                },
               ],
             ),
           ),
@@ -139,27 +153,38 @@ void main() {
       expect(selectedId, isNull);
     });
 
-    testWidgets('calls onAccountSelected with account id when account is tapped', (tester) async {
-      String? selectedId;
+    testWidgets(
+      'calls onAccountSelected with account id when account is tapped',
+      (tester) async {
+        String? selectedId;
 
-      await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: MockAccountSection(
-              onAccountSelected: (id) => selectedId = id,
-              accounts: [
-                {'account_id_232143': 'acc_1', 'name_232143': 'Cash', 'type_232143': 'cash'},
-                {'account_id_232143': 'acc_bca', 'name_232143': 'BCA', 'type_232143': 'bank'},
-              ],
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Scaffold(
+              body: MockAccountSection(
+                onAccountSelected: (id) => selectedId = id,
+                accounts: [
+                  {
+                    'account_id_232143': 'acc_1',
+                    'name_232143': 'Cash',
+                    'type_232143': 'cash',
+                  },
+                  {
+                    'account_id_232143': 'acc_bca',
+                    'name_232143': 'BCA',
+                    'type_232143': 'bank',
+                  },
+                ],
+              ),
             ),
           ),
-        ),
-      );
+        );
 
-      await tester.tap(find.text('BCA'));
-      await tester.pump();
+        await tester.tap(find.text('BCA'));
+        await tester.pump();
 
-      expect(selectedId, 'acc_bca');
-    });
+        expect(selectedId, 'acc_bca');
+      },
+    );
   });
 }

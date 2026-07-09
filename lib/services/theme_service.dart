@@ -6,10 +6,8 @@ enum AppThemeMode { light, dark, system }
 class ThemeService extends ChangeNotifier {
   static const String _themeKey = 'app_theme_mode';
   AppThemeMode _themeMode = AppThemeMode.system; // Default to system
-  bool _isTransitioning = false;
 
   AppThemeMode get themeMode => _themeMode;
-  bool get isTransitioning => _isTransitioning;
 
   ThemeService() {
     _loadTheme();
@@ -18,7 +16,10 @@ class ThemeService extends ChangeNotifier {
 
   /// Listen to system theme changes
   void _listenToSystemTheme() {
-    WidgetsBinding.instance.platformDispatcher.onPlatformBrightnessChanged = () {
+    WidgetsBinding
+        .instance
+        .platformDispatcher
+        .onPlatformBrightnessChanged = () {
       if (_themeMode == AppThemeMode.system) {
         notifyListeners();
       }
@@ -40,15 +41,7 @@ class ThemeService extends ChangeNotifier {
 
   Future<void> setThemeMode(AppThemeMode mode) async {
     if (_themeMode == mode) return;
-
-    _isTransitioning = true;
-    notifyListeners();
-
-    // Note: Removed delay - theme change is instant for better UX
-    // If smooth transition is needed, use AnimatedTheme widget instead
-
     _themeMode = mode;
-    _isTransitioning = false;
     notifyListeners();
 
     final prefs = await SharedPreferences.getInstance();

@@ -7,12 +7,18 @@ import 'dart:convert';
 
 /// Local Data Service - Replaces all API calls with local database operations
 class LocalDataService {
-  final LocalDatabaseService _dbService = LocalDatabaseService();
-  final LocalAuthService _authService = LocalAuthService();
+  final LocalDatabaseService _dbService;
+  final LocalAuthService _authService;
   final _uuid = const Uuid();
 
+  LocalDataService({
+    LocalDatabaseService? dbService,
+    LocalAuthService? authService,
+  }) : _dbService = dbService ?? LocalDatabaseService(),
+       _authService = authService ?? LocalAuthService();
+
   /// Get current user ID
-  Future<String?> _getCurrentUserId() async {
+  Future<String?> getCurrentUserId() async {
     return await _authService.getCurrentUserId();
   }
 
@@ -32,7 +38,7 @@ class LocalDataService {
     String? search,
   }) async {
     try {
-      final userId = await _getCurrentUserId();
+      final userId = await getCurrentUserId();
       if (userId == null) throw Exception('Not authenticated');
 
       final db = await _dbService.database;
@@ -105,7 +111,7 @@ class LocalDataService {
   /// Get single transaction
   Future<Map<String, dynamic>?> getTransaction(String id) async {
     try {
-      final userId = await _getCurrentUserId();
+      final userId = await getCurrentUserId();
       if (userId == null) throw Exception('Not authenticated');
 
       final db = await _dbService.database;
@@ -137,7 +143,7 @@ class LocalDataService {
     Map<String, dynamic> transactionData,
   ) async {
     try {
-      final userId = await _getCurrentUserId();
+      final userId = await getCurrentUserId();
       if (userId == null) throw Exception('Not authenticated');
 
       final db = await _dbService.database;
@@ -209,7 +215,7 @@ class LocalDataService {
     Map<String, dynamic> transactionData,
   ) async {
     try {
-      final userId = await _getCurrentUserId();
+      final userId = await getCurrentUserId();
       if (userId == null) throw Exception('Not authenticated');
 
       final db = await _dbService.database;
@@ -225,7 +231,8 @@ class LocalDataService {
 
       if (oldTxn.isNotEmpty) {
         final oldAccountId = oldTxn.first['account_id_232143'] as String?;
-        final oldAmount = (oldTxn.first['amount_232143'] as num?)?.toDouble() ?? 0.0;
+        final oldAmount =
+            (oldTxn.first['amount_232143'] as num?)?.toDouble() ?? 0.0;
         final oldType = oldTxn.first['type_232143'] as String? ?? '';
 
         // Reverse old balance effect
@@ -280,7 +287,10 @@ class LocalDataService {
       final newAccountId = transactionData['account_id'] as String?;
       final newAmount = (transactionData['amount'] as num?)?.toDouble();
       final newType = transactionData['type'] as String?;
-      if (newAccountId != null && newAccountId.isNotEmpty && newAmount != null && newType != null) {
+      if (newAccountId != null &&
+          newAccountId.isNotEmpty &&
+          newAmount != null &&
+          newType != null) {
         double newChange = 0;
         if (newType == 'income') {
           newChange = newAmount;
@@ -303,7 +313,7 @@ class LocalDataService {
   /// Delete transaction
   Future<void> deleteTransaction(String id) async {
     try {
-      final userId = await _getCurrentUserId();
+      final userId = await getCurrentUserId();
       if (userId == null) throw Exception('Not authenticated');
 
       final db = await _dbService.database;
@@ -319,7 +329,8 @@ class LocalDataService {
       if (oldTxn.isNotEmpty) {
         final accountId = oldTxn.first['account_id_232143'] as String?;
         if (accountId != null && accountId.isNotEmpty) {
-          final amount = (oldTxn.first['amount_232143'] as num?)?.toDouble() ?? 0.0;
+          final amount =
+              (oldTxn.first['amount_232143'] as num?)?.toDouble() ?? 0.0;
           final type = oldTxn.first['type_232143'] as String? ?? '';
           double balanceChange = 0;
           if (type == 'income') {
@@ -385,7 +396,7 @@ class LocalDataService {
     int? month,
   }) async {
     try {
-      final userId = await _getCurrentUserId();
+      final userId = await getCurrentUserId();
       if (userId == null) throw Exception('Not authenticated');
 
       final db = await _dbService.database;
@@ -436,7 +447,7 @@ class LocalDataService {
   /// Get categories
   Future<List<Map<String, dynamic>>> getCategories() async {
     try {
-      final userId = await _getCurrentUserId();
+      final userId = await getCurrentUserId();
       if (userId == null) throw Exception('Not authenticated');
 
       final db = await _dbService.database;
@@ -459,7 +470,7 @@ class LocalDataService {
     Map<String, dynamic> categoryData,
   ) async {
     try {
-      final userId = await _getCurrentUserId();
+      final userId = await getCurrentUserId();
       if (userId == null) throw Exception('Not authenticated');
 
       final db = await _dbService.database;
@@ -495,7 +506,7 @@ class LocalDataService {
     Map<String, dynamic> categoryData,
   ) async {
     try {
-      final userId = await _getCurrentUserId();
+      final userId = await getCurrentUserId();
       if (userId == null) throw Exception('Not authenticated');
 
       final db = await _dbService.database;
@@ -539,7 +550,7 @@ class LocalDataService {
   /// Delete category
   Future<void> deleteCategory(String id) async {
     try {
-      final userId = await _getCurrentUserId();
+      final userId = await getCurrentUserId();
       if (userId == null) throw Exception('Not authenticated');
 
       final db = await _dbService.database;
@@ -563,7 +574,7 @@ class LocalDataService {
     bool activeOnly = true,
   }) async {
     try {
-      final userId = await _getCurrentUserId();
+      final userId = await getCurrentUserId();
       if (userId == null) throw Exception('Not authenticated');
 
       final db = await _dbService.database;
@@ -593,7 +604,7 @@ class LocalDataService {
     Map<String, dynamic> budgetData,
   ) async {
     try {
-      final userId = await _getCurrentUserId();
+      final userId = await getCurrentUserId();
       if (userId == null) throw Exception('Not authenticated');
 
       final db = await _dbService.database;
@@ -610,7 +621,8 @@ class LocalDataService {
         'period_end_232143': budgetData['period_end'],
         'spent_amount_232143': 0.0,
         'remaining_amount_232143': budgetData['amount'],
-        'rollover_enabled_232143': budgetData['rollover_enabled'] == true ? 1 : 0,
+        'rollover_enabled_232143':
+            budgetData['rollover_enabled'] == true ? 1 : 0,
         'alert_threshold_232143': budgetData['alert_threshold'] ?? 80,
         'is_active_232143': budgetData['is_active'] == false ? 0 : 1,
         'created_at_232143': now,
@@ -629,7 +641,7 @@ class LocalDataService {
   /// Delete budget
   Future<Map<String, dynamic>> deleteBudget(String budgetId) async {
     try {
-      final userId = await _getCurrentUserId();
+      final userId = await getCurrentUserId();
       if (userId == null) throw Exception('Not authenticated');
 
       final db = await _dbService.database;
@@ -658,7 +670,7 @@ class LocalDataService {
     Map<String, dynamic> budgetData,
   ) async {
     try {
-      final userId = await _getCurrentUserId();
+      final userId = await getCurrentUserId();
       if (userId == null) throw Exception('Not authenticated');
 
       final db = await _dbService.database;
@@ -702,7 +714,7 @@ class LocalDataService {
   /// Get goals
   Future<List<Map<String, dynamic>>> getGoals() async {
     try {
-      final userId = await _getCurrentUserId();
+      final userId = await getCurrentUserId();
       if (userId == null) throw Exception('Not authenticated');
 
       final db = await _dbService.database;
@@ -723,7 +735,7 @@ class LocalDataService {
   /// Add goal
   Future<Map<String, dynamic>> addGoal(Map<String, dynamic> goalData) async {
     try {
-      final userId = await _getCurrentUserId();
+      final userId = await getCurrentUserId();
       if (userId == null) throw Exception('Not authenticated');
 
       final db = await _dbService.database;
@@ -760,7 +772,7 @@ class LocalDataService {
     Map<String, dynamic> goalData,
   ) async {
     try {
-      final userId = await _getCurrentUserId();
+      final userId = await getCurrentUserId();
       if (userId == null) throw Exception('Not authenticated');
 
       final db = await _dbService.database;
@@ -813,7 +825,7 @@ class LocalDataService {
   /// Delete goal
   Future<Map<String, dynamic>> deleteGoal(String goalId) async {
     try {
-      final userId = await _getCurrentUserId();
+      final userId = await getCurrentUserId();
       if (userId == null) throw Exception('Not authenticated');
 
       final db = await _dbService.database;
@@ -845,7 +857,7 @@ class LocalDataService {
     String? note,
   }) async {
     try {
-      final userId = await _getCurrentUserId();
+      final userId = await getCurrentUserId();
       if (userId == null) throw Exception('Not authenticated');
 
       final db = await _dbService.database;
@@ -872,7 +884,8 @@ class LocalDataService {
 
         if (accountResult.isNotEmpty) {
           final currentBalance =
-              (accountResult.first['balance_232143'] as num?)?.toDouble() ?? 0.0;
+              (accountResult.first['balance_232143'] as num?)?.toDouble() ??
+              0.0;
           if (currentBalance < amount) {
             throw Exception('Saldo tidak mencukupi');
           }
@@ -980,7 +993,7 @@ class LocalDataService {
   /// Get total contributed amount across all goals
   Future<double> getTotalGoalContributions() async {
     try {
-      final userId = await _getCurrentUserId();
+      final userId = await getCurrentUserId();
       if (userId == null) return 0.0;
 
       final db = await _dbService.database;
@@ -1002,7 +1015,7 @@ class LocalDataService {
   /// Get obligations
   Future<List<Map<String, dynamic>>> getObligations({String? type}) async {
     try {
-      final userId = await _getCurrentUserId();
+      final userId = await getCurrentUserId();
       if (userId == null) throw Exception('Not authenticated');
 
       final db = await _dbService.database;
@@ -1031,7 +1044,7 @@ class LocalDataService {
     int days = 7,
   }) async {
     try {
-      final userId = await _getCurrentUserId();
+      final userId = await getCurrentUserId();
       if (userId == null) throw Exception('Not authenticated');
 
       final db = await _dbService.database;
@@ -1058,7 +1071,7 @@ class LocalDataService {
     Map<String, dynamic> obligationData,
   ) async {
     try {
-      final userId = await _getCurrentUserId();
+      final userId = await getCurrentUserId();
       if (userId == null) throw Exception('Not authenticated');
 
       final db = await _dbService.database;
@@ -1103,7 +1116,7 @@ class LocalDataService {
     Map<String, dynamic> obligationData,
   ) async {
     try {
-      final userId = await _getCurrentUserId();
+      final userId = await getCurrentUserId();
       if (userId == null) throw Exception('Not authenticated');
 
       final db = await _dbService.database;
@@ -1175,7 +1188,7 @@ class LocalDataService {
   /// Delete obligation
   Future<Map<String, dynamic>> deleteObligation(String obligationId) async {
     try {
-      final userId = await _getCurrentUserId();
+      final userId = await getCurrentUserId();
       if (userId == null) throw Exception('Not authenticated');
 
       final db = await _dbService.database;
@@ -1199,7 +1212,7 @@ class LocalDataService {
     Map<String, dynamic> paymentData,
   ) async {
     try {
-      final userId = await _getCurrentUserId();
+      final userId = await getCurrentUserId();
       if (userId == null) throw Exception('Not authenticated');
 
       final db = await _dbService.database;
@@ -1299,7 +1312,7 @@ class LocalDataService {
   ) async {
     try {
       final db = await _dbService.database;
-      final userId = await _getCurrentUserId();
+      final userId = await getCurrentUserId();
 
       if (userId == null) {
         LoggerService.warning('User not authenticated');
@@ -1356,7 +1369,7 @@ class LocalDataService {
   /// Carries unused budget to the next period for enabled budgets
   Future<Map<String, dynamic>> processBudgetRollover() async {
     try {
-      final userId = await _getCurrentUserId();
+      final userId = await getCurrentUserId();
       if (userId == null) throw Exception('Not authenticated');
 
       final db = await _dbService.database;
@@ -1372,8 +1385,7 @@ class LocalDataService {
 
       for (var budget in rolloverBudgets) {
         final budgetId = budget['budget_id_232143'] as String;
-        final amount =
-            (budget['amount_232143'] as num?)?.toDouble() ?? 0.0;
+        final amount = (budget['amount_232143'] as num?)?.toDouble() ?? 0.0;
         final spent =
             (budget['spent_amount_232143'] as num?)?.toDouble() ?? 0.0;
         final remaining = amount - spent;
@@ -1416,8 +1428,7 @@ class LocalDataService {
           'period_end_232143': newPeriodEnd.toIso8601String(),
           'spent_amount_232143': 0.0,
           'rollover_enabled_232143': 1,
-          'alert_threshold_232143':
-              budget['alert_threshold_232143'] ?? 80,
+          'alert_threshold_232143': budget['alert_threshold_232143'] ?? 80,
           'is_active_232143': 1,
           'remaining_amount_232143': amount + remaining,
           'recommendation_reason_232143':
@@ -1435,13 +1446,8 @@ class LocalDataService {
         processedCount++;
       }
 
-      LoggerService.info(
-        '✅ Processed rollover for $processedCount budgets',
-      );
-      return {
-        'success': true,
-        'processed_count': processedCount,
-      };
+      LoggerService.info('✅ Processed rollover for $processedCount budgets');
+      return {'success': true, 'processed_count': processedCount};
     } catch (e) {
       LoggerService.error('Error processing budget rollover', error: e);
       rethrow;
@@ -1453,7 +1459,7 @@ class LocalDataService {
     int months = 3,
   }) async {
     try {
-      final userId = await _getCurrentUserId();
+      final userId = await getCurrentUserId();
       if (userId == null) throw Exception('Not authenticated');
 
       final db = await _dbService.database;
@@ -1516,12 +1522,12 @@ class LocalDataService {
             (budget['amount_232143'] as num?)?.toDouble() ?? 0.0;
         final currentSpent =
             (budget['spent_amount_232143'] as num?)?.toDouble() ?? 0.0;
-        final averages = monthlySpending
-            .map((m) => m['spent'] as double)
-            .toList();
-        final avgSpending = averages.isNotEmpty
-            ? averages.reduce((a, b) => a + b) / averages.length
-            : 0.0;
+        final averages =
+            monthlySpending.map((m) => m['spent'] as double).toList();
+        final avgSpending =
+            averages.isNotEmpty
+                ? averages.reduce((a, b) => a + b) / averages.length
+                : 0.0;
 
         trends.add({
           'budget_id': budget['budget_id_232143'],
@@ -1550,16 +1556,17 @@ class LocalDataService {
     Map<String, dynamic> receiptData,
   ) async {
     try {
-      final userId = await _getCurrentUserId();
+      final userId = await getCurrentUserId();
       if (userId == null) throw Exception('Not authenticated');
 
       final db = await _dbService.database;
       final receiptId = _uuid.v4();
       final now = DateTime.now().toIso8601String();
 
-      final itemsJson = receiptData['items'] != null
-          ? jsonEncode(receiptData['items'])
-          : null;
+      final itemsJson =
+          receiptData['items'] != null
+              ? jsonEncode(receiptData['items'])
+              : null;
 
       final data = {
         'receipt_id_232143': receiptId,
@@ -1594,7 +1601,7 @@ class LocalDataService {
     bool? processedOnly,
   }) async {
     try {
-      final userId = await _getCurrentUserId();
+      final userId = await getCurrentUserId();
       if (userId == null) throw Exception('Not authenticated');
 
       final db = await _dbService.database;
@@ -1641,7 +1648,7 @@ class LocalDataService {
   /// Get a single receipt scan
   Future<Map<String, dynamic>?> getReceiptScan(String receiptId) async {
     try {
-      final userId = await _getCurrentUserId();
+      final userId = await getCurrentUserId();
       if (userId == null) throw Exception('Not authenticated');
 
       final db = await _dbService.database;
@@ -1675,7 +1682,7 @@ class LocalDataService {
   /// Delete a receipt scan
   Future<Map<String, dynamic>> deleteReceiptScan(String receiptId) async {
     try {
-      final userId = await _getCurrentUserId();
+      final userId = await getCurrentUserId();
       if (userId == null) throw Exception('Not authenticated');
 
       final db = await _dbService.database;
@@ -1714,7 +1721,7 @@ class LocalDataService {
     String transactionId,
   ) async {
     try {
-      final userId = await _getCurrentUserId();
+      final userId = await getCurrentUserId();
       if (userId == null) throw Exception('Not authenticated');
 
       final db = await _dbService.database;
@@ -1735,10 +1742,7 @@ class LocalDataService {
         LoggerService.info(
           '✅ Receipt linked to transaction: $receiptId -> $transactionId',
         );
-        return {
-          'success': true,
-          'message': 'Receipt linked successfully',
-        };
+        return {'success': true, 'message': 'Receipt linked successfully'};
       } else {
         return {'success': false, 'message': 'Receipt not found'};
       }
@@ -1750,9 +1754,11 @@ class LocalDataService {
 
   // ==================== ACCOUNTS ====================
 
-  Future<List<Map<String, dynamic>>> getAccounts({bool activeOnly = true}) async {
+  Future<List<Map<String, dynamic>>> getAccounts({
+    bool activeOnly = true,
+  }) async {
     try {
-      final userId = await _getCurrentUserId();
+      final userId = await getCurrentUserId();
       if (userId == null) throw Exception('Not authenticated');
 
       final db = await _dbService.database;
@@ -1777,9 +1783,11 @@ class LocalDataService {
     }
   }
 
-  Future<Map<String, dynamic>> addAccount(Map<String, dynamic> accountData) async {
+  Future<Map<String, dynamic>> addAccount(
+    Map<String, dynamic> accountData,
+  ) async {
     try {
-      final userId = await _getCurrentUserId();
+      final userId = await getCurrentUserId();
       if (userId == null) throw Exception('Not authenticated');
 
       final db = await _dbService.database;
@@ -1817,7 +1825,7 @@ class LocalDataService {
     Map<String, dynamic> accountData,
   ) async {
     try {
-      final userId = await _getCurrentUserId();
+      final userId = await getCurrentUserId();
       if (userId == null) throw Exception('Not authenticated');
 
       final db = await _dbService.database;
@@ -1825,16 +1833,26 @@ class LocalDataService {
 
       final updateData = <String, dynamic>{'updated_at_232143': now};
 
-      if (accountData.containsKey('name')) updateData['name_232143'] = accountData['name'];
-      if (accountData.containsKey('type')) updateData['type_232143'] = accountData['type'];
-      if (accountData.containsKey('icon')) updateData['icon_232143'] = accountData['icon'];
-      if (accountData.containsKey('color')) updateData['color_232143'] = accountData['color'];
-      if (accountData.containsKey('balance')) updateData['balance_232143'] = accountData['balance'];
-      if (accountData.containsKey('currency')) updateData['currency_232143'] = accountData['currency'];
-      if (accountData.containsKey('account_number')) updateData['account_number_232143'] = accountData['account_number'];
-      if (accountData.containsKey('bank_name')) updateData['bank_name_232143'] = accountData['bank_name'];
-      if (accountData.containsKey('is_active')) updateData['is_active_232143'] = accountData['is_active'] ? 1 : 0;
-      if (accountData.containsKey('is_default')) updateData['is_default_232143'] = accountData['is_default'] ? 1 : 0;
+      if (accountData.containsKey('name'))
+        updateData['name_232143'] = accountData['name'];
+      if (accountData.containsKey('type'))
+        updateData['type_232143'] = accountData['type'];
+      if (accountData.containsKey('icon'))
+        updateData['icon_232143'] = accountData['icon'];
+      if (accountData.containsKey('color'))
+        updateData['color_232143'] = accountData['color'];
+      if (accountData.containsKey('balance'))
+        updateData['balance_232143'] = accountData['balance'];
+      if (accountData.containsKey('currency'))
+        updateData['currency_232143'] = accountData['currency'];
+      if (accountData.containsKey('account_number'))
+        updateData['account_number_232143'] = accountData['account_number'];
+      if (accountData.containsKey('bank_name'))
+        updateData['bank_name_232143'] = accountData['bank_name'];
+      if (accountData.containsKey('is_active'))
+        updateData['is_active_232143'] = accountData['is_active'] ? 1 : 0;
+      if (accountData.containsKey('is_default'))
+        updateData['is_default_232143'] = accountData['is_default'] ? 1 : 0;
 
       await db.update(
         'accounts_232143',
@@ -1859,7 +1877,7 @@ class LocalDataService {
 
   Future<Map<String, dynamic>> deleteAccount(String accountId) async {
     try {
-      final userId = await _getCurrentUserId();
+      final userId = await getCurrentUserId();
       if (userId == null) throw Exception('Not authenticated');
 
       final db = await _dbService.database;
@@ -1883,7 +1901,7 @@ class LocalDataService {
 
   Future<Map<String, dynamic>> getAccount(String accountId) async {
     try {
-      final userId = await _getCurrentUserId();
+      final userId = await getCurrentUserId();
       if (userId == null) throw Exception('Not authenticated');
 
       final db = await _dbService.database;
@@ -1903,7 +1921,7 @@ class LocalDataService {
 
   Future<Map<String, dynamic>> getAccountSummary() async {
     try {
-      final userId = await _getCurrentUserId();
+      final userId = await getCurrentUserId();
       if (userId == null) throw Exception('Not authenticated');
 
       final db = await _dbService.database;
@@ -1927,7 +1945,11 @@ class LocalDataService {
         byType[type] = {'balance': balance, 'count': row['count']};
       }
 
-      return {'total_balance': totalBalance, 'by_type': byType, 'account_count': result.length};
+      return {
+        'total_balance': totalBalance,
+        'by_type': byType,
+        'account_count': result.length,
+      };
     } catch (e) {
       LoggerService.error('Error getting account summary', error: e);
       rethrow;
@@ -1938,7 +1960,7 @@ class LocalDataService {
 
   Future<List<Map<String, dynamic>>> getDebts({bool activeOnly = true}) async {
     try {
-      final userId = await _getCurrentUserId();
+      final userId = await getCurrentUserId();
       if (userId == null) throw Exception('Not authenticated');
 
       final db = await _dbService.database;
@@ -1965,7 +1987,7 @@ class LocalDataService {
 
   Future<Map<String, dynamic>> addDebt(Map<String, dynamic> debtData) async {
     try {
-      final userId = await _getCurrentUserId();
+      final userId = await getCurrentUserId();
       if (userId == null) throw Exception('Not authenticated');
 
       final db = await _dbService.database;
@@ -2004,7 +2026,7 @@ class LocalDataService {
     String? notes,
   }) async {
     try {
-      final userId = await _getCurrentUserId();
+      final userId = await getCurrentUserId();
       if (userId == null) throw Exception('Not authenticated');
 
       final db = await _dbService.database;
@@ -2020,7 +2042,8 @@ class LocalDataService {
       if (debtResult.isEmpty) throw Exception('Debt not found');
 
       final debt = debtResult.first;
-      final currentBalance = (debt['current_balance_232143'] as num?)?.toDouble() ?? 0.0;
+      final currentBalance =
+          (debt['current_balance_232143'] as num?)?.toDouble() ?? 0.0;
       final newBalance = (currentBalance - amount).clamp(0.0, currentBalance);
 
       await db.update(
@@ -2046,7 +2069,11 @@ class LocalDataService {
       });
 
       LoggerService.info('✅ Debt payment recorded: $amount for $debtId');
-      return {'success': true, 'new_balance': newBalance, 'payment_id': paymentId};
+      return {
+        'success': true,
+        'new_balance': newBalance,
+        'payment_id': paymentId,
+      };
     } catch (e) {
       LoggerService.error('Error recording debt payment', error: e);
       rethrow;
@@ -2055,7 +2082,7 @@ class LocalDataService {
 
   Future<List<Map<String, dynamic>>> getDebtPayments(String debtId) async {
     try {
-      final userId = await _getCurrentUserId();
+      final userId = await getCurrentUserId();
       if (userId == null) throw Exception('Not authenticated');
 
       final db = await _dbService.database;
@@ -2075,7 +2102,7 @@ class LocalDataService {
 
   Future<Map<String, dynamic>> getDebtSummary() async {
     try {
-      final userId = await _getCurrentUserId();
+      final userId = await getCurrentUserId();
       if (userId == null) throw Exception('Not authenticated');
 
       final db = await _dbService.database;
@@ -2109,7 +2136,7 @@ class LocalDataService {
 
   Future<Map<String, dynamic>> deleteDebt(String debtId) async {
     try {
-      final userId = await _getCurrentUserId();
+      final userId = await getCurrentUserId();
       if (userId == null) throw Exception('Not authenticated');
 
       final db = await _dbService.database;
@@ -2133,9 +2160,11 @@ class LocalDataService {
 
   // ==================== SUBSCRIPTIONS ====================
 
-  Future<List<Map<String, dynamic>>> getSubscriptions({bool activeOnly = true}) async {
+  Future<List<Map<String, dynamic>>> getSubscriptions({
+    bool activeOnly = true,
+  }) async {
     try {
-      final userId = await _getCurrentUserId();
+      final userId = await getCurrentUserId();
       if (userId == null) throw Exception('Not authenticated');
 
       final db = await _dbService.database;
@@ -2160,9 +2189,11 @@ class LocalDataService {
     }
   }
 
-  Future<Map<String, dynamic>> addSubscription(Map<String, dynamic> subData) async {
+  Future<Map<String, dynamic>> addSubscription(
+    Map<String, dynamic> subData,
+  ) async {
     try {
-      final userId = await _getCurrentUserId();
+      final userId = await getCurrentUserId();
       if (userId == null) throw Exception('Not authenticated');
 
       final db = await _dbService.database;
@@ -2199,7 +2230,7 @@ class LocalDataService {
     Map<String, dynamic> subData,
   ) async {
     try {
-      final userId = await _getCurrentUserId();
+      final userId = await getCurrentUserId();
       if (userId == null) throw Exception('Not authenticated');
 
       final db = await _dbService.database;
@@ -2207,14 +2238,22 @@ class LocalDataService {
 
       final updateData = <String, dynamic>{'updated_at_232143': now};
 
-      if (subData.containsKey('name')) updateData['name_232143'] = subData['name'];
-      if (subData.containsKey('cost')) updateData['cost_232143'] = subData['cost'];
-      if (subData.containsKey('cycle')) updateData['cycle_232143'] = subData['cycle'];
-      if (subData.containsKey('category')) updateData['category_232143'] = subData['category'];
-      if (subData.containsKey('next_renewal')) updateData['next_renewal_232143'] = subData['next_renewal'];
-      if (subData.containsKey('is_active')) updateData['is_active_232143'] = subData['is_active'] ? 1 : 0;
-      if (subData.containsKey('notes')) updateData['notes_232143'] = subData['notes'];
-      if (subData.containsKey('account_id')) updateData['account_id_232143'] = subData['account_id'];
+      if (subData.containsKey('name'))
+        updateData['name_232143'] = subData['name'];
+      if (subData.containsKey('cost'))
+        updateData['cost_232143'] = subData['cost'];
+      if (subData.containsKey('cycle'))
+        updateData['cycle_232143'] = subData['cycle'];
+      if (subData.containsKey('category'))
+        updateData['category_232143'] = subData['category'];
+      if (subData.containsKey('next_renewal'))
+        updateData['next_renewal_232143'] = subData['next_renewal'];
+      if (subData.containsKey('is_active'))
+        updateData['is_active_232143'] = subData['is_active'] ? 1 : 0;
+      if (subData.containsKey('notes'))
+        updateData['notes_232143'] = subData['notes'];
+      if (subData.containsKey('account_id'))
+        updateData['account_id_232143'] = subData['account_id'];
 
       await db.update(
         'subscriptions_232143',
@@ -2239,7 +2278,7 @@ class LocalDataService {
 
   Future<Map<String, dynamic>> deleteSubscription(String subId) async {
     try {
-      final userId = await _getCurrentUserId();
+      final userId = await getCurrentUserId();
       if (userId == null) throw Exception('Not authenticated');
 
       final db = await _dbService.database;
@@ -2263,7 +2302,7 @@ class LocalDataService {
 
   Future<Map<String, dynamic>> getSubscriptionSummary() async {
     try {
-      final userId = await _getCurrentUserId();
+      final userId = await getCurrentUserId();
       if (userId == null) throw Exception('Not authenticated');
 
       final db = await _dbService.database;
@@ -2313,7 +2352,7 @@ class LocalDataService {
 
   Future<List<Map<String, dynamic>>> getTags() async {
     try {
-      final userId = await _getCurrentUserId();
+      final userId = await getCurrentUserId();
       if (userId == null) throw Exception('Not authenticated');
 
       final db = await _dbService.database;
@@ -2333,7 +2372,7 @@ class LocalDataService {
 
   Future<Map<String, dynamic>> addTag(Map<String, dynamic> tagData) async {
     try {
-      final userId = await _getCurrentUserId();
+      final userId = await getCurrentUserId();
       if (userId == null) throw Exception('Not authenticated');
 
       final db = await _dbService.database;
@@ -2348,7 +2387,9 @@ class LocalDataService {
       });
 
       LoggerService.info('✅ Tag added: $tagId');
-      return {'tag': {'tag_id_232143': tagId, ...tagData}};
+      return {
+        'tag': {'tag_id_232143': tagId, ...tagData},
+      };
     } catch (e) {
       LoggerService.error('Error adding tag', error: e);
       rethrow;
@@ -2357,7 +2398,7 @@ class LocalDataService {
 
   Future<Map<String, dynamic>> deleteTag(String tagId) async {
     try {
-      final userId = await _getCurrentUserId();
+      final userId = await getCurrentUserId();
       if (userId == null) throw Exception('Not authenticated');
 
       final db = await _dbService.database;
@@ -2379,7 +2420,9 @@ class LocalDataService {
     }
   }
 
-  Future<List<Map<String, dynamic>>> getTransactionTags(String transactionId) async {
+  Future<List<Map<String, dynamic>>> getTransactionTags(
+    String transactionId,
+  ) async {
     try {
       final db = await _dbService.database;
       final result = await db.rawQuery(
@@ -2427,9 +2470,12 @@ class LocalDataService {
 
   // ==================== EXPENSE SPLITS ====================
 
-  Future<List<Map<String, dynamic>>> getSplits({String? transactionId, bool activeOnly = true}) async {
+  Future<List<Map<String, dynamic>>> getSplits({
+    String? transactionId,
+    bool activeOnly = true,
+  }) async {
     try {
-      final userId = await _getCurrentUserId();
+      final userId = await getCurrentUserId();
       if (userId == null) throw Exception('Not authenticated');
 
       final db = await _dbService.database;
@@ -2461,7 +2507,7 @@ class LocalDataService {
 
   Future<Map<String, dynamic>> addSplit(Map<String, dynamic> splitData) async {
     try {
-      final userId = await _getCurrentUserId();
+      final userId = await getCurrentUserId();
       if (userId == null) throw Exception('Not authenticated');
 
       final db = await _dbService.database;
@@ -2482,7 +2528,9 @@ class LocalDataService {
       });
 
       LoggerService.info('✅ Split added: $splitId');
-      return {'split': {'split_id_232143': splitId, ...splitData}};
+      return {
+        'split': {'split_id_232143': splitId, ...splitData},
+      };
     } catch (e) {
       LoggerService.error('Error adding split', error: e);
       rethrow;
@@ -2491,7 +2539,7 @@ class LocalDataService {
 
   Future<Map<String, dynamic>> settleSplit(String splitId) async {
     try {
-      final userId = await _getCurrentUserId();
+      final userId = await getCurrentUserId();
       if (userId == null) throw Exception('Not authenticated');
 
       final db = await _dbService.database;
@@ -2499,10 +2547,7 @@ class LocalDataService {
 
       await db.update(
         'expense_splits_232143',
-        {
-          'is_settled_232143': 1,
-          'settled_at_232143': now,
-        },
+        {'is_settled_232143': 1, 'settled_at_232143': now},
         where: 'split_id_232143 = ? AND user_id_232143 = ?',
         whereArgs: [splitId, userId],
       );
@@ -2517,7 +2562,7 @@ class LocalDataService {
 
   Future<Map<String, dynamic>> deleteSplit(String splitId) async {
     try {
-      final userId = await _getCurrentUserId();
+      final userId = await getCurrentUserId();
       if (userId == null) throw Exception('Not authenticated');
 
       final db = await _dbService.database;
@@ -2541,7 +2586,7 @@ class LocalDataService {
 
   Future<Map<String, dynamic>> getSplitSummary() async {
     try {
-      final userId = await _getCurrentUserId();
+      final userId = await getCurrentUserId();
       if (userId == null) throw Exception('Not authenticated');
 
       final db = await _dbService.database;
@@ -2575,7 +2620,7 @@ class LocalDataService {
 
   Future<List<Map<String, dynamic>>> getInvestments({String? type}) async {
     try {
-      final userId = await _getCurrentUserId();
+      final userId = await getCurrentUserId();
       if (userId == null) throw Exception('Not authenticated');
 
       final db = await _dbService.database;
@@ -2601,9 +2646,11 @@ class LocalDataService {
     }
   }
 
-  Future<Map<String, dynamic>> addInvestment(Map<String, dynamic> invData) async {
+  Future<Map<String, dynamic>> addInvestment(
+    Map<String, dynamic> invData,
+  ) async {
     try {
-      final userId = await _getCurrentUserId();
+      final userId = await getCurrentUserId();
       if (userId == null) throw Exception('Not authenticated');
 
       final db = await _dbService.database;
@@ -2617,7 +2664,8 @@ class LocalDataService {
         'type_232143': invData['type'] ?? 'other',
         'quantity_232143': invData['quantity'],
         'buy_price_232143': invData['buy_price'],
-        'current_price_232143': invData['current_price'] ?? invData['buy_price'],
+        'current_price_232143':
+            invData['current_price'] ?? invData['buy_price'],
         'buy_date_232143': invData['buy_date'] ?? now.split('T')[0],
         'ticker_232143': invData['ticker'],
         'notes_232143': invData['notes'],
@@ -2634,9 +2682,12 @@ class LocalDataService {
     }
   }
 
-  Future<Map<String, dynamic>> updateInvestmentPrice(String invId, double newPrice) async {
+  Future<Map<String, dynamic>> updateInvestmentPrice(
+    String invId,
+    double newPrice,
+  ) async {
     try {
-      final userId = await _getCurrentUserId();
+      final userId = await getCurrentUserId();
       if (userId == null) throw Exception('Not authenticated');
 
       final db = await _dbService.database;
@@ -2660,7 +2711,7 @@ class LocalDataService {
 
   Future<Map<String, dynamic>> deleteInvestment(String invId) async {
     try {
-      final userId = await _getCurrentUserId();
+      final userId = await getCurrentUserId();
       if (userId == null) throw Exception('Not authenticated');
 
       final db = await _dbService.database;
@@ -2684,7 +2735,7 @@ class LocalDataService {
 
   Future<Map<String, dynamic>> getPortfolioSummary() async {
     try {
-      final userId = await _getCurrentUserId();
+      final userId = await getCurrentUserId();
       if (userId == null) throw Exception('Not authenticated');
 
       final db = await _dbService.database;
@@ -2701,7 +2752,8 @@ class LocalDataService {
       for (var inv in investments) {
         final quantity = (inv['quantity_232143'] as num?)?.toDouble() ?? 0.0;
         final buyPrice = (inv['buy_price_232143'] as num?)?.toDouble() ?? 0.0;
-        final currentPrice = (inv['current_price_232143'] as num?)?.toDouble() ?? 0.0;
+        final currentPrice =
+            (inv['current_price_232143'] as num?)?.toDouble() ?? 0.0;
         final type = inv['type_232143'] as String? ?? 'other';
 
         final cost = quantity * buyPrice;
@@ -2736,9 +2788,11 @@ class LocalDataService {
 
   // ==================== CHALLENGES ====================
 
-  Future<List<Map<String, dynamic>>> getChallenges({bool activeOnly = true}) async {
+  Future<List<Map<String, dynamic>>> getChallenges({
+    bool activeOnly = true,
+  }) async {
     try {
-      final userId = await _getCurrentUserId();
+      final userId = await getCurrentUserId();
       if (userId == null) throw Exception('Not authenticated');
 
       final db = await _dbService.database;
@@ -2763,9 +2817,11 @@ class LocalDataService {
     }
   }
 
-  Future<Map<String, dynamic>> addChallenge(Map<String, dynamic> challengeData) async {
+  Future<Map<String, dynamic>> addChallenge(
+    Map<String, dynamic> challengeData,
+  ) async {
     try {
-      final userId = await _getCurrentUserId();
+      final userId = await getCurrentUserId();
       if (userId == null) throw Exception('Not authenticated');
 
       final db = await _dbService.database;
@@ -2803,7 +2859,7 @@ class LocalDataService {
     Map<String, dynamic> challengeData,
   ) async {
     try {
-      final userId = await _getCurrentUserId();
+      final userId = await getCurrentUserId();
       if (userId == null) throw Exception('Not authenticated');
 
       final db = await _dbService.database;
@@ -2811,18 +2867,25 @@ class LocalDataService {
 
       final updateData = <String, dynamic>{'updated_at_232143': now};
 
-      if (challengeData.containsKey('name')) updateData['name_232143'] = challengeData['name'];
-      if (challengeData.containsKey('description')) updateData['description_232143'] = challengeData['description'];
-      if (challengeData.containsKey('target_amount')) updateData['target_amount_232143'] = challengeData['target_amount'];
-      if (challengeData.containsKey('current_amount')) updateData['current_amount_232143'] = challengeData['current_amount'];
-      if (challengeData.containsKey('is_active')) updateData['is_active_232143'] = challengeData['is_active'] ? 1 : 0;
+      if (challengeData.containsKey('name'))
+        updateData['name_232143'] = challengeData['name'];
+      if (challengeData.containsKey('description'))
+        updateData['description_232143'] = challengeData['description'];
+      if (challengeData.containsKey('target_amount'))
+        updateData['target_amount_232143'] = challengeData['target_amount'];
+      if (challengeData.containsKey('current_amount'))
+        updateData['current_amount_232143'] = challengeData['current_amount'];
+      if (challengeData.containsKey('is_active'))
+        updateData['is_active_232143'] = challengeData['is_active'] ? 1 : 0;
       if (challengeData.containsKey('is_completed')) {
-        updateData['is_completed_232143'] = challengeData['is_completed'] ? 1 : 0;
+        updateData['is_completed_232143'] =
+            challengeData['is_completed'] ? 1 : 0;
         if (challengeData['is_completed'] == true) {
           updateData['completed_date_232143'] = now.split('T')[0];
         }
       }
-      if (challengeData.containsKey('streak_days')) updateData['streak_days_232143'] = challengeData['streak_days'];
+      if (challengeData.containsKey('streak_days'))
+        updateData['streak_days_232143'] = challengeData['streak_days'];
 
       await db.update(
         'challenges_232143',
@@ -2841,7 +2904,7 @@ class LocalDataService {
 
   Future<Map<String, dynamic>> deleteChallenge(String challengeId) async {
     try {
-      final userId = await _getCurrentUserId();
+      final userId = await getCurrentUserId();
       if (userId == null) throw Exception('Not authenticated');
 
       final db = await _dbService.database;
@@ -2867,7 +2930,7 @@ class LocalDataService {
 
   Future<List<Map<String, dynamic>>> getTransactionTemplates() async {
     try {
-      final userId = await _getCurrentUserId();
+      final userId = await getCurrentUserId();
       if (userId == null) throw Exception('Not authenticated');
 
       final db = await _dbService.database;
@@ -2885,9 +2948,11 @@ class LocalDataService {
     }
   }
 
-  Future<Map<String, dynamic>> addTransactionTemplate(Map<String, dynamic> templateData) async {
+  Future<Map<String, dynamic>> addTransactionTemplate(
+    Map<String, dynamic> templateData,
+  ) async {
     try {
-      final userId = await _getCurrentUserId();
+      final userId = await getCurrentUserId();
       if (userId == null) throw Exception('Not authenticated');
 
       final db = await _dbService.database;
@@ -2920,9 +2985,11 @@ class LocalDataService {
     }
   }
 
-  Future<Map<String, dynamic>> deleteTransactionTemplate(String templateId) async {
+  Future<Map<String, dynamic>> deleteTransactionTemplate(
+    String templateId,
+  ) async {
     try {
-      final userId = await _getCurrentUserId();
+      final userId = await getCurrentUserId();
       if (userId == null) throw Exception('Not authenticated');
 
       final db = await _dbService.database;
@@ -2944,9 +3011,11 @@ class LocalDataService {
     }
   }
 
-  Future<Map<String, dynamic>> createTransactionFromTemplate(String templateId) async {
+  Future<Map<String, dynamic>> createTransactionFromTemplate(
+    String templateId,
+  ) async {
     try {
-      final userId = await _getCurrentUserId();
+      final userId = await getCurrentUserId();
       if (userId == null) throw Exception('Not authenticated');
 
       final db = await _dbService.database;
@@ -2982,9 +3051,11 @@ class LocalDataService {
 
   // ==================== NET WORTH ====================
 
-  Future<Map<String, dynamic>> recordNetWorthSnapshot(Map<String, dynamic> snapshotData) async {
+  Future<Map<String, dynamic>> recordNetWorthSnapshot(
+    Map<String, dynamic> snapshotData,
+  ) async {
     try {
-      final userId = await _getCurrentUserId();
+      final userId = await getCurrentUserId();
       if (userId == null) throw Exception('Not authenticated');
 
       final db = await _dbService.database;
@@ -2994,16 +3065,19 @@ class LocalDataService {
       await db.insert('net_worth_history_232143', {
         'snapshot_id_232143': snapshotId,
         'user_id_232143': userId,
-        'snapshot_date_232143': snapshotData['snapshot_date'] ?? now.split('T')[0],
+        'snapshot_date_232143':
+            snapshotData['snapshot_date'] ?? now.split('T')[0],
         'net_worth_232143': snapshotData['net_worth'],
         'total_assets_232143': snapshotData['total_assets'],
         'total_liabilities_232143': snapshotData['total_liabilities'],
-        'asset_breakdown_232143': snapshotData['asset_breakdown'] != null
-            ? json.encode(snapshotData['asset_breakdown'])
-            : null,
-        'liability_breakdown_232143': snapshotData['liability_breakdown'] != null
-            ? json.encode(snapshotData['liability_breakdown'])
-            : null,
+        'asset_breakdown_232143':
+            snapshotData['asset_breakdown'] != null
+                ? json.encode(snapshotData['asset_breakdown'])
+                : null,
+        'liability_breakdown_232143':
+            snapshotData['liability_breakdown'] != null
+                ? json.encode(snapshotData['liability_breakdown'])
+                : null,
         'created_at_232143': now,
       });
 
@@ -3015,9 +3089,11 @@ class LocalDataService {
     }
   }
 
-  Future<List<Map<String, dynamic>>> getNetWorthHistory({int limit = 90}) async {
+  Future<List<Map<String, dynamic>>> getNetWorthHistory({
+    int limit = 90,
+  }) async {
     try {
-      final userId = await _getCurrentUserId();
+      final userId = await getCurrentUserId();
       if (userId == null) throw Exception('Not authenticated');
 
       final db = await _dbService.database;
@@ -3029,27 +3105,29 @@ class LocalDataService {
         limit: limit,
       );
 
-      final history = List<Map<String, dynamic>>.from(snapshots).map((s) {
-        final map = Map<String, dynamic>.from(s);
-        final assetBreakdown = map['asset_breakdown_232143'] as String?;
-        final liabilityBreakdown = map['liability_breakdown_232143'] as String?;
+      final history =
+          List<Map<String, dynamic>>.from(snapshots).map((s) {
+            final map = Map<String, dynamic>.from(s);
+            final assetBreakdown = map['asset_breakdown_232143'] as String?;
+            final liabilityBreakdown =
+                map['liability_breakdown_232143'] as String?;
 
-        if (assetBreakdown != null) {
-          try {
-            map['asset_breakdown'] = json.decode(assetBreakdown);
-          } catch (e) {
-            map['asset_breakdown'] = {};
-          }
-        }
-        if (liabilityBreakdown != null) {
-          try {
-            map['liability_breakdown'] = json.decode(liabilityBreakdown);
-          } catch (e) {
-            map['liability_breakdown'] = {};
-          }
-        }
-        return map;
-      }).toList();
+            if (assetBreakdown != null) {
+              try {
+                map['asset_breakdown'] = json.decode(assetBreakdown);
+              } catch (e) {
+                map['asset_breakdown'] = {};
+              }
+            }
+            if (liabilityBreakdown != null) {
+              try {
+                map['liability_breakdown'] = json.decode(liabilityBreakdown);
+              } catch (e) {
+                map['liability_breakdown'] = {};
+              }
+            }
+            return map;
+          }).toList();
 
       return history;
     } catch (e) {
@@ -3060,7 +3138,7 @@ class LocalDataService {
 
   Future<Map<String, dynamic>> getNetWorthTrend() async {
     try {
-      final userId = await _getCurrentUserId();
+      final userId = await getCurrentUserId();
       if (userId == null) throw Exception('Not authenticated');
 
       final db = await _dbService.database;
@@ -3078,12 +3156,18 @@ class LocalDataService {
         return {'trend': 'no_data', 'change': 0.0};
       }
 
-      final first = (result.first['net_worth_232143'] as num?)?.toDouble() ?? 0.0;
+      final first =
+          (result.first['net_worth_232143'] as num?)?.toDouble() ?? 0.0;
       final last = (result.last['net_worth_232143'] as num?)?.toDouble() ?? 0.0;
       final change = first != 0 ? ((last - first) / first.abs()) * 100 : 0.0;
 
       return {
-        'trend': change > 0 ? 'increasing' : change < 0 ? 'decreasing' : 'stable',
+        'trend':
+            change > 0
+                ? 'increasing'
+                : change < 0
+                ? 'decreasing'
+                : 'stable',
         'change_percent': change,
         'start_value': first,
         'end_value': last,
@@ -3146,18 +3230,15 @@ class LocalDataService {
       final now = DateTime.now().toIso8601String();
 
       for (var entry in rates.entries) {
-        final rateId = '${entry.key}_${entry.value}';
-        await db.insert(
-          'exchange_rates_232143',
-          {
-            'rate_id_232143': rateId,
-            'from_currency_232143': 'IDR',
-            'to_currency_232143': entry.key,
-            'rate_232143': entry.value,
-            'last_updated_232143': now,
-          },
-          conflictAlgorithm: ConflictAlgorithm.replace,
-        );
+        // Use currency pair as the ID so rate updates replace the old record
+        final rateId = 'IDR_${entry.key}';
+        await db.insert('exchange_rates_232143', {
+          'rate_id_232143': rateId,
+          'from_currency_232143': 'IDR',
+          'to_currency_232143': entry.key,
+          'rate_232143': entry.value,
+          'last_updated_232143': now,
+        }, conflictAlgorithm: ConflictAlgorithm.replace);
       }
 
       LoggerService.info('✅ Exchange rates updated');

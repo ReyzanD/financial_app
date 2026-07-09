@@ -30,7 +30,9 @@ class QuickAmountSelector extends StatelessWidget {
         decoration: BoxDecoration(
           color: const Color(0xFF8B5FBF).withValues(alpha: 0.2),
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: const Color(0xFF8B5FBF).withValues(alpha: 0.5)),
+          border: Border.all(
+            color: const Color(0xFF8B5FBF).withValues(alpha: 0.5),
+          ),
         ),
         child: Text(
           CurrencyFormatter.formatRupiah(amount.toInt()),

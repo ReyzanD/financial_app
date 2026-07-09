@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 import 'package:crypto/crypto.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
@@ -6,15 +7,13 @@ class PinAuthService {
   final FlutterSecureStorage _secureStorage = const FlutterSecureStorage();
 
   static const String _pinKey = 'user_pin';
+  static const String _pinSaltKey = 'pin_salt';
   static const String _pinLengthKey = 'pin_length';
   static const String _hasPinKey = 'has_pin';
   static const String _pinCreatedAtKey = 'pin_created_at';
   static const String _failedAttemptsKey = 'failed_attempts';
   static const String _lockUntilKey = 'lock_until';
   static const String _lastUnlockKey = 'last_unlock';
-
-  // Salt for PIN hashing (in production, use a more secure salt)
-  static const String _salt = 'FinancialApp_SecureSalt_2024';
 
   /// Check if user has set up a PIN
   Future<bool> hasPin() async {
@@ -28,6 +27,13 @@ class PinAuthService {
     return int.tryParse(length ?? '6') ?? 6;
   }
 
+  /// Generate a cryptographically random salt
+  String _generateSalt() {
+    final random = Random.secure();
+    final saltBytes = List<int>.generate(32, (_) => random.nextInt(256));
+    return base64.encode(saltBytes);
+  }
+
   /// Create new PIN (first-time setup)
   Future<void> createPin(String pin) async {
     if (pin.length != 4 && pin.length != 6) {
@@ -38,10 +44,13 @@ class PinAuthService {
       throw Exception('PIN must contain only numbers');
     }
 
-    final hashedPin = _hashPin(pin);
+    // Generate per-user random salt (no more static hardcoded salt)
+    final salt = _generateSalt();
+    final hashedPin = _hashPin(pin, salt);
     final now = DateTime.now().toIso8601String();
 
     await _secureStorage.write(key: _pinKey, value: hashedPin);
+    await _secureStorage.write(key: _pinSaltKey, value: salt);
     await _secureStorage.write(
       key: _pinLengthKey,
       value: pin.length.toString(),
@@ -63,7 +72,9 @@ class PinAuthService {
       throw Exception('No PIN set');
     }
 
-    final hashedPin = _hashPin(pin);
+    final storedSalt = await _secureStorage.read(key: _pinSaltKey);
+    final salt = storedSalt ?? ''; // Backward compat: empty salt for old hashes
+    final hashedPin = _hashPin(pin, salt);
     final isValid = hashedPin == storedPin;
 
     if (isValid) {
@@ -96,6 +107,7 @@ class PinAuthService {
   /// Clear PIN (on logout)
   Future<void> clearPin() async {
     await _secureStorage.delete(key: _pinKey);
+    await _secureStorage.delete(key: _pinSaltKey);
     await _secureStorage.delete(key: _pinLengthKey);
     await _secureStorage.delete(key: _hasPinKey);
     await _secureStorage.delete(key: _pinCreatedAtKey);
@@ -176,9 +188,9 @@ class PinAuthService {
     }
   }
 
-  /// Hash PIN with salt
-  String _hashPin(String pin) {
-    final bytes = utf8.encode(pin + _salt);
+  /// Hash PIN with the given salt (per-user random salt, not global)
+  String _hashPin(String pin, String salt) {
+    final bytes = utf8.encode(pin + salt);
     final digest = sha256.convert(bytes);
     return digest.toString();
   }

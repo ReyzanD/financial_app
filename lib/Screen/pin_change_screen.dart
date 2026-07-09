@@ -73,6 +73,8 @@ class _PinChangeScreenState extends State<PinChangeScreen> {
   Future<void> _verifyOldPin() async {
     setState(() => _isLoading = true);
 
+    final ctx = context;
+
     try {
       final isValid = await _pinAuthService.verifyPin(_oldPin);
 
@@ -81,22 +83,19 @@ class _PinChangeScreenState extends State<PinChangeScreen> {
           _currentStep = 1;
         });
       } else {
-        ErrorHandlerService.showWarningSnackbar(
-          context,
-          'PIN lama salah',
-        );
+        if (!ctx.mounted) return;
+        ErrorHandlerService.showWarningSnackbar(ctx, 'PIN lama salah');
         setState(() {
           _oldPin = '';
         });
       }
     } catch (e) {
       LoggerService.error('Error verifying old PIN', error: e);
-      if (mounted) {
-        ErrorHandlerService.showErrorSnackbar(
-          context,
-          ErrorHandlerService.getUserFriendlyMessage(e),
-        );
-      }
+      if (!ctx.mounted) return;
+      ErrorHandlerService.showErrorSnackbar(
+        ctx,
+        ErrorHandlerService.getUserFriendlyMessage(e),
+      );
       setState(() {
         _oldPin = '';
       });
@@ -107,10 +106,7 @@ class _PinChangeScreenState extends State<PinChangeScreen> {
 
   Future<void> _saveNewPin() async {
     if (_newPin != _confirmPin) {
-      ErrorHandlerService.showWarningSnackbar(
-        context,
-        'PIN baru tidak cocok',
-      );
+      ErrorHandlerService.showWarningSnackbar(context, 'PIN baru tidak cocok');
       setState(() {
         _newPin = '';
         _confirmPin = '';
@@ -235,105 +231,113 @@ class _PinChangeScreenState extends State<PinChangeScreen> {
               child:
                   _isLoading
                       ? const Center(
-                          child: CircularProgressIndicator(color: Color(0xFF8B5FBF)),
-                        )
+                        child: CircularProgressIndicator(
+                          color: Color(0xFF8B5FBF),
+                        ),
+                      )
                       : SingleChildScrollView(
-                          padding: const EdgeInsets.all(24),
-                          child: Column(
-                            children: [
-                      const SizedBox(height: 20),
-
-                      // Icon
-                      Container(
-                        padding: const EdgeInsets.all(20),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF8B5FBF).withValues(alpha: 0.2),
-                          shape: BoxShape.circle,
-                        ),
-                        child: Icon(
-                          _currentStep == 0 ? Iconsax.lock : Iconsax.lock_1,
-                          size: 60,
-                          color: const Color(0xFF8B5FBF),
-                        ),
-                      ),
-                      const SizedBox(height: 32),
-
-                      // Progress Indicator
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: List.generate(3, (index) {
-                          final isCompleted = index < _currentStep;
-                          final isCurrent = index == _currentStep;
-                          return Container(
-                            margin: const EdgeInsets.symmetric(horizontal: 4),
-                            width: isCurrent ? 32 : 8,
-                            height: 8,
-                            decoration: BoxDecoration(
-                              color:
-                                  isCompleted || isCurrent
-                                      ? const Color(0xFF8B5FBF)
-                                      : Colors.grey[800],
-                              borderRadius: BorderRadius.circular(4),
-                            ),
-                          );
-                        }),
-                      ),
-                      const SizedBox(height: 24),
-
-                      // Title
-                      Text(
-                        _getTitle(),
-                        style: GoogleFonts.poppins(
-                          color: Colors.white,
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-
-                      // Subtitle
-                      Text(
-                        _getSubtitle(),
-                        style: GoogleFonts.poppins(
-                          color: Colors.grey[400],
-                          fontSize: 14,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                      const SizedBox(height: 40),
-
-                      // PIN Length Selection (only on new PIN step)
-                      if (_currentStep == 1) ...[
-                        Text(
-                          'Pilih Panjang PIN',
-                          style: GoogleFonts.poppins(
-                            color: Colors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
+                        padding: const EdgeInsets.all(24),
+                        child: Column(
                           children: [
-                            _buildPinLengthButton(4),
-                            const SizedBox(width: 16),
-                            _buildPinLengthButton(6),
+                            const SizedBox(height: 20),
+
+                            // Icon
+                            Container(
+                              padding: const EdgeInsets.all(20),
+                              decoration: BoxDecoration(
+                                color: const Color(
+                                  0xFF8B5FBF,
+                                ).withValues(alpha: 0.2),
+                                shape: BoxShape.circle,
+                              ),
+                              child: Icon(
+                                _currentStep == 0
+                                    ? Iconsax.lock
+                                    : Iconsax.lock_1,
+                                size: 60,
+                                color: const Color(0xFF8B5FBF),
+                              ),
+                            ),
+                            const SizedBox(height: 32),
+
+                            // Progress Indicator
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: List.generate(3, (index) {
+                                final isCompleted = index < _currentStep;
+                                final isCurrent = index == _currentStep;
+                                return Container(
+                                  margin: const EdgeInsets.symmetric(
+                                    horizontal: 4,
+                                  ),
+                                  width: isCurrent ? 32 : 8,
+                                  height: 8,
+                                  decoration: BoxDecoration(
+                                    color:
+                                        isCompleted || isCurrent
+                                            ? const Color(0xFF8B5FBF)
+                                            : Colors.grey[800],
+                                    borderRadius: BorderRadius.circular(4),
+                                  ),
+                                );
+                              }),
+                            ),
+                            const SizedBox(height: 24),
+
+                            // Title
+                            Text(
+                              _getTitle(),
+                              style: GoogleFonts.poppins(
+                                color: Colors.white,
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+
+                            // Subtitle
+                            Text(
+                              _getSubtitle(),
+                              style: GoogleFonts.poppins(
+                                color: Colors.grey[400],
+                                fontSize: 14,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                            const SizedBox(height: 40),
+
+                            // PIN Length Selection (only on new PIN step)
+                            if (_currentStep == 1) ...[
+                              Text(
+                                'Pilih Panjang PIN',
+                                style: GoogleFonts.poppins(
+                                  color: Colors.white,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              const SizedBox(height: 16),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  _buildPinLengthButton(4),
+                                  const SizedBox(width: 16),
+                                  _buildPinLengthButton(6),
+                                ],
+                              ),
+                              const SizedBox(height: 40),
+                            ],
+
+                            // PIN Pad
+                            PinPad(
+                              pin: _getCurrentPin(),
+                              pinLength: _getCurrentPinLength(),
+                              onPinChanged: _onPinChanged,
+                              onComplete: _onPinComplete,
+                            ),
                           ],
                         ),
-                        const SizedBox(height: 40),
-                      ],
-
-                      // PIN Pad
-                      PinPad(
-                        pin: _getCurrentPin(),
-                        pinLength: _getCurrentPinLength(),
-                        onPinChanged: _onPinChanged,
-                        onComplete: _onPinComplete,
                       ),
-                    ],
-                  ),
-                ),
             ),
           ),
         ],

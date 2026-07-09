@@ -10,27 +10,6 @@ import '../widgets/login/login_form.dart';
 import '../widgets/login/social_login.dart';
 import '../widgets/login/toggle_auth.dart';
 
-class LoginUI extends StatelessWidget {
-  const LoginUI({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData.dark().copyWith(
-        scaffoldBackgroundColor: Colors.black,
-        primaryColor: const Color(0xFF8B5FBF),
-        colorScheme: const ColorScheme.dark(
-          primary: Color(0xFF8B5FBF),
-          secondary: Color(0xFF6A3093),
-          surface: Color(0xFF1A1A1A),
-        ),
-      ),
-      home: const LoginScreen(),
-    );
-  }
-}
-
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
@@ -76,6 +55,16 @@ class _LoginScreenState extends State<LoginScreen> {
     });
   }
 
+  bool _isValidEmail(String email) {
+    return RegExp(
+      r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',
+    ).hasMatch(email);
+  }
+
+  bool _isStrongPassword(String password) {
+    return password.length >= 8;
+  }
+
   Future<void> _handleLogin() async {
     if (_emailController.text.isEmpty || _passwordController.text.isEmpty) {
       ErrorHandlerService.showWarningSnackbar(
@@ -85,7 +74,17 @@ class _LoginScreenState extends State<LoginScreen> {
       return;
     }
 
+    if (!_isValidEmail(_emailController.text.trim())) {
+      ErrorHandlerService.showWarningSnackbar(
+        context,
+        'Format email tidak valid',
+      );
+      return;
+    }
+
     setState(() => _isLoading = true);
+
+    final ctx = context;
 
     try {
       final result = await _authService.login(
@@ -99,32 +98,30 @@ class _LoginScreenState extends State<LoginScreen> {
         final onboardingCompleted =
             prefs.getBool('onboarding_completed') ?? false;
 
+        if (!ctx.mounted) return;
         if (!onboardingCompleted) {
           // New user - redirect to onboarding
-          Navigator.pushReplacementNamed(context, '/onboarding');
+          Navigator.pushReplacementNamed(ctx, '/onboarding');
         } else {
           // Check if user has PIN set up
           final pinAuthService = PinAuthService();
           final hasPin = await pinAuthService.hasPin();
 
+          if (!ctx.mounted) return;
           if (!hasPin) {
             // No PIN - redirect to PIN setup (mandatory)
-            if (mounted) {
-              Navigator.pushReplacementNamed(context, '/pin-setup');
-            }
+            Navigator.pushReplacementNamed(ctx, '/pin-setup');
           } else {
             // Has PIN - go to home (PIN unlock handled by AuthGate)
-            if (mounted) {
-              Navigator.pushReplacementNamed(context, '/home');
-            }
+            Navigator.pushReplacementNamed(ctx, '/home');
           }
         }
       }
     } catch (e) {
       LoggerService.error('Error during login', error: e);
-      if (mounted) {
+      if (ctx.mounted) {
         ErrorHandlerService.showErrorSnackbar(
-          context,
+          ctx,
           ErrorHandlerService.getUserFriendlyMessage(e),
           onRetry: _handleLogin,
         );
@@ -141,6 +138,22 @@ class _LoginScreenState extends State<LoginScreen> {
       ErrorHandlerService.showWarningSnackbar(
         context,
         'Silakan isi semua field',
+      );
+      return;
+    }
+
+    if (!_isValidEmail(_emailController.text.trim())) {
+      ErrorHandlerService.showWarningSnackbar(
+        context,
+        'Format email tidak valid',
+      );
+      return;
+    }
+
+    if (!_isStrongPassword(_passwordController.text)) {
+      ErrorHandlerService.showWarningSnackbar(
+        context,
+        'Password minimal 8 karakter',
       );
       return;
     }
@@ -190,57 +203,58 @@ class _LoginScreenState extends State<LoginScreen> {
               padding: const EdgeInsets.all(24.0),
               child: Column(
                 children: [
-            const SizedBox(height: 40),
+                  const SizedBox(height: 40),
 
-            // Header dengan animasi
-            AnimatedSwitcher(
-              duration: const Duration(milliseconds: 300),
-              child: _isLogin ? const LoginHeader() : const RegisterHeader(),
-            ),
+                  // Header dengan animasi
+                  AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 300),
+                    child:
+                        _isLogin ? const LoginHeader() : const RegisterHeader(),
+                  ),
 
-            const SizedBox(height: 40),
+                  const SizedBox(height: 40),
 
-            // Form
-            AnimatedSwitcher(
-              duration: const Duration(milliseconds: 300),
-              child:
-                  _isLogin
-                      ? LoginForm(
-                        emailController: _emailController,
-                        passwordController: _passwordController,
-                        obscurePassword: _obscurePassword,
-                        onToggleObscure: () {
-                          setState(() {
-                            _obscurePassword = !_obscurePassword;
-                          });
-                        },
-                        onLoginPressed: _handleLogin,
-                        isLoading: _isLoading,
-                      )
-                      : RegisterForm(
-                        nameController: _nameController,
-                        emailController: _emailController,
-                        passwordController: _passwordController,
-                        obscurePassword: _obscurePassword,
-                        onToggleObscure: () {
-                          setState(() {
-                            _obscurePassword = !_obscurePassword;
-                          });
-                        },
-                        onRegisterPressed: _handleRegister,
-                        isLoading: _isLoading,
-                      ),
-            ),
+                  // Form
+                  AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 300),
+                    child:
+                        _isLogin
+                            ? LoginForm(
+                              emailController: _emailController,
+                              passwordController: _passwordController,
+                              obscurePassword: _obscurePassword,
+                              onToggleObscure: () {
+                                setState(() {
+                                  _obscurePassword = !_obscurePassword;
+                                });
+                              },
+                              onLoginPressed: _handleLogin,
+                              isLoading: _isLoading,
+                            )
+                            : RegisterForm(
+                              nameController: _nameController,
+                              emailController: _emailController,
+                              passwordController: _passwordController,
+                              obscurePassword: _obscurePassword,
+                              onToggleObscure: () {
+                                setState(() {
+                                  _obscurePassword = !_obscurePassword;
+                                });
+                              },
+                              onRegisterPressed: _handleRegister,
+                              isLoading: _isLoading,
+                            ),
+                  ),
 
-            const SizedBox(height: 30),
+                  const SizedBox(height: 30),
 
-            // Social Login
-            const SocialLogin(),
+                  // Social Login
+                  const SocialLogin(),
 
-            const SizedBox(height: 20),
+                  const SizedBox(height: 20),
 
-            // Toggle Auth Mode
-            ToggleAuth(isLogin: _isLogin, onToggle: _toggleAuthMode),
+                  // Toggle Auth Mode
+                  ToggleAuth(isLogin: _isLogin, onToggle: _toggleAuthMode),
                 ],
               ),
             ),

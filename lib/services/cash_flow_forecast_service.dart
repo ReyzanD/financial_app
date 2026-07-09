@@ -8,15 +8,20 @@ class CashFlowForecastService {
   final ApiService _apiService;
   final AccountService _accountService;
 
-  CashFlowForecastService({ApiService? apiService, AccountService? accountService})
-      : _apiService = apiService ?? getIt<ApiService>(),
-        _accountService = accountService ?? getIt<AccountService>();
+  CashFlowForecastService({
+    ApiService? apiService,
+    AccountService? accountService,
+  }) : _apiService = apiService ?? getIt<ApiService>(),
+       _accountService = accountService ?? getIt<AccountService>();
 
-  Future<List<Map<String, dynamic>>> forecastDailyCashFlow({int days = 30}) async {
+  Future<List<Map<String, dynamic>>> forecastDailyCashFlow({
+    int days = 30,
+  }) async {
     try {
       final now = DateTime.now();
       final transactionsData = await _apiService.getTransactions(limit: 5000);
-      final transactions = transactionsData['transactions'] as List<dynamic>? ?? [];
+      final transactions =
+          transactionsData['transactions'] as List<dynamic>? ?? [];
 
       final dailyData = _analyzeDailyPatterns(transactions);
       final forecast = <Map<String, dynamic>>[];
@@ -27,8 +32,10 @@ class CashFlowForecastService {
         final forecastDate = now.add(Duration(days: i));
         final dayOfWeek = forecastDate.weekday;
 
-        final avgIncome = dailyData['income_by_weekday']?[dayOfWeek]?.toDouble() ?? 0.0;
-        final avgExpense = dailyData['expense_by_weekday']?[dayOfWeek]?.toDouble() ?? 0.0;
+        final avgIncome =
+            dailyData['income_by_weekday']?[dayOfWeek]?.toDouble() ?? 0.0;
+        final avgExpense =
+            dailyData['expense_by_weekday']?[dayOfWeek]?.toDouble() ?? 0.0;
 
         runningBalance += avgIncome - avgExpense;
 
@@ -49,11 +56,14 @@ class CashFlowForecastService {
     }
   }
 
-  Future<Map<String, dynamic>> getWeeklyCashFlowForecast({int weeks = 4}) async {
+  Future<Map<String, dynamic>> getWeeklyCashFlowForecast({
+    int weeks = 4,
+  }) async {
     try {
       final now = DateTime.now();
       final transactionsData = await _apiService.getTransactions(limit: 5000);
-      final transactions = transactionsData['transactions'] as List<dynamic>? ?? [];
+      final transactions =
+          transactionsData['transactions'] as List<dynamic>? ?? [];
 
       final weeklyData = _analyzeWeeklyPatterns(transactions);
       double runningBalance = await _accountService.getTotalBalance();
@@ -78,17 +88,26 @@ class CashFlowForecastService {
         });
       }
 
-      final riskWeeks = forecast.where((w) => (w['projected_balance'] as double) < 0).toList();
+      final riskWeeks =
+          forecast
+              .where((w) => (w['projected_balance'] as double) < 0)
+              .toList();
 
       return {
         'weekly_forecast': forecast,
         'risk_weeks': riskWeeks.length,
-        'lowest_balance': forecast.isNotEmpty
-            ? forecast.map((w) => w['projected_balance'] as double).reduce(math.min)
-            : 0.0,
-        'highest_balance': forecast.isNotEmpty
-            ? forecast.map((w) => w['projected_balance'] as double).reduce(math.max)
-            : 0.0,
+        'lowest_balance':
+            forecast.isNotEmpty
+                ? forecast
+                    .map((w) => w['projected_balance'] as double)
+                    .reduce(math.min)
+                : 0.0,
+        'highest_balance':
+            forecast.isNotEmpty
+                ? forecast
+                    .map((w) => w['projected_balance'] as double)
+                    .reduce(math.max)
+                : 0.0,
       };
     } catch (e) {
       LoggerService.error('Error getting weekly cash flow forecast', error: e);
@@ -99,7 +118,8 @@ class CashFlowForecastService {
   Future<Map<String, dynamic>> getCashFlowSummary() async {
     try {
       final transactionsData = await _apiService.getTransactions(limit: 1000);
-      final transactions = transactionsData['transactions'] as List<dynamic>? ?? [];
+      final transactions =
+          transactionsData['transactions'] as List<dynamic>? ?? [];
       final now = DateTime.now();
 
       double currentIncome = 0;
@@ -117,7 +137,8 @@ class CashFlowForecastService {
         final amount = (transaction['amount'] as num?)?.toDouble() ?? 0.0;
 
         final isCurrentMonth = date.year == now.year && date.month == now.month;
-        final isPreviousMonth = date.year == now.add(const Duration(days: -30)).year &&
+        final isPreviousMonth =
+            date.year == now.add(const Duration(days: -30)).year &&
             date.month == now.add(const Duration(days: -30)).month;
 
         if (isCurrentMonth) {
@@ -136,12 +157,14 @@ class CashFlowForecastService {
         'previous_month_income': previousIncome,
         'previous_month_expense': previousExpense,
         'previous_month_net': previousIncome - previousExpense,
-        'income_change': previousIncome > 0
-            ? ((currentIncome - previousIncome) / previousIncome) * 100
-            : 0,
-        'expense_change': previousExpense > 0
-            ? ((currentExpense - previousExpense) / previousExpense) * 100
-            : 0,
+        'income_change':
+            previousIncome > 0
+                ? ((currentIncome - previousIncome) / previousIncome) * 100
+                : 0,
+        'expense_change':
+            previousExpense > 0
+                ? ((currentExpense - previousExpense) / previousExpense) * 100
+                : 0,
       };
     } catch (e) {
       LoggerService.error('Error getting cash flow summary', error: e);
@@ -228,12 +251,14 @@ class CashFlowForecastService {
     }
 
     return {
-      'avg_weekly_income': weeklyIncome.isNotEmpty
-          ? weeklyIncome.reduce((a, b) => a + b) / weeklyIncome.length
-          : 0.0,
-      'avg_weekly_expense': weeklyExpense.isNotEmpty
-          ? weeklyExpense.reduce((a, b) => a + b) / weeklyExpense.length
-          : 0.0,
+      'avg_weekly_income':
+          weeklyIncome.isNotEmpty
+              ? weeklyIncome.reduce((a, b) => a + b) / weeklyIncome.length
+              : 0.0,
+      'avg_weekly_expense':
+          weeklyExpense.isNotEmpty
+              ? weeklyExpense.reduce((a, b) => a + b) / weeklyExpense.length
+              : 0.0,
     };
   }
 

@@ -31,8 +31,14 @@ class ExchangeRateService {
 
       final rates = await _localData.getExchangeRates();
 
-      final fromRateInIDR = rates[fromCode.toUpperCase()] ?? _defaultRates[fromCode.toUpperCase()] ?? 1.0;
-      final toRateInIDR = rates[toCode.toUpperCase()] ?? _defaultRates[toCode.toUpperCase()] ?? 1.0;
+      final fromRateInIDR =
+          rates[fromCode.toUpperCase()] ??
+          _defaultRates[fromCode.toUpperCase()] ??
+          1.0;
+      final toRateInIDR =
+          rates[toCode.toUpperCase()] ??
+          _defaultRates[toCode.toUpperCase()] ??
+          1.0;
 
       return toRateInIDR / fromRateInIDR;
     } catch (e) {
@@ -95,9 +101,7 @@ class ExchangeRateService {
     return 0.0;
   }
 
-  Future<double> calculatePortfolioValue(
-    Map<String, double> balances,
-  ) async {
+  Future<double> calculatePortfolioValue(Map<String, double> balances) async {
     final baseCurrency = await getBaseCurrency();
     double totalInBase = 0;
 
@@ -140,7 +144,13 @@ class ExchangeRateService {
       );
 
       distribution.add({
-        'currency': currency ?? CurrencyModel(code: currencyCode, name: currencyCode, symbol: currencyCode),
+        'currency':
+            currency ??
+            CurrencyModel(
+              code: currencyCode,
+              name: currencyCode,
+              symbol: currencyCode,
+            ),
         'amount': amount,
         'value_in_base': valueInBase,
         'percentage': (valueInBase / totalValue) * 100,
@@ -148,7 +158,9 @@ class ExchangeRateService {
     }
 
     distribution.sort((a, b) {
-      return (b['value_in_base'] as double).compareTo(a['value_in_base'] as double);
+      return (b['value_in_base'] as double).compareTo(
+        a['value_in_base'] as double,
+      );
     });
 
     return distribution;

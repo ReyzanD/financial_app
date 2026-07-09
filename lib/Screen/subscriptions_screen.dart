@@ -17,7 +17,8 @@ class SubscriptionsScreen extends StatefulWidget {
 }
 
 class _SubscriptionsScreenState extends State<SubscriptionsScreen> {
-  final SubscriptionTrackerService _subscriptionService = getIt<SubscriptionTrackerService>();
+  final SubscriptionTrackerService _subscriptionService =
+      getIt<SubscriptionTrackerService>();
 
   bool _isLoading = true;
   String? _errorMessage;
@@ -110,7 +111,10 @@ class _SubscriptionsScreenState extends State<SubscriptionsScreen> {
           Row(
             children: [
               IconButton(
-                icon: const Icon(Iconsax.arrow_left, color: DesignTokens.textPrimaryDark),
+                icon: const Icon(
+                  Iconsax.arrow_left,
+                  color: DesignTokens.textPrimaryDark,
+                ),
                 onPressed: () => Navigator.pop(context),
               ),
               const SizedBox(width: 8),
@@ -152,7 +156,9 @@ class _SubscriptionsScreenState extends State<SubscriptionsScreen> {
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     color: DesignTokens.surfaceDark,
-                    borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                    borderRadius: BorderRadius.circular(
+                      DesignTokens.radiusMedium,
+                    ),
                     border: Border.all(color: DesignTokens.borderDark),
                   ),
                   child: Column(
@@ -184,7 +190,9 @@ class _SubscriptionsScreenState extends State<SubscriptionsScreen> {
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     color: DesignTokens.surfaceDark,
-                    borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                    borderRadius: BorderRadius.circular(
+                      DesignTokens.radiusMedium,
+                    ),
                     border: Border.all(color: DesignTokens.borderDark),
                   ),
                   child: Column(
@@ -243,7 +251,11 @@ class _SubscriptionsScreenState extends State<SubscriptionsScreen> {
     );
   }
 
-  Widget _buildSubscriptionCard(BuildContext context, dynamic subscription, AppLocalizations? l10n) {
+  Widget _buildSubscriptionCard(
+    BuildContext context,
+    dynamic subscription,
+    AppLocalizations? l10n,
+  ) {
     final name = subscription.name ?? '';
     final cost = subscription.cost ?? 0.0;
     final cycle = subscription.cycle ?? 'monthly';
@@ -268,7 +280,9 @@ class _SubscriptionsScreenState extends State<SubscriptionsScreen> {
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
                   color: DesignTokens.primaryColor.withValues(alpha: 0.15),
-                  borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                  borderRadius: BorderRadius.circular(
+                    DesignTokens.radiusMedium,
+                  ),
                 ),
                 child: const Icon(
                   Iconsax.repeat,
@@ -345,9 +359,10 @@ class _SubscriptionsScreenState extends State<SubscriptionsScreen> {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
-                  color: daysRemaining <= 3
-                      ? DesignTokens.errorColor.withValues(alpha: 0.15)
-                      : DesignTokens.successColor.withValues(alpha: 0.15),
+                  color:
+                      daysRemaining <= 3
+                          ? DesignTokens.errorColor.withValues(alpha: 0.15)
+                          : DesignTokens.successColor.withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(DesignTokens.radiusSmall),
                 ),
                 child: Text(
@@ -355,7 +370,10 @@ class _SubscriptionsScreenState extends State<SubscriptionsScreen> {
                       ? '$daysRemaining ${l10n?.days_left ?? 'hari lagi'}'
                       : l10n?.due_soon ?? 'Segera',
                   style: GoogleFonts.poppins(
-                    color: daysRemaining <= 3 ? DesignTokens.errorColor : DesignTokens.successColor,
+                    color:
+                        daysRemaining <= 3
+                            ? DesignTokens.errorColor
+                            : DesignTokens.successColor,
                     fontSize: 11,
                     fontWeight: FontWeight.w600,
                   ),
@@ -416,11 +434,7 @@ class _SubscriptionsScreenState extends State<SubscriptionsScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            Iconsax.repeat,
-            size: 64,
-            color: DesignTokens.textTertiaryDark,
-          ),
+          Icon(Iconsax.repeat, size: 64, color: DesignTokens.textTertiaryDark),
           const SizedBox(height: 16),
           Text(
             l10n?.no_subscriptions ?? 'Tidak ada langganan aktif',
@@ -432,7 +446,8 @@ class _SubscriptionsScreenState extends State<SubscriptionsScreen> {
           ),
           const SizedBox(height: 8),
           Text(
-            l10n?.no_obligations_subtitle ?? 'Tap + untuk menambah langganan baru',
+            l10n?.no_obligations_subtitle ??
+                'Tap + untuk menambah langganan baru',
             style: GoogleFonts.poppins(
               color: DesignTokens.textSecondaryDark,
               fontSize: 14,
@@ -448,11 +463,7 @@ class _SubscriptionsScreenState extends State<SubscriptionsScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            Iconsax.warning_2,
-            size: 64,
-            color: DesignTokens.errorColor,
-          ),
+          Icon(Iconsax.warning_2, size: 64, color: DesignTokens.errorColor),
           const SizedBox(height: 16),
           Text(
             l10n?.error ?? 'Terjadi kesalahan',
@@ -516,7 +527,8 @@ class _SubscriptionsScreenState extends State<SubscriptionsScreen> {
             ),
           ),
           content: Text(
-            l10n?.confirm_delete_budget ?? 'Yakin ingin membatalkan langganan ini?',
+            l10n?.confirm_delete_budget ??
+                'Yakin ingin membatalkan langganan ini?',
             style: GoogleFonts.poppins(
               color: DesignTokens.textSecondaryDark,
               fontSize: 13,
@@ -629,11 +641,15 @@ class _AddSubscriptionModalState extends State<_AddSubscriptionModal> {
                 style: GoogleFonts.poppins(color: DesignTokens.textPrimaryDark),
                 decoration: InputDecoration(
                   labelText: l10n?.name ?? 'Nama',
-                  labelStyle: GoogleFonts.poppins(color: DesignTokens.textSecondaryDark),
+                  labelStyle: GoogleFonts.poppins(
+                    color: DesignTokens.textSecondaryDark,
+                  ),
                   filled: true,
                   fillColor: DesignTokens.surfaceDark,
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                    borderRadius: BorderRadius.circular(
+                      DesignTokens.radiusMedium,
+                    ),
                     borderSide: BorderSide(color: DesignTokens.borderDark),
                   ),
                 ),
@@ -651,11 +667,15 @@ class _AddSubscriptionModalState extends State<_AddSubscriptionModal> {
                 keyboardType: TextInputType.number,
                 decoration: InputDecoration(
                   labelText: l10n?.amount ?? 'Biaya',
-                  labelStyle: GoogleFonts.poppins(color: DesignTokens.textSecondaryDark),
+                  labelStyle: GoogleFonts.poppins(
+                    color: DesignTokens.textSecondaryDark,
+                  ),
                   filled: true,
                   fillColor: DesignTokens.surfaceDark,
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                    borderRadius: BorderRadius.circular(
+                      DesignTokens.radiusMedium,
+                    ),
                     borderSide: BorderSide(color: DesignTokens.borderDark),
                   ),
                 ),
@@ -677,26 +697,30 @@ class _AddSubscriptionModalState extends State<_AddSubscriptionModal> {
               const SizedBox(height: 8),
               Wrap(
                 spacing: 8,
-                children: ['weekly', 'monthly', 'yearly'].map((cycle) {
-                  final isSelected = _selectedCycle == cycle;
-                  return ChoiceChip(
-                    label: Text(
-                      _getCycleLabel(cycle, l10n),
-                      style: GoogleFonts.poppins(
-                        color: isSelected ? Colors.white : DesignTokens.textSecondaryDark,
-                        fontSize: 12,
-                      ),
-                    ),
-                    selected: isSelected,
-                    onSelected: (selected) {
-                      setState(() {
-                        _selectedCycle = cycle;
-                      });
-                    },
-                    backgroundColor: DesignTokens.surfaceDark,
-                    selectedColor: DesignTokens.primaryColor,
-                  );
-                }).toList(),
+                children:
+                    ['weekly', 'monthly', 'yearly'].map((cycle) {
+                      final isSelected = _selectedCycle == cycle;
+                      return ChoiceChip(
+                        label: Text(
+                          _getCycleLabel(cycle, l10n),
+                          style: GoogleFonts.poppins(
+                            color:
+                                isSelected
+                                    ? Colors.white
+                                    : DesignTokens.textSecondaryDark,
+                            fontSize: 12,
+                          ),
+                        ),
+                        selected: isSelected,
+                        onSelected: (selected) {
+                          setState(() {
+                            _selectedCycle = cycle;
+                          });
+                        },
+                        backgroundColor: DesignTokens.surfaceDark,
+                        selectedColor: DesignTokens.primaryColor,
+                      );
+                    }).toList(),
               ),
               const SizedBox(height: 24),
               SizedBox(
@@ -707,7 +731,9 @@ class _AddSubscriptionModalState extends State<_AddSubscriptionModal> {
                     backgroundColor: DesignTokens.primaryColor,
                     padding: const EdgeInsets.symmetric(vertical: 14),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                      borderRadius: BorderRadius.circular(
+                        DesignTokens.radiusMedium,
+                      ),
                     ),
                   ),
                   child: Text(

@@ -64,9 +64,7 @@ class _LocationPickerMapState extends State<LocationPickerMap> {
       );
 
       if (results.isNotEmpty) {
-        LoggerService.success(
-          '✅ Found ${results.length} results for: $query',
-        );
+        LoggerService.success('✅ Found ${results.length} results for: $query');
 
         setState(() {
           _searchResults = results;
@@ -433,7 +431,9 @@ class _LocationPickerMapState extends State<LocationPickerMap> {
                       child: Container(
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          color: const Color(0xFF1A1A1A).withValues(alpha: 0.95),
+                          color: const Color(
+                            0xFF1A1A1A,
+                          ).withValues(alpha: 0.95),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Column(
@@ -566,7 +566,9 @@ class _LocationPickerMapState extends State<LocationPickerMap> {
                                       decoration: BoxDecoration(
                                         border: Border(
                                           bottom: BorderSide(
-                                            color: Colors.grey.withValues(alpha: 0.1),
+                                            color: Colors.grey.withValues(
+                                              alpha: 0.1,
+                                            ),
                                             width: 1,
                                           ),
                                         ),

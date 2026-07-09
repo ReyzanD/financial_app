@@ -6,14 +6,12 @@ class InvestmentService {
   final LocalDataService _localData;
 
   InvestmentService({LocalDataService? localData})
-      : _localData = localData ?? LocalDataService();
+    : _localData = localData ?? LocalDataService();
 
   Future<List<InvestmentModel>> getInvestments({String? type}) async {
     try {
       final investmentsData = await _localData.getInvestments(type: type);
-      return investmentsData
-          .map((i) => InvestmentModel.fromMap(i))
-          .toList();
+      return investmentsData.map((i) => InvestmentModel.fromMap(i)).toList();
     } catch (e) {
       LoggerService.error('Error getting investments', error: e);
       return [];
@@ -23,7 +21,9 @@ class InvestmentService {
   Future<InvestmentModel> addInvestment(InvestmentModel investment) async {
     try {
       final result = await _localData.addInvestment(investment.toMap());
-      final created = InvestmentModel.fromMap(result['investment'] as Map<String, dynamic>);
+      final created = InvestmentModel.fromMap(
+        result['investment'] as Map<String, dynamic>,
+      );
       LoggerService.success('Investment added: ${created.name}');
       return created;
     } catch (e) {
@@ -32,7 +32,10 @@ class InvestmentService {
     }
   }
 
-  Future<InvestmentModel> updatePrice(String investmentId, double newPrice) async {
+  Future<InvestmentModel> updatePrice(
+    String investmentId,
+    double newPrice,
+  ) async {
     try {
       await _localData.updateInvestmentPrice(investmentId, newPrice);
       final investments = await getInvestments();

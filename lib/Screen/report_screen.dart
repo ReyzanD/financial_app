@@ -118,10 +118,12 @@ class _ReportScreenState extends State<ReportScreen> {
               .toList();
 
       if (transactions.isEmpty) {
+        final ctx = context;
+        if (!ctx.mounted) return;
         setState(() => _isGenerating = false);
         ErrorHandlerService.showWarningSnackbar(
-          context,
-          AppLocalizations.of(context)!.no_transactions_for_period,
+          ctx,
+          AppLocalizations.of(ctx)!.no_transactions_for_period,
         );
         return;
       }
@@ -153,12 +155,9 @@ class _ReportScreenState extends State<ReportScreen> {
         await _shareFile(file);
       }
 
-      if (mounted) {
-        ErrorHandlerService.showSuccessSnackbar(
-          context,
-          'Report berhasil dibuat!',
-        );
-      }
+      final ctx = context;
+      if (!ctx.mounted) return;
+      ErrorHandlerService.showSuccessSnackbar(ctx, 'Report berhasil dibuat!');
     } catch (e) {
       LoggerService.error('Error generating report', error: e);
       if (mounted) {
@@ -380,183 +379,190 @@ class _ReportScreenState extends State<ReportScreen> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   // Period Type Selection
-            _buildSectionTitle('Jenis Periode'),
-            const SizedBox(height: 12),
-            Row(
-              children: [
-                Expanded(
-                  child: _buildPeriodTypeButton(
-                    'Bulanan',
-                    'monthly',
-                    Icons.calendar_month_rounded,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: _buildPeriodTypeButton(
-                    'Tahunan',
-                    'yearly',
-                    Icons.calendar_today_rounded,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 24),
-
-            // Period Selection
-            _buildSectionTitle(AppLocalizations.of(context)!.select_period),
-            const SizedBox(height: 12),
-            if (_selectedPeriodType == 'monthly')
-              _buildDateSelector(
-                'Bulan',
-                _selectedMonth != null
-                    ? DateFormat('MMMM yyyy', 'id_ID').format(_selectedMonth!)
-                    : AppLocalizations.of(context)!.select_month,
-                _selectMonth,
-                Icons.calendar_month_rounded,
-              )
-            else
-              _buildDateSelector(
-                'Tahun',
-                _selectedYear?.toString() ??
-                    AppLocalizations.of(context)!.select_year,
-                _selectYear,
-                Icons.calendar_today_rounded,
-              ),
-            const SizedBox(height: 24),
-
-            // Format Selection
-            _buildSectionTitle('Format Report'),
-            const SizedBox(height: 12),
-            Row(
-              children: [
-                Expanded(
-                  child: _buildFormatButton(
-                    'PDF',
-                    'pdf',
-                    Icons.picture_as_pdf_rounded,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: _buildFormatButton(
-                    'CSV',
-                    'csv',
-                    Icons.table_chart_rounded,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 24),
-
-            // Filter Options (for CSV)
-            if (_selectedFormat == 'csv') ...[
-              _buildSectionTitle(AppLocalizations.of(context)!.filter_optional),
-              const SizedBox(height: 12),
-              _buildFilterDropdown(
-                'Tipe Transaksi',
-                _selectedTypeFilter,
-                ['Semua', 'Pemasukan', 'Pengeluaran'],
-                ['all', 'income', 'expense'],
-                (value) {
-                  setState(() {
-                    _selectedTypeFilter = value == 'all' ? null : value;
-                  });
-                },
-              ),
-              const SizedBox(height: 12),
-            ],
-
-            const SizedBox(height: 32),
-
-            // Generate Button
-            ElevatedButton(
-              onPressed: _isGenerating ? null : _generateReport,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF8B5FBF),
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                elevation: 0,
-              ),
-              child:
-                  _isGenerating
-                      ? SizedBox(
-                        height: 20,
-                        width: 20,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          valueColor: AlwaysStoppedAnimation<Color>(
-                            Colors.white,
-                          ),
-                        ),
-                      )
-                      : Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Icon(
-                            Icons.description_rounded,
-                            color: Colors.white,
-                          ),
-                          const SizedBox(width: 8),
-                          Text(
-                            'Buat Laporan',
-                            style: GoogleFonts.poppins(
-                              color: Colors.white,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ],
-                      ),
-            ),
-          const SizedBox(height: 16),
-
-            // Info Card
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: const Color(0xFF1A1A1A),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                  color: const Color(0xFF8B5FBF).withValues(alpha: 0.3),
-                ),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
+                  _buildSectionTitle('Jenis Periode'),
+                  const SizedBox(height: 12),
                   Row(
                     children: [
-                      Icon(
-                        Icons.info_outline_rounded,
-                        color: const Color(0xFF8B5FBF),
-                        size: 20,
+                      Expanded(
+                        child: _buildPeriodTypeButton(
+                          'Bulanan',
+                          'monthly',
+                          Icons.calendar_month_rounded,
+                        ),
                       ),
-                      const SizedBox(width: 8),
-                      Text(
-                        'Informasi',
-                        style: GoogleFonts.poppins(
-                          color: Colors.white,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: _buildPeriodTypeButton(
+                          'Tahunan',
+                          'yearly',
+                          Icons.calendar_today_rounded,
                         ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 8),
-                  Text(
-                    _selectedFormat == 'pdf'
-                        ? '• PDF report akan menampilkan summary, breakdown kategori, dan daftar transaksi\n• Anda dapat preview dan print langsung dari aplikasi\n• Report dapat dibagikan via email atau WhatsApp'
-                        : '• CSV export berisi semua data transaksi dalam format spreadsheet\n• Dapat dibuka dengan Excel, Google Sheets, atau aplikasi spreadsheet lainnya\n• File dapat dibagikan via email atau WhatsApp',
-                    style: GoogleFonts.poppins(
-                      color: Colors.grey[400],
-                      fontSize: 12,
+                  const SizedBox(height: 24),
+
+                  // Period Selection
+                  _buildSectionTitle(
+                    AppLocalizations.of(context)!.select_period,
+                  ),
+                  const SizedBox(height: 12),
+                  if (_selectedPeriodType == 'monthly')
+                    _buildDateSelector(
+                      'Bulan',
+                      _selectedMonth != null
+                          ? DateFormat(
+                            'MMMM yyyy',
+                            'id_ID',
+                          ).format(_selectedMonth!)
+                          : AppLocalizations.of(context)!.select_month,
+                      _selectMonth,
+                      Icons.calendar_month_rounded,
+                    )
+                  else
+                    _buildDateSelector(
+                      'Tahun',
+                      _selectedYear?.toString() ??
+                          AppLocalizations.of(context)!.select_year,
+                      _selectYear,
+                      Icons.calendar_today_rounded,
+                    ),
+                  const SizedBox(height: 24),
+
+                  // Format Selection
+                  _buildSectionTitle('Format Report'),
+                  const SizedBox(height: 12),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _buildFormatButton(
+                          'PDF',
+                          'pdf',
+                          Icons.picture_as_pdf_rounded,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: _buildFormatButton(
+                          'CSV',
+                          'csv',
+                          Icons.table_chart_rounded,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 24),
+
+                  // Filter Options (for CSV)
+                  if (_selectedFormat == 'csv') ...[
+                    _buildSectionTitle(
+                      AppLocalizations.of(context)!.filter_optional,
+                    ),
+                    const SizedBox(height: 12),
+                    _buildFilterDropdown(
+                      'Tipe Transaksi',
+                      _selectedTypeFilter,
+                      ['Semua', 'Pemasukan', 'Pengeluaran'],
+                      ['all', 'income', 'expense'],
+                      (value) {
+                        setState(() {
+                          _selectedTypeFilter = value == 'all' ? null : value;
+                        });
+                      },
+                    ),
+                    const SizedBox(height: 12),
+                  ],
+
+                  const SizedBox(height: 32),
+
+                  // Generate Button
+                  ElevatedButton(
+                    onPressed: _isGenerating ? null : _generateReport,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF8B5FBF),
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      elevation: 0,
+                    ),
+                    child:
+                        _isGenerating
+                            ? SizedBox(
+                              height: 20,
+                              width: 20,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                  Colors.white,
+                                ),
+                              ),
+                            )
+                            : Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                const Icon(
+                                  Icons.description_rounded,
+                                  color: Colors.white,
+                                ),
+                                const SizedBox(width: 8),
+                                Text(
+                                  'Buat Laporan',
+                                  style: GoogleFonts.poppins(
+                                    color: Colors.white,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ],
+                            ),
+                  ),
+                  const SizedBox(height: 16),
+
+                  // Info Card
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF1A1A1A),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: const Color(0xFF8B5FBF).withValues(alpha: 0.3),
+                      ),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.info_outline_rounded,
+                              color: const Color(0xFF8B5FBF),
+                              size: 20,
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              'Informasi',
+                              style: GoogleFonts.poppins(
+                                color: Colors.white,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          _selectedFormat == 'pdf'
+                              ? '• PDF report akan menampilkan summary, breakdown kategori, dan daftar transaksi\n• Anda dapat preview dan print langsung dari aplikasi\n• Report dapat dibagikan via email atau WhatsApp'
+                              : '• CSV export berisi semua data transaksi dalam format spreadsheet\n• Dapat dibuka dengan Excel, Google Sheets, atau aplikasi spreadsheet lainnya\n• File dapat dibagikan via email atau WhatsApp',
+                          style: GoogleFonts.poppins(
+                            color: Colors.grey[400],
+                            fontSize: 12,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                ],
-              ),
-            ),
                 ],
               ),
             ),
@@ -682,7 +688,9 @@ class _ReportScreenState extends State<ReportScreen> {
         decoration: BoxDecoration(
           color: const Color(0xFF1A1A1A),
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: const Color(0xFF8B5FBF).withValues(alpha: 0.3)),
+          border: Border.all(
+            color: const Color(0xFF8B5FBF).withValues(alpha: 0.3),
+          ),
         ),
         child: Row(
           children: [
@@ -734,7 +742,9 @@ class _ReportScreenState extends State<ReportScreen> {
       decoration: BoxDecoration(
         color: const Color(0xFF1A1A1A),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFF8B5FBF).withValues(alpha: 0.3)),
+        border: Border.all(
+          color: const Color(0xFF8B5FBF).withValues(alpha: 0.3),
+        ),
       ),
       child: DropdownButtonHideUnderline(
         child: DropdownButton<String>(

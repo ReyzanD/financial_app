@@ -6,11 +6,7 @@ void main() {
   group('ShimmerLoading', () {
     testWidgets('renders without crashing', (tester) async {
       await tester.pumpWidget(
-        const MaterialApp(
-          home: Scaffold(
-            body: ShimmerLoading(),
-          ),
-        ),
+        const MaterialApp(home: Scaffold(body: ShimmerLoading())),
       );
 
       expect(find.byType(ShimmerLoading), findsOneWidget);
@@ -20,11 +16,7 @@ void main() {
   group('TransactionShimmer', () {
     testWidgets('renders list of shimmer items', (tester) async {
       await tester.pumpWidget(
-        const MaterialApp(
-          home: Scaffold(
-            body: TransactionShimmer(),
-          ),
-        ),
+        const MaterialApp(home: Scaffold(body: TransactionShimmer())),
       );
 
       expect(find.byType(TransactionShimmer), findsOneWidget);
@@ -35,11 +27,7 @@ void main() {
   group('CardShimmer', () {
     testWidgets('renders with default height', (tester) async {
       await tester.pumpWidget(
-        const MaterialApp(
-          home: Scaffold(
-            body: CardShimmer(),
-          ),
-        ),
+        const MaterialApp(home: Scaffold(body: CardShimmer())),
       );
 
       expect(find.byType(CardShimmer), findsOneWidget);
@@ -47,11 +35,7 @@ void main() {
 
     testWidgets('renders with custom height', (tester) async {
       await tester.pumpWidget(
-        const MaterialApp(
-          home: Scaffold(
-            body: CardShimmer(height: 200),
-          ),
-        ),
+        const MaterialApp(home: Scaffold(body: CardShimmer(height: 200))),
       );
 
       expect(find.byType(CardShimmer), findsOneWidget);
@@ -62,11 +46,7 @@ void main() {
     testWidgets('renders with default item count', (tester) async {
       await tester.pumpWidget(
         const MaterialApp(
-          home: SizedBox(
-            height: 1000,
-            width: 500,
-            child: CardListShimmer(),
-          ),
+          home: SizedBox(height: 1000, width: 500, child: CardListShimmer()),
         ),
       );
 
@@ -90,9 +70,7 @@ void main() {
 
     testWidgets('renders with custom card height', (tester) async {
       await tester.pumpWidget(
-        const MaterialApp(
-          home: CardListShimmer(cardHeight: 150),
-        ),
+        const MaterialApp(home: CardListShimmer(cardHeight: 150)),
       );
 
       expect(find.byType(CardListShimmer), findsOneWidget);
@@ -102,11 +80,7 @@ void main() {
   group('SummaryCardShimmer', () {
     testWidgets('renders shimmer summary cards', (tester) async {
       await tester.pumpWidget(
-        const MaterialApp(
-          home: Scaffold(
-            body: SummaryCardShimmer(),
-          ),
-        ),
+        const MaterialApp(home: Scaffold(body: SummaryCardShimmer())),
       );
 
       expect(find.byType(SummaryCardShimmer), findsOneWidget);
@@ -118,9 +92,7 @@ void main() {
     testWidgets('renders with required parameters', (tester) async {
       await tester.pumpWidget(
         const MaterialApp(
-          home: Scaffold(
-            body: ShimmerBox(width: 100, height: 50),
-          ),
+          home: Scaffold(body: ShimmerBox(width: 100, height: 50)),
         ),
       );
 

@@ -39,7 +39,10 @@ class _TemplatesScreenState extends State<TemplatesScreen> {
       }
 
       final templatesData = await _localData.getTransactionTemplates();
-      final templates = templatesData.map((e) => TransactionTemplateModel.fromMap(e)).toList();
+      final templates =
+          templatesData
+              .map((e) => TransactionTemplateModel.fromMap(e))
+              .toList();
 
       if (!mounted) return;
 
@@ -104,7 +107,10 @@ class _TemplatesScreenState extends State<TemplatesScreen> {
       child: Row(
         children: [
           IconButton(
-            icon: const Icon(Iconsax.arrow_left, color: DesignTokens.textPrimaryDark),
+            icon: const Icon(
+              Iconsax.arrow_left,
+              color: DesignTokens.textPrimaryDark,
+            ),
             onPressed: () => Navigator.pop(context),
           ),
           const SizedBox(width: 8),
@@ -163,7 +169,11 @@ class _TemplatesScreenState extends State<TemplatesScreen> {
     );
   }
 
-  Widget _buildTemplateCard(BuildContext context, dynamic template, AppLocalizations? l10n) {
+  Widget _buildTemplateCard(
+    BuildContext context,
+    dynamic template,
+    AppLocalizations? l10n,
+  ) {
     final name = template.name ?? '';
     final amount = template.amount ?? 0.0;
     final type = template.type ?? 'expense';
@@ -230,7 +240,10 @@ class _TemplatesScreenState extends State<TemplatesScreen> {
               Text(
                 CurrencyFormatter.formatRupiah(amount.toInt()),
                 style: GoogleFonts.poppins(
-                  color: isIncome ? DesignTokens.successColor : DesignTokens.errorColor,
+                  color:
+                      isIncome
+                          ? DesignTokens.successColor
+                          : DesignTokens.errorColor,
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
                 ),
@@ -239,10 +252,17 @@ class _TemplatesScreenState extends State<TemplatesScreen> {
               ElevatedButton(
                 onPressed: () => _quickAdd(template),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: DesignTokens.primaryColor.withValues(alpha: 0.15),
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  backgroundColor: DesignTokens.primaryColor.withValues(
+                    alpha: 0.15,
+                  ),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(DesignTokens.radiusSmall),
+                    borderRadius: BorderRadius.circular(
+                      DesignTokens.radiusSmall,
+                    ),
                   ),
                   elevation: 0,
                 ),
@@ -276,11 +296,7 @@ class _TemplatesScreenState extends State<TemplatesScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            Iconsax.note,
-            size: 64,
-            color: DesignTokens.textTertiaryDark,
-          ),
+          Icon(Iconsax.note, size: 64, color: DesignTokens.textTertiaryDark),
           const SizedBox(height: 16),
           Text(
             l10n?.no_transactions_title ?? 'No Templates',
@@ -308,11 +324,7 @@ class _TemplatesScreenState extends State<TemplatesScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            Iconsax.warning_2,
-            size: 64,
-            color: DesignTokens.errorColor,
-          ),
+          Icon(Iconsax.warning_2, size: 64, color: DesignTokens.errorColor),
           const SizedBox(height: 16),
           Text(
             l10n?.error ?? 'An error occurred',
@@ -399,7 +411,8 @@ class _TemplatesScreenState extends State<TemplatesScreen> {
             ),
           ),
           content: Text(
-            l10n?.confirm_delete_budget ?? 'Are you sure you want to delete this template?',
+            l10n?.confirm_delete_budget ??
+                'Are you sure you want to delete this template?',
             style: GoogleFonts.poppins(
               color: DesignTokens.textSecondaryDark,
               fontSize: 13,
@@ -428,7 +441,9 @@ class _TemplatesScreenState extends State<TemplatesScreen> {
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(l10n?.transaction_deleted_successfully ?? 'Template deleted'),
+            content: Text(
+              l10n?.transaction_deleted_successfully ?? 'Template deleted',
+            ),
             backgroundColor: DesignTokens.primaryColor,
           ),
         );
@@ -516,11 +531,15 @@ class _AddTemplateModalState extends State<_AddTemplateModal> {
                 style: GoogleFonts.poppins(color: DesignTokens.textPrimaryDark),
                 decoration: InputDecoration(
                   labelText: l10n?.name ?? 'Name',
-                  labelStyle: GoogleFonts.poppins(color: DesignTokens.textSecondaryDark),
+                  labelStyle: GoogleFonts.poppins(
+                    color: DesignTokens.textSecondaryDark,
+                  ),
                   filled: true,
                   fillColor: DesignTokens.surfaceDark,
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                    borderRadius: BorderRadius.circular(
+                      DesignTokens.radiusMedium,
+                    ),
                     borderSide: BorderSide(color: DesignTokens.borderDark),
                   ),
                 ),
@@ -542,26 +561,30 @@ class _AddTemplateModalState extends State<_AddTemplateModal> {
               const SizedBox(height: 8),
               Wrap(
                 spacing: 8,
-                children: _types.map((type) {
-                  final isSelected = _selectedType == type['value'];
-                  return ChoiceChip(
-                    label: Text(
-                      type['label'],
-                      style: GoogleFonts.poppins(
-                        color: isSelected ? Colors.white : DesignTokens.textSecondaryDark,
-                        fontSize: 12,
-                      ),
-                    ),
-                    selected: isSelected,
-                    onSelected: (selected) {
-                      setState(() {
-                        _selectedType = type['value'];
-                      });
-                    },
-                    backgroundColor: DesignTokens.surfaceDark,
-                    selectedColor: DesignTokens.primaryColor,
-                  );
-                }).toList(),
+                children:
+                    _types.map((type) {
+                      final isSelected = _selectedType == type['value'];
+                      return ChoiceChip(
+                        label: Text(
+                          type['label'],
+                          style: GoogleFonts.poppins(
+                            color:
+                                isSelected
+                                    ? Colors.white
+                                    : DesignTokens.textSecondaryDark,
+                            fontSize: 12,
+                          ),
+                        ),
+                        selected: isSelected,
+                        onSelected: (selected) {
+                          setState(() {
+                            _selectedType = type['value'];
+                          });
+                        },
+                        backgroundColor: DesignTokens.surfaceDark,
+                        selectedColor: DesignTokens.primaryColor,
+                      );
+                    }).toList(),
               ),
               const SizedBox(height: 16),
               TextFormField(
@@ -570,11 +593,15 @@ class _AddTemplateModalState extends State<_AddTemplateModal> {
                 keyboardType: TextInputType.number,
                 decoration: InputDecoration(
                   labelText: l10n?.amount ?? 'Amount',
-                  labelStyle: GoogleFonts.poppins(color: DesignTokens.textSecondaryDark),
+                  labelStyle: GoogleFonts.poppins(
+                    color: DesignTokens.textSecondaryDark,
+                  ),
                   filled: true,
                   fillColor: DesignTokens.surfaceDark,
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                    borderRadius: BorderRadius.circular(
+                      DesignTokens.radiusMedium,
+                    ),
                     borderSide: BorderSide(color: DesignTokens.borderDark),
                   ),
                 ),
@@ -594,7 +621,9 @@ class _AddTemplateModalState extends State<_AddTemplateModal> {
                     backgroundColor: DesignTokens.primaryColor,
                     padding: const EdgeInsets.symmetric(vertical: 14),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                      borderRadius: BorderRadius.circular(
+                        DesignTokens.radiusMedium,
+                      ),
                     ),
                   ),
                   child: Text(

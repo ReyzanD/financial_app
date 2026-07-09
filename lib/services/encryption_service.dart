@@ -12,7 +12,7 @@ class EncryptionService {
   static const String _keyStorageKey = 'encryption_key';
   static const String _ivStorageKey = 'encryption_iv';
   final FlutterSecureStorage _secureStorage = const FlutterSecureStorage();
-  
+
   Key? _encryptionKey;
   IV? _encryptionIV;
   Encrypter? _encrypter;
@@ -28,27 +28,31 @@ class EncryptionService {
     try {
       final existingKey = await _secureStorage.read(key: _keyStorageKey);
       final existingIV = await _secureStorage.read(key: _ivStorageKey);
-      
+
       if (existingKey == null || existingIV == null) {
         // Generate new key and IV
         final key = _generateAESKey();
         final iv = _generateIV();
-        
+
         await _secureStorage.write(key: _keyStorageKey, value: key.base64);
         await _secureStorage.write(key: _ivStorageKey, value: iv.base64);
-        
+
         _encryptionKey = key;
         _encryptionIV = iv;
         _encrypter = Encrypter(AES(key));
-        
-        LoggerService.success('[EncryptionService] New AES-256 encryption key generated');
+
+        LoggerService.success(
+          '[EncryptionService] New AES-256 encryption key generated',
+        );
       } else {
         // Load existing key and IV
         _encryptionKey = Key.fromBase64(existingKey);
         _encryptionIV = IV.fromBase64(existingIV);
         _encrypter = Encrypter(AES(_encryptionKey!));
-        
-        LoggerService.debug('[EncryptionService] AES-256 encryption key loaded');
+
+        LoggerService.debug(
+          '[EncryptionService] AES-256 encryption key loaded',
+        );
       }
     } catch (e) {
       LoggerService.error(
@@ -88,15 +92,17 @@ class EncryptionService {
   Future<String> encrypt(String data) async {
     try {
       await _ensureInitialized();
-      
+
       if (_encrypter == null || _encryptionIV == null) {
         throw Exception('Encryption not initialized');
       }
 
       final encrypted = _encrypter!.encrypt(data, iv: _encryptionIV!);
       final encryptedBase64 = encrypted.base64;
-      
-      LoggerService.debug('[EncryptionService] Data encrypted using AES-256 (length: ${encryptedBase64.length})');
+
+      LoggerService.debug(
+        '[EncryptionService] Data encrypted using AES-256 (length: ${encryptedBase64.length})',
+      );
       return encryptedBase64;
     } catch (e) {
       LoggerService.error('[EncryptionService] Encryption failed', error: e);
@@ -108,14 +114,14 @@ class EncryptionService {
   Future<String> decrypt(String encryptedData) async {
     try {
       await _ensureInitialized();
-      
+
       if (_encrypter == null || _encryptionIV == null) {
         throw Exception('Encryption not initialized');
       }
 
       final encrypted = Encrypted.fromBase64(encryptedData);
       final decrypted = _encrypter!.decrypt(encrypted, iv: _encryptionIV!);
-      
+
       LoggerService.debug('[EncryptionService] Data decrypted using AES-256');
       return decrypted;
     } catch (e) {
@@ -154,11 +160,11 @@ class EncryptionService {
     try {
       await _secureStorage.delete(key: _keyStorageKey);
       await _secureStorage.delete(key: _ivStorageKey);
-      
+
       _encryptionKey = null;
       _encryptionIV = null;
       _encrypter = null;
-      
+
       LoggerService.info('[EncryptionService] AES-256 encryption keys cleared');
     } catch (e) {
       LoggerService.error('[EncryptionService] Error clearing keys', error: e);
@@ -169,9 +175,14 @@ class EncryptionService {
   Future<bool> isEncryptionAvailable() async {
     try {
       await _ensureInitialized();
-      return _encrypter != null && _encryptionKey != null && _encryptionIV != null;
+      return _encrypter != null &&
+          _encryptionKey != null &&
+          _encryptionIV != null;
     } catch (e) {
-      LoggerService.error('[EncryptionService] Error checking availability', error: e);
+      LoggerService.error(
+        '[EncryptionService] Error checking availability',
+        error: e,
+      );
       return false;
     }
   }
@@ -187,7 +198,10 @@ class EncryptionService {
         'timestamp': DateTime.now().toIso8601String(),
       };
     } catch (e) {
-      LoggerService.error('[EncryptionService] Error encrypting for storage', error: e);
+      LoggerService.error(
+        '[EncryptionService] Error encrypting for storage',
+        error: e,
+      );
       rethrow;
     }
   }
@@ -198,7 +212,10 @@ class EncryptionService {
       final data = encryptedData['data'] as String;
       return await decrypt(data);
     } catch (e) {
-      LoggerService.error('[EncryptionService] Error decrypting from storage', error: e);
+      LoggerService.error(
+        '[EncryptionService] Error decrypting from storage',
+        error: e,
+      );
       rethrow;
     }
   }
@@ -207,8 +224,10 @@ class EncryptionService {
   /// Note: This is a best-effort approach. True secure deletion requires OS-level support
   String secureWipe(String data) {
     final random = Random.secure();
-    final randomData = List<int>.generate(data.length, (_) => random.nextInt(256));
+    final randomData = List<int>.generate(
+      data.length,
+      (_) => random.nextInt(256),
+    );
     return String.fromCharCodes(randomData);
   }
 }
-

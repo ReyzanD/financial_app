@@ -36,14 +36,21 @@ class BiometricHelper {
       );
 
       if (authenticated) {
-        LoggerService.success('[BiometricHelper] Biometric authentication successful');
+        LoggerService.success(
+          '[BiometricHelper] Biometric authentication successful',
+        );
       } else {
-        LoggerService.warning('[BiometricHelper] Biometric authentication failed or cancelled');
+        LoggerService.warning(
+          '[BiometricHelper] Biometric authentication failed or cancelled',
+        );
       }
 
       return authenticated;
     } catch (e) {
-      LoggerService.error('[BiometricHelper] Error during biometric authentication', error: e);
+      LoggerService.error(
+        '[BiometricHelper] Error during biometric authentication',
+        error: e,
+      );
       return false;
     }
   }
@@ -55,7 +62,10 @@ class BiometricHelper {
       final isEnabled = await _biometricService.isBiometricEnabled();
       return isAvailable && isEnabled;
     } catch (e) {
-      LoggerService.error('[BiometricHelper] Error checking biometric requirement', error: e);
+      LoggerService.error(
+        '[BiometricHelper] Error checking biometric requirement',
+        error: e,
+      );
       return false;
     }
   }
@@ -66,17 +76,14 @@ class BiometricHelper {
     String reason = 'Autentikasi diperlukan',
   }) async {
     final shouldUseBiometric = await shouldRequireBiometric();
-    
+
     if (shouldUseBiometric) {
-      return await requestBiometricAuth(
-        context: context,
-        reason: reason,
-      );
+      if (!context.mounted) return false;
+      return await requestBiometricAuth(context: context, reason: reason);
     }
-    
+
     // Fallback: return true (no authentication required)
     // In a real app, you might want to show PIN dialog here
     return true;
   }
 }
-

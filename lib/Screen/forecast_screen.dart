@@ -129,42 +129,52 @@ class _ForecastScreenState extends State<ForecastScreen> {
                           ),
                         ),
                         IconButton(
-                          icon: const Icon(Iconsax.refresh, color: Colors.white),
+                          icon: const Icon(
+                            Iconsax.refresh,
+                            color: Colors.white,
+                          ),
                           onPressed: _loadForecastData,
                         ),
                       ],
                     ),
                   ),
                   Expanded(
-                    child: _isLoading
-                        ? const Center(child: CircularProgressIndicator(color: DesignTokens.primaryColor))
-                        : _error != null
+                    child:
+                        _isLoading
+                            ? const Center(
+                              child: CircularProgressIndicator(
+                                color: DesignTokens.primaryColor,
+                              ),
+                            )
+                            : _error != null
                             ? _buildErrorState()
                             : RefreshIndicator(
-                                onRefresh: _loadForecastData,
-                                color: DesignTokens.primaryColor,
-                                child: ListView(
-                                  padding: const EdgeInsets.all(16),
-                                  children: [
-                                    _buildForecastSummary(),
+                              onRefresh: _loadForecastData,
+                              color: DesignTokens.primaryColor,
+                              child: ListView(
+                                padding: const EdgeInsets.all(16),
+                                children: [
+                                  _buildForecastSummary(),
+                                  const SizedBox(height: 20),
+                                  _buildSpendingTrendChart(),
+                                  const SizedBox(height: 20),
+                                  if (_budgetRisks.isNotEmpty)
+                                    _buildBudgetRisks(),
+                                  if (_budgetRisks.isNotEmpty)
                                     const SizedBox(height: 20),
-                                    _buildSpendingTrendChart(),
+                                  if (_categoryForecasts.isNotEmpty)
+                                    _buildCategoryForecast(),
+                                  if (_categoryForecasts.isNotEmpty)
                                     const SizedBox(height: 20),
-                                    if (_budgetRisks.isNotEmpty) _buildBudgetRisks(),
-                                    if (_budgetRisks.isNotEmpty) const SizedBox(height: 20),
-                                    if (_categoryForecasts.isNotEmpty)
-                                      _buildCategoryForecast(),
-                                    if (_categoryForecasts.isNotEmpty)
-                                      const SizedBox(height: 20),
-                                    if (_suggestedBudgets.isNotEmpty)
-                                      _buildSuggestedBudgets(),
-                                    if (_suggestedBudgets.isNotEmpty)
-                                      const SizedBox(height: 20),
-                                    if (_patternAnalysis['trends'] != null)
-                                      _buildSpendingInsights(),
-                                  ],
-                                ),
+                                  if (_suggestedBudgets.isNotEmpty)
+                                    _buildSuggestedBudgets(),
+                                  if (_suggestedBudgets.isNotEmpty)
+                                    const SizedBox(height: 20),
+                                  if (_patternAnalysis['trends'] != null)
+                                    _buildSpendingInsights(),
+                                ],
                               ),
+                            ),
                   ),
                 ],
               ),
@@ -182,11 +192,7 @@ class _ForecastScreenState extends State<ForecastScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              Iconsax.warning_2,
-              size: 64,
-              color: DesignTokens.errorColor,
-            ),
+            Icon(Iconsax.warning_2, size: 64, color: DesignTokens.errorColor),
             const SizedBox(height: 16),
             Text(
               'Gagal Memuat Forecast',
@@ -279,8 +285,8 @@ class _ForecastScreenState extends State<ForecastScreen> {
                 trend == 'increasing'
                     ? 'Pengeluaran meningkat'
                     : trend == 'decreasing'
-                        ? 'Pengeluaran menurun'
-                        : 'Pengeluaran stabil',
+                    ? 'Pengeluaran menurun'
+                    : 'Pengeluaran stabil',
                 style: GoogleFonts.poppins(
                   fontSize: 13,
                   color: trendColor,
@@ -374,8 +380,8 @@ class _ForecastScreenState extends State<ForecastScreen> {
           confidence > 0.7
               ? DesignTokens.successColor
               : confidence > 0.5
-                  ? Colors.orange
-                  : Colors.red,
+              ? Colors.orange
+              : Colors.red,
         ),
       ),
     );
@@ -388,12 +394,14 @@ class _ForecastScreenState extends State<ForecastScreen> {
     }
 
     final sortedMonths = periodData.keys.toList()..sort();
-    final expenses = sortedMonths.map((m) {
-      return (periodData[m]['expense'] as num?)?.toDouble() ?? 0.0;
-    }).toList();
-    final incomes = sortedMonths.map((m) {
-      return (periodData[m]['income'] as num?)?.toDouble() ?? 0.0;
-    }).toList();
+    final expenses =
+        sortedMonths.map((m) {
+          return (periodData[m]['expense'] as num?)?.toDouble() ?? 0.0;
+        }).toList();
+    final incomes =
+        sortedMonths.map((m) {
+          return (periodData[m]['income'] as num?)?.toDouble() ?? 0.0;
+        }).toList();
 
     if (expenses.length < 2) return const SizedBox.shrink();
 
@@ -449,9 +457,11 @@ class _ForecastScreenState extends State<ForecastScreen> {
                         if (value.toInt() >= sortedMonths.length) {
                           return const SizedBox.shrink();
                         }
-                        final monthParts = sortedMonths[value.toInt()].split('-');
+                        final monthParts = sortedMonths[value.toInt()].split(
+                          '-',
+                        );
                         return Text(
-                          _monthName(int.parse(monthParts[1])),
+                          _monthName(int.tryParse(monthParts[1]) ?? 1),
                           style: GoogleFonts.poppins(
                             fontSize: 11,
                             fontWeight: FontWeight.w500,
@@ -510,9 +520,12 @@ class _ForecastScreenState extends State<ForecastScreen> {
   }
 
   Widget _buildBudgetRisks() {
-    final critical = _budgetRisks
-        .where((r) => r['risk_level'] == 'critical' || r['risk_level'] == 'high')
-        .toList();
+    final critical =
+        _budgetRisks
+            .where(
+              (r) => r['risk_level'] == 'critical' || r['risk_level'] == 'high',
+            )
+            .toList();
 
     if (critical.isEmpty) {
       return Container(
@@ -570,9 +583,7 @@ class _ForecastScreenState extends State<ForecastScreen> {
             ],
           ),
           const SizedBox(height: 12),
-          ...critical.map(
-            (risk) => _buildBudgetRiskItem(risk),
-          ),
+          ...critical.map((risk) => _buildBudgetRiskItem(risk)),
         ],
       ),
     );
@@ -659,8 +670,9 @@ class _ForecastScreenState extends State<ForecastScreen> {
   }
 
   Widget _buildCategoryForecast() {
-    final sorted = _categoryForecasts.entries.toList()
-      ..sort((a, b) => b.value.amount.compareTo(a.value.amount));
+    final sorted =
+        _categoryForecasts.entries.toList()
+          ..sort((a, b) => b.value.amount.compareTo(a.value.amount));
 
     return Container(
       padding: const EdgeInsets.all(20),
@@ -687,49 +699,52 @@ class _ForecastScreenState extends State<ForecastScreen> {
             ],
           ),
           const SizedBox(height: 12),
-          ...sorted.take(8).map(
-            (entry) => Padding(
-              padding: const EdgeInsets.symmetric(vertical: 6),
-              child: Row(
-                children: [
-                  Container(
-                    width: 4,
-                    height: 24,
-                    decoration: BoxDecoration(
-                      color: DesignTokens.primaryColor,
-                      borderRadius: BorderRadius.circular(2),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Text(
-                      entry.key,
-                      style: GoogleFonts.poppins(
-                        fontSize: 14,
-                        color: Colors.white,
+          ...sorted
+              .take(8)
+              .map(
+                (entry) => Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 6),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 4,
+                        height: 24,
+                        decoration: BoxDecoration(
+                          color: DesignTokens.primaryColor,
+                          borderRadius: BorderRadius.circular(2),
+                        ),
                       ),
-                    ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          entry.key,
+                          style: GoogleFonts.poppins(
+                            fontSize: 14,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                      Text(
+                        'Rp ${_formatNumber(entry.value.toDouble())}',
+                        style: GoogleFonts.poppins(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ],
                   ),
-                  Text(
-                    'Rp ${_formatNumber(entry.value.toDouble())}',
-                    style: GoogleFonts.poppins(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.white,
-                    ),
-                  ),
-                ],
+                ),
               ),
-            ),
-          ),
         ],
       ),
     );
   }
 
   Widget _buildSuggestedBudgets() {
-    final sorted = _suggestedBudgets.entries.toList()
-      ..sort((a, b) => b.value.compareTo(a.value));
+    final sorted =
+        _suggestedBudgets.entries.toList()
+          ..sort((a, b) => b.value.compareTo(a.value));
 
     return Container(
       padding: const EdgeInsets.all(20),
@@ -787,7 +802,9 @@ class _ForecastScreenState extends State<ForecastScreen> {
                     decoration: BoxDecoration(
                       color: DesignTokens.warningColor.withValues(alpha: 0.15),
                       borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: DesignTokens.warningColor.withValues(alpha: 0.3)),
+                      border: Border.all(
+                        color: DesignTokens.warningColor.withValues(alpha: 0.3),
+                      ),
                     ),
                     child: Text(
                       'Rp ${_formatNumber(entry.value.toDouble())}',
@@ -810,56 +827,57 @@ class _ForecastScreenState extends State<ForecastScreen> {
   Widget _buildSpendingInsights() {
     final trends = _patternAnalysis['trends'] as Map? ?? {};
     final dayPatterns = _patternAnalysis['day_of_week_patterns'] as Map? ?? {};
-    final merchants =
-        (_patternAnalysis['frequent_merchants'] as List?) ?? [];
+    final merchants = (_patternAnalysis['frequent_merchants'] as List?) ?? [];
 
     final insights = <Widget>[];
 
     final expenseTrend = trends['expense_trend'] as String?;
     final expenseChange = trends['expense_change_percent'] as double? ?? 0.0;
     if (expenseTrend != null && expenseTrend != 'insufficient_data') {
-      final icon = expenseTrend == 'increasing'
-          ? Icons.trending_up
-          : expenseTrend == 'decreasing'
+      final icon =
+          expenseTrend == 'increasing'
+              ? Icons.trending_up
+              : expenseTrend == 'decreasing'
               ? Icons.trending_down
               : Icons.trending_flat;
-      final color = expenseTrend == 'increasing'
-          ? DesignTokens.errorColor
-          : expenseTrend == 'decreasing'
+      final color =
+          expenseTrend == 'increasing'
+              ? DesignTokens.errorColor
+              : expenseTrend == 'decreasing'
               ? DesignTokens.successColor
               : DesignTokens.textSecondaryDark;
-      final text = expenseTrend == 'increasing'
-          ? 'Pengeluaran meningkat ${expenseChange.abs().toStringAsFixed(1)}% dalam 3 bulan terakhir'
-          : expenseTrend == 'decreasing'
+      final text =
+          expenseTrend == 'increasing'
+              ? 'Pengeluaran meningkat ${expenseChange.abs().toStringAsFixed(1)}% dalam 3 bulan terakhir'
+              : expenseTrend == 'decreasing'
               ? 'Pengeluaran menurun ${expenseChange.abs().toStringAsFixed(1)}% - bagus!'
               : 'Pengeluaran stabil dalam 3 bulan terakhir';
 
-      insights.add(
-        _buildInsightCard(icon, color, text),
-      );
+      insights.add(_buildInsightCard(icon, color, text));
     }
 
     final savingsTrend = trends['savings_rate_trend'] as String?;
     if (savingsTrend != null && savingsTrend != 'insufficient_data') {
-      final icon = savingsTrend == 'improving'
-          ? Icons.savings
-          : savingsTrend == 'declining'
+      final icon =
+          savingsTrend == 'improving'
+              ? Icons.savings
+              : savingsTrend == 'declining'
               ? Icons.warning
               : Icons.trending_flat;
-      final color = savingsTrend == 'improving'
-          ? DesignTokens.successColor
-          : savingsTrend == 'declining'
+      final color =
+          savingsTrend == 'improving'
+              ? DesignTokens.successColor
+              : savingsTrend == 'declining'
               ? DesignTokens.warningColor
               : DesignTokens.textSecondaryDark;
-      final text = savingsTrend == 'improving'
-          ? 'Tingkat tabungan Anda membaik'
-          : savingsTrend == 'declining'
+      final text =
+          savingsTrend == 'improving'
+              ? 'Tingkat tabungan Anda membaik'
+              : savingsTrend == 'declining'
               ? 'Tingkat tabungan menurun, perhatikan pengeluaran'
               : 'Tingkat tabungan stabil';
 
-      insights.add(
-        _buildInsightCard(icon, color, text),
-      );
+      insights.add(_buildInsightCard(icon, color, text));
     }
 
     final peakDay = dayPatterns['peak_day'] as String?;
@@ -873,9 +891,8 @@ class _ForecastScreenState extends State<ForecastScreen> {
       );
     }
 
-    final frequentMerchants = merchants
-        .where((m) => (m['frequency'] as int? ?? 0) >= 3)
-        .toList();
+    final frequentMerchants =
+        merchants.where((m) => (m['frequency'] as int? ?? 0) >= 3).toList();
     if (frequentMerchants.isNotEmpty) {
       final topMerchant = frequentMerchants.first;
       insights.add(
@@ -934,10 +951,7 @@ class _ForecastScreenState extends State<ForecastScreen> {
           Expanded(
             child: Text(
               text,
-              style: GoogleFonts.poppins(
-                fontSize: 13,
-                color: Colors.white,
-              ),
+              style: GoogleFonts.poppins(fontSize: 13, color: Colors.white),
             ),
           ),
         ],
@@ -959,10 +973,7 @@ class _ForecastScreenState extends State<ForecastScreen> {
         const SizedBox(width: 6),
         Text(
           label,
-          style: GoogleFonts.poppins(
-            fontSize: 12,
-            color: Colors.white,
-          ),
+          style: GoogleFonts.poppins(fontSize: 12, color: Colors.white),
         ),
       ],
     );

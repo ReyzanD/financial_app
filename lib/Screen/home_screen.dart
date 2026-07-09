@@ -12,6 +12,7 @@ import 'package:financial_app/widgets/home/floating_action_button.dart';
 import 'package:financial_app/widgets/home/tab_placeholders.dart';
 import 'package:financial_app/widgets/common/offline_indicator.dart';
 import 'package:financial_app/services/logger_service.dart';
+import 'package:financial_app/services/error_handler_service.dart';
 import 'package:financial_app/utils/app_refresh.dart';
 import 'package:financial_app/utils/responsive_helper.dart';
 import 'package:financial_app/Screen/forecast_screen.dart';
@@ -30,6 +31,7 @@ class _HomeScreenState extends State<HomeScreen> {
   final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
       GlobalKey<RefreshIndicatorState>();
   int _refreshCounter = 0; // Add refresh counter for forcing widget rebuilds
+  String? _errorMessage;
 
   @override
   void initState() {
@@ -50,9 +52,13 @@ class _HomeScreenState extends State<HomeScreen> {
     try {
       final appState = Provider.of<AppState>(context, listen: false);
       await appState.loadInitialData();
+      setState(() => _errorMessage = null);
       LoggerService.success('[HomeScreen] Initial data load completed');
     } catch (e) {
       LoggerService.error('[HomeScreen] Error loading initial data', error: e);
+      setState(() {
+        _errorMessage = ErrorHandlerService.getUserFriendlyMessage(e);
+      });
     }
   }
 
@@ -63,18 +69,23 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void dispose() {
+    _pageController.dispose();
     RefreshNotifier().removeListener(_onGlobalRefresh);
     super.dispose();
   }
 
   Future<void> _loadDefaultTab() async {
-    final prefs = await SharedPreferences.getInstance();
-    final defaultTabIndex =
-        prefs.getInt('default_tab_index') ?? 0; // Default to dashboard (0)
-    setState(() {
-      _currentIndex = defaultTabIndex;
-    });
-    _pageController.jumpToPage(defaultTabIndex);
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final defaultTabIndex =
+          prefs.getInt('default_tab_index') ?? 0; // Default to dashboard (0)
+      setState(() {
+        _currentIndex = defaultTabIndex;
+      });
+      _pageController.jumpToPage(defaultTabIndex);
+    } catch (e) {
+      LoggerService.error('[HomeScreen] Error loading default tab', error: e);
+    }
   }
 
   @override
@@ -130,6 +141,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
   // MARK: - Dashboard Tab
   Widget _buildDashboardTab() {
+    if (_errorMessage != null) {
+      return _buildErrorState();
+    }
     return RefreshIndicator(
       key: _refreshIndicatorKey,
       onRefresh: _refreshDashboard,
@@ -154,6 +168,51 @@ class _HomeScreenState extends State<HomeScreen> {
 
             // AI Recommendations
             const AIRecommendations(),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildErrorState() {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.error_outline_rounded, size: 64, color: Colors.red[400]),
+            const SizedBox(height: 16),
+            const Text(
+              'Terjadi kesalahan',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+                color: Colors.white,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              _errorMessage ?? '',
+              textAlign: TextAlign.center,
+              style: const TextStyle(color: Colors.grey, fontSize: 14),
+            ),
+            const SizedBox(height: 24),
+            Semantics(
+              label: 'Coba lagi',
+              button: true,
+              child: ElevatedButton.icon(
+                onPressed: () {
+                  setState(() => _errorMessage = null);
+                  _loadInitialData();
+                },
+                icon: const Icon(Icons.refresh),
+                label: const Text('Coba Lagi'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF8B5FBF),
+                ),
+              ),
+            ),
           ],
         ),
       ),

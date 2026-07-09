@@ -6,14 +6,12 @@ class AccountService {
   final LocalDataService _localData;
 
   AccountService({LocalDataService? localData})
-      : _localData = localData ?? LocalDataService();
+    : _localData = localData ?? LocalDataService();
 
   Future<List<AccountModel>> getAccounts({bool activeOnly = true}) async {
     try {
       final accountsData = await _localData.getAccounts(activeOnly: activeOnly);
-      return accountsData
-          .map((a) => AccountModel.fromMap(a))
-          .toList();
+      return accountsData.map((a) => AccountModel.fromMap(a)).toList();
     } catch (e) {
       LoggerService.error('Error getting accounts', error: e);
       return _getDefaultAccounts();
@@ -23,7 +21,9 @@ class AccountService {
   Future<AccountModel> createAccount(AccountModel account) async {
     try {
       final result = await _localData.addAccount(account.toMap());
-      final created = AccountModel.fromMap(result['account'] as Map<String, dynamic>);
+      final created = AccountModel.fromMap(
+        result['account'] as Map<String, dynamic>,
+      );
       LoggerService.success('Account created: ${created.name}');
       return created;
     } catch (e) {
@@ -32,10 +32,15 @@ class AccountService {
     }
   }
 
-  Future<AccountModel> updateAccount(String id, Map<String, dynamic> updates) async {
+  Future<AccountModel> updateAccount(
+    String id,
+    Map<String, dynamic> updates,
+  ) async {
     try {
       final result = await _localData.updateAccount(id, updates);
-      final updated = AccountModel.fromMap(result['account'] as Map<String, dynamic>);
+      final updated = AccountModel.fromMap(
+        result['account'] as Map<String, dynamic>,
+      );
       LoggerService.success('Account updated: ${updated.name}');
       return updated;
     } catch (e) {
@@ -88,9 +93,15 @@ class AccountService {
         throw Exception('Insufficient balance');
       }
 
-      await updateAccount(fromAccountId, {'balance': accounts[fromIndex].balance - amount});
-      await updateAccount(toAccountId, {'balance': accounts[toIndex].balance + amount});
-      LoggerService.success('Transfer: $amount from ${accounts[fromIndex].name} to ${accounts[toIndex].name}');
+      await updateAccount(fromAccountId, {
+        'balance': accounts[fromIndex].balance - amount,
+      });
+      await updateAccount(toAccountId, {
+        'balance': accounts[toIndex].balance + amount,
+      });
+      LoggerService.success(
+        'Transfer: $amount from ${accounts[fromIndex].name} to ${accounts[toIndex].name}',
+      );
     } catch (e) {
       LoggerService.error('Error transferring between accounts', error: e);
       rethrow;

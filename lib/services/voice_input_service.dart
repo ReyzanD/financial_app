@@ -107,4 +107,3 @@ class VoiceInputService {
     return _speech.locales();
   }
 }
-

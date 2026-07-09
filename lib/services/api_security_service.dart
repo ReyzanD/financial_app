@@ -6,16 +6,21 @@ import 'package:financial_app/services/logger_service.dart';
 class ApiSecurityService {
   static const int _maxRequestsPerMinute = 60;
   static const int _maxRequestsPerHour = 1000;
-  
+
   final Map<String, List<DateTime>> _requestHistory = {};
   final Map<String, int> _requestCounts = {};
 
   /// Sign request dengan HMAC
-  String signRequest(String method, String endpoint, Map<String, dynamic>? body, String secret) {
+  String signRequest(
+    String method,
+    String endpoint,
+    Map<String, dynamic>? body,
+    String secret,
+  ) {
     try {
       final timestamp = DateTime.now().millisecondsSinceEpoch.toString();
       final nonce = DateTime.now().microsecondsSinceEpoch.toString();
-      
+
       // Create signature payload
       final payload = {
         'method': method,
@@ -24,14 +29,14 @@ class ApiSecurityService {
         'timestamp': timestamp,
         'nonce': nonce,
       };
-      
+
       final payloadString = json.encode(payload);
       final key = utf8.encode(secret);
       final bytes = utf8.encode(payloadString);
-      
+
       final hmac = Hmac(sha256, key);
       final digest = hmac.convert(bytes);
-      
+
       return digest.toString();
     } catch (e) {
       LoggerService.error('Error signing request', error: e);
@@ -44,7 +49,7 @@ class ApiSecurityService {
     try {
       final now = DateTime.now();
       final key = endpoint;
-      
+
       // Clean old requests (older than 1 hour)
       if (_requestHistory.containsKey(key)) {
         _requestHistory[key]!.removeWhere(
@@ -53,30 +58,32 @@ class ApiSecurityService {
       } else {
         _requestHistory[key] = [];
       }
-      
+
       // Check per-minute limit
-      final recentRequests = _requestHistory[key]!.where(
-        (time) => now.difference(time).inMinutes < 1,
-      ).length;
-      
+      final recentRequests =
+          _requestHistory[key]!
+              .where((time) => now.difference(time).inMinutes < 1)
+              .length;
+
       if (recentRequests >= _maxRequestsPerMinute) {
         LoggerService.warning('Rate limit exceeded for $endpoint');
         return false;
       }
-      
+
       // Check per-hour limit
-      final hourlyRequests = _requestHistory[key]!.where(
-        (time) => now.difference(time).inHours < 1,
-      ).length;
-      
+      final hourlyRequests =
+          _requestHistory[key]!
+              .where((time) => now.difference(time).inHours < 1)
+              .length;
+
       if (hourlyRequests >= _maxRequestsPerHour) {
         LoggerService.warning('Hourly rate limit exceeded for $endpoint');
         return false;
       }
-      
+
       // Record request
       _requestHistory[key]!.add(now);
-      
+
       return true;
     } catch (e) {
       LoggerService.error('Error checking rate limit', error: e);
@@ -88,7 +95,7 @@ class ApiSecurityService {
   Map<String, dynamic> getRateLimitStatus(String endpoint) {
     final now = DateTime.now();
     final key = endpoint;
-    
+
     if (!_requestHistory.containsKey(key)) {
       return {
         'remaining_per_minute': _maxRequestsPerMinute,
@@ -96,15 +103,17 @@ class ApiSecurityService {
         'reset_in_seconds': 60,
       };
     }
-    
-    final recentRequests = _requestHistory[key]!.where(
-      (time) => now.difference(time).inMinutes < 1,
-    ).length;
-    
-    final hourlyRequests = _requestHistory[key]!.where(
-      (time) => now.difference(time).inHours < 1,
-    ).length;
-    
+
+    final recentRequests =
+        _requestHistory[key]!
+            .where((time) => now.difference(time).inMinutes < 1)
+            .length;
+
+    final hourlyRequests =
+        _requestHistory[key]!
+            .where((time) => now.difference(time).inHours < 1)
+            .length;
+
     return {
       'remaining_per_minute': _maxRequestsPerMinute - recentRequests,
       'remaining_per_hour': _maxRequestsPerHour - hourlyRequests,
@@ -121,12 +130,12 @@ class ApiSecurityService {
 
   /// Certificate pinning storage
   /// In production, these should be stored securely (e.g., in encrypted storage)
-  /// 
+  ///
   /// To add a certificate pin:
   /// 1. Extract your server's certificate SHA-256 hash
   /// 2. Call ApiSecurityService.addCertificatePin('your-server.com', 'hash_here')
   /// 3. In production builds, set _pinnedCertificates with your actual certificate hashes
-  /// 
+  ///
   /// Example:
   /// ```dart
   /// ApiSecurityService.addCertificatePin(
@@ -145,9 +154,7 @@ class ApiSecurityService {
   Future<bool> validateCertificate(String host, List<int> certificate) async {
     try {
       // Extract hostname from URL if full URL is provided
-      final hostname = host.contains('://')
-          ? Uri.parse(host).host
-          : host;
+      final hostname = host.contains('://') ? Uri.parse(host).host : host;
 
       // Check if we have a pinned certificate for this host
       if (!_pinnedCertificates.containsKey(hostname)) {
@@ -216,4 +223,3 @@ class ApiSecurityService {
     return digest.toString();
   }
 }
-

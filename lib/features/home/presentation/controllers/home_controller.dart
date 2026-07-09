@@ -37,7 +37,8 @@ class HomeController extends ChangeNotifier {
       // Load data in parallel
       final transactions = await _getTransactionsUseCase(limit: 10);
       final budgets = await _budgetRepository.getBudgets(activeOnly: true);
-      final recommendations = await _aiService.generatePersonalizedRecommendations();
+      final recommendations =
+          await _aiService.generatePersonalizedRecommendations();
 
       _recentTransactions = transactions;
       _budgets = budgets;
@@ -56,4 +57,3 @@ class HomeController extends ChangeNotifier {
     await loadHomeData();
   }
 }
-

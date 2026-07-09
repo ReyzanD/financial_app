@@ -245,11 +245,14 @@ class _RecurringTransactionsScreenState
         children: [
           const OfflineIndicator(),
           Expanded(
-            child: _isLoading
-                ? const Center(
-                    child: CircularProgressIndicator(color: Color(0xFF8B5FBF)),
-                  )
-                : _recurringTransactions.isEmpty
+            child:
+                _isLoading
+                    ? const Center(
+                      child: CircularProgressIndicator(
+                        color: Color(0xFF8B5FBF),
+                      ),
+                    )
+                    : _recurringTransactions.isEmpty
                     ? _buildEmptyState()
                     : _buildTransactionsList(),
           ),
@@ -392,7 +395,9 @@ class _RecurringTransactionsScreenState
                             vertical: 2,
                           ),
                           decoration: BoxDecoration(
-                            color: const Color(0xFF8B5FBF).withValues(alpha: 0.2),
+                            color: const Color(
+                              0xFF8B5FBF,
+                            ).withValues(alpha: 0.2),
                             borderRadius: BorderRadius.circular(4),
                           ),
                           child: Row(

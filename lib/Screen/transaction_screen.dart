@@ -8,6 +8,8 @@ import 'package:financial_app/widgets/transactions/transaction_filters.dart';
 import 'package:financial_app/widgets/transactions/transaction_list.dart';
 import 'package:financial_app/utils/responsive_helper.dart';
 import 'package:financial_app/l10n/app_localizations.dart';
+import 'package:financial_app/services/logger_service.dart';
+import 'package:financial_app/widgets/common/offline_indicator.dart';
 
 class TransactionsScreen extends StatefulWidget {
   const TransactionsScreen({super.key});
@@ -32,8 +34,15 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
       });
     });
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final appState = Provider.of<AppState>(context, listen: false);
-      appState.refreshData();
+      try {
+        final appState = Provider.of<AppState>(context, listen: false);
+        appState.refreshData();
+      } catch (e) {
+        LoggerService.error(
+          '[TransactionsScreen] Error refreshing data',
+          error: e,
+        );
+      }
     });
   }
 
@@ -60,6 +69,7 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
       body: SafeArea(
         child: Column(
           children: [
+            const OfflineIndicator(),
             // Header
             const TransactionHeader(),
 
@@ -80,6 +90,7 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                       _searchQuery.isNotEmpty
                           ? IconButton(
                             icon: Icon(Icons.clear, color: Colors.grey[600]),
+                            tooltip: 'Hapus pencarian',
                             onPressed: () {
                               _searchController.clear();
                             },

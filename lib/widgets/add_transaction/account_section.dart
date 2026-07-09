@@ -39,10 +39,12 @@ class _AccountSectionState extends State<AccountSection> {
         });
         // Auto-select default account if none selected
         if (widget.selectedAccountId == null && accounts.isNotEmpty) {
-          final defaultAccount = accounts.cast<Map<String, dynamic>>().firstWhere(
-            (a) => a['is_default_232143'] == 1,
-            orElse: () => accounts.first,
-          );
+          final defaultAccount = accounts
+              .cast<Map<String, dynamic>>()
+              .firstWhere(
+                (a) => a['is_default_232143'] == 1,
+                orElse: () => accounts.first,
+              );
           widget.onAccountSelected(defaultAccount['account_id_232143']);
         }
       }
@@ -85,7 +87,9 @@ class _AccountSectionState extends State<AccountSection> {
             ),
           ),
           const SizedBox(height: 12),
-          const Center(child: CircularProgressIndicator(color: DesignTokens.primaryColor)),
+          const Center(
+            child: CircularProgressIndicator(color: DesignTokens.primaryColor),
+          ),
         ],
       );
     }
@@ -113,7 +117,10 @@ class _AccountSectionState extends State<AccountSection> {
             GestureDetector(
               onTap: () => widget.onAccountSelected(null),
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 10,
+                ),
                 decoration: BoxDecoration(
                   color:
                       widget.selectedAccountId == null
@@ -155,18 +162,29 @@ class _AccountSectionState extends State<AccountSection> {
               ),
             ),
             ..._accounts.map((account) {
-              final isSelected = widget.selectedAccountId == account['account_id_232143'];
+              final isSelected =
+                  widget.selectedAccountId == account['account_id_232143'];
               final type = account['type_232143'] ?? 'other';
               final name = account['name_232143'] ?? 'Akun';
               final colorHex = account['color_232143'] ?? '#8B5FBF';
-              final accountColor = Color(int.parse(colorHex.replaceFirst('#', '0xFF')));
+              final accountColor = Color(
+                int.parse(colorHex.replaceFirst('#', '0xFF')),
+              );
 
               return GestureDetector(
-                onTap: () => widget.onAccountSelected(account['account_id_232143']),
+                onTap:
+                    () =>
+                        widget.onAccountSelected(account['account_id_232143']),
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 10,
+                  ),
                   decoration: BoxDecoration(
-                    color: isSelected ? accountColor.withValues(alpha: 0.3) : const Color(0xFF1A1A1A),
+                    color:
+                        isSelected
+                            ? accountColor.withValues(alpha: 0.3)
+                            : const Color(0xFF1A1A1A),
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(
                       color: isSelected ? accountColor : Colors.grey[700]!,
@@ -178,13 +196,19 @@ class _AccountSectionState extends State<AccountSection> {
                       Icon(
                         _getAccountIcon(type),
                         size: 18,
-                        color: isSelected ? DesignTokens.primaryColor : Colors.grey[500],
+                        color:
+                            isSelected
+                                ? DesignTokens.primaryColor
+                                : Colors.grey[500],
                       ),
                       const SizedBox(width: 6),
                       Text(
                         name,
                         style: GoogleFonts.poppins(
-                          color: isSelected ? DesignTokens.primaryColor : Colors.grey[500],
+                          color:
+                              isSelected
+                                  ? DesignTokens.primaryColor
+                                  : Colors.grey[500],
                           fontSize: 13,
                           fontWeight: FontWeight.w500,
                         ),

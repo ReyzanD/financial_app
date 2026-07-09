@@ -18,11 +18,13 @@ class HomeFloatingActionButton extends StatelessWidget {
         );
 
         // If transaction was added successfully, refresh the dashboard
-        if (result == true && context.mounted) {
+        if (!context.mounted) return;
+        if (result == true) {
           // Trigger data refresh using AppState which has DataService
           final appState = Provider.of<AppState>(context, listen: false);
           await appState.refreshData(forceRefresh: true);
 
+          if (!context.mounted) return;
           // Show success feedback
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(

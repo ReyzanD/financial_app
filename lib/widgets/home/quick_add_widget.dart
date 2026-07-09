@@ -125,7 +125,9 @@ class _QuickAddWidgetState extends State<QuickAddWidget> {
         borderRadius: BorderRadius.circular(
           ResponsiveHelper.borderRadius(context, 16),
         ),
-        border: Border.all(color: const Color(0xFF8B5FBF).withValues(alpha: 0.3)),
+        border: Border.all(
+          color: const Color(0xFF8B5FBF).withValues(alpha: 0.3),
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -303,7 +305,9 @@ class _QuickAddWidgetState extends State<QuickAddWidget> {
           borderRadius: BorderRadius.circular(
             ResponsiveHelper.borderRadius(context, 20),
           ),
-          border: Border.all(color: const Color(0xFF8B5FBF).withValues(alpha: 0.5)),
+          border: Border.all(
+            color: const Color(0xFF8B5FBF).withValues(alpha: 0.5),
+          ),
         ),
         child: Text(
           CurrencyFormatter.formatRupiah(amount),

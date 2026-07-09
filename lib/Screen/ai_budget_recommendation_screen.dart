@@ -39,6 +39,7 @@ class _AIBudgetRecommendationScreenState
   }
 
   Future<void> _loadBudgetRecommendation() async {
+    final ctx = context;
     try {
       setState(() {
         _isLoading = true;
@@ -58,13 +59,12 @@ class _AIBudgetRecommendationScreenState
         _error = ErrorHandlerService.getUserFriendlyMessage(e);
         _isLoading = false;
       });
-      if (context.mounted) {
-        ErrorHandlerService.showErrorSnackbar(
-          context,
-          _error!,
-          onRetry: _loadBudgetRecommendation,
-        );
-      }
+      if (!ctx.mounted) return;
+      ErrorHandlerService.showErrorSnackbar(
+        ctx,
+        _error!,
+        onRetry: _loadBudgetRecommendation,
+      );
     }
   }
 
@@ -77,7 +77,8 @@ class _AIBudgetRecommendationScreenState
       final categories = await _apiService.getCategories();
       final existingBudgets =
           await _apiService.getBudgets(); // Fetch existing budgets
-      final income = _editedIncome ?? (_budgetRecommendation!['total_income'] as double);
+      final income =
+          _editedIncome ?? (_budgetRecommendation!['total_income'] as double);
       final recommendedCategories =
           _budgetRecommendation!['categories'] as List;
 
@@ -313,102 +314,107 @@ class _AIBudgetRecommendationScreenState
   }
 
   Future<void> _showIncomeEditDialog() async {
-    final currentIncome = _editedIncome ??
-        (_budgetRecommendation!['total_income'] as num?)?.toDouble() ?? 0;
+    final currentIncome =
+        _editedIncome ??
+        (_budgetRecommendation!['total_income'] as num?)?.toDouble() ??
+        0;
     final controller = TextEditingController(
       text: currentIncome.toStringAsFixed(0),
     );
 
     final newIncome = await showDialog<double>(
       context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: const Color(0xFF1A1A1A),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
-        title: Text(
-          'Edit Total Budget',
-          style: GoogleFonts.poppins(color: Colors.white),
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Masukkan total pendapatan bulanan Anda',
-              style: GoogleFonts.poppins(
-                color: Colors.white70,
-                fontSize: 14,
-              ),
+      builder:
+          (context) => AlertDialog(
+            backgroundColor: const Color(0xFF1A1A1A),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
             ),
-            const SizedBox(height: 16),
-            TextField(
-              controller: controller,
-              keyboardType: TextInputType.number,
+            title: Text(
+              'Edit Total Budget',
               style: GoogleFonts.poppins(color: Colors.white),
-              decoration: InputDecoration(
-                labelText: 'Total Pendapatan',
-                labelStyle: GoogleFonts.poppins(color: Colors.grey),
-                prefixText: 'Rp ',
-                prefixStyle: GoogleFonts.poppins(color: Colors.white70),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  borderSide: BorderSide(color: Colors.grey[700]!),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  borderSide: const BorderSide(color: Color(0xFF8B5FBF)),
-                ),
-              ),
             ),
-            const SizedBox(height: 12),
-            Text(
-              '💡 Jumlah ini akan digunakan untuk menghitung ulang alokasi budget per kategori',
-              style: GoogleFonts.poppins(
-                color: Colors.orange,
-                fontSize: 11,
-              ),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(
-              'Batal',
-              style: GoogleFonts.poppins(color: Colors.grey),
-            ),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              final value = double.tryParse(controller.text.replaceAll(',', ''));
-              if (value != null && value > 0) {
-                Navigator.pop(context, value);
-              } else {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(
-                      'Masukkan jumlah yang valid',
-                      style: GoogleFonts.poppins(),
-                    ),
-                    backgroundColor: Colors.red,
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Masukkan total pendapatan bulanan Anda',
+                  style: GoogleFonts.poppins(
+                    color: Colors.white70,
+                    fontSize: 14,
                   ),
-                );
-              }
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF8B5FBF),
+                ),
+                const SizedBox(height: 16),
+                TextField(
+                  controller: controller,
+                  keyboardType: TextInputType.number,
+                  style: GoogleFonts.poppins(color: Colors.white),
+                  decoration: InputDecoration(
+                    labelText: 'Total Pendapatan',
+                    labelStyle: GoogleFonts.poppins(color: Colors.grey),
+                    prefixText: 'Rp ',
+                    prefixStyle: GoogleFonts.poppins(color: Colors.white70),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                      borderSide: BorderSide(color: Colors.grey[700]!),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                      borderSide: const BorderSide(color: Color(0xFF8B5FBF)),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  '💡 Jumlah ini akan digunakan untuk menghitung ulang alokasi budget per kategori',
+                  style: GoogleFonts.poppins(
+                    color: Colors.orange,
+                    fontSize: 11,
+                  ),
+                ),
+              ],
             ),
-            child: Text(
-              'Simpan',
-              style: GoogleFonts.poppins(color: Colors.white),
-            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text(
+                  'Batal',
+                  style: GoogleFonts.poppins(color: Colors.grey),
+                ),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  final value = double.tryParse(
+                    controller.text.replaceAll(',', ''),
+                  );
+                  if (value != null && value > 0) {
+                    Navigator.pop(context, value);
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          'Masukkan jumlah yang valid',
+                          style: GoogleFonts.poppins(),
+                        ),
+                        backgroundColor: Colors.red,
+                      ),
+                    );
+                  }
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF8B5FBF),
+                ),
+                child: Text(
+                  'Simpan',
+                  style: GoogleFonts.poppins(color: Colors.white),
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
     );
 
     if (newIncome != null && newIncome > 0) {
@@ -441,378 +447,415 @@ class _AIBudgetRecommendationScreenState
         children: [
           const OfflineIndicator(),
           Expanded(
-            child: _isLoading
-                ? const Center(
-                    child: CircularProgressIndicator(color: Color(0xFF8B5FBF)),
-                  )
-                : _error != null
+            child:
+                _isLoading
+                    ? const Center(
+                      child: CircularProgressIndicator(
+                        color: Color(0xFF8B5FBF),
+                      ),
+                    )
+                    : _error != null
                     ? Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const Icon(
-                              Iconsax.info_circle,
-                              color: Colors.red,
-                              size: 48,
-                            ),
-                            const SizedBox(height: 16),
-                            Text(
-                              _error!,
-                              style: GoogleFonts.poppins(color: Colors.white70),
-                              textAlign: TextAlign.center,
-                            ),
-                            const SizedBox(height: 16),
-                            ElevatedButton(
-                              onPressed: _loadBudgetRecommendation,
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(0xFF8B5FBF),
-                              ),
-                              child: Text(
-                                'Coba Lagi',
-                                style: GoogleFonts.poppins(color: Colors.white),
-                              ),
-                            ),
-                          ],
-                        ),
-                      )
-                    : SafeArea(
-                        child: SingleChildScrollView(
-                          padding: const EdgeInsets.all(16),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              // Header Card
-                              Container(
-                        padding: const EdgeInsets.all(20),
-                        decoration: BoxDecoration(
-                          gradient: const LinearGradient(
-                            colors: [Color(0xFF8B5FBF), Color(0xFF6A4C9C)],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(
+                            Iconsax.info_circle,
+                            color: Colors.red,
+                            size: 48,
                           ),
-                          borderRadius: BorderRadius.circular(16),
-                        ),
+                          const SizedBox(height: 16),
+                          Text(
+                            _error!,
+                            style: GoogleFonts.poppins(color: Colors.white70),
+                            textAlign: TextAlign.center,
+                          ),
+                          const SizedBox(height: 16),
+                          ElevatedButton(
+                            onPressed: _loadBudgetRecommendation,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFF8B5FBF),
+                            ),
+                            child: Text(
+                              'Coba Lagi',
+                              style: GoogleFonts.poppins(color: Colors.white),
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
+                    : SafeArea(
+                      child: SingleChildScrollView(
+                        padding: const EdgeInsets.all(16),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Row(
-                              children: [
-                                const Icon(
-                                  Iconsax.flash,
-                                  color: Colors.white,
-                                  size: 24,
-                                ),
-                                const SizedBox(width: 8),
-                                Text(
-                                  'AI Budget Planner',
-                                  style: GoogleFonts.poppins(
-                                    color: Colors.white,
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 12),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  'Pendapatan Bulanan',
-                                  style: GoogleFonts.poppins(
-                                    color: Colors.white70,
-                                    fontSize: 12,
-                                  ),
-                                ),
-                                GestureDetector(
-                                  onTap: _showIncomeEditDialog,
-                                  child: Container(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 10,
-                                      vertical: 4,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color: Colors.white.withValues(alpha: 0.2),
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                    child: Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        const Icon(
-                                          Iconsax.edit,
-                                          color: Colors.white,
-                                          size: 14,
-                                        ),
-                                        const SizedBox(width: 4),
-                                        Text(
-                                          'Edit',
-                                          style: GoogleFonts.poppins(
-                                            color: Colors.white,
-                                            fontSize: 11,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 4),
-                            Row(
-                              children: [
-                                Text(
-                                  CurrencyFormatter.formatRupiah(
-                                    _editedIncome ??
-                                        _budgetRecommendation!['total_income'],
-                                  ),
-                                  style: GoogleFonts.poppins(
-                                    color: Colors.white,
-                                    fontSize: 28,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                if (_editedIncome != null) ...[
-                                  const SizedBox(width: 8),
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 6,
-                                      vertical: 2,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color: Colors.green.withValues(alpha: 0.3),
-                                      borderRadius: BorderRadius.circular(4),
-                                    ),
-                                    child: Text(
-                                      'Diedit',
-                                      style: GoogleFonts.poppins(
-                                        color: Colors.green[300],
-                                        fontSize: 9,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ],
-                            ),
-                            const SizedBox(height: 12),
+                            // Header Card
                             Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 12,
-                                vertical: 6,
-                              ),
+                              padding: const EdgeInsets.all(20),
                               decoration: BoxDecoration(
-                                color: Colors.white.withValues(alpha: 0.2),
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: Text(
-                                _budgetRecommendation!['is_new_user'] == true
-                                    ? '💡 Template standar untuk user baru - akan disesuaikan setelah ada transaksi'
-                                    : '💡 Berdasarkan aturan 50/30/20 yang disesuaikan dengan pola pengeluaran Anda',
-                                style: GoogleFonts.poppins(
-                                  color: Colors.white,
-                                  fontSize: 10,
-                                ),
-                              ),
-                            ),
-                            if (_budgetRecommendation!['is_new_user'] ==
-                                true) ...[
-                              const SizedBox(height: 8),
-                              Container(
-                                padding: const EdgeInsets.all(12),
-                                decoration: BoxDecoration(
-                                  color: Colors.white.withValues(alpha: 0.1),
-                                  borderRadius: BorderRadius.circular(8),
-                                  border: Border.all(
-                                    color: Colors.white.withValues(alpha: 0.2),
-                                  ),
-                                ),
-                                child: Row(
-                                  children: [
-                                    const Icon(
-                                      Iconsax.info_circle,
-                                      color: Colors.white70,
-                                      size: 16,
-                                    ),
-                                    const SizedBox(width: 8),
-                                    Expanded(
-                                      child: Text(
-                                        _budgetRecommendation!['message']
-                                                as String? ??
-                                            'Mulai catat transaksi untuk mendapatkan rekomendasi yang lebih personal',
-                                        style: GoogleFonts.poppins(
-                                          color: Colors.white70,
-                                          fontSize: 11,
-                                        ),
-                                      ),
-                                    ),
+                                gradient: const LinearGradient(
+                                  colors: [
+                                    Color(0xFF8B5FBF),
+                                    Color(0xFF6A4C9C),
                                   ],
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
                                 ),
+                                borderRadius: BorderRadius.circular(16),
                               ),
-                            ],
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 24),
-
-                      // Budget Categories
-                      Text(
-                        'Alokasi Budget yang Disarankan',
-                        style: GoogleFonts.poppins(
-                          color: Colors.white,
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-
-                      // Category Cards
-                      ...(_budgetRecommendation!['categories'] as List)
-                          .map(
-                            (category) => BudgetCategoryCard(
-                              category: category,
-                              editedPercentages: _editedPercentages,
-                              totalIncome:
-                                  _editedIncome ??
-                                      (_budgetRecommendation!['total_income']
-                                          as double),
-                              onEdit: () {
-                                final categoryName = category['name'] as String;
-                                final currentPercentage =
-                                    _editedPercentages[categoryName]?.toInt() ??
-                                    ((category['percentage'] as num?)
-                                            ?.toInt() ??
-                                        0);
-                                _showEditDialog(
-                                  categoryName,
-                                  currentPercentage,
-                                );
-                              },
-                            ),
-                          )
-                          ,
-
-                      const SizedBox(height: 24),
-
-                      // Apply Button
-                      Container(
-                        width: double.infinity,
-                        height: 56,
-                        decoration: BoxDecoration(
-                          gradient: const LinearGradient(
-                            colors: [Color(0xFF8B5FBF), Color(0xFF6A4C9C)],
-                          ),
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        child: ElevatedButton(
-                          onPressed:
-                              _isApplying
-                                  ? null
-                                  : () async {
-                                    final confirmed = await showDialog<bool>(
-                                      context: context,
-                                      builder:
-                                          (context) => AlertDialog(
-                                            backgroundColor: const Color(
-                                              0xFF1A1A1A,
-                                            ),
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(16),
-                                            ),
-                                            title: Text(
-                                              'Terapkan Budget?',
-                                              style: GoogleFonts.poppins(
-                                                color: Colors.white,
-                                              ),
-                                            ),
-                                            content: Text(
-                                              'Budget ini akan otomatis dibuat berdasarkan rekomendasi AI. Anda bisa mengeditnya nanti.',
-                                              style: GoogleFonts.poppins(
-                                                color: Colors.white70,
-                                              ),
-                                            ),
-                                            actions: [
-                                              TextButton(
-                                                onPressed:
-                                                    () => Navigator.pop(
-                                                      context,
-                                                      false,
-                                                    ),
-                                                child: Text(
-                                                  'Batal',
-                                                  style: GoogleFonts.poppins(
-                                                    color: Colors.grey,
-                                                  ),
-                                                ),
-                                              ),
-                                              ElevatedButton(
-                                                onPressed:
-                                                    () => Navigator.pop(
-                                                      context,
-                                                      true,
-                                                    ),
-                                                style: ElevatedButton.styleFrom(
-                                                  backgroundColor: const Color(
-                                                    0xFF8B5FBF,
-                                                  ),
-                                                ),
-                                                child: Text(
-                                                  'Terapkan',
-                                                  style: GoogleFonts.poppins(
-                                                    color: Colors.white,
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                    );
-
-                                    if (confirmed == true) {
-                                      await _applyRecommendationAsBudgets();
-                                    }
-                                  },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.transparent,
-                            shadowColor: Colors.transparent,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                          ),
-                          child:
-                              _isApplying
-                                  ? const CircularProgressIndicator(
-                                    color: Colors.white,
-                                  )
-                                  : Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
                                     children: [
                                       const Icon(
-                                        Iconsax.tick_circle,
+                                        Iconsax.flash,
                                         color: Colors.white,
+                                        size: 24,
                                       ),
-                                      const SizedBox(width: 12),
+                                      const SizedBox(width: 8),
                                       Text(
-                                        'Terapkan sebagai Budget',
+                                        'AI Budget Planner',
                                         style: GoogleFonts.poppins(
                                           color: Colors.white,
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w600,
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.bold,
                                         ),
                                       ),
                                     ],
                                   ),
+                                  const SizedBox(height: 12),
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        'Pendapatan Bulanan',
+                                        style: GoogleFonts.poppins(
+                                          color: Colors.white70,
+                                          fontSize: 12,
+                                        ),
+                                      ),
+                                      GestureDetector(
+                                        onTap: _showIncomeEditDialog,
+                                        child: Container(
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 10,
+                                            vertical: 4,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color: Colors.white.withValues(
+                                              alpha: 0.2,
+                                            ),
+                                            borderRadius: BorderRadius.circular(
+                                              8,
+                                            ),
+                                          ),
+                                          child: Row(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              const Icon(
+                                                Iconsax.edit,
+                                                color: Colors.white,
+                                                size: 14,
+                                              ),
+                                              const SizedBox(width: 4),
+                                              Text(
+                                                'Edit',
+                                                style: GoogleFonts.poppins(
+                                                  color: Colors.white,
+                                                  fontSize: 11,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Row(
+                                    children: [
+                                      Text(
+                                        CurrencyFormatter.formatRupiah(
+                                          _editedIncome ??
+                                              _budgetRecommendation!['total_income'],
+                                        ),
+                                        style: GoogleFonts.poppins(
+                                          color: Colors.white,
+                                          fontSize: 28,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      if (_editedIncome != null) ...[
+                                        const SizedBox(width: 8),
+                                        Container(
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 6,
+                                            vertical: 2,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color: Colors.green.withValues(
+                                              alpha: 0.3,
+                                            ),
+                                            borderRadius: BorderRadius.circular(
+                                              4,
+                                            ),
+                                          ),
+                                          child: Text(
+                                            'Diedit',
+                                            style: GoogleFonts.poppins(
+                                              color: Colors.green[300],
+                                              fontSize: 9,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ],
+                                  ),
+                                  const SizedBox(height: 12),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 12,
+                                      vertical: 6,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white.withValues(
+                                        alpha: 0.2,
+                                      ),
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    child: Text(
+                                      _budgetRecommendation!['is_new_user'] ==
+                                              true
+                                          ? '💡 Template standar untuk user baru - akan disesuaikan setelah ada transaksi'
+                                          : '💡 Berdasarkan aturan 50/30/20 yang disesuaikan dengan pola pengeluaran Anda',
+                                      style: GoogleFonts.poppins(
+                                        color: Colors.white,
+                                        fontSize: 10,
+                                      ),
+                                    ),
+                                  ),
+                                  if (_budgetRecommendation!['is_new_user'] ==
+                                      true) ...[
+                                    const SizedBox(height: 8),
+                                    Container(
+                                      padding: const EdgeInsets.all(12),
+                                      decoration: BoxDecoration(
+                                        color: Colors.white.withValues(
+                                          alpha: 0.1,
+                                        ),
+                                        borderRadius: BorderRadius.circular(8),
+                                        border: Border.all(
+                                          color: Colors.white.withValues(
+                                            alpha: 0.2,
+                                          ),
+                                        ),
+                                      ),
+                                      child: Row(
+                                        children: [
+                                          const Icon(
+                                            Iconsax.info_circle,
+                                            color: Colors.white70,
+                                            size: 16,
+                                          ),
+                                          const SizedBox(width: 8),
+                                          Expanded(
+                                            child: Text(
+                                              _budgetRecommendation!['message']
+                                                      as String? ??
+                                                  'Mulai catat transaksi untuk mendapatkan rekomendasi yang lebih personal',
+                                              style: GoogleFonts.poppins(
+                                                color: Colors.white70,
+                                                fontSize: 11,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ],
+                              ),
+                            ),
+                            const SizedBox(height: 24),
+
+                            // Budget Categories
+                            Text(
+                              'Alokasi Budget yang Disarankan',
+                              style: GoogleFonts.poppins(
+                                color: Colors.white,
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+
+                            // Category Cards
+                            ...(_budgetRecommendation!['categories'] as List)
+                                .map(
+                                  (category) => BudgetCategoryCard(
+                                    category: category,
+                                    editedPercentages: _editedPercentages,
+                                    totalIncome:
+                                        _editedIncome ??
+                                        (_budgetRecommendation!['total_income']
+                                            as double),
+                                    onEdit: () {
+                                      final categoryName =
+                                          category['name'] as String;
+                                      final currentPercentage =
+                                          _editedPercentages[categoryName]
+                                              ?.toInt() ??
+                                          ((category['percentage'] as num?)
+                                                  ?.toInt() ??
+                                              0);
+                                      _showEditDialog(
+                                        categoryName,
+                                        currentPercentage,
+                                      );
+                                    },
+                                  ),
+                                ),
+
+                            const SizedBox(height: 24),
+
+                            // Apply Button
+                            Container(
+                              width: double.infinity,
+                              height: 56,
+                              decoration: BoxDecoration(
+                                gradient: const LinearGradient(
+                                  colors: [
+                                    Color(0xFF8B5FBF),
+                                    Color(0xFF6A4C9C),
+                                  ],
+                                ),
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              child: ElevatedButton(
+                                onPressed:
+                                    _isApplying
+                                        ? null
+                                        : () async {
+                                          final confirmed = await showDialog<
+                                            bool
+                                          >(
+                                            context: context,
+                                            builder:
+                                                (context) => AlertDialog(
+                                                  backgroundColor: const Color(
+                                                    0xFF1A1A1A,
+                                                  ),
+                                                  shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                          16,
+                                                        ),
+                                                  ),
+                                                  title: Text(
+                                                    'Terapkan Budget?',
+                                                    style: GoogleFonts.poppins(
+                                                      color: Colors.white,
+                                                    ),
+                                                  ),
+                                                  content: Text(
+                                                    'Budget ini akan otomatis dibuat berdasarkan rekomendasi AI. Anda bisa mengeditnya nanti.',
+                                                    style: GoogleFonts.poppins(
+                                                      color: Colors.white70,
+                                                    ),
+                                                  ),
+                                                  actions: [
+                                                    TextButton(
+                                                      onPressed:
+                                                          () => Navigator.pop(
+                                                            context,
+                                                            false,
+                                                          ),
+                                                      child: Text(
+                                                        'Batal',
+                                                        style:
+                                                            GoogleFonts.poppins(
+                                                              color:
+                                                                  Colors.grey,
+                                                            ),
+                                                      ),
+                                                    ),
+                                                    ElevatedButton(
+                                                      onPressed:
+                                                          () => Navigator.pop(
+                                                            context,
+                                                            true,
+                                                          ),
+                                                      style:
+                                                          ElevatedButton.styleFrom(
+                                                            backgroundColor:
+                                                                const Color(
+                                                                  0xFF8B5FBF,
+                                                                ),
+                                                          ),
+                                                      child: Text(
+                                                        'Terapkan',
+                                                        style:
+                                                            GoogleFonts.poppins(
+                                                              color:
+                                                                  Colors.white,
+                                                            ),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                          );
+
+                                          if (confirmed == true) {
+                                            await _applyRecommendationAsBudgets();
+                                          }
+                                        },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.transparent,
+                                  shadowColor: Colors.transparent,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(16),
+                                  ),
+                                ),
+                                child:
+                                    _isApplying
+                                        ? const CircularProgressIndicator(
+                                          color: Colors.white,
+                                        )
+                                        : Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            const Icon(
+                                              Iconsax.tick_circle,
+                                              color: Colors.white,
+                                            ),
+                                            const SizedBox(width: 12),
+                                            Text(
+                                              'Terapkan sebagai Budget',
+                                              style: GoogleFonts.poppins(
+                                                color: Colors.white,
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.w600,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                              ),
+                            ),
+
+                            const SizedBox(height: 24),
+
+                            // Tips Section
+                            const BudgetTipsSection(),
+
+                            const SizedBox(height: 24),
+                          ],
                         ),
                       ),
-
-                      const SizedBox(height: 24),
-
-                      // Tips Section
-                      const BudgetTipsSection(),
-
-                      const SizedBox(height: 24),
-                    ],
-                  ),
-                ),
-              ),
+                    ),
           ),
         ],
       ),

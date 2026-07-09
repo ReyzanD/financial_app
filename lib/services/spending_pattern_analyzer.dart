@@ -136,7 +136,11 @@ class SpendingPatternAnalyzer {
     // Calculate expense trend
     final expenses =
         sortedMonths
-            .map((m) => ((periodData[m] as Map)['expense'] as num?)?.toDouble() ?? 0.0)
+            .map(
+              (m) =>
+                  ((periodData[m] as Map)['expense'] as num?)?.toDouble() ??
+                  0.0,
+            )
             .toList();
     final expenseChange =
         expenses.length > 1 && expenses.isNotEmpty && expenses.first > 0
@@ -146,7 +150,10 @@ class SpendingPatternAnalyzer {
     // Calculate income trend
     final incomes =
         sortedMonths
-            .map((m) => ((periodData[m] as Map)['income'] as num?)?.toDouble() ?? 0.0)
+            .map(
+              (m) =>
+                  ((periodData[m] as Map)['income'] as num?)?.toDouble() ?? 0.0,
+            )
             .toList();
     final incomeChange =
         incomes.length > 1 && incomes.isNotEmpty && incomes.first > 0
@@ -156,7 +163,12 @@ class SpendingPatternAnalyzer {
     // Calculate savings rate trend
     final savingsRates =
         sortedMonths
-            .map((m) => ((periodData[m] as Map)['savings_rate'] as num?)?.toDouble() ?? 0.0)
+            .map(
+              (m) =>
+                  ((periodData[m] as Map)['savings_rate'] as num?)
+                      ?.toDouble() ??
+                  0.0,
+            )
             .toList();
     final savingsRateChange =
         savingsRates.length > 1 && savingsRates.isNotEmpty
@@ -195,10 +207,8 @@ class SpendingPatternAnalyzer {
       if (catSpendingRaw is Map) {
         final catSpending = Map<String, double>.from(
           catSpendingRaw.map(
-            (key, value) => MapEntry(
-              key.toString(),
-              ((value as num?)?.toDouble() ?? 0.0),
-            ),
+            (key, value) =>
+                MapEntry(key.toString(), ((value as num?)?.toDouble() ?? 0.0)),
           ),
         );
         allCategories.addAll(catSpending.keys);
@@ -258,10 +268,8 @@ class SpendingPatternAnalyzer {
       if (catSpendingRaw is Map) {
         final catSpending = Map<String, double>.from(
           catSpendingRaw.map(
-            (key, value) => MapEntry(
-              key.toString(),
-              ((value as num?)?.toDouble() ?? 0.0),
-            ),
+            (key, value) =>
+                MapEntry(key.toString(), ((value as num?)?.toDouble() ?? 0.0)),
           ),
         );
         allCategories.addAll(catSpending.keys);
@@ -280,7 +288,8 @@ class SpendingPatternAnalyzer {
         final cat2Amounts = <double>[];
 
         for (var month in sortedMonths) {
-          final catSpendingRaw = (periodData[month] as Map)['category_spending'];
+          final catSpendingRaw =
+              (periodData[month] as Map)['category_spending'];
           if (catSpendingRaw is Map) {
             final catSpending = Map<String, double>.from(
               catSpendingRaw.map(
@@ -380,9 +389,10 @@ class SpendingPatternAnalyzer {
     });
 
     // Calculate average per day
-    final avgPerDay = dayTotals.values.isNotEmpty
-        ? dayTotals.values.reduce((a, b) => a + b) / dayTotals.length
-        : 0.0;
+    final avgPerDay =
+        dayTotals.values.isNotEmpty
+            ? dayTotals.values.reduce((a, b) => a + b) / dayTotals.length
+            : 0.0;
 
     return {
       'day_totals': dayTotals,
@@ -408,10 +418,8 @@ class SpendingPatternAnalyzer {
       if (merchantFreqRaw is Map) {
         final merchantFreq = Map<String, int>.from(
           merchantFreqRaw.map(
-            (key, value) => MapEntry(
-              key.toString(),
-              ((value as num?)?.toInt() ?? 0),
-            ),
+            (key, value) =>
+                MapEntry(key.toString(), ((value as num?)?.toInt() ?? 0)),
           ),
         );
         merchantFreq.forEach((merchant, count) {
@@ -459,9 +467,8 @@ class SpendingPatternAnalyzer {
       categoryTransactions.forEach((category, txns) {
         if (txns.length < 3) return;
 
-        final amounts = txns
-            .map((t) => (t['amount'] as num?)?.toDouble() ?? 0.0)
-            .toList();
+        final amounts =
+            txns.map((t) => (t['amount'] as num?)?.toDouble() ?? 0.0).toList();
 
         final avg = amounts.reduce((a, b) => a + b) / amounts.length;
         final variance =
@@ -480,9 +487,8 @@ class SpendingPatternAnalyzer {
               'deviation': (amount - avg) / (stdDev > 0 ? stdDev : 1),
               'date': txns[i]['transaction_date'] ?? txns[i]['date'],
               'description': txns[i]['description'],
-              'severity': stdDev > 0 && (amount - avg) / stdDev > 3
-                  ? 'high'
-                  : 'medium',
+              'severity':
+                  stdDev > 0 && (amount - avg) / stdDev > 3 ? 'high' : 'medium',
             });
           }
         }
@@ -508,14 +514,16 @@ class SpendingPatternAnalyzer {
   }) {
     try {
       final now = DateTime.now();
-      final currentMonth = '${now.year}-${now.month.toString().padLeft(2, '0')}';
+      final currentMonth =
+          '${now.year}-${now.month.toString().padLeft(2, '0')}';
 
       // Get current month expenses
       double currentExpenses = 0;
       final categoryExpenses = <String, double>{};
 
       for (var t in transactions) {
-        final dateStr = t['transaction_date']?.toString() ?? t['date']?.toString() ?? '';
+        final dateStr =
+            t['transaction_date']?.toString() ?? t['date']?.toString() ?? '';
         if (!dateStr.startsWith(currentMonth)) continue;
 
         final type = t['type']?.toString().toLowerCase() ?? 'expense';
@@ -530,7 +538,8 @@ class SpendingPatternAnalyzer {
 
       // Calculate health score components
       // 1. Budget adherence (40% weight)
-      final budgetUtilization = monthlyBudget > 0 ? currentExpenses / monthlyBudget : 1.0;
+      final budgetUtilization =
+          monthlyBudget > 0 ? currentExpenses / monthlyBudget : 1.0;
       double budgetScore;
       if (budgetUtilization <= 0.8) {
         budgetScore = 100;
@@ -541,7 +550,10 @@ class SpendingPatternAnalyzer {
       }
 
       // 2. Savings rate (30% weight)
-      final savingsRate = monthlyIncome > 0 ? ((monthlyIncome - currentExpenses) / monthlyIncome) * 100 : 0;
+      final savingsRate =
+          monthlyIncome > 0
+              ? ((monthlyIncome - currentExpenses) / monthlyIncome) * 100
+              : 0;
       double savingsScore;
       if (savingsRate >= 20) {
         savingsScore = 100;
@@ -556,27 +568,39 @@ class SpendingPatternAnalyzer {
       // 3. Spending diversity (30% weight) - penalize if one category dominates
       double diversityScore = 100;
       if (categoryExpenses.isNotEmpty) {
-        final maxCategorySpend = categoryExpenses.values.reduce((a, b) => a > b ? a : b);
-        final maxCategoryRatio = currentExpenses > 0 ? maxCategorySpend / currentExpenses : 0;
+        final maxCategorySpend = categoryExpenses.values.reduce(
+          (a, b) => a > b ? a : b,
+        );
+        final maxCategoryRatio =
+            currentExpenses > 0 ? maxCategorySpend / currentExpenses : 0;
         if (maxCategoryRatio > 0.5) {
           diversityScore = 100 - (maxCategoryRatio - 0.5) * 200;
         }
       }
 
       // Calculate weighted score
-      final totalScore = (budgetScore * 0.4) + (savingsScore * 0.3) + (diversityScore * 0.3);
+      final totalScore =
+          (budgetScore * 0.4) + (savingsScore * 0.3) + (diversityScore * 0.3);
 
       // Generate recommendations
       final recommendations = <String>[];
       if (budgetUtilization > 1.0) {
-        recommendations.add('You have exceeded your monthly budget. Consider reducing expenses.');
+        recommendations.add(
+          'You have exceeded your monthly budget. Consider reducing expenses.',
+        );
       }
       if (savingsRate < 10 && monthlyIncome > 0) {
-        recommendations.add('Your savings rate is below 10%. Try to save at least 20% of income.');
+        recommendations.add(
+          'Your savings rate is below 10%. Try to save at least 20% of income.',
+        );
       }
       if (diversityScore < 70) {
-        final topCategory = categoryExpenses.entries.reduce((a, b) => a.value > b.value ? a : b);
-        recommendations.add('${topCategory.key} takes up most of your budget. Look for ways to reduce this.');
+        final topCategory = categoryExpenses.entries.reduce(
+          (a, b) => a.value > b.value ? a : b,
+        );
+        recommendations.add(
+          '${topCategory.key} takes up most of your budget. Look for ways to reduce this.',
+        );
       }
       if (recommendations.isEmpty) {
         recommendations.add('Your spending habits look healthy! Keep it up.');
@@ -591,15 +615,16 @@ class SpendingPatternAnalyzer {
         'savings_rate': savingsRate,
         'current_expenses': currentExpenses,
         'recommendations': recommendations,
-        'grade': totalScore >= 90
-            ? 'A'
-            : totalScore >= 80
+        'grade':
+            totalScore >= 90
+                ? 'A'
+                : totalScore >= 80
                 ? 'B'
                 : totalScore >= 70
-                    ? 'C'
-                    : totalScore >= 60
-                        ? 'D'
-                        : 'F',
+                ? 'C'
+                : totalScore >= 60
+                ? 'D'
+                : 'F',
       };
     } catch (e) {
       LoggerService.error('Error calculating budget health score', error: e);
@@ -629,7 +654,8 @@ class SpendingPatternAnalyzer {
 
         double monthTotal = 0;
         for (var t in transactions) {
-          final dateStr = t['transaction_date']?.toString() ?? t['date']?.toString() ?? '';
+          final dateStr =
+              t['transaction_date']?.toString() ?? t['date']?.toString() ?? '';
           if (dateStr.startsWith(monthKey)) {
             final type = t['type']?.toString().toLowerCase() ?? 'expense';
             if (type == 'expense') {
@@ -642,15 +668,18 @@ class SpendingPatternAnalyzer {
 
       // Opportunity 1: Reduce expenses if consistently above 80% of income
       if (monthlyExpenses.isNotEmpty) {
-        final avgExpense = monthlyExpenses.reduce((a, b) => a + b) / monthlyExpenses.length;
-        final expenseRatio = monthlyIncome > 0 ? avgExpense / monthlyIncome : 1.0;
+        final avgExpense =
+            monthlyExpenses.reduce((a, b) => a + b) / monthlyExpenses.length;
+        final expenseRatio =
+            monthlyIncome > 0 ? avgExpense / monthlyIncome : 1.0;
 
         if (expenseRatio > 0.8) {
           final potentialSavings = avgExpense - (monthlyIncome * 0.7);
           opportunities.add({
             'type': 'reduce_overall_spending',
             'title': 'Reduce Overall Spending',
-            'description': 'Your expenses average ${expenseRatio * 100} of income. Target 70% to improve savings.',
+            'description':
+                'Your expenses average ${expenseRatio * 100} of income. Target 70% to improve savings.',
             'potential_savings': potentialSavings > 0 ? potentialSavings : 0,
             'priority': 'high',
           });
@@ -667,7 +696,8 @@ class SpendingPatternAnalyzer {
         final category = t['category_name']?.toString() ?? 'Lainnya';
         categoryFrequency[category] = (categoryFrequency[category] ?? 0) + 1;
         categoryTotal[category] =
-            (categoryTotal[category] ?? 0) + ((t['amount'] as num?)?.toDouble() ?? 0.0);
+            (categoryTotal[category] ?? 0) +
+            ((t['amount'] as num?)?.toDouble() ?? 0.0);
       }
 
       for (var entry in categoryFrequency.entries) {
@@ -677,8 +707,10 @@ class SpendingPatternAnalyzer {
           opportunities.add({
             'type': 'review_recurring_expenses',
             'title': 'Review ${entry.key} Expenses',
-            'description': 'You have ${entry.value} transactions in ${entry.key}, averaging Rp ${avgPerTransaction.toStringAsFixed(0)} each.',
-            'potential_savings': avgPerTransaction * 0.2, // Assume 20% savings possible
+            'description':
+                'You have ${entry.value} transactions in ${entry.key}, averaging Rp ${avgPerTransaction.toStringAsFixed(0)} each.',
+            'potential_savings':
+                avgPerTransaction * 0.2, // Assume 20% savings possible
             'priority': 'medium',
           });
         }
@@ -686,7 +718,9 @@ class SpendingPatternAnalyzer {
 
       // Sort by potential savings
       opportunities.sort((a, b) {
-        return (b['potential_savings'] as double).compareTo(a['potential_savings'] as double);
+        return (b['potential_savings'] as double).compareTo(
+          a['potential_savings'] as double,
+        );
       });
 
       return opportunities;
@@ -721,11 +755,14 @@ class SpendingPatternAnalyzer {
       String overallAssessment;
       final score = healthScore['score'] as double;
       if (score >= 80) {
-        overallAssessment = 'Your finances are in good shape. Keep maintaining your current habits.';
+        overallAssessment =
+            'Your finances are in good shape. Keep maintaining your current habits.';
       } else if (score >= 60) {
-        overallAssessment = 'There is room for improvement. Focus on the recommendations below.';
+        overallAssessment =
+            'There is room for improvement. Focus on the recommendations below.';
       } else {
-        overallAssessment = 'Your spending needs attention. Review the insights and take action.';
+        overallAssessment =
+            'Your spending needs attention. Review the insights and take action.';
       }
 
       // Key metrics summary
@@ -734,8 +771,8 @@ class SpendingPatternAnalyzer {
       insights['anomaly_count'] = anomalies.length;
       insights['top_anomalies'] = anomalies.take(3).toList();
       insights['savings_opportunities'] = savingsOpportunities.take(5).toList();
-      insights['total_potential_monthly_savings'] =
-          savingsOpportunities.fold<double>(
+      insights['total_potential_monthly_savings'] = savingsOpportunities
+          .fold<double>(
             0,
             (sum, opp) => sum + (opp['potential_savings'] as double),
           );
@@ -751,7 +788,8 @@ class SpendingPatternAnalyzer {
           },
         if (savingsOpportunities.isNotEmpty)
           {
-            'text': 'Explore ${savingsOpportunities.length} savings opportunities',
+            'text':
+                'Explore ${savingsOpportunities.length} savings opportunities',
             'type': 'savings_opportunity',
           },
       ];

@@ -69,23 +69,41 @@ class AccountModel {
     return AccountModel(
       id: json['id']?.toString() ?? json['account_id_232143']?.toString() ?? '',
       name: json['name']?.toString() ?? json['name_232143']?.toString() ?? '',
-      type: json['type']?.toString() ?? json['type_232143']?.toString() ?? 'cash',
+      type:
+          json['type']?.toString() ?? json['type_232143']?.toString() ?? 'cash',
       icon: json['icon']?.toString() ?? json['icon_232143']?.toString(),
       color: json['color']?.toString() ?? json['color_232143']?.toString(),
-      balance: (json['balance'] as num?)?.toDouble() ?? (json['balance_232143'] as num?)?.toDouble() ?? 0.0,
-      currency: json['currency']?.toString() ?? json['currency_232143']?.toString() ?? 'IDR',
-      accountNumber: json['account_number']?.toString() ?? json['account_number_232143']?.toString(),
-      bankName: json['bank_name']?.toString() ?? json['bank_name_232143']?.toString(),
-      isActive: _parseBool(json['is_active']) ?? _parseBool(json['is_active_232143']) ?? true,
-      isDefault: _parseBool(json['is_default']) ?? _parseBool(json['is_default_232143']) ?? false,
-      createdAt: json['created_at'] != null
-          ? DateTime.parse(json['created_at'].toString())
-          : json['created_at_232143'] != null
+      balance:
+          (json['balance'] as num?)?.toDouble() ??
+          (json['balance_232143'] as num?)?.toDouble() ??
+          0.0,
+      currency:
+          json['currency']?.toString() ??
+          json['currency_232143']?.toString() ??
+          'IDR',
+      accountNumber:
+          json['account_number']?.toString() ??
+          json['account_number_232143']?.toString(),
+      bankName:
+          json['bank_name']?.toString() ?? json['bank_name_232143']?.toString(),
+      isActive:
+          _parseBool(json['is_active']) ??
+          _parseBool(json['is_active_232143']) ??
+          true,
+      isDefault:
+          _parseBool(json['is_default']) ??
+          _parseBool(json['is_default_232143']) ??
+          false,
+      createdAt:
+          json['created_at'] != null
+              ? DateTime.parse(json['created_at'].toString())
+              : json['created_at_232143'] != null
               ? DateTime.parse(json['created_at_232143'].toString())
               : DateTime.now(),
-      updatedAt: json['updated_at'] != null
-          ? DateTime.parse(json['updated_at'].toString())
-          : json['updated_at_232143'] != null
+      updatedAt:
+          json['updated_at'] != null
+              ? DateTime.parse(json['updated_at'].toString())
+              : json['updated_at_232143'] != null
               ? DateTime.parse(json['updated_at_232143'].toString())
               : null,
     );
@@ -98,20 +116,37 @@ class AccountModel {
       type: map['type_232143']?.toString() ?? map['type']?.toString() ?? 'cash',
       icon: map['icon_232143']?.toString() ?? map['icon']?.toString(),
       color: map['color_232143']?.toString() ?? map['color']?.toString(),
-      balance: (map['balance_232143'] as num?)?.toDouble() ?? (map['balance'] as num?)?.toDouble() ?? 0.0,
-      currency: map['currency_232143']?.toString() ?? map['currency']?.toString() ?? 'IDR',
-      accountNumber: map['account_number_232143']?.toString() ?? map['account_number']?.toString(),
-      bankName: map['bank_name_232143']?.toString() ?? map['bank_name']?.toString(),
-      isActive: _parseBool(map['is_active_232143']) ?? _parseBool(map['is_active']) ?? true,
-      isDefault: _parseBool(map['is_default_232143']) ?? _parseBool(map['is_default']) ?? false,
-      createdAt: map['created_at_232143'] != null
-          ? DateTime.parse(map['created_at_232143'].toString())
-          : map['created_at'] != null
+      balance:
+          (map['balance_232143'] as num?)?.toDouble() ??
+          (map['balance'] as num?)?.toDouble() ??
+          0.0,
+      currency:
+          map['currency_232143']?.toString() ??
+          map['currency']?.toString() ??
+          'IDR',
+      accountNumber:
+          map['account_number_232143']?.toString() ??
+          map['account_number']?.toString(),
+      bankName:
+          map['bank_name_232143']?.toString() ?? map['bank_name']?.toString(),
+      isActive:
+          _parseBool(map['is_active_232143']) ??
+          _parseBool(map['is_active']) ??
+          true,
+      isDefault:
+          _parseBool(map['is_default_232143']) ??
+          _parseBool(map['is_default']) ??
+          false,
+      createdAt:
+          map['created_at_232143'] != null
+              ? DateTime.parse(map['created_at_232143'].toString())
+              : map['created_at'] != null
               ? DateTime.parse(map['created_at'].toString())
               : DateTime.now(),
-      updatedAt: map['updated_at_232143'] != null
-          ? DateTime.parse(map['updated_at_232143'].toString())
-          : map['updated_at'] != null
+      updatedAt:
+          map['updated_at_232143'] != null
+              ? DateTime.parse(map['updated_at_232143'].toString())
+              : map['updated_at'] != null
               ? DateTime.parse(map['updated_at'].toString())
               : null,
     );
@@ -157,8 +192,18 @@ class AccountModel {
   static List<String> get types => ['cash', 'bank', 'e_wallet'];
 
   static List<Map<String, dynamic>> get defaultAccounts => [
-        {'name': 'Cash', 'type': 'cash', 'icon': 'wallet', 'color': '#4CAF50'},
-        {'name': 'Bank Account', 'type': 'bank', 'icon': 'account_balance', 'color': '#2196F3'},
-        {'name': 'E-Wallet', 'type': 'e_wallet', 'icon': 'phone_android', 'color': '#FF9800'},
-      ];
+    {'name': 'Cash', 'type': 'cash', 'icon': 'wallet', 'color': '#4CAF50'},
+    {
+      'name': 'Bank Account',
+      'type': 'bank',
+      'icon': 'account_balance',
+      'color': '#2196F3',
+    },
+    {
+      'name': 'E-Wallet',
+      'type': 'e_wallet',
+      'icon': 'phone_android',
+      'color': '#FF9800',
+    },
+  ];
 }

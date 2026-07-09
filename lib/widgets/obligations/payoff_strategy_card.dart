@@ -7,9 +7,9 @@ class PayoffStrategyCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       color: const Color(0xFF1A1A1A),
-      margin: EdgeInsets.all(16),
+      margin: const EdgeInsets.all(16),
       child: Padding(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

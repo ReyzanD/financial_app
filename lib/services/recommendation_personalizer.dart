@@ -16,12 +16,10 @@ class RecommendationPersonalizer {
     try {
       final prefs = await SharedPreferences.getInstance();
       final feedbackData = prefs.getString(_prefsKey);
-      
+
       Map<String, dynamic> feedback;
       if (feedbackData != null) {
-        feedback = Map<String, dynamic>.from(
-          jsonDecode(feedbackData) as Map,
-        );
+        feedback = Map<String, dynamic>.from(jsonDecode(feedbackData) as Map);
       } else {
         feedback = {};
       }
@@ -54,17 +52,18 @@ class RecommendationPersonalizer {
 
       // Calculate success rate (acted_on + helpful) / total_shown
       final totalShown = typeData['total_shown'] as int;
-      final positiveActions = (typeData['acted_on'] as int? ?? 0) + 
-                             (typeData['helpful'] as int? ?? 0);
-      typeData['success_rate'] = totalShown > 0 
-          ? positiveActions / totalShown 
-          : 0.0;
+      final positiveActions =
+          (typeData['acted_on'] as int? ?? 0) +
+          (typeData['helpful'] as int? ?? 0);
+      typeData['success_rate'] =
+          totalShown > 0 ? positiveActions / totalShown : 0.0;
 
       // Track individual recommendation
       if (!feedback.containsKey('recommendations')) {
         feedback['recommendations'] = {};
       }
-      final recommendations = feedback['recommendations'] as Map<String, dynamic>;
+      final recommendations =
+          feedback['recommendations'] as Map<String, dynamic>;
       if (!recommendations.containsKey(recommendationId)) {
         recommendations[recommendationId] = {
           'type': recommendationType,
@@ -79,8 +78,10 @@ class RecommendationPersonalizer {
       });
 
       await prefs.setString(_prefsKey, jsonEncode(feedback));
-      
-      final successRatePercent = ((typeData['success_rate'] as double? ?? 0.0) * 100).toStringAsFixed(1);
+
+      final successRatePercent = ((typeData['success_rate'] as double? ?? 0.0) *
+              100)
+          .toStringAsFixed(1);
       LoggerService.debug(
         'Tracked feedback: $recommendationType - $action (Success rate: $successRatePercent%)',
       );
@@ -94,14 +95,16 @@ class RecommendationPersonalizer {
     try {
       final prefs = await SharedPreferences.getInstance();
       final feedbackData = prefs.getString(_prefsKey);
-      
+
       if (feedbackData == null) return 0.5; // Default neutral score
 
-      final feedback = Map<String, dynamic>.from(jsonDecode(feedbackData) as Map);
+      final feedback = Map<String, dynamic>.from(
+        jsonDecode(feedbackData) as Map,
+      );
       final typeData = feedback[recommendationType] as Map<String, dynamic>?;
-      
+
       if (typeData == null) return 0.5;
-      
+
       return typeData['success_rate'] as double? ?? 0.5;
     } catch (e) {
       LoggerService.error('Error getting success rate', error: e);
@@ -118,18 +121,20 @@ class RecommendationPersonalizer {
       final personalizedRecs = <Map<String, dynamic>>[];
 
       for (var rec in recommendations) {
-        final recType = rec['category'] as String? ?? rec['type'] as String? ?? 'general';
+        final recType =
+            rec['category'] as String? ?? rec['type'] as String? ?? 'general';
         final successRate = await getSuccessRate(recType);
-        
+
         // Add personalization score
         final personalizedRec = Map<String, dynamic>.from(rec);
         personalizedRec['personalization_score'] = successRate;
-        
+
         // Adjust overall score with personalization (30% weight)
-        final currentScore = rec['score'] as double? ?? rec['confidence'] as double? ?? 0.5;
+        final currentScore =
+            rec['score'] as double? ?? rec['confidence'] as double? ?? 0.5;
         final personalizedScore = (currentScore * 0.7) + (successRate * 0.3);
         personalizedRec['final_score'] = personalizedScore;
-        
+
         personalizedRecs.add(personalizedRec);
       }
 
@@ -152,7 +157,7 @@ class RecommendationPersonalizer {
     try {
       final prefs = await SharedPreferences.getInstance();
       final feedbackData = prefs.getString(_prefsKey);
-      
+
       if (feedbackData == null) {
         return {
           'preferred_types': [],
@@ -161,17 +166,19 @@ class RecommendationPersonalizer {
         };
       }
 
-      final feedback = Map<String, dynamic>.from(jsonDecode(feedbackData) as Map);
+      final feedback = Map<String, dynamic>.from(
+        jsonDecode(feedbackData) as Map,
+      );
       final preferences = <String, dynamic>{};
       final preferredTypes = <String>[];
       final avoidedTypes = <String>[];
 
       feedback.forEach((type, data) {
         if (type == 'recommendations') return;
-        
+
         final typeData = data as Map<String, dynamic>;
         final successRate = typeData['success_rate'] as double? ?? 0.0;
-        
+
         if (successRate > 0.6) {
           preferredTypes.add(type);
         } else if (successRate < 0.3) {
@@ -186,8 +193,9 @@ class RecommendationPersonalizer {
         if (type == 'recommendations') return;
         final typeData = data as Map<String, dynamic>;
         totalShown += typeData['total_shown'] as int? ?? 0;
-        totalActions += (typeData['acted_on'] as int? ?? 0) + 
-                       (typeData['helpful'] as int? ?? 0);
+        totalActions +=
+            (typeData['acted_on'] as int? ?? 0) +
+            (typeData['helpful'] as int? ?? 0);
       });
 
       String engagementLevel;
@@ -232,6 +240,4 @@ class RecommendationPersonalizer {
       LoggerService.error('Error clearing feedback', error: e);
     }
   }
-
 }
-

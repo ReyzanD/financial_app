@@ -72,17 +72,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
       });
     } catch (e) {
       LoggerService.error('Error loading profile', error: e);
+      final ctx = context;
+      if (!ctx.mounted) return;
       setState(() {
         _isLoading = false;
         _errorMessage = ErrorHandlerService.getUserFriendlyMessage(e);
       });
-      if (context.mounted) {
-        ErrorHandlerService.showErrorSnackbar(
-          context,
-          _errorMessage!,
-          onRetry: _loadProfile,
-        );
-      }
+      ErrorHandlerService.showErrorSnackbar(
+        ctx,
+        _errorMessage!,
+        onRetry: _loadProfile,
+      );
     }
   }
 
@@ -169,11 +169,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
         children: [
           const OfflineIndicator(),
           Expanded(
-            child: _isLoading
-                ? const Center(
-                    child: CircularProgressIndicator(color: Color(0xFF8B5FBF)),
-                  )
-                : _errorMessage != null
+            child:
+                _isLoading
+                    ? const Center(
+                      child: CircularProgressIndicator(
+                        color: Color(0xFF8B5FBF),
+                      ),
+                    )
+                    : _errorMessage != null
                     ? _buildErrorState()
                     : _buildForm(),
           ),

@@ -29,43 +29,49 @@ class ExportService {
       final transactions = List<dynamic>.from(
         transactionsData['transactions'] ?? [],
       );
-      
+
       // Filter transactions
       List<dynamic> filtered = transactions;
-      if (startDate != null || endDate != null || categoryId != null || type != null) {
-        filtered = transactions.where((t) {
-          final transaction = t as Map<String, dynamic>;
-          
-          if (startDate != null || endDate != null) {
-            final tDateStr = transaction['transaction_date']?.toString();
-            if (tDateStr != null) {
-              try {
-                final tDate = DateTime.parse(tDateStr);
-                if (startDate != null && tDate.isBefore(startDate)) return false;
-                if (endDate != null && tDate.isAfter(endDate)) return false;
-              } catch (e) {
-                return false;
+      if (startDate != null ||
+          endDate != null ||
+          categoryId != null ||
+          type != null) {
+        filtered =
+            transactions.where((t) {
+              final transaction = t as Map<String, dynamic>;
+
+              if (startDate != null || endDate != null) {
+                final tDateStr = transaction['transaction_date']?.toString();
+                if (tDateStr != null) {
+                  try {
+                    final tDate = DateTime.parse(tDateStr);
+                    if (startDate != null && tDate.isBefore(startDate))
+                      return false;
+                    if (endDate != null && tDate.isAfter(endDate)) return false;
+                  } catch (e) {
+                    return false;
+                  }
+                }
               }
-            }
-          }
-          
-          if (categoryId != null) {
-            if (transaction['category_id']?.toString() != categoryId) return false;
-          }
-          
-          if (type != null) {
-            if (transaction['type']?.toString() != type) return false;
-          }
-          
-          return true;
-        }).toList();
+
+              if (categoryId != null) {
+                if (transaction['category_id']?.toString() != categoryId)
+                  return false;
+              }
+
+              if (type != null) {
+                if (transaction['type']?.toString() != type) return false;
+              }
+
+              return true;
+            }).toList();
       }
-      
+
       // Create CSV data
       final csvData = <List<dynamic>>[
         ['Date', 'Type', 'Category', 'Description', 'Amount', 'Location'],
       ];
-      
+
       for (var t in filtered) {
         final transaction = t as Map<String, dynamic>;
         csvData.add([
@@ -77,17 +83,20 @@ class ExportService {
           transaction['location_name'] ?? '',
         ]);
       }
-      
+
       // Convert to CSV string
       final csvString = const ListToCsvConverter().convert(csvData);
-      
+
       // Save to file
       final directory = await getApplicationDocumentsDirectory();
-      final fileName = 'transactions_${DateTime.now().millisecondsSinceEpoch}.csv';
+      final fileName =
+          'transactions_${DateTime.now().millisecondsSinceEpoch}.csv';
       final file = File('${directory.path}/$fileName');
       await file.writeAsString(csvString);
-      
-      LoggerService.info('Exported ${filtered.length} transactions to CSV: $fileName');
+
+      LoggerService.info(
+        'Exported ${filtered.length} transactions to CSV: $fileName',
+      );
       return file.path;
     } catch (e) {
       LoggerService.error('Error exporting to CSV', error: e);
@@ -107,52 +116,61 @@ class ExportService {
       final transactions = List<dynamic>.from(
         transactionsData['transactions'] ?? [],
       );
-      
+
       // Filter transactions (same logic as CSV)
       List<dynamic> filtered = transactions;
-      if (startDate != null || endDate != null || categoryId != null || type != null) {
-        filtered = transactions.where((t) {
-          final transaction = t as Map<String, dynamic>;
-          
-          if (startDate != null || endDate != null) {
-            final tDateStr = transaction['transaction_date']?.toString();
-            if (tDateStr != null) {
-              try {
-                final tDate = DateTime.parse(tDateStr);
-                if (startDate != null && tDate.isBefore(startDate)) return false;
-                if (endDate != null && tDate.isAfter(endDate)) return false;
-              } catch (e) {
-                return false;
+      if (startDate != null ||
+          endDate != null ||
+          categoryId != null ||
+          type != null) {
+        filtered =
+            transactions.where((t) {
+              final transaction = t as Map<String, dynamic>;
+
+              if (startDate != null || endDate != null) {
+                final tDateStr = transaction['transaction_date']?.toString();
+                if (tDateStr != null) {
+                  try {
+                    final tDate = DateTime.parse(tDateStr);
+                    if (startDate != null && tDate.isBefore(startDate))
+                      return false;
+                    if (endDate != null && tDate.isAfter(endDate)) return false;
+                  } catch (e) {
+                    return false;
+                  }
+                }
               }
-            }
-          }
-          
-          if (categoryId != null) {
-            if (transaction['category_id']?.toString() != categoryId) return false;
-          }
-          
-          if (type != null) {
-            if (transaction['type']?.toString() != type) return false;
-          }
-          
-          return true;
-        }).toList();
+
+              if (categoryId != null) {
+                if (transaction['category_id']?.toString() != categoryId)
+                  return false;
+              }
+
+              if (type != null) {
+                if (transaction['type']?.toString() != type) return false;
+              }
+
+              return true;
+            }).toList();
       }
-      
+
       // Convert to JSON
       final jsonString = jsonEncode({
         'export_date': DateTime.now().toIso8601String(),
         'total_transactions': filtered.length,
         'transactions': filtered,
       });
-      
+
       // Save to file
       final directory = await getApplicationDocumentsDirectory();
-      final fileName = 'transactions_${DateTime.now().millisecondsSinceEpoch}.json';
+      final fileName =
+          'transactions_${DateTime.now().millisecondsSinceEpoch}.json';
       final file = File('${directory.path}/$fileName');
       await file.writeAsString(jsonString);
-      
-      LoggerService.info('Exported ${filtered.length} transactions to JSON: $fileName');
+
+      LoggerService.info(
+        'Exported ${filtered.length} transactions to JSON: $fileName',
+      );
       return file.path;
     } catch (e) {
       LoggerService.error('Error exporting to JSON', error: e);
@@ -172,41 +190,47 @@ class ExportService {
       final transactions = List<dynamic>.from(
         transactionsData['transactions'] ?? [],
       );
-      
+
       // Filter transactions (same logic)
       List<dynamic> filtered = transactions;
-      if (startDate != null || endDate != null || categoryId != null || type != null) {
-        filtered = transactions.where((t) {
-          final transaction = t as Map<String, dynamic>;
-          
-          if (startDate != null || endDate != null) {
-            final tDateStr = transaction['transaction_date']?.toString();
-            if (tDateStr != null) {
-              try {
-                final tDate = DateTime.parse(tDateStr);
-                if (startDate != null && tDate.isBefore(startDate)) return false;
-                if (endDate != null && tDate.isAfter(endDate)) return false;
-              } catch (e) {
-                return false;
+      if (startDate != null ||
+          endDate != null ||
+          categoryId != null ||
+          type != null) {
+        filtered =
+            transactions.where((t) {
+              final transaction = t as Map<String, dynamic>;
+
+              if (startDate != null || endDate != null) {
+                final tDateStr = transaction['transaction_date']?.toString();
+                if (tDateStr != null) {
+                  try {
+                    final tDate = DateTime.parse(tDateStr);
+                    if (startDate != null && tDate.isBefore(startDate))
+                      return false;
+                    if (endDate != null && tDate.isAfter(endDate)) return false;
+                  } catch (e) {
+                    return false;
+                  }
+                }
               }
-            }
-          }
-          
-          if (categoryId != null) {
-            if (transaction['category_id']?.toString() != categoryId) return false;
-          }
-          
-          if (type != null) {
-            if (transaction['type']?.toString() != type) return false;
-          }
-          
-          return true;
-        }).toList();
+
+              if (categoryId != null) {
+                if (transaction['category_id']?.toString() != categoryId)
+                  return false;
+              }
+
+              if (type != null) {
+                if (transaction['type']?.toString() != type) return false;
+              }
+
+              return true;
+            }).toList();
       }
-      
+
       // Create PDF
       final pdf = pw.Document();
-      
+
       pdf.addPage(
         pw.MultiPage(
           pageFormat: PdfPageFormat.a4,
@@ -216,7 +240,10 @@ class ExportService {
                 level: 0,
                 child: pw.Text(
                   'Transaction Report',
-                  style: pw.TextStyle(fontSize: 24, fontWeight: pw.FontWeight.bold),
+                  style: pw.TextStyle(
+                    fontSize: 24,
+                    fontWeight: pw.FontWeight.bold,
+                  ),
                 ),
               ),
               pw.SizedBox(height: 20),
@@ -236,23 +263,38 @@ class ExportService {
                     children: [
                       pw.Padding(
                         padding: const pw.EdgeInsets.all(4),
-                        child: pw.Text('Date', style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
+                        child: pw.Text(
+                          'Date',
+                          style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
+                        ),
                       ),
                       pw.Padding(
                         padding: const pw.EdgeInsets.all(4),
-                        child: pw.Text('Type', style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
+                        child: pw.Text(
+                          'Type',
+                          style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
+                        ),
                       ),
                       pw.Padding(
                         padding: const pw.EdgeInsets.all(4),
-                        child: pw.Text('Category', style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
+                        child: pw.Text(
+                          'Category',
+                          style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
+                        ),
                       ),
                       pw.Padding(
                         padding: const pw.EdgeInsets.all(4),
-                        child: pw.Text('Description', style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
+                        child: pw.Text(
+                          'Description',
+                          style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
+                        ),
                       ),
                       pw.Padding(
                         padding: const pw.EdgeInsets.all(4),
-                        child: pw.Text('Amount', style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
+                        child: pw.Text(
+                          'Amount',
+                          style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
+                        ),
                       ),
                     ],
                   ),
@@ -262,7 +304,9 @@ class ExportService {
                       children: [
                         pw.Padding(
                           padding: const pw.EdgeInsets.all(4),
-                          child: pw.Text(transaction['transaction_date']?.toString() ?? ''),
+                          child: pw.Text(
+                            transaction['transaction_date']?.toString() ?? '',
+                          ),
                         ),
                         pw.Padding(
                           padding: const pw.EdgeInsets.all(4),
@@ -270,11 +314,15 @@ class ExportService {
                         ),
                         pw.Padding(
                           padding: const pw.EdgeInsets.all(4),
-                          child: pw.Text(transaction['category_name']?.toString() ?? ''),
+                          child: pw.Text(
+                            transaction['category_name']?.toString() ?? '',
+                          ),
                         ),
                         pw.Padding(
                           padding: const pw.EdgeInsets.all(4),
-                          child: pw.Text(transaction['description']?.toString() ?? ''),
+                          child: pw.Text(
+                            transaction['description']?.toString() ?? '',
+                          ),
                         ),
                         pw.Padding(
                           padding: const pw.EdgeInsets.all(4),
@@ -293,14 +341,17 @@ class ExportService {
           },
         ),
       );
-      
+
       // Save to file
       final directory = await getApplicationDocumentsDirectory();
-      final fileName = 'transactions_${DateTime.now().millisecondsSinceEpoch}.pdf';
+      final fileName =
+          'transactions_${DateTime.now().millisecondsSinceEpoch}.pdf';
       final file = File('${directory.path}/$fileName');
       await file.writeAsBytes(await pdf.save());
-      
-      LoggerService.info('Exported ${filtered.length} transactions to PDF: $fileName');
+
+      LoggerService.info(
+        'Exported ${filtered.length} transactions to PDF: $fileName',
+      );
       return file.path;
     } catch (e) {
       LoggerService.error('Error exporting to PDF', error: e);
@@ -319,13 +370,15 @@ class ExportService {
   }
 
   /// Import transactions dari CSV
-  Future<Map<String, dynamic>> importTransactionsFromCSV(String filePath) async {
+  Future<Map<String, dynamic>> importTransactionsFromCSV(
+    String filePath,
+  ) async {
     try {
       final file = File(filePath);
       final csvString = await file.readAsString();
-      
+
       final csvData = const CsvToListConverter().convert(csvString);
-      
+
       if (csvData.isEmpty) {
         return {
           'success': false,
@@ -334,14 +387,14 @@ class ExportService {
           'failed': 0,
         };
       }
-      
+
       // Skip header
       final rows = csvData.skip(1).toList();
-      
+
       int imported = 0;
       int failed = 0;
       final errors = <String>[];
-      
+
       for (int i = 0; i < rows.length; i++) {
         try {
           final row = rows[i];
@@ -350,10 +403,10 @@ class ExportService {
             errors.add('Row ${i + 2}: Tidak cukup kolom');
             continue;
           }
-          
+
           // Parse row
           final type = row[1].toString();
-          
+
           // Validate
           if (type != 'income' && type != 'expense') {
             failed++;
@@ -377,11 +430,14 @@ class ExportService {
             final categories = await _apiService.getCategories();
             for (final cat in categories) {
               final catName =
-                  (cat['name']?.toString() ?? cat['name_232143']?.toString() ?? '')
+                  (cat['name']?.toString() ??
+                          cat['name_232143']?.toString() ??
+                          '')
                       .toLowerCase();
               if (catName.contains(category.toLowerCase()) ||
                   category.toLowerCase().contains(catName)) {
-                categoryId = cat['category_id']?.toString() ??
+                categoryId =
+                    cat['category_id']?.toString() ??
                     cat['category_id_232143']?.toString();
                 break;
               }
@@ -389,12 +445,12 @@ class ExportService {
           }
 
           final transactionData = {
-            'transaction_date_232143': date.isNotEmpty
-                ? date
-                : DateTime.now().toIso8601String(),
+            'transaction_date_232143':
+                date.isNotEmpty ? date : DateTime.now().toIso8601String(),
             'type_232143': type,
             'amount_232143': amount,
-            'description_232143': description.isEmpty ? 'Imported from CSV' : description,
+            'description_232143':
+                description.isEmpty ? 'Imported from CSV' : description,
             'category_id_232143': categoryId,
             'location_name': row.length > 5 ? row[5].toString() : '',
           };
@@ -411,7 +467,7 @@ class ExportService {
           errors.add('Row ${i + 2}: ${e.toString()}');
         }
       }
-      
+
       return {
         'success': imported > 0,
         'message': 'Imported $imported transactions, $failed failed',
@@ -430,4 +486,3 @@ class ExportService {
     }
   }
 }
-

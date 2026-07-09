@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:financial_app/services/obligation_service.dart';
 import 'package:financial_app/services/logger_service.dart';
+import 'package:financial_app/services/error_handler_service.dart';
 import 'package:financial_app/widgets/obligations/obligation_view_tabs.dart';
 import 'package:financial_app/widgets/obligations/all_obligations_view.dart';
 import 'package:financial_app/widgets/obligations/upcoming_obligations_view.dart';
@@ -68,6 +69,7 @@ class _FinancialObligationsScreenState
         ),
         leading: IconButton(
           icon: Icon(Iconsax.arrow_left, color: Colors.white),
+          tooltip: 'Kembali',
           onPressed: () => Navigator.of(context).pop(),
         ),
         actions: [
@@ -90,6 +92,7 @@ class _FinancialObligationsScreenState
                   ),
               ],
             ),
+            tooltip: 'Filter',
             onPressed: () => _showFiltersDialog(),
           ),
         ],
@@ -151,6 +154,7 @@ class _FinancialObligationsScreenState
                                 size: 16,
                               ),
                             ),
+                            tooltip: 'Hapus pencarian',
                             onPressed: () {
                               _searchController.clear();
                             },
@@ -199,6 +203,7 @@ class _FinancialObligationsScreenState
         ),
         child: FloatingActionButton(
           heroTag: 'obligations_fab',
+          tooltip: 'Tambah Kewajiban',
           onPressed: () async {
             final result = await ObligationHelpers.showAddObligationModal(
               context,
@@ -220,6 +225,22 @@ class _FinancialObligationsScreenState
       key: ValueKey('summary_$_refreshKey'),
       future: _getEnhancedSummary(),
       builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return SizedBox(
+            height: 100,
+            child: Center(
+              child: Text(
+                ErrorHandlerService.getUserFriendlyMessage(snapshot.error),
+                style: GoogleFonts.poppins(
+                  color: Colors.red[300],
+                  fontSize: 12,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ),
+          );
+        }
+
         if (!snapshot.hasData) {
           return const SizedBox(
             height: 100,
@@ -239,25 +260,33 @@ class _FinancialObligationsScreenState
               Row(
                 children: [
                   Expanded(
-                    child: GestureDetector(
-                      onTap: () => setState(() => _selectedView = 'all'),
-                      child: _buildSummaryCard(
-                        AppLocalizations.of(context)!.monthly_total,
-                        'Rp ${summary['monthlyTotal']?.toStringAsFixed(0) ?? '0'}',
-                        Colors.blue,
-                        Iconsax.calendar,
+                    child: Semantics(
+                      label: 'Total bulanan',
+                      button: true,
+                      child: GestureDetector(
+                        onTap: () => setState(() => _selectedView = 'all'),
+                        child: _buildSummaryCard(
+                          AppLocalizations.of(context)!.monthly_total,
+                          'Rp ${summary['monthlyTotal']?.toStringAsFixed(0) ?? '0'}',
+                          Colors.blue,
+                          Iconsax.calendar,
+                        ),
                       ),
                     ),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
-                    child: GestureDetector(
-                      onTap: () => setState(() => _selectedView = 'debts'),
-                      child: _buildSummaryCard(
-                        AppLocalizations.of(context)!.total_debt,
-                        'Rp ${summary['totalDebt']?.toStringAsFixed(0) ?? '0'}',
-                        Colors.red,
-                        Iconsax.card,
+                    child: Semantics(
+                      label: 'Total utang',
+                      button: true,
+                      child: GestureDetector(
+                        onTap: () => setState(() => _selectedView = 'debts'),
+                        child: _buildSummaryCard(
+                          AppLocalizations.of(context)!.total_debt,
+                          'Rp ${summary['totalDebt']?.toStringAsFixed(0) ?? '0'}',
+                          Colors.red,
+                          Iconsax.card,
+                        ),
                       ),
                     ),
                   ),
@@ -268,27 +297,35 @@ class _FinancialObligationsScreenState
               Row(
                 children: [
                   Expanded(
-                    child: GestureDetector(
-                      onTap: () => setState(() => _selectedView = 'upcoming'),
-                      child: _buildSummaryCard(
-                        AppLocalizations.of(context)!.due_this_week,
-                        '${summary['dueThisWeek'] ?? 0} ${AppLocalizations.of(context)!.obligations_count}',
-                        Colors.orange,
-                        Iconsax.clock,
-                        isCount: true,
+                    child: Semantics(
+                      label: 'Jatuh tempo minggu ini',
+                      button: true,
+                      child: GestureDetector(
+                        onTap: () => setState(() => _selectedView = 'upcoming'),
+                        child: _buildSummaryCard(
+                          AppLocalizations.of(context)!.due_this_week,
+                          '${summary['dueThisWeek'] ?? 0} ${AppLocalizations.of(context)!.obligations_count}',
+                          Colors.orange,
+                          Iconsax.clock,
+                          isCount: true,
+                        ),
                       ),
                     ),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
-                    child: GestureDetector(
-                      onTap: () => setState(() => _selectedView = 'overdue'),
-                      child: _buildSummaryCard(
-                        AppLocalizations.of(context)!.overdue_count,
-                        '${summary['overdue'] ?? 0} ${AppLocalizations.of(context)!.obligations_count}',
-                        Colors.red,
-                        Iconsax.warning_2,
-                        isCount: true,
+                    child: Semantics(
+                      label: 'Kewajiban terlambat',
+                      button: true,
+                      child: GestureDetector(
+                        onTap: () => setState(() => _selectedView = 'overdue'),
+                        child: _buildSummaryCard(
+                          AppLocalizations.of(context)!.overdue_count,
+                          '${summary['overdue'] ?? 0} ${AppLocalizations.of(context)!.obligations_count}',
+                          Colors.red,
+                          Iconsax.warning_2,
+                          isCount: true,
+                        ),
                       ),
                     ),
                   ),
@@ -404,12 +441,18 @@ class _FinancialObligationsScreenState
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
-                    colors: [color.withValues(alpha: 0.3), color.withValues(alpha: 0.15)],
+                    colors: [
+                      color.withValues(alpha: 0.3),
+                      color.withValues(alpha: 0.15),
+                    ],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: color.withValues(alpha: 0.3), width: 1),
+                  border: Border.all(
+                    color: color.withValues(alpha: 0.3),
+                    width: 1,
+                  ),
                 ),
                 child: Icon(icon, color: color, size: 22),
               ),
@@ -421,10 +464,16 @@ class _FinancialObligationsScreenState
                   ),
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
-                      colors: [color.withValues(alpha: 0.2), color.withValues(alpha: 0.3)],
+                      colors: [
+                        color.withValues(alpha: 0.2),
+                        color.withValues(alpha: 0.3),
+                      ],
                     ),
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: color.withValues(alpha: 0.4), width: 1),
+                    border: Border.all(
+                      color: color.withValues(alpha: 0.4),
+                      width: 1,
+                    ),
                   ),
                   child: Text(
                     amount.split(' ')[0],

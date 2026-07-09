@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:financial_app/utils/design_tokens.dart';
+import 'package:financial_app/widgets/common/offline_indicator.dart';
 
 class MoreTabScreen extends StatelessWidget {
   const MoreTabScreen({super.key});
@@ -174,45 +175,57 @@ class MoreTabScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: DesignTokens.backgroundDark,
-      body: SafeArea(
-        child: CustomScrollView(
-          slivers: [
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Lainnya',
-                      style: GoogleFonts.poppins(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w600,
-                        fontSize: 20,
+      body: Column(
+        children: [
+          const OfflineIndicator(),
+          Expanded(
+            child: SafeArea(
+              child: CustomScrollView(
+                slivers: [
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'Lainnya',
+                            style: GoogleFonts.poppins(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 20,
+                            ),
+                          ),
+                          Icon(
+                            Iconsax.more_square,
+                            color: DesignTokens.textSecondaryDark,
+                          ),
+                        ],
                       ),
                     ),
-                    Icon(Iconsax.more_square, color: DesignTokens.textSecondaryDark),
-                  ],
-                ),
+                  ),
+                  SliverPadding(
+                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+                    sliver: SliverGrid(
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 3,
+                            mainAxisSpacing: 16,
+                            crossAxisSpacing: 12,
+                            childAspectRatio: 0.85,
+                          ),
+                      delegate: SliverChildBuilderDelegate(
+                        (context, index) =>
+                            _buildGridItem(context, items[index]),
+                        childCount: items.length,
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
-            SliverPadding(
-              padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-              sliver: SliverGrid(
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 3,
-                  mainAxisSpacing: 16,
-                  crossAxisSpacing: 12,
-                  childAspectRatio: 0.85,
-                ),
-                delegate: SliverChildBuilderDelegate(
-                  (context, index) => _buildGridItem(context, items[index]),
-                  childCount: items.length,
-                ),
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -252,10 +265,7 @@ class MoreTabScreen extends StatelessWidget {
               Text(
                 item.subtitle,
                 textAlign: TextAlign.center,
-                style: GoogleFonts.poppins(
-                  color: Colors.white54,
-                  fontSize: 10,
-                ),
+                style: GoogleFonts.poppins(color: Colors.white54, fontSize: 10),
               ),
             ],
           ),

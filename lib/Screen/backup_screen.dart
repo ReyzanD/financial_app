@@ -171,16 +171,15 @@ class _BackupScreenState extends State<BackupScreen> {
                     try {
                       await _backupService.shareBackup(file);
                     } catch (e) {
-                      if (mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(
-                              '${AppLocalizations.of(context)!.failed_to_share}: ${e.toString()}',
-                            ),
-                            backgroundColor: Colors.red,
+                      if (!context.mounted) return;
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            '${AppLocalizations.of(context)!.failed_to_share}: ${e.toString()}',
                           ),
-                        );
-                      }
+                          backgroundColor: Colors.red,
+                        ),
+                      );
                     }
                   },
                   style: ElevatedButton.styleFrom(
@@ -342,180 +341,200 @@ class _BackupScreenState extends State<BackupScreen> {
         children: [
           const OfflineIndicator(),
           Expanded(
-            child: _isLoading
-                ? const Center(
-                    child: CircularProgressIndicator(color: Color(0xFF8B5FBF)),
-                  )
-                : SingleChildScrollView(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Info Card
-                        Container(
-                      padding: const EdgeInsets.all(20),
-                      decoration: BoxDecoration(
-                        gradient: const LinearGradient(
-                          colors: [Color(0xFF8B5FBF), Color(0xFF6A3093)],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                        ),
-                        borderRadius: BorderRadius.circular(20),
+            child:
+                _isLoading
+                    ? const Center(
+                      child: CircularProgressIndicator(
+                        color: Color(0xFF8B5FBF),
                       ),
+                    )
+                    : SingleChildScrollView(
+                      padding: const EdgeInsets.all(16),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Icon(
-                            Iconsax.shield_tick,
-                            color: Colors.white,
-                            size: 40,
-                          ),
-                          const SizedBox(height: 12),
-                          Text(
-                            'Lindungi Data Anda',
-                            style: GoogleFonts.poppins(
-                              color: Colors.white,
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
+                          // Info Card
+                          Container(
+                            padding: const EdgeInsets.all(20),
+                            decoration: BoxDecoration(
+                              gradient: const LinearGradient(
+                                colors: [Color(0xFF8B5FBF), Color(0xFF6A3093)],
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                              ),
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Icon(
+                                  Iconsax.shield_tick,
+                                  color: Colors.white,
+                                  size: 40,
+                                ),
+                                const SizedBox(height: 12),
+                                Text(
+                                  'Lindungi Data Anda',
+                                  style: GoogleFonts.poppins(
+                                    color: Colors.white,
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                const SizedBox(height: 8),
+                                Text(
+                                  AppLocalizations.of(
+                                    context,
+                                  )!.backup_description,
+                                  style: GoogleFonts.poppins(
+                                    color: Colors.white.withValues(alpha: 0.9),
+                                    fontSize: 14,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
-                          const SizedBox(height: 8),
-                          Text(
-                            AppLocalizations.of(context)!.backup_description,
-                            style: GoogleFonts.poppins(
-                              color: Colors.white.withValues(alpha: 0.9),
-                              fontSize: 14,
-                            ),
+                          const SizedBox(height: 24),
+
+                          // Action Buttons
+                          Row(
+                            children: [
+                              Expanded(
+                                child: ElevatedButton.icon(
+                                  onPressed:
+                                      _isCreatingBackup
+                                          ? null
+                                          : () => _createBackup(share: false),
+                                  icon:
+                                      _isCreatingBackup
+                                          ? const SizedBox(
+                                            width: 20,
+                                            height: 20,
+                                            child: CircularProgressIndicator(
+                                              color: Colors.white,
+                                              strokeWidth: 2,
+                                            ),
+                                          )
+                                          : const Icon(Iconsax.document_upload),
+                                  label: Text(
+                                    _isCreatingBackup
+                                        ? 'Membuat...'
+                                        : 'Buat Backup',
+                                    style: GoogleFonts.poppins(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: const Color(0xFF8B5FBF),
+                                    foregroundColor: Colors.white,
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 16,
+                                    ),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: OutlinedButton.icon(
+                                  onPressed:
+                                      _isCreatingBackup
+                                          ? null
+                                          : () => _createBackup(share: true),
+                                  icon: const Icon(Iconsax.share),
+                                  label: Text(
+                                    'Buat & Bagikan',
+                                    style: GoogleFonts.poppins(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                  style: OutlinedButton.styleFrom(
+                                    foregroundColor: const Color(0xFF8B5FBF),
+                                    side: const BorderSide(
+                                      color: Color(0xFF8B5FBF),
+                                    ),
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 16,
+                                    ),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
+                          const SizedBox(height: 32),
+
+                          // Backup List Header
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                AppLocalizations.of(context)!.backup_saved,
+                                style: GoogleFonts.poppins(
+                                  color: Colors.white,
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              Text(
+                                '${_backups.length} file',
+                                style: GoogleFonts.poppins(
+                                  color: Colors.grey[500],
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 16),
+
+                          // Backup List
+                          if (_backups.isEmpty)
+                            Center(
+                              child: Column(
+                                children: [
+                                  const SizedBox(height: 40),
+                                  Icon(
+                                    Iconsax.folder_open,
+                                    size: 64,
+                                    color: Colors.grey[600],
+                                  ),
+                                  const SizedBox(height: 16),
+                                  Text(
+                                    AppLocalizations.of(context)!.no_backup_yet,
+                                    style: GoogleFonts.poppins(
+                                      color: Colors.grey[500],
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    'Buat backup pertama Anda',
+                                    style: GoogleFonts.poppins(
+                                      color: Colors.grey[600],
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            )
+                          else
+                            ListView.builder(
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
+                              itemCount: _backups.length,
+                              itemBuilder:
+                                  (context, index) =>
+                                      _buildBackupCard(_backups[index]),
+                            ),
                         ],
                       ),
                     ),
-                    const SizedBox(height: 24),
-
-                    // Action Buttons
-                    Row(
-                      children: [
-                        Expanded(
-                          child: ElevatedButton.icon(
-                            onPressed:
-                                _isCreatingBackup
-                                    ? null
-                                    : () => _createBackup(share: false),
-                            icon:
-                                _isCreatingBackup
-                                    ? const SizedBox(
-                                      width: 20,
-                                      height: 20,
-                                      child: CircularProgressIndicator(
-                                        color: Colors.white,
-                                        strokeWidth: 2,
-                                      ),
-                                    )
-                                    : const Icon(Iconsax.document_upload),
-                            label: Text(
-                              _isCreatingBackup ? 'Membuat...' : 'Buat Backup',
-                              style: GoogleFonts.poppins(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFF8B5FBF),
-                              foregroundColor: Colors.white,
-                              padding: const EdgeInsets.symmetric(vertical: 16),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: OutlinedButton.icon(
-                            onPressed:
-                                _isCreatingBackup
-                                    ? null
-                                    : () => _createBackup(share: true),
-                            icon: const Icon(Iconsax.share),
-                            label: Text(
-                              'Buat & Bagikan',
-                              style: GoogleFonts.poppins(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                            style: OutlinedButton.styleFrom(
-                              foregroundColor: const Color(0xFF8B5FBF),
-                              side: const BorderSide(color: Color(0xFF8B5FBF)),
-                              padding: const EdgeInsets.symmetric(vertical: 16),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 32),
-
-                    // Backup List Header
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          AppLocalizations.of(context)!.backup_saved,
-                          style: GoogleFonts.poppins(
-                            color: Colors.white,
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        Text(
-                          '${_backups.length} file',
-                          style: GoogleFonts.poppins(
-                            color: Colors.grey[500],
-                            fontSize: 14,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-
-                    // Backup List
-                    if (_backups.isEmpty)
-                      Center(
-                        child: Column(
-                          children: [
-                            const SizedBox(height: 40),
-                            Icon(
-                              Iconsax.folder_open,
-                              size: 64,
-                              color: Colors.grey[600],
-                            ),
-                            const SizedBox(height: 16),
-                            Text(
-                              AppLocalizations.of(context)!.no_backup_yet,
-                              style: GoogleFonts.poppins(
-                                color: Colors.grey[500],
-                                fontSize: 16,
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              'Buat backup pertama Anda',
-                              style: GoogleFonts.poppins(
-                                color: Colors.grey[600],
-                                fontSize: 14,
-                              ),
-                            ),
-                          ],
-                        ),
-                      )
-                    else
-                      ..._backups.map((file) => _buildBackupCard(file)),
-                  ],
-                ),
-            ),
           ),
         ],
       ),

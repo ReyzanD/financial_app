@@ -38,7 +38,9 @@ class _AIRecommendationsState extends State<AIRecommendations> {
         return;
       }
 
-      final recommendations = await _aiService.generateMultipleRecommendations(limit: 5);
+      final recommendations = await _aiService.generateMultipleRecommendations(
+        limit: 5,
+      );
       if (mounted) {
         setState(() {
           _recommendations = recommendations;
@@ -90,7 +92,9 @@ class _AIRecommendationsState extends State<AIRecommendations> {
         decoration: BoxDecoration(
           color: const Color(0xFF1A1A1A),
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: const Color(0xFF8B5FBF).withValues(alpha: 0.3)),
+          border: Border.all(
+            color: const Color(0xFF8B5FBF).withValues(alpha: 0.3),
+          ),
         ),
         child: const Center(
           child: CircularProgressIndicator(color: Color(0xFF8B5FBF)),
@@ -104,22 +108,22 @@ class _AIRecommendationsState extends State<AIRecommendations> {
         decoration: BoxDecoration(
           color: const Color(0xFF1A1A1A),
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: const Color(0xFF8B5FBF).withValues(alpha: 0.3)),
+          border: Border.all(
+            color: const Color(0xFF8B5FBF).withValues(alpha: 0.3),
+          ),
         ),
         child: Center(
           child: Text(
             'Belum ada rekomendasi AI tersedia',
-            style: GoogleFonts.poppins(
-              color: Colors.grey[500],
-              fontSize: 13,
-            ),
+            style: GoogleFonts.poppins(color: Colors.grey[500], fontSize: 13),
           ),
         ),
       );
     }
 
     final currentRec = _recommendations[_currentIndex];
-    final recommendation = currentRec['recommendation'] ?? 'Belum ada rekomendasi AI tersedia';
+    final recommendation =
+        currentRec['recommendation'] ?? 'Belum ada rekomendasi AI tersedia';
     final savings = (currentRec['potential_savings'] ?? 0).toDouble();
     final priority = currentRec['priority'];
     final category = currentRec['category'];
@@ -271,7 +275,8 @@ class _AIRecommendationsState extends State<AIRecommendations> {
                     icon: const Icon(Icons.chevron_left, color: Colors.white70),
                     onPressed: () {
                       setState(() {
-                        _currentIndex = (_currentIndex - 1) % _recommendations.length;
+                        _currentIndex =
+                            (_currentIndex - 1) % _recommendations.length;
                       });
                     },
                     iconSize: 20,
@@ -285,10 +290,14 @@ class _AIRecommendationsState extends State<AIRecommendations> {
                 ),
                 if (_currentIndex < _recommendations.length - 1)
                   IconButton(
-                    icon: const Icon(Icons.chevron_right, color: Colors.white70),
+                    icon: const Icon(
+                      Icons.chevron_right,
+                      color: Colors.white70,
+                    ),
                     onPressed: () {
                       setState(() {
-                        _currentIndex = (_currentIndex + 1) % _recommendations.length;
+                        _currentIndex =
+                            (_currentIndex + 1) % _recommendations.length;
                       });
                     },
                     iconSize: 20,

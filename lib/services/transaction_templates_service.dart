@@ -18,13 +18,13 @@ class TransactionTemplatesService {
     try {
       final prefs = await SharedPreferences.getInstance();
       final templatesJson = prefs.getString(_templatesKey);
-      
+
       List<Map<String, dynamic>> templates = [];
       if (templatesJson != null) {
         final decoded = json.decode(templatesJson) as List;
         templates = decoded.cast<Map<String, dynamic>>();
       }
-      
+
       templates.add({
         'id': DateTime.now().millisecondsSinceEpoch.toString(),
         'name': name,
@@ -36,7 +36,7 @@ class TransactionTemplatesService {
         'created_at': DateTime.now().toIso8601String(),
         'usage_count': 0,
       });
-      
+
       await prefs.setString(_templatesKey, json.encode(templates));
       LoggerService.debug('Saved transaction template: $name');
     } catch (e) {
@@ -49,9 +49,9 @@ class TransactionTemplatesService {
     try {
       final prefs = await SharedPreferences.getInstance();
       final templatesJson = prefs.getString(_templatesKey);
-      
+
       if (templatesJson == null) return [];
-      
+
       final decoded = json.decode(templatesJson) as List;
       return decoded.cast<Map<String, dynamic>>();
     } catch (e) {
@@ -71,14 +71,16 @@ class TransactionTemplatesService {
     try {
       final prefs = await SharedPreferences.getInstance();
       final templatesJson = prefs.getString(_templatesKey);
-      
+
       if (templatesJson == null) return;
-      
-      final templates = (json.decode(templatesJson) as List).cast<Map<String, dynamic>>();
+
+      final templates =
+          (json.decode(templatesJson) as List).cast<Map<String, dynamic>>();
       final index = templates.indexWhere((t) => t['id'] == templateId);
-      
+
       if (index != -1) {
-        templates[index]['usage_count'] = ((templates[index]['usage_count'] as num?)?.toInt() ?? 0) + 1;
+        templates[index]['usage_count'] =
+            ((templates[index]['usage_count'] as num?)?.toInt() ?? 0) + 1;
         await prefs.setString(_templatesKey, json.encode(templates));
       }
     } catch (e) {
@@ -91,12 +93,13 @@ class TransactionTemplatesService {
     try {
       final prefs = await SharedPreferences.getInstance();
       final templatesJson = prefs.getString(_templatesKey);
-      
+
       if (templatesJson == null) return;
-      
-      final templates = (json.decode(templatesJson) as List).cast<Map<String, dynamic>>();
+
+      final templates =
+          (json.decode(templatesJson) as List).cast<Map<String, dynamic>>();
       templates.removeWhere((t) => t['id'] == templateId);
-      
+
       await prefs.setString(_templatesKey, json.encode(templates));
       LoggerService.debug('Deleted template: $templateId');
     } catch (e) {
@@ -105,7 +108,9 @@ class TransactionTemplatesService {
   }
 
   /// Get most used templates
-  Future<List<Map<String, dynamic>>> getMostUsedTemplates({int limit = 5}) async {
+  Future<List<Map<String, dynamic>>> getMostUsedTemplates({
+    int limit = 5,
+  }) async {
     final templates = await getTemplates();
     templates.sort((a, b) {
       final countA = (a['usage_count'] as num?)?.toInt() ?? 0;
@@ -115,4 +120,3 @@ class TransactionTemplatesService {
     return templates.take(limit).toList();
   }
 }
-

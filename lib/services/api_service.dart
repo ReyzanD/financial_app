@@ -261,12 +261,11 @@ class ApiService {
         'source': 'local_budget_recommendation_service',
       };
     } catch (e) {
-      LoggerService.warning('AI recommendations failed, returning empty',
-          error: e);
-      return {
-        'recommendations': [],
-        'error': e.toString(),
-      };
+      LoggerService.warning(
+        'AI recommendations failed, returning empty',
+        error: e,
+      );
+      return {'recommendations': [], 'error': e.toString()};
     }
   }
 

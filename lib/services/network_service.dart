@@ -17,9 +17,13 @@ class NetworkService {
   bool get isOnline => _isOnline;
 
   /// Stream untuk listen connectivity changes
-  Stream<bool> get connectivityStream => _connectivity.onConnectivityChanged
-      .map((results) => results.any((result) => result != ConnectivityResult.none))
-      .distinct();
+  Stream<bool> get connectivityStream =>
+      _connectivity.onConnectivityChanged
+          .map(
+            (results) =>
+                results.any((result) => result != ConnectivityResult.none),
+          )
+          .distinct();
 
   /// Initialize network monitoring
   Future<void> initialize() async {
@@ -33,8 +37,10 @@ class NetworkService {
       _subscription = _connectivity.onConnectivityChanged.listen(
         (List<ConnectivityResult> results) {
           final wasOnline = _isOnline;
-          _isOnline = results.any((result) => result != ConnectivityResult.none);
-          
+          _isOnline = results.any(
+            (result) => result != ConnectivityResult.none,
+          );
+
           if (wasOnline != _isOnline) {
             LoggerService.info(
               'Network status changed: ${_isOnline ? "Online" : "Offline"}',
@@ -92,4 +98,3 @@ class NetworkService {
     _listeners.clear();
   }
 }
-

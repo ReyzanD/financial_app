@@ -6,24 +6,30 @@ class SubscriptionTrackerService {
   final LocalDataService _localData;
 
   SubscriptionTrackerService({LocalDataService? localData})
-      : _localData = localData ?? LocalDataService();
+    : _localData = localData ?? LocalDataService();
 
-  Future<List<SubscriptionModel>> getSubscriptions({bool activeOnly = true}) async {
+  Future<List<SubscriptionModel>> getSubscriptions({
+    bool activeOnly = true,
+  }) async {
     try {
-      final subsData = await _localData.getSubscriptions(activeOnly: activeOnly);
-      return subsData
-          .map((s) => SubscriptionModel.fromMap(s))
-          .toList();
+      final subsData = await _localData.getSubscriptions(
+        activeOnly: activeOnly,
+      );
+      return subsData.map((s) => SubscriptionModel.fromMap(s)).toList();
     } catch (e) {
       LoggerService.error('Error getting subscriptions', error: e);
       return [];
     }
   }
 
-  Future<SubscriptionModel> addSubscription(SubscriptionModel subscription) async {
+  Future<SubscriptionModel> addSubscription(
+    SubscriptionModel subscription,
+  ) async {
     try {
       final result = await _localData.addSubscription(subscription.toMap());
-      final created = SubscriptionModel.fromMap(result['subscription'] as Map<String, dynamic>);
+      final created = SubscriptionModel.fromMap(
+        result['subscription'] as Map<String, dynamic>,
+      );
       LoggerService.success('Subscription added: ${created.name}');
       return created;
     } catch (e) {
@@ -32,13 +38,19 @@ class SubscriptionTrackerService {
     }
   }
 
-  Future<SubscriptionModel> updateSubscription(String id, Map<String, dynamic> updates) async {
+  Future<SubscriptionModel> updateSubscription(
+    String id,
+    Map<String, dynamic> updates,
+  ) async {
     try {
       if (updates['next_renewal'] is DateTime) {
-        updates['next_renewal'] = (updates['next_renewal'] as DateTime).toIso8601String();
+        updates['next_renewal'] =
+            (updates['next_renewal'] as DateTime).toIso8601String();
       }
       final result = await _localData.updateSubscription(id, updates);
-      final updated = SubscriptionModel.fromMap(result['subscription'] as Map<String, dynamic>);
+      final updated = SubscriptionModel.fromMap(
+        result['subscription'] as Map<String, dynamic>,
+      );
       LoggerService.success('Subscription updated: ${updated.name}');
       return updated;
     } catch (e) {

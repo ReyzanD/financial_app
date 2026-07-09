@@ -56,8 +56,7 @@ class _ContributeModalState extends State<ContributeModal> {
         _isLoadingAccounts = false;
 
         if (_accounts.isNotEmpty) {
-          final defaultAcc =
-              _accounts.where((a) => a.isDefault).firstOrNull;
+          final defaultAcc = _accounts.where((a) => a.isDefault).firstOrNull;
           _selectedAccount = defaultAcc ?? _accounts.first;
         }
       });
@@ -85,7 +84,7 @@ class _ContributeModalState extends State<ContributeModal> {
       return;
     }
 
-    final amount = double.parse(amountText);
+    final amount = double.tryParse(amountText) ?? 0.0;
     if (amount <= 0) {
       ErrorHandlerService.showWarningSnackbar(
         context,
@@ -288,37 +287,40 @@ class _ContributeModalState extends State<ContributeModal> {
                       'Pilih akun',
                       style: GoogleFonts.poppins(color: Colors.grey[600]),
                     ),
-                    items: _accounts.map((account) {
-                      return DropdownMenuItem<AccountModel>(
-                        value: account,
-                        child: Row(
-                          children: [
-                            Icon(
-                              _getAccountIcon(account.icon),
-                              size: 18,
-                              color: const Color(0xFF8B5FBF),
-                            ),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: Text(
-                                account.name,
-                                style: GoogleFonts.poppins(
-                                  color: Colors.white,
-                                  fontSize: 14,
+                    items:
+                        _accounts.map((account) {
+                          return DropdownMenuItem<AccountModel>(
+                            value: account,
+                            child: Row(
+                              children: [
+                                Icon(
+                                  _getAccountIcon(account.icon),
+                                  size: 18,
+                                  color: const Color(0xFF8B5FBF),
                                 ),
-                              ),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: Text(
+                                    account.name,
+                                    style: GoogleFonts.poppins(
+                                      color: Colors.white,
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                ),
+                                Text(
+                                  CurrencyFormatter.formatRupiah(
+                                    account.balance.toInt(),
+                                  ),
+                                  style: GoogleFonts.poppins(
+                                    color: Colors.grey[400],
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              ],
                             ),
-                            Text(
-                              CurrencyFormatter.formatRupiah(account.balance.toInt()),
-                              style: GoogleFonts.poppins(
-                                color: Colors.grey[400],
-                                fontSize: 12,
-                              ),
-                            ),
-                          ],
-                        ),
-                      );
-                    }).toList(),
+                          );
+                        }).toList(),
                     onChanged: (account) {
                       if (account != null) {
                         setState(() => _selectedAccount = account);
@@ -350,18 +352,24 @@ class _ContributeModalState extends State<ContributeModal> {
                     Expanded(
                       child: RichText(
                         text: TextSpan(
-                          style: GoogleFonts.poppins(fontSize: 11, color: Colors.grey[400]),
+                          style: GoogleFonts.poppins(
+                            fontSize: 11,
+                            color: Colors.grey[400],
+                          ),
                           children: [
                             const TextSpan(text: 'Saldo tersedia: '),
                             TextSpan(
-                              text: CurrencyFormatter.formatRupiah(_availableBalance.toInt()),
+                              text: CurrencyFormatter.formatRupiah(
+                                _availableBalance.toInt(),
+                              ),
                               style: GoogleFonts.poppins(
                                 fontWeight: FontWeight.w600,
                                 color: Colors.white,
                               ),
                             ),
                             TextSpan(
-                              text: ' (dari total ${CurrencyFormatter.formatRupiah(_totalBalance.toInt())} - ${CurrencyFormatter.formatRupiah(_totalGoals.toInt())} dialokasikan ke goal)',
+                              text:
+                                  ' (dari total ${CurrencyFormatter.formatRupiah(_totalBalance.toInt())} - ${CurrencyFormatter.formatRupiah(_totalGoals.toInt())} dialokasikan ke goal)',
                             ),
                           ],
                         ),
@@ -380,11 +388,7 @@ class _ContributeModalState extends State<ContributeModal> {
                   ),
                   child: Row(
                     children: [
-                      const Icon(
-                        Iconsax.wallet,
-                        size: 16,
-                        color: Colors.grey,
-                      ),
+                      const Icon(Iconsax.wallet, size: 16, color: Colors.grey),
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
@@ -428,7 +432,9 @@ class _ContributeModalState extends State<ContributeModal> {
                           color: const Color(0xFF8B5FBF).withValues(alpha: 0.2),
                           borderRadius: BorderRadius.circular(20),
                           border: Border.all(
-                            color: const Color(0xFF8B5FBF).withValues(alpha: 0.5),
+                            color: const Color(
+                              0xFF8B5FBF,
+                            ).withValues(alpha: 0.5),
                           ),
                         ),
                         child: Text(

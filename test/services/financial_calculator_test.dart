@@ -59,35 +59,41 @@ void main() {
       expect(result['level'], isNotNull);
     });
 
-    test('calculateFinancialHealthScore should give higher score for good habits', () {
-      final goodHabits = calculator.calculateFinancialHealthScore(
-        income: 10000000,
-        expenses: 3000000,
-        savings: 7000000,
-        debtAmount: 0,
-        budgetTotal: 5000000,
-        budgetSpent: 3000000,
-      );
+    test(
+      'calculateFinancialHealthScore should give higher score for good habits',
+      () {
+        final goodHabits = calculator.calculateFinancialHealthScore(
+          income: 10000000,
+          expenses: 3000000,
+          savings: 7000000,
+          debtAmount: 0,
+          budgetTotal: 5000000,
+          budgetSpent: 3000000,
+        );
 
-      final badHabits = calculator.calculateFinancialHealthScore(
-        income: 10000000,
-        expenses: 9500000,
-        savings: 500000,
-        debtAmount: 5000000,
-      );
+        final badHabits = calculator.calculateFinancialHealthScore(
+          income: 10000000,
+          expenses: 9500000,
+          savings: 500000,
+          debtAmount: 5000000,
+        );
 
-      expect(goodHabits['score'], greaterThan(badHabits['score']));
-    });
+        expect(goodHabits['score'], greaterThan(badHabits['score']));
+      },
+    );
 
     test('calculateProgressiveTax should return 0 for zero income', () {
       final result = calculator.calculateProgressiveTax(0);
       expect(result, 0.0);
     });
 
-    test('calculateProgressiveTax should calculate 5% for income under 50M', () {
-      final result = calculator.calculateProgressiveTax(10000000);
-      expect(result, 500000.0);
-    });
+    test(
+      'calculateProgressiveTax should calculate 5% for income under 50M',
+      () {
+        final result = calculator.calculateProgressiveTax(10000000);
+        expect(result, 500000.0);
+      },
+    );
 
     test('calculateMonthComparison should return changes', () {
       final result = calculator.calculateMonthComparison(
@@ -107,7 +113,9 @@ void main() {
         {'date': '2025-01-05', 'amount': 3000000.0, 'type': 'expense'},
       ];
 
-      final result = calculator.calculateRunningBalance(transactions: transactions);
+      final result = calculator.calculateRunningBalance(
+        transactions: transactions,
+      );
 
       expect(result.length, 2);
       expect(result[0]['runningBalanceValue'], 10000000.0);

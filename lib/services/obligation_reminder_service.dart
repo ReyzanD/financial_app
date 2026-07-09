@@ -12,17 +12,24 @@ class ObligationReminderService {
   /// Schedule reminders untuk semua active obligations
   Future<void> scheduleAllReminders() async {
     try {
-      LoggerService.info('[ObligationReminderService] Scheduling all reminders...');
-      
+      LoggerService.info(
+        '[ObligationReminderService] Scheduling all reminders...',
+      );
+
       final obligations = await _obligationService.getObligations();
-      
+
       for (var obligation in obligations) {
         await scheduleReminderForObligation(obligation);
       }
-      
-      LoggerService.success('[ObligationReminderService] All reminders scheduled');
+
+      LoggerService.success(
+        '[ObligationReminderService] All reminders scheduled',
+      );
     } catch (e) {
-      LoggerService.error('[ObligationReminderService] Error scheduling reminders', error: e);
+      LoggerService.error(
+        '[ObligationReminderService] Error scheduling reminders',
+        error: e,
+      );
     }
   }
 
@@ -34,16 +41,20 @@ class ObligationReminderService {
       // Check if reminders are enabled for this obligation
       final remindersEnabled = await getReminderEnabled(obligation.id);
       if (!remindersEnabled) {
-        LoggerService.debug('[ObligationReminderService] Reminders disabled for ${obligation.name}');
+        LoggerService.debug(
+          '[ObligationReminderService] Reminders disabled for ${obligation.name}',
+        );
         return;
       }
 
       // Get reminder days before due date
       final reminderDays = await getReminderDays(obligation.id);
-      
+
       // Calculate reminder date
-      final reminderDate = obligation.dueDate.subtract(Duration(days: reminderDays));
-      
+      final reminderDate = obligation.dueDate.subtract(
+        Duration(days: reminderDays),
+      );
+
       // Only schedule if reminder date is in the future
       if (reminderDate.isAfter(DateTime.now())) {
         await _notificationService.scheduleBillReminder(
@@ -52,7 +63,7 @@ class ObligationReminderService {
           dueDate: obligation.dueDate,
           daysBeforeReminder: reminderDays,
         );
-        
+
         LoggerService.debug(
           '[ObligationReminderService] Scheduled reminder for ${obligation.name} on ${reminderDate.toString()}',
         );
@@ -77,7 +88,8 @@ class ObligationReminderService {
       await _notificationService.scheduleNotification(
         id: 'overdue_${obligation.id}'.hashCode,
         title: '⚠️ Tagihan Terlambat',
-        body: '${obligation.name} sudah jatuh tempo! Jumlah: Rp ${obligation.monthlyAmount.toStringAsFixed(0)}',
+        body:
+            '${obligation.name} sudah jatuh tempo! Jumlah: Rp ${obligation.monthlyAmount.toStringAsFixed(0)}',
         scheduledDate: DateTime.now().add(const Duration(seconds: 5)),
         payload: 'obligation:${obligation.id}:overdue',
       );
@@ -98,10 +110,12 @@ class ObligationReminderService {
       // Cancel all reminder notifications for this obligation
       final reminderDays = await getReminderDays(obligationId);
       final notificationId = '${obligation.name}_$reminderDays'.hashCode;
-      
+
       await _notificationService.cancelNotification(notificationId);
-      
-      LoggerService.debug('[ObligationReminderService] Cancelled reminder for ${obligation.name}');
+
+      LoggerService.debug(
+        '[ObligationReminderService] Cancelled reminder for ${obligation.name}',
+      );
     } catch (e) {
       LoggerService.error('Error cancelling reminder', error: e);
     }
@@ -123,7 +137,7 @@ class ObligationReminderService {
     try {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setBool('obligation_reminder_$obligationId', enabled);
-      
+
       if (enabled) {
         // Reschedule reminder if enabling
         final obligations = await _obligationService.getObligations();
@@ -157,17 +171,17 @@ class ObligationReminderService {
     try {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setInt('obligation_reminder_days_$obligationId', days);
-      
+
       // Reschedule reminder with new days
       final obligations = await _obligationService.getObligations();
       final obligation = obligations.firstWhere(
         (o) => o.id == obligationId,
         orElse: () => throw Exception('Obligation not found'),
       );
-      
+
       // Cancel old reminder
       await cancelReminder(obligationId);
-      
+
       // Schedule new reminder
       await scheduleReminderForObligation(obligation);
     } catch (e) {
@@ -176,9 +190,13 @@ class ObligationReminderService {
   }
 
   /// Get upcoming reminders (bills due soon)
-  Future<List<Map<String, dynamic>>> getUpcomingReminders({int days = 7}) async {
+  Future<List<Map<String, dynamic>>> getUpcomingReminders({
+    int days = 7,
+  }) async {
     try {
-      final obligations = await _obligationService.getUpcomingObligations(days: days);
+      final obligations = await _obligationService.getUpcomingObligations(
+        days: days,
+      );
       final reminders = <Map<String, dynamic>>[];
 
       for (var obligation in obligations) {
@@ -211,17 +229,21 @@ class ObligationReminderService {
 
       // Schedule new reminder for later
       await _notificationService.scheduleNotification(
-        id: 'snooze_${obligation.id}_${DateTime.now().millisecondsSinceEpoch}'.hashCode,
+        id:
+            'snooze_${obligation.id}_${DateTime.now().millisecondsSinceEpoch}'
+                .hashCode,
         title: '💰 Pengingat Tagihan',
-        body: '${obligation.name} jatuh tempo: Rp ${obligation.monthlyAmount.toStringAsFixed(0)}',
+        body:
+            '${obligation.name} jatuh tempo: Rp ${obligation.monthlyAmount.toStringAsFixed(0)}',
         scheduledDate: DateTime.now().add(Duration(hours: hours)),
         payload: 'obligation:${obligation.id}:reminder',
       );
 
-      LoggerService.debug('[ObligationReminderService] Snoozed reminder for ${obligation.name}');
+      LoggerService.debug(
+        '[ObligationReminderService] Snoozed reminder for ${obligation.name}',
+      );
     } catch (e) {
       LoggerService.error('Error snoozing reminder', error: e);
     }
   }
 }
-

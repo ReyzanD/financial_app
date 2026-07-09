@@ -121,7 +121,10 @@ class _DebtsScreenState extends State<DebtsScreen> {
           Row(
             children: [
               IconButton(
-                icon: const Icon(Iconsax.arrow_left, color: DesignTokens.textPrimaryDark),
+                icon: const Icon(
+                  Iconsax.arrow_left,
+                  color: DesignTokens.textPrimaryDark,
+                ),
                 onPressed: () => Navigator.pop(context),
               ),
               const SizedBox(width: 8),
@@ -192,7 +195,9 @@ class _DebtsScreenState extends State<DebtsScreen> {
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     color: DesignTokens.errorColor.withValues(alpha: 0.15),
-                    borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                    borderRadius: BorderRadius.circular(
+                      DesignTokens.radiusMedium,
+                    ),
                   ),
                   child: const Icon(
                     Iconsax.money_send,
@@ -234,14 +239,21 @@ class _DebtsScreenState extends State<DebtsScreen> {
     );
   }
 
-  Widget _buildDebtCard(BuildContext context, dynamic debt, AppLocalizations? l10n) {
+  Widget _buildDebtCard(
+    BuildContext context,
+    dynamic debt,
+    AppLocalizations? l10n,
+  ) {
     final name = debt.name ?? '';
     final type = debt.type ?? 'other';
     final originalAmount = debt.originalAmount ?? 0.0;
     final currentBalance = debt.currentBalance ?? 0.0;
     final interestRate = debt.interestRate ?? 0.0;
 
-    final progress = originalAmount > 0 ? (originalAmount - currentBalance) / originalAmount : 0.0;
+    final progress =
+        originalAmount > 0
+            ? (originalAmount - currentBalance) / originalAmount
+            : 0.0;
     final percentage = (progress * 100).clamp(0, 100).toDouble();
 
     return Container(
@@ -261,7 +273,9 @@ class _DebtsScreenState extends State<DebtsScreen> {
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
                   color: _getDebtTypeColor(type).withValues(alpha: 0.15),
-                  borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                  borderRadius: BorderRadius.circular(
+                    DesignTokens.radiusMedium,
+                  ),
                 ),
                 child: Icon(
                   Iconsax.money_send,
@@ -352,10 +366,15 @@ class _DebtsScreenState extends State<DebtsScreen> {
               InkWell(
                 onTap: () => _recordPayment(debt),
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
                   decoration: BoxDecoration(
                     color: DesignTokens.successColor.withValues(alpha: 0.15),
-                    borderRadius: BorderRadius.circular(DesignTokens.radiusSmall),
+                    borderRadius: BorderRadius.circular(
+                      DesignTokens.radiusSmall,
+                    ),
                   ),
                   child: Text(
                     l10n?.pay ?? 'Bayar',
@@ -437,11 +456,7 @@ class _DebtsScreenState extends State<DebtsScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            Iconsax.warning_2,
-            size: 64,
-            color: DesignTokens.errorColor,
-          ),
+          Icon(Iconsax.warning_2, size: 64, color: DesignTokens.errorColor),
           const SizedBox(height: 16),
           Text(
             l10n?.error ?? 'Terjadi kesalahan',
@@ -498,10 +513,7 @@ class _DebtsScreenState extends State<DebtsScreen> {
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (context) {
-        return _RecordPaymentModal(
-          debt: debt,
-          onPaymentRecorded: _loadData,
-        );
+        return _RecordPaymentModal(debt: debt, onPaymentRecorded: _loadData);
       },
     );
   }
@@ -551,7 +563,10 @@ class _DebtsScreenState extends State<DebtsScreen> {
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(l10n?.transaction_deleted_successfully ?? 'Hutang berhasil dihapus'),
+            content: Text(
+              l10n?.transaction_deleted_successfully ??
+                  'Hutang berhasil dihapus',
+            ),
             backgroundColor: DesignTokens.primaryColor,
           ),
         );
@@ -644,11 +659,15 @@ class _AddDebtModalState extends State<_AddDebtModal> {
                 style: GoogleFonts.poppins(color: DesignTokens.textPrimaryDark),
                 decoration: InputDecoration(
                   labelText: l10n?.name ?? 'Nama',
-                  labelStyle: GoogleFonts.poppins(color: DesignTokens.textSecondaryDark),
+                  labelStyle: GoogleFonts.poppins(
+                    color: DesignTokens.textSecondaryDark,
+                  ),
                   filled: true,
                   fillColor: DesignTokens.surfaceDark,
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                    borderRadius: BorderRadius.circular(
+                      DesignTokens.radiusMedium,
+                    ),
                     borderSide: BorderSide(color: DesignTokens.borderDark),
                   ),
                 ),
@@ -670,26 +689,30 @@ class _AddDebtModalState extends State<_AddDebtModal> {
               const SizedBox(height: 8),
               Wrap(
                 spacing: 8,
-                children: _types.map((type) {
-                  final isSelected = _selectedType == type['value'];
-                  return ChoiceChip(
-                    label: Text(
-                      type['label'],
-                      style: GoogleFonts.poppins(
-                        color: isSelected ? Colors.white : DesignTokens.textSecondaryDark,
-                        fontSize: 12,
-                      ),
-                    ),
-                    selected: isSelected,
-                    onSelected: (selected) {
-                      setState(() {
-                        _selectedType = type['value'];
-                      });
-                    },
-                    backgroundColor: DesignTokens.surfaceDark,
-                    selectedColor: DesignTokens.primaryColor,
-                  );
-                }).toList(),
+                children:
+                    _types.map((type) {
+                      final isSelected = _selectedType == type['value'];
+                      return ChoiceChip(
+                        label: Text(
+                          type['label'],
+                          style: GoogleFonts.poppins(
+                            color:
+                                isSelected
+                                    ? Colors.white
+                                    : DesignTokens.textSecondaryDark,
+                            fontSize: 12,
+                          ),
+                        ),
+                        selected: isSelected,
+                        onSelected: (selected) {
+                          setState(() {
+                            _selectedType = type['value'];
+                          });
+                        },
+                        backgroundColor: DesignTokens.surfaceDark,
+                        selectedColor: DesignTokens.primaryColor,
+                      );
+                    }).toList(),
               ),
               const SizedBox(height: 16),
               TextFormField(
@@ -698,11 +721,15 @@ class _AddDebtModalState extends State<_AddDebtModal> {
                 keyboardType: TextInputType.number,
                 decoration: InputDecoration(
                   labelText: l10n?.original_amount ?? 'Jumlah Awal',
-                  labelStyle: GoogleFonts.poppins(color: DesignTokens.textSecondaryDark),
+                  labelStyle: GoogleFonts.poppins(
+                    color: DesignTokens.textSecondaryDark,
+                  ),
                   filled: true,
                   fillColor: DesignTokens.surfaceDark,
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                    borderRadius: BorderRadius.circular(
+                      DesignTokens.radiusMedium,
+                    ),
                     borderSide: BorderSide(color: DesignTokens.borderDark),
                   ),
                 ),
@@ -720,14 +747,26 @@ class _AddDebtModalState extends State<_AddDebtModal> {
                 keyboardType: TextInputType.number,
                 decoration: InputDecoration(
                   labelText: l10n?.interest_rate ?? 'Bunga (%)',
-                  labelStyle: GoogleFonts.poppins(color: DesignTokens.textSecondaryDark),
+                  labelStyle: GoogleFonts.poppins(
+                    color: DesignTokens.textSecondaryDark,
+                  ),
                   filled: true,
                   fillColor: DesignTokens.surfaceDark,
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                    borderRadius: BorderRadius.circular(
+                      DesignTokens.radiusMedium,
+                    ),
                     borderSide: BorderSide(color: DesignTokens.borderDark),
                   ),
                 ),
+                validator: (value) {
+                  if (value != null && value.trim().isNotEmpty) {
+                    if (double.tryParse(value.replaceAll(',', '.')) == null) {
+                      return 'Bunga harus berupa angka';
+                    }
+                  }
+                  return null;
+                },
               ),
               const SizedBox(height: 24),
               SizedBox(
@@ -738,7 +777,9 @@ class _AddDebtModalState extends State<_AddDebtModal> {
                     backgroundColor: DesignTokens.primaryColor,
                     padding: const EdgeInsets.symmetric(vertical: 14),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                      borderRadius: BorderRadius.circular(
+                        DesignTokens.radiusMedium,
+                      ),
                     ),
                   ),
                   child: Text(
@@ -863,7 +904,9 @@ class _RecordPaymentModalState extends State<_RecordPaymentModal> {
             keyboardType: TextInputType.number,
             decoration: InputDecoration(
               labelText: l10n?.amount ?? 'Jumlah',
-              labelStyle: GoogleFonts.poppins(color: DesignTokens.textSecondaryDark),
+              labelStyle: GoogleFonts.poppins(
+                color: DesignTokens.textSecondaryDark,
+              ),
               filled: true,
               fillColor: DesignTokens.surfaceDark,
               border: OutlineInputBorder(
@@ -871,6 +914,15 @@ class _RecordPaymentModalState extends State<_RecordPaymentModal> {
                 borderSide: BorderSide(color: DesignTokens.borderDark),
               ),
             ),
+            validator: (value) {
+              if (value == null || value.trim().isEmpty) {
+                return 'Masukkan jumlah';
+              }
+              if (double.tryParse(value.replaceAll(',', '.')) == null) {
+                return 'Jumlah harus berupa angka';
+              }
+              return null;
+            },
           ),
           const SizedBox(height: 24),
           SizedBox(
@@ -881,7 +933,9 @@ class _RecordPaymentModalState extends State<_RecordPaymentModal> {
                 backgroundColor: DesignTokens.successColor,
                 padding: const EdgeInsets.symmetric(vertical: 14),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                  borderRadius: BorderRadius.circular(
+                    DesignTokens.radiusMedium,
+                  ),
                 ),
               ),
               child: Text(

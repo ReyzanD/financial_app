@@ -46,7 +46,8 @@ class ErrorHandlerService {
       return 'Server sedang mengalami masalah. Silakan coba lagi nanti.';
     }
 
-    if (errorString.contains('503') || errorString.contains('service unavailable')) {
+    if (errorString.contains('503') ||
+        errorString.contains('service unavailable')) {
       return 'Layanan sedang tidak tersedia. Silakan coba lagi nanti.';
     }
 
@@ -100,10 +101,7 @@ class ErrorHandlerService {
             Expanded(
               child: Text(
                 message,
-                style: GoogleFonts.poppins(
-                  color: Colors.white,
-                  fontSize: 14,
-                ),
+                style: GoogleFonts.poppins(color: Colors.white, fontSize: 14),
               ),
             ),
             if (onRetry != null) ...[
@@ -128,9 +126,7 @@ class ErrorHandlerService {
         backgroundColor: Colors.red[700],
         duration: duration,
         behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       ),
     );
   }
@@ -147,15 +143,16 @@ class ErrorHandlerService {
       SnackBar(
         content: Row(
           children: [
-            const Icon(Icons.check_circle_outline, color: Colors.white, size: 20),
+            const Icon(
+              Icons.check_circle_outline,
+              color: Colors.white,
+              size: 20,
+            ),
             const SizedBox(width: 12),
             Expanded(
               child: Text(
                 message,
-                style: GoogleFonts.poppins(
-                  color: Colors.white,
-                  fontSize: 14,
-                ),
+                style: GoogleFonts.poppins(color: Colors.white, fontSize: 14),
               ),
             ),
           ],
@@ -163,9 +160,7 @@ class ErrorHandlerService {
         backgroundColor: Colors.green[700],
         duration: duration,
         behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       ),
     );
   }
@@ -182,15 +177,16 @@ class ErrorHandlerService {
       SnackBar(
         content: Row(
           children: [
-            const Icon(Icons.warning_amber_rounded, color: Colors.white, size: 20),
+            const Icon(
+              Icons.warning_amber_rounded,
+              color: Colors.white,
+              size: 20,
+            ),
             const SizedBox(width: 12),
             Expanded(
               child: Text(
                 message,
-                style: GoogleFonts.poppins(
-                  color: Colors.white,
-                  fontSize: 14,
-                ),
+                style: GoogleFonts.poppins(color: Colors.white, fontSize: 14),
               ),
             ),
           ],
@@ -198,9 +194,7 @@ class ErrorHandlerService {
         backgroundColor: Colors.orange[700],
         duration: duration,
         behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       ),
     );
   }
@@ -222,10 +216,7 @@ class ErrorHandlerService {
             Expanded(
               child: Text(
                 message,
-                style: GoogleFonts.poppins(
-                  color: Colors.white,
-                  fontSize: 14,
-                ),
+                style: GoogleFonts.poppins(color: Colors.white, fontSize: 14),
               ),
             ),
           ],
@@ -233,9 +224,7 @@ class ErrorHandlerService {
         backgroundColor: Colors.blue[700],
         duration: duration,
         behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       ),
     );
   }
@@ -252,71 +241,66 @@ class ErrorHandlerService {
 
     return showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: const Color(0xFF1A1A1A),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
-        title: Row(
-          children: [
-            const Icon(Icons.error_outline, color: Colors.red, size: 24),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Text(
-                title,
-                style: GoogleFonts.poppins(
-                  color: Colors.white,
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
+      builder:
+          (context) => AlertDialog(
+            backgroundColor: const Color(0xFF1A1A1A),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
             ),
-          ],
-        ),
-        content: Text(
-          message,
-          style: GoogleFonts.poppins(
-            color: Colors.white70,
-            fontSize: 14,
+            title: Row(
+              children: [
+                const Icon(Icons.error_outline, color: Colors.red, size: 24),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    title,
+                    style: GoogleFonts.poppins(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            content: Text(
+              message,
+              style: GoogleFonts.poppins(color: Colors.white70, fontSize: 14),
+            ),
+            actions: [
+              if (onDismiss != null)
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                    onDismiss();
+                  },
+                  child: Text(
+                    'Tutup',
+                    style: GoogleFonts.poppins(color: Colors.grey[400]),
+                  ),
+                ),
+              if (onRetry != null)
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                    onRetry();
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF8B5FBF),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  child: Text(
+                    'Coba Lagi',
+                    style: GoogleFonts.poppins(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+            ],
           ),
-        ),
-        actions: [
-          if (onDismiss != null)
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-                onDismiss();
-              },
-              child: Text(
-                'Tutup',
-                style: GoogleFonts.poppins(
-                  color: Colors.grey[400],
-                ),
-              ),
-            ),
-          if (onRetry != null)
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pop(context);
-                onRetry();
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF8B5FBF),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
-              child: Text(
-                'Coba Lagi',
-                style: GoogleFonts.poppins(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
-        ],
-      ),
     );
   }
 }
-

@@ -12,7 +12,7 @@ class CreateTransactionUseCase {
     if (transaction.amount <= 0) {
       throw Exception('Amount must be greater than 0');
     }
-    
+
     if (transaction.categoryId.isEmpty) {
       throw Exception('Category is required');
     }
@@ -20,4 +20,3 @@ class CreateTransactionUseCase {
     return await _repository.createTransaction(transaction);
   }
 }
-

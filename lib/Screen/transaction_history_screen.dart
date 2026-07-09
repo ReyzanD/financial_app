@@ -5,7 +5,10 @@ import 'package:financial_app/services/api_service.dart';
 import 'package:financial_app/services/error_handler_service.dart';
 import 'package:financial_app/services/logger_service.dart';
 import 'package:financial_app/Screen/report_screen.dart';
+import 'package:financial_app/Screen/add_transaction_screen.dart';
 import 'package:financial_app/l10n/app_localizations.dart';
+import 'package:financial_app/widgets/common/empty_state.dart';
+import 'package:financial_app/widgets/common/offline_indicator.dart';
 
 class TransactionHistoryScreen extends StatefulWidget {
   const TransactionHistoryScreen({super.key});
@@ -58,10 +61,8 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
   }
 
   void _onSearchChanged() {
-    setState(() {
-      _searchQuery = _searchController.text.toLowerCase();
-      _applyAllFilters();
-    });
+    _searchQuery = _searchController.text.toLowerCase();
+    _applyAllFilters();
   }
 
   Future<void> _loadTransactions({bool reset = true}) async {
@@ -217,69 +218,74 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
           }).toList();
     }
 
+    // Apply current sort order
+    _sortList(filtered);
+
     setState(() {
       _filteredTransactions = filtered;
     });
   }
 
+  /// Apply the current sort order to the given list and update state once.
+  /// Sort the given list in-place using the current _sortBy setting.
+  void _sortList(List<Map<String, dynamic>> list) {
+    switch (_sortBy) {
+      case 'date_desc':
+        list.sort((a, b) {
+          final dateA = DateTime.parse(
+            a['date'] ?? DateTime.now().toIso8601String(),
+          );
+          final dateB = DateTime.parse(
+            b['date'] ?? DateTime.now().toIso8601String(),
+          );
+          return dateB.compareTo(dateA);
+        });
+        break;
+      case 'date_asc':
+        list.sort((a, b) {
+          final dateA = DateTime.parse(
+            a['date'] ?? DateTime.now().toIso8601String(),
+          );
+          final dateB = DateTime.parse(
+            b['date'] ?? DateTime.now().toIso8601String(),
+          );
+          return dateA.compareTo(dateB);
+        });
+        break;
+      case 'amount_desc':
+        list.sort((a, b) {
+          final amountA = (a['amount'] ?? 0).toDouble();
+          final amountB = (b['amount'] ?? 0).toDouble();
+          return amountB.compareTo(amountA);
+        });
+        break;
+      case 'amount_asc':
+        list.sort((a, b) {
+          final amountA = (a['amount'] ?? 0).toDouble();
+          final amountB = (b['amount'] ?? 0).toDouble();
+          return amountA.compareTo(amountB);
+        });
+        break;
+    }
+  }
+
   void _applyFilter(String filterType) {
-    setState(() {
-      _filterType = filterType;
-      _applyAllFilters();
-    });
+    _filterType = filterType;
+    _applyAllFilters();
   }
 
   void _clearAllFilters() {
-    setState(() {
-      _filterType = 'all';
-      _selectedCategory = 'all';
-      _dateRange = null;
-      _searchQuery = '';
-      _searchController.clear();
-      _applyAllFilters();
-    });
+    _filterType = 'all';
+    _selectedCategory = 'all';
+    _dateRange = null;
+    _searchQuery = '';
+    _searchController.clear();
+    _applyAllFilters();
   }
 
   void _applySorting() {
     setState(() {
-      switch (_sortBy) {
-        case 'date_desc':
-          _filteredTransactions.sort((a, b) {
-            final dateA = DateTime.parse(
-              a['date'] ?? DateTime.now().toIso8601String(),
-            );
-            final dateB = DateTime.parse(
-              b['date'] ?? DateTime.now().toIso8601String(),
-            );
-            return dateB.compareTo(dateA);
-          });
-          break;
-        case 'date_asc':
-          _filteredTransactions.sort((a, b) {
-            final dateA = DateTime.parse(
-              a['date'] ?? DateTime.now().toIso8601String(),
-            );
-            final dateB = DateTime.parse(
-              b['date'] ?? DateTime.now().toIso8601String(),
-            );
-            return dateA.compareTo(dateB);
-          });
-          break;
-        case 'amount_desc':
-          _filteredTransactions.sort((a, b) {
-            final amountA = (a['amount'] ?? 0).toDouble();
-            final amountB = (b['amount'] ?? 0).toDouble();
-            return amountB.compareTo(amountA);
-          });
-          break;
-        case 'amount_asc':
-          _filteredTransactions.sort((a, b) {
-            final amountA = (a['amount'] ?? 0).toDouble();
-            final amountB = (b['amount'] ?? 0).toDouble();
-            return amountA.compareTo(amountB);
-          });
-          break;
-      }
+      _sortList(_filteredTransactions);
     });
   }
 
@@ -329,6 +335,7 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
@@ -339,7 +346,7 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
-          'Riwayat Transaksi',
+          '${l10n?.history ?? 'Riwayat'} ${l10n?.transactions ?? 'Transaksi'}',
           style: GoogleFonts.poppins(
             color: Colors.white,
             fontSize: 20,
@@ -364,22 +371,32 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
           ),
         ],
       ),
-      body:
-          _isLoading
-              ? const Center(
-                child: CircularProgressIndicator(color: Color(0xFF8B5FBF)),
-              )
-              : Column(
-                children: [
-                  _buildSummaryCard(),
-                  _buildFiltersAndSort(),
-                  Expanded(child: _buildTransactionsList()),
-                ],
-              ),
+      body: Column(
+        children: [
+          const OfflineIndicator(),
+          Expanded(
+            child:
+                _isLoading
+                    ? const Center(
+                      child: CircularProgressIndicator(
+                        color: Color(0xFF8B5FBF),
+                      ),
+                    )
+                    : Column(
+                      children: [
+                        _buildSummaryCard(),
+                        _buildFiltersAndSort(),
+                        Expanded(child: _buildTransactionsList()),
+                      ],
+                    ),
+          ),
+        ],
+      ),
     );
   }
 
   Widget _buildSummaryCard() {
+    final l10n = AppLocalizations.of(context);
     final totalIncome = _transactions
         .where((t) => t['type']?.toString().toLowerCase() == 'income')
         .fold(0.0, (sum, t) => sum + (t['amount'] ?? 0).toDouble());
@@ -405,14 +422,14 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               _buildSummaryItem(
-                'Total Pemasukan',
+                l10n?.total_income ?? 'Total Pemasukan',
                 totalIncome,
                 const Color(0xFF4CAF50),
                 Icons.trending_up_rounded,
               ),
               Container(width: 1, height: 40, color: Colors.white24),
               _buildSummaryItem(
-                'Total Pengeluaran',
+                l10n?.total_expense ?? 'Total Pengeluaran',
                 totalExpense,
                 const Color(0xFFF44336),
                 Icons.trending_down_rounded,
@@ -436,7 +453,7 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
                 ),
                 const SizedBox(width: 8),
                 Text(
-                  'Saldo Akhir: ',
+                  '${l10n?.balance ?? 'Saldo'}: ',
                   style: GoogleFonts.poppins(
                     color: Colors.white70,
                     fontSize: 14,
@@ -701,20 +718,14 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
 
     if (_filteredTransactions.isEmpty) {
       return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.account_balance_wallet_outlined,
-              size: 64,
-              color: Colors.grey[600],
+        child: EmptyStates.noTransactions(
+          () => Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const AddTransactionScreen(),
             ),
-            const SizedBox(height: 16),
-            Text(
-              'Tidak ada transaksi',
-              style: GoogleFonts.poppins(color: Colors.grey[500], fontSize: 16),
-            ),
-          ],
+          ),
+          context,
         ),
       );
     }
@@ -766,7 +777,10 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
             decoration: BoxDecoration(
               color: typeColor.withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(14),
-              border: Border.all(color: typeColor.withValues(alpha: 0.3), width: 1.5),
+              border: Border.all(
+                color: typeColor.withValues(alpha: 0.3),
+                width: 1.5,
+              ),
             ),
             child: Icon(typeIcon, color: typeColor, size: 26),
           ),

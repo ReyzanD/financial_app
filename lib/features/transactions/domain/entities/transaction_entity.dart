@@ -32,9 +32,10 @@ class TransactionEntity {
       categoryId: json['category_id']?.toString() ?? '',
       categoryName: json['category_name']?.toString() ?? 'Uncategorized',
       description: json['description']?.toString() ?? '',
-      transactionDate: json['transaction_date'] != null
-          ? DateTime.parse(json['transaction_date'].toString())
-          : DateTime.now(),
+      transactionDate:
+          json['transaction_date'] != null
+              ? DateTime.parse(json['transaction_date'].toString())
+              : DateTime.now(),
       locationName: json['location_name']?.toString(),
       latitude: (json['latitude'] as num?)?.toDouble(),
       longitude: (json['longitude'] as num?)?.toDouble(),
@@ -55,4 +56,3 @@ class TransactionEntity {
     };
   }
 }
-

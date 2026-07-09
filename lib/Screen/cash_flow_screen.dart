@@ -16,7 +16,8 @@ class CashFlowScreen extends StatefulWidget {
 }
 
 class _CashFlowScreenState extends State<CashFlowScreen> {
-  final CashFlowForecastService _cashFlowService = getIt<CashFlowForecastService>();
+  final CashFlowForecastService _cashFlowService =
+      getIt<CashFlowForecastService>();
 
   bool _isLoading = true;
   String? _errorMessage;
@@ -89,9 +90,12 @@ class _CashFlowScreenState extends State<CashFlowScreen> {
   }
 
   Widget _buildHeader(BuildContext context, AppLocalizations? l10n) {
-    final currentIncome = (_summary['current_month_income'] as num?)?.toDouble() ?? 0.0;
-    final currentExpense = (_summary['current_month_expense'] as num?)?.toDouble() ?? 0.0;
-    final currentNet = (_summary['current_month_net'] as num?)?.toDouble() ?? 0.0;
+    final currentIncome =
+        (_summary['current_month_income'] as num?)?.toDouble() ?? 0.0;
+    final currentExpense =
+        (_summary['current_month_expense'] as num?)?.toDouble() ?? 0.0;
+    final currentNet =
+        (_summary['current_month_net'] as num?)?.toDouble() ?? 0.0;
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -101,7 +105,10 @@ class _CashFlowScreenState extends State<CashFlowScreen> {
           Row(
             children: [
               IconButton(
-                icon: const Icon(Iconsax.arrow_left, color: DesignTokens.textPrimaryDark),
+                icon: const Icon(
+                  Iconsax.arrow_left,
+                  color: DesignTokens.textPrimaryDark,
+                ),
                 onPressed: () => Navigator.pop(context),
               ),
               const SizedBox(width: 8),
@@ -148,7 +155,9 @@ class _CashFlowScreenState extends State<CashFlowScreen> {
                             ),
                           ),
                           Text(
-                            CurrencyFormatter.formatRupiah(currentIncome.toInt()),
+                            CurrencyFormatter.formatRupiah(
+                              currentIncome.toInt(),
+                            ),
                             style: GoogleFonts.poppins(
                               color: DesignTokens.successColor,
                               fontSize: 14,
@@ -170,7 +179,9 @@ class _CashFlowScreenState extends State<CashFlowScreen> {
                             ),
                           ),
                           Text(
-                            CurrencyFormatter.formatRupiah(currentExpense.toInt()),
+                            CurrencyFormatter.formatRupiah(
+                              currentExpense.toInt(),
+                            ),
                             style: GoogleFonts.poppins(
                               color: DesignTokens.errorColor,
                               fontSize: 14,
@@ -194,7 +205,10 @@ class _CashFlowScreenState extends State<CashFlowScreen> {
                           Text(
                             CurrencyFormatter.formatRupiah(currentNet.toInt()),
                             style: GoogleFonts.poppins(
-                              color: currentNet >= 0 ? DesignTokens.successColor : DesignTokens.errorColor,
+                              color:
+                                  currentNet >= 0
+                                      ? DesignTokens.successColor
+                                      : DesignTokens.errorColor,
                               fontSize: 14,
                               fontWeight: FontWeight.w600,
                             ),
@@ -236,7 +250,10 @@ class _CashFlowScreenState extends State<CashFlowScreen> {
   }
 
   Widget _buildWeeklyForecast(BuildContext context, AppLocalizations? l10n) {
-    final forecast = (_weeklyForecast['weekly_forecast'] as List?)?.cast<Map<String, dynamic>>() ?? [];
+    final forecast =
+        (_weeklyForecast['weekly_forecast'] as List?)
+            ?.cast<Map<String, dynamic>>() ??
+        [];
 
     if (forecast.isEmpty) return const SizedBox.shrink();
 
@@ -254,7 +271,8 @@ class _CashFlowScreenState extends State<CashFlowScreen> {
         const SizedBox(height: 12),
         ...forecast.map((week) {
           final weekStart = week['week_start'] as DateTime? ?? DateTime.now();
-          final projectedBalance = (week['projected_balance'] as num?)?.toDouble() ?? 0.0;
+          final projectedBalance =
+              (week['projected_balance'] as num?)?.toDouble() ?? 0.0;
           final isLow = projectedBalance < 0;
 
           return Container(
@@ -264,7 +282,10 @@ class _CashFlowScreenState extends State<CashFlowScreen> {
               color: DesignTokens.surfaceDark,
               borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
               border: Border.all(
-                color: isLow ? DesignTokens.errorColor.withValues(alpha: 0.3) : DesignTokens.borderDark,
+                color:
+                    isLow
+                        ? DesignTokens.errorColor.withValues(alpha: 0.3)
+                        : DesignTokens.borderDark,
               ),
             ),
             child: Row(
@@ -280,7 +301,10 @@ class _CashFlowScreenState extends State<CashFlowScreen> {
                 Text(
                   CurrencyFormatter.formatRupiah(projectedBalance.toInt()),
                   style: GoogleFonts.poppins(
-                    color: isLow ? DesignTokens.errorColor : DesignTokens.successColor,
+                    color:
+                        isLow
+                            ? DesignTokens.errorColor
+                            : DesignTokens.successColor,
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
                   ),
@@ -316,52 +340,65 @@ class _CashFlowScreenState extends State<CashFlowScreen> {
             border: Border.all(color: DesignTokens.borderDark),
           ),
           child: Column(
-            children: _dailyForecast.take(7).map((day) {
-              final date = day['date'] as DateTime? ?? DateTime.now();
-              final projectedBalance = (day['projected_balance'] as num?)?.toDouble() ?? 0.0;
-              final isWeekend = day['is_weekend'] as bool? ?? false;
+            children:
+                _dailyForecast.take(7).map((day) {
+                  final date = day['date'] as DateTime? ?? DateTime.now();
+                  final projectedBalance =
+                      (day['projected_balance'] as num?)?.toDouble() ?? 0.0;
+                  final isWeekend = day['is_weekend'] as bool? ?? false;
 
-              return Container(
-                padding: const EdgeInsets.symmetric(vertical: 8),
-                decoration: BoxDecoration(
-                  border: Border(
-                    bottom: BorderSide(color: DesignTokens.borderDark, width: 0.5),
-                  ),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      children: [
-                        Text(
-                          '${date.day}/${date.month}',
-                          style: GoogleFonts.poppins(
-                            color: isWeekend ? DesignTokens.primaryColor : DesignTokens.textPrimaryDark,
-                            fontSize: 12,
-                          ),
+                  return Container(
+                    padding: const EdgeInsets.symmetric(vertical: 8),
+                    decoration: BoxDecoration(
+                      border: Border(
+                        bottom: BorderSide(
+                          color: DesignTokens.borderDark,
+                          width: 0.5,
                         ),
-                        if (isWeekend) ...[
-                          const SizedBox(width: 4),
-                          Icon(
-                            Iconsax.calendar,
-                            size: 12,
-                            color: DesignTokens.primaryColor,
-                          ),
-                        ],
-                      ],
-                    ),
-                    Text(
-                      CurrencyFormatter.formatRupiah(projectedBalance.toInt()),
-                      style: GoogleFonts.poppins(
-                        color: projectedBalance >= 0 ? DesignTokens.successColor : DesignTokens.errorColor,
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
                       ),
                     ),
-                  ],
-                ),
-              );
-            }).toList(),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+                          children: [
+                            Text(
+                              '${date.day}/${date.month}',
+                              style: GoogleFonts.poppins(
+                                color:
+                                    isWeekend
+                                        ? DesignTokens.primaryColor
+                                        : DesignTokens.textPrimaryDark,
+                                fontSize: 12,
+                              ),
+                            ),
+                            if (isWeekend) ...[
+                              const SizedBox(width: 4),
+                              Icon(
+                                Iconsax.calendar,
+                                size: 12,
+                                color: DesignTokens.primaryColor,
+                              ),
+                            ],
+                          ],
+                        ),
+                        Text(
+                          CurrencyFormatter.formatRupiah(
+                            projectedBalance.toInt(),
+                          ),
+                          style: GoogleFonts.poppins(
+                            color:
+                                projectedBalance >= 0
+                                    ? DesignTokens.successColor
+                                    : DesignTokens.errorColor,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                }).toList(),
           ),
         ),
       ],
@@ -378,11 +415,17 @@ class _CashFlowScreenState extends State<CashFlowScreen> {
       decoration: BoxDecoration(
         color: DesignTokens.errorColor.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
-        border: Border.all(color: DesignTokens.errorColor.withValues(alpha: 0.3)),
+        border: Border.all(
+          color: DesignTokens.errorColor.withValues(alpha: 0.3),
+        ),
       ),
       child: Row(
         children: [
-          const Icon(Iconsax.warning_2, color: DesignTokens.errorColor, size: 20),
+          const Icon(
+            Iconsax.warning_2,
+            color: DesignTokens.errorColor,
+            size: 20,
+          ),
           const SizedBox(width: 8),
           Expanded(
             child: Text(
@@ -403,11 +446,7 @@ class _CashFlowScreenState extends State<CashFlowScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            Iconsax.warning_2,
-            size: 64,
-            color: DesignTokens.errorColor,
-          ),
+          Icon(Iconsax.warning_2, size: 64, color: DesignTokens.errorColor),
           const SizedBox(height: 16),
           Text(
             l10n?.error ?? 'Terjadi kesalahan',

@@ -7,9 +7,12 @@ class FinancialCalendarService {
   final ApiService _apiService;
   final SubscriptionTrackerService _subscriptionService;
 
-  FinancialCalendarService({ApiService? apiService, SubscriptionTrackerService? subscriptionService})
-      : _apiService = apiService ?? getIt<ApiService>(),
-        _subscriptionService = subscriptionService ?? getIt<SubscriptionTrackerService>();
+  FinancialCalendarService({
+    ApiService? apiService,
+    SubscriptionTrackerService? subscriptionService,
+  }) : _apiService = apiService ?? getIt<ApiService>(),
+       _subscriptionService =
+           subscriptionService ?? getIt<SubscriptionTrackerService>();
 
   Future<List<Map<String, dynamic>>> getMonthEvents(int year, int month) async {
     final events = <Map<String, dynamic>>[];
@@ -23,7 +26,8 @@ class FinancialCalendarService {
         endDate: endDate,
       );
 
-      final transactions = transactionsData['transactions'] as List<dynamic>? ?? [];
+      final transactions =
+          transactionsData['transactions'] as List<dynamic>? ?? [];
       for (var t in transactions) {
         final transaction = t as Map<String, dynamic>;
         final dateStr = transaction['transaction_date']?.toString() ?? '';
@@ -60,7 +64,9 @@ class FinancialCalendarService {
         }
       }
 
-      events.sort((a, b) => (a['date'] as DateTime).compareTo(b['date'] as DateTime));
+      events.sort(
+        (a, b) => (a['date'] as DateTime).compareTo(b['date'] as DateTime),
+      );
     } catch (e) {
       LoggerService.error('Error getting calendar events', error: e);
     }
@@ -70,12 +76,13 @@ class FinancialCalendarService {
 
   Future<Map<String, dynamic>> getDaySummary(DateTime date) async {
     final events = await getMonthEvents(date.year, date.month);
-    final dayEvents = events.where((e) {
-      final eventDate = e['date'] as DateTime;
-      return eventDate.year == date.year &&
-          eventDate.month == date.month &&
-          eventDate.day == date.day;
-    }).toList();
+    final dayEvents =
+        events.where((e) {
+          final eventDate = e['date'] as DateTime;
+          return eventDate.year == date.year &&
+              eventDate.month == date.month &&
+              eventDate.day == date.day;
+        }).toList();
 
     double totalIncome = 0;
     double totalExpense = 0;
@@ -98,7 +105,9 @@ class FinancialCalendarService {
     };
   }
 
-  Future<List<Map<String, dynamic>>> getUpcomingEvents({int daysAhead = 7}) async {
+  Future<List<Map<String, dynamic>>> getUpcomingEvents({
+    int daysAhead = 7,
+  }) async {
     final now = DateTime.now();
     final events = await getMonthEvents(now.year, now.month);
 
@@ -107,13 +116,16 @@ class FinancialCalendarService {
       events.addAll(nextMonthEvents);
     }
 
-    final upcoming = events.where((e) {
-      final eventDate = e['date'] as DateTime;
-      final diff = eventDate.difference(now).inDays;
-      return diff >= 0 && diff <= daysAhead;
-    }).toList();
+    final upcoming =
+        events.where((e) {
+          final eventDate = e['date'] as DateTime;
+          final diff = eventDate.difference(now).inDays;
+          return diff >= 0 && diff <= daysAhead;
+        }).toList();
 
-    upcoming.sort((a, b) => (a['date'] as DateTime).compareTo(b['date'] as DateTime));
+    upcoming.sort(
+      (a, b) => (a['date'] as DateTime).compareTo(b['date'] as DateTime),
+    );
     return upcoming;
   }
 

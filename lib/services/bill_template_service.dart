@@ -130,22 +130,22 @@ class BillTemplateService {
   Future<void> saveCustomTemplate(Map<String, dynamic> template) async {
     try {
       final customTemplates = await getCustomTemplates();
-      
+
       // Check if template with same ID exists
       final existingIndex = customTemplates.indexWhere(
         (t) => t['id'] == template['id'],
       );
-      
+
       if (existingIndex >= 0) {
         customTemplates[existingIndex] = template;
       } else {
         customTemplates.add(template);
       }
-      
+
       final prefs = await SharedPreferences.getInstance();
       final templatesJson = jsonEncode(customTemplates);
       await prefs.setString('custom_bill_templates', templatesJson);
-      
+
       LoggerService.success('Custom template saved');
     } catch (e) {
       LoggerService.error('Error saving custom template', error: e);
@@ -158,11 +158,11 @@ class BillTemplateService {
     try {
       final customTemplates = await getCustomTemplates();
       customTemplates.removeWhere((t) => t['id'] == templateId);
-      
+
       final prefs = await SharedPreferences.getInstance();
       final templatesJson = jsonEncode(customTemplates);
       await prefs.setString('custom_bill_templates', templatesJson);
-      
+
       LoggerService.success('Custom template deleted');
     } catch (e) {
       LoggerService.error('Error deleting custom template', error: e);
@@ -200,9 +200,7 @@ class BillTemplateService {
       'monthly_amount_232143': amount ?? 0.0,
       if (template['subscription_cycle'] != null)
         'subscription_cycle_232143': template['subscription_cycle'],
-      if (template['type'] == 'subscription')
-        'is_subscription_232143': true,
+      if (template['type'] == 'subscription') 'is_subscription_232143': true,
     };
   }
 }
-

@@ -380,7 +380,8 @@ class NotificationService {
     final daysLeft = endDate.difference(DateTime.now()).inDays;
 
     if (daysLeft > 0 && daysLeft <= 3) {
-      final percentage = target > 0 ? (progress / target * 100).toStringAsFixed(0) : '0';
+      final percentage =
+          target > 0 ? (progress / target * 100).toStringAsFixed(0) : '0';
 
       await scheduleNotification(
         id: 'challenge_$name'.hashCode,
@@ -401,7 +402,8 @@ class NotificationService {
     await showNotification(
       id: 'challenge_complete_$name'.hashCode,
       title: '🏆 Challenge Complete!',
-      body: 'Congratulations! You completed "$name" with Rp ${progress.toStringAsFixed(0)} / Rp ${target.toStringAsFixed(0)}',
+      body:
+          'Congratulations! You completed "$name" with Rp ${progress.toStringAsFixed(0)} / Rp ${target.toStringAsFixed(0)}',
       priority: NotificationPriority.max,
       payload: 'challenge_complete:$name',
     );
@@ -419,7 +421,8 @@ class NotificationService {
       await scheduleNotification(
         id: 'debt_$name'.hashCode,
         title: '💳 Debt Payment Reminder',
-        body: '$name payment due in $daysLeft days: Rp ${amount.toStringAsFixed(0)}',
+        body:
+            '$name payment due in $daysLeft days: Rp ${amount.toStringAsFixed(0)}',
         scheduledDate: dueDate.subtract(const Duration(days: 1)),
         payload: 'debt:$name',
       );
@@ -435,7 +438,8 @@ class NotificationService {
     await showNotification(
       id: 'split_$participantName'.hashCode,
       title: '💸 Split Payment Reminder',
-      body: '$participantName owes you Rp ${amount.toStringAsFixed(0)} for $description',
+      body:
+          '$participantName owes you Rp ${amount.toStringAsFixed(0)} for $description',
       priority: NotificationPriority.medium,
       payload: 'split:$participantName',
     );

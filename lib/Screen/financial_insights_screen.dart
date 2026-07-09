@@ -14,7 +14,8 @@ class FinancialInsightsScreen extends StatefulWidget {
   const FinancialInsightsScreen({super.key});
 
   @override
-  State<FinancialInsightsScreen> createState() => _FinancialInsightsScreenState();
+  State<FinancialInsightsScreen> createState() =>
+      _FinancialInsightsScreenState();
 }
 
 class _FinancialInsightsScreenState extends State<FinancialInsightsScreen> {
@@ -92,7 +93,8 @@ class _FinancialInsightsScreenState extends State<FinancialInsightsScreen> {
     }
 
     if (thisMonthIncome > 0) {
-      final savingsRate = ((thisMonthIncome - thisMonthExpense) / thisMonthIncome) * 100;
+      final savingsRate =
+          ((thisMonthIncome - thisMonthExpense) / thisMonthIncome) * 100;
       if (savingsRate >= 20) {
         score += 20;
       } else if (savingsRate >= 10) {
@@ -117,7 +119,8 @@ class _FinancialInsightsScreenState extends State<FinancialInsightsScreen> {
     }
 
     if (categorySpending.isNotEmpty) {
-      final topCategoryShare = categorySpending.values.reduce((a, b) => a > b ? a : b) /
+      final topCategoryShare =
+          categorySpending.values.reduce((a, b) => a > b ? a : b) /
           categorySpending.values.reduce((a, b) => a + b);
       if (topCategoryShare < 0.5) {
         score += 10;
@@ -134,7 +137,8 @@ class _FinancialInsightsScreenState extends State<FinancialInsightsScreen> {
   List<dynamic> transactionsThisMonth() {
     final now = DateTime.now();
     return _transactions.where((t) {
-      final dateStr = t['transaction_date']?.toString() ?? t['date']?.toString() ?? '';
+      final dateStr =
+          t['transaction_date']?.toString() ?? t['date']?.toString() ?? '';
       if (dateStr.isEmpty) return false;
       try {
         final date = DateTime.parse(dateStr);
@@ -150,7 +154,8 @@ class _FinancialInsightsScreenState extends State<FinancialInsightsScreen> {
     final lastMonth = now.month == 1 ? 12 : now.month - 1;
     final year = now.month == 1 ? now.year - 1 : now.year;
     return _transactions.where((t) {
-      final dateStr = t['transaction_date']?.toString() ?? t['date']?.toString() ?? '';
+      final dateStr =
+          t['transaction_date']?.toString() ?? t['date']?.toString() ?? '';
       if (dateStr.isEmpty) return false;
       try {
         final date = DateTime.parse(dateStr);
@@ -196,14 +201,16 @@ class _FinancialInsightsScreenState extends State<FinancialInsightsScreen> {
           'type': 'positive',
           'icon': Iconsax.arrow_down_1,
           'title': 'Pengeluaran menurun!',
-          'description': 'Pengeluaran turun ${change.abs().toStringAsFixed(0)}% dibanding bulan lalu. Pertahankan!',
+          'description':
+              'Pengeluaran turun ${change.abs().toStringAsFixed(0)}% dibanding bulan lalu. Pertahankan!',
         });
       } else if (change > 15) {
         insights.add({
           'type': 'warning',
           'icon': Iconsax.arrow_up_1,
           'title': 'Pengeluaran meningkat',
-          'description': 'Pengeluaran naik ${change.toStringAsFixed(0)}% dibanding bulan lalu. Periksa kategori yang meningkat.',
+          'description':
+              'Pengeluaran naik ${change.toStringAsFixed(0)}% dibanding bulan lalu. Periksa kategori yang meningkat.',
         });
       }
     }
@@ -215,14 +222,16 @@ class _FinancialInsightsScreenState extends State<FinancialInsightsScreen> {
           'type': 'positive',
           'icon': Iconsax.safe_home,
           'title': 'Tabungan sehat',
-          'description': 'Anda menabung ${savingsRate.toStringAsFixed(0)}% dari pendapatan. Luar biasa!',
+          'description':
+              'Anda menabung ${savingsRate.toStringAsFixed(0)}% dari pendapatan. Luar biasa!',
         });
       } else if (savingsRate < 0) {
         insights.add({
           'type': 'danger',
           'icon': Iconsax.warning_2,
           'title': 'Pengeluaran melebihi pendapatan',
-          'description': 'Defisit ${savingsRate.abs().toStringAsFixed(0)}%. Pertimbangkan untuk mengurangi pengeluaran.',
+          'description':
+              'Defisit ${savingsRate.abs().toStringAsFixed(0)}%. Pertimbangkan untuk mengurangi pengeluaran.',
         });
       }
     }
@@ -239,8 +248,9 @@ class _FinancialInsightsScreenState extends State<FinancialInsightsScreen> {
 
     if (categorySpending.isNotEmpty) {
       final totalExpense = categorySpending.values.reduce((a, b) => a + b);
-      final sorted = categorySpending.entries.toList()
-        ..sort((a, b) => b.value.compareTo(a.value));
+      final sorted =
+          categorySpending.entries.toList()
+            ..sort((a, b) => b.value.compareTo(a.value));
 
       final topCategory = sorted.first;
       final topShare = (topCategory.value / totalExpense) * 100;
@@ -250,7 +260,8 @@ class _FinancialInsightsScreenState extends State<FinancialInsightsScreen> {
           'type': 'info',
           'icon': Iconsax.chart,
           'title': '${topCategory.key} mendominasi',
-          'description': '${topCategory.key} mengambil ${topShare.toStringAsFixed(0)}% dari total pengeluaran.',
+          'description':
+              '${topCategory.key} mengambil ${topShare.toStringAsFixed(0)}% dari total pengeluaran.',
         });
       }
     }
@@ -261,7 +272,8 @@ class _FinancialInsightsScreenState extends State<FinancialInsightsScreen> {
         'type': 'info',
         'icon': Iconsax.calendar,
         'title': 'Pengeluaran akhir pekan tinggi',
-        'description': '${(weekendSpending * 100).toStringAsFixed(0)}% pengeluaran terjadi di akhir pekan.',
+        'description':
+            '${(weekendSpending * 100).toStringAsFixed(0)}% pengeluaran terjadi di akhir pekan.',
       });
     }
 
@@ -274,7 +286,8 @@ class _FinancialInsightsScreenState extends State<FinancialInsightsScreen> {
 
     int weekendCount = 0;
     for (final t in thisMonth) {
-      final dateStr = t['transaction_date']?.toString() ?? t['date']?.toString() ?? '';
+      final dateStr =
+          t['transaction_date']?.toString() ?? t['date']?.toString() ?? '';
       if (dateStr.isEmpty) continue;
       try {
         final date = DateTime.parse(dateStr);
@@ -323,31 +336,36 @@ class _FinancialInsightsScreenState extends State<FinancialInsightsScreen> {
           ),
         ],
       ),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator(color: DesignTokens.primaryColor))
-          : _errorMessage != null
+      body:
+          _isLoading
+              ? const Center(
+                child: CircularProgressIndicator(
+                  color: DesignTokens.primaryColor,
+                ),
+              )
+              : _errorMessage != null
               ? _buildErrorState()
               : RefreshIndicator(
-                  onRefresh: _loadData,
-                  color: DesignTokens.primaryColor,
-                  child: ListView(
-                    padding: const EdgeInsets.all(16),
-                    children: [
-                      const OfflineIndicator(),
-                      const SizedBox(height: 16),
-                      _buildHealthScoreCard(),
-                      const SizedBox(height: 16),
-                      _buildInsightsCard(),
-                      const SizedBox(height: 16),
-                      _buildSpendingTrendCard(),
-                      const SizedBox(height: 16),
-                      _buildGoalForecastsCard(),
-                      const SizedBox(height: 16),
-                      _buildCategoryDistributionCard(),
-                      const SizedBox(height: 16),
-                    ],
-                  ),
+                onRefresh: _loadData,
+                color: DesignTokens.primaryColor,
+                child: ListView(
+                  padding: const EdgeInsets.all(16),
+                  children: [
+                    const OfflineIndicator(),
+                    const SizedBox(height: 16),
+                    _buildHealthScoreCard(),
+                    const SizedBox(height: 16),
+                    _buildInsightsCard(),
+                    const SizedBox(height: 16),
+                    _buildSpendingTrendCard(),
+                    const SizedBox(height: 16),
+                    _buildGoalForecastsCard(),
+                    const SizedBox(height: 16),
+                    _buildCategoryDistributionCard(),
+                    const SizedBox(height: 16),
+                  ],
                 ),
+              ),
     );
   }
 
@@ -376,13 +394,19 @@ class _FinancialInsightsScreenState extends State<FinancialInsightsScreen> {
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: _getHealthScoreColor(_healthScore).withValues(alpha: 0.3)),
+        border: Border.all(
+          color: _getHealthScoreColor(_healthScore).withValues(alpha: 0.3),
+        ),
       ),
       child: Column(
         children: [
           Row(
             children: [
-              Icon(Iconsax.heart, color: _getHealthScoreColor(_healthScore), size: 24),
+              Icon(
+                Iconsax.heart,
+                color: _getHealthScoreColor(_healthScore),
+                size: 24,
+              ),
               const SizedBox(width: 8),
               Text(
                 'Skor Kesehatan Keuangan',
@@ -405,7 +429,9 @@ class _FinancialInsightsScreenState extends State<FinancialInsightsScreen> {
                   value: _healthScore / 100,
                   strokeWidth: 10,
                   backgroundColor: Colors.white.withValues(alpha: 0.1),
-                  valueColor: AlwaysStoppedAnimation<Color>(_getHealthScoreColor(_healthScore)),
+                  valueColor: AlwaysStoppedAnimation<Color>(
+                    _getHealthScoreColor(_healthScore),
+                  ),
                 ),
               ),
               Column(
@@ -442,14 +468,20 @@ class _FinancialInsightsScreenState extends State<FinancialInsightsScreen> {
       decoration: BoxDecoration(
         color: const Color(0xFF1A1A1A),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFF8B5FBF).withValues(alpha: 0.3)),
+        border: Border.all(
+          color: const Color(0xFF8B5FBF).withValues(alpha: 0.3),
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Icon(Iconsax.lamp_charge, color: DesignTokens.primaryColor, size: 20),
+              Icon(
+                Iconsax.lamp_charge,
+                color: DesignTokens.primaryColor,
+                size: 20,
+              ),
               const SizedBox(width: 8),
               Text(
                 'Wawasan AI',
@@ -465,10 +497,7 @@ class _FinancialInsightsScreenState extends State<FinancialInsightsScreen> {
           if (_insights.isEmpty)
             Text(
               'Belum ada wawasan yang tersedia. Tambahkan lebih banyak transaksi untuk analisis.',
-              style: GoogleFonts.poppins(
-                color: Colors.white54,
-                fontSize: 13,
-              ),
+              style: GoogleFonts.poppins(color: Colors.white54, fontSize: 13),
             )
           else
             ..._insights.map((insight) => _buildInsightItem(insight)),
@@ -614,10 +643,7 @@ class _FinancialInsightsScreenState extends State<FinancialInsightsScreen> {
         ),
         child: Text(
           'Belum ada target keuangan. Tambahkan target untuk melihat proyeksi.',
-          style: GoogleFonts.poppins(
-            color: Colors.white54,
-            fontSize: 13,
-          ),
+          style: GoogleFonts.poppins(color: Colors.white54, fontSize: 13),
         ),
       );
     }
@@ -655,7 +681,8 @@ class _FinancialInsightsScreenState extends State<FinancialInsightsScreen> {
             final forecast = _goalForecaster.forecastGoalCompletion(
               targetAmount: target,
               currentAmount: current,
-              monthlyContribution: (goal['monthly_contribution'] as num?)?.toDouble() ?? 0,
+              monthlyContribution:
+                  (goal['monthly_contribution'] as num?)?.toDouble() ?? 0,
             );
 
             final progress = target > 0 ? (current / target) * 100 : 0;
@@ -682,7 +709,9 @@ class _FinancialInsightsScreenState extends State<FinancialInsightsScreen> {
                   LinearProgressIndicator(
                     value: progress / 100,
                     backgroundColor: Colors.white.withValues(alpha: 0.1),
-                    valueColor: AlwaysStoppedAnimation<Color>(DesignTokens.primaryColor),
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                      DesignTokens.primaryColor,
+                    ),
                     minHeight: 6,
                   ),
                   const SizedBox(height: 8),
@@ -697,7 +726,8 @@ class _FinancialInsightsScreenState extends State<FinancialInsightsScreen> {
                           fontWeight: FontWeight.w500,
                         ),
                       ),
-                      if (forecast['monthsToCompletion'] != null && forecast['monthsToCompletion'] > 0)
+                      if (forecast['monthsToCompletion'] != null &&
+                          forecast['monthsToCompletion'] > 0)
                         Text(
                           '~${forecast['monthsToCompletion']} bulan lagi',
                           style: GoogleFonts.poppins(
@@ -749,16 +779,14 @@ class _FinancialInsightsScreenState extends State<FinancialInsightsScreen> {
         ),
         child: Text(
           'Belum ada pengeluaran bulan ini.',
-          style: GoogleFonts.poppins(
-            color: Colors.white54,
-            fontSize: 13,
-          ),
+          style: GoogleFonts.poppins(color: Colors.white54, fontSize: 13),
         ),
       );
     }
 
-    final sorted = categorySpending.entries.toList()
-      ..sort((a, b) => b.value.compareTo(a.value));
+    final sorted =
+        categorySpending.entries.toList()
+          ..sort((a, b) => b.value.compareTo(a.value));
     final total = sorted.map((e) => e.value).reduce((a, b) => a + b);
 
     final colors = [
@@ -833,7 +861,9 @@ class _FinancialInsightsScreenState extends State<FinancialInsightsScreen> {
                   LinearProgressIndicator(
                     value: percentage / 100,
                     backgroundColor: Colors.white.withValues(alpha: 0.1),
-                    valueColor: AlwaysStoppedAnimation<Color>(colors[idx % colors.length]),
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                      colors[idx % colors.length],
+                    ),
                     minHeight: 6,
                   ),
                 ],

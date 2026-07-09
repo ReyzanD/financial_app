@@ -12,11 +12,13 @@ class FinancialCalendarScreen extends StatefulWidget {
   const FinancialCalendarScreen({super.key});
 
   @override
-  State<FinancialCalendarScreen> createState() => _FinancialCalendarScreenState();
+  State<FinancialCalendarScreen> createState() =>
+      _FinancialCalendarScreenState();
 }
 
 class _FinancialCalendarScreenState extends State<FinancialCalendarScreen> {
-  final FinancialCalendarService _calendarService = getIt<FinancialCalendarService>();
+  final FinancialCalendarService _calendarService =
+      getIt<FinancialCalendarService>();
 
   bool _isLoading = true;
   String? _errorMessage;
@@ -87,9 +89,7 @@ class _FinancialCalendarScreenState extends State<FinancialCalendarScreen> {
           children: [
             _buildHeader(context, l10n),
             const OfflineIndicator(),
-            Expanded(
-              child: _buildBody(context, l10n),
-            ),
+            Expanded(child: _buildBody(context, l10n)),
           ],
         ),
       ),
@@ -98,8 +98,18 @@ class _FinancialCalendarScreenState extends State<FinancialCalendarScreen> {
 
   Widget _buildHeader(BuildContext context, AppLocalizations? l10n) {
     final monthNames = [
-      'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
-      'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+      'Januari',
+      'Februari',
+      'Maret',
+      'April',
+      'Mei',
+      'Juni',
+      'Juli',
+      'Agustus',
+      'September',
+      'Oktober',
+      'November',
+      'Desember',
     ];
 
     return Container(
@@ -109,7 +119,10 @@ class _FinancialCalendarScreenState extends State<FinancialCalendarScreen> {
           Row(
             children: [
               IconButton(
-                icon: const Icon(Iconsax.arrow_left, color: DesignTokens.textPrimaryDark),
+                icon: const Icon(
+                  Iconsax.arrow_left,
+                  color: DesignTokens.textPrimaryDark,
+                ),
                 onPressed: () => Navigator.pop(context),
               ),
               const SizedBox(width: 8),
@@ -123,7 +136,10 @@ class _FinancialCalendarScreenState extends State<FinancialCalendarScreen> {
               ),
               const Spacer(),
               IconButton(
-                icon: const Icon(Iconsax.arrow_left, color: DesignTokens.textPrimaryDark),
+                icon: const Icon(
+                  Iconsax.arrow_left,
+                  color: DesignTokens.textPrimaryDark,
+                ),
                 onPressed: () {
                   setState(() {
                     if (_selectedMonth == 1) {
@@ -146,7 +162,10 @@ class _FinancialCalendarScreenState extends State<FinancialCalendarScreen> {
                 ),
               ),
               IconButton(
-                icon: const Icon(Iconsax.arrow_right, color: DesignTokens.textPrimaryDark),
+                icon: const Icon(
+                  Iconsax.arrow_right,
+                  color: DesignTokens.textPrimaryDark,
+                ),
                 onPressed: () {
                   setState(() {
                     if (_selectedMonth == 12) {
@@ -203,20 +222,23 @@ class _FinancialCalendarScreenState extends State<FinancialCalendarScreen> {
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min']
-                .map((day) => Expanded(
-                      child: Center(
-                        child: Text(
-                          day,
-                          style: GoogleFonts.poppins(
-                            color: DesignTokens.textSecondaryDark,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
+            children:
+                ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min']
+                    .map(
+                      (day) => Expanded(
+                        child: Center(
+                          child: Text(
+                            day,
+                            style: GoogleFonts.poppins(
+                              color: DesignTokens.textSecondaryDark,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
                         ),
                       ),
-                    ))
-                .toList(),
+                    )
+                    .toList(),
           ),
           const SizedBox(height: 8),
           GridView.builder(
@@ -233,11 +255,13 @@ class _FinancialCalendarScreenState extends State<FinancialCalendarScreen> {
               }
 
               final day = index - firstDayOfWeek + 2;
-              final isSelected = _selectedDay.year == _selectedYear &&
+              final isSelected =
+                  _selectedDay.year == _selectedYear &&
                   _selectedDay.month == _selectedMonth &&
                   _selectedDay.day == day;
               final hasEvents = _heatMap[day] != null && _heatMap[day]! > 0;
-              final isToday = DateTime.now().year == _selectedYear &&
+              final isToday =
+                  DateTime.now().year == _selectedYear &&
                   DateTime.now().month == _selectedMonth &&
                   DateTime.now().day == day;
 
@@ -251,27 +275,37 @@ class _FinancialCalendarScreenState extends State<FinancialCalendarScreen> {
                 child: Container(
                   margin: const EdgeInsets.all(2),
                   decoration: BoxDecoration(
-                    color: isSelected
-                        ? DesignTokens.primaryColor
-                        : isToday
+                    color:
+                        isSelected
+                            ? DesignTokens.primaryColor
+                            : isToday
                             ? DesignTokens.primaryColor.withValues(alpha: 0.3)
                             : Colors.transparent,
                     borderRadius: BorderRadius.circular(8),
-                    border: hasEvents && !isSelected
-                        ? Border.all(color: DesignTokens.errorColor.withValues(alpha: 0.5))
-                        : null,
+                    border:
+                        hasEvents && !isSelected
+                            ? Border.all(
+                              color: DesignTokens.errorColor.withValues(
+                                alpha: 0.5,
+                              ),
+                            )
+                            : null,
                   ),
                   child: Center(
                     child: Text(
                       '$day',
                       style: GoogleFonts.poppins(
-                        color: isSelected
-                            ? Colors.white
-                            : hasEvents
+                        color:
+                            isSelected
+                                ? Colors.white
+                                : hasEvents
                                 ? DesignTokens.errorColor
                                 : DesignTokens.textPrimaryDark,
                         fontSize: 12,
-                        fontWeight: isSelected || isToday ? FontWeight.w600 : FontWeight.normal,
+                        fontWeight:
+                            isSelected || isToday
+                                ? FontWeight.w600
+                                : FontWeight.normal,
                       ),
                     ),
                   ),
@@ -288,7 +322,8 @@ class _FinancialCalendarScreenState extends State<FinancialCalendarScreen> {
     final events = _getEventsForSelectedDay();
     final daySummary = _selectedDaySummary;
     final totalIncome = (daySummary['total_income'] as num?)?.toDouble() ?? 0.0;
-    final totalExpense = (daySummary['total_expense'] as num?)?.toDouble() ?? 0.0;
+    final totalExpense =
+        (daySummary['total_expense'] as num?)?.toDouble() ?? 0.0;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -371,69 +406,83 @@ class _FinancialCalendarScreenState extends State<FinancialCalendarScreen> {
             ),
           )
         else
-          ...events.map((event) {
-            final type = event['transaction_type'] ?? 'expense';
-            final isIncome = type == 'income';
-            return Container(
-              margin: const EdgeInsets.only(bottom: 8),
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: DesignTokens.surfaceDark,
-                borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
-                border: Border.all(color: DesignTokens.borderDark),
-              ),
-              child: Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: isIncome
-                          ? DesignTokens.successColor.withValues(alpha: 0.15)
-                          : DesignTokens.errorColor.withValues(alpha: 0.15),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Icon(
-                      isIncome ? Iconsax.arrow_up_1 : Iconsax.arrow_down,
-                      color: isIncome ? DesignTokens.successColor : DesignTokens.errorColor,
-                      size: 16,
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          event['title'] ?? '',
-                          style: GoogleFonts.poppins(
-                            color: DesignTokens.textPrimaryDark,
-                            fontSize: 13,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                        Text(
-                          event['category'] ?? '',
-                          style: GoogleFonts.poppins(
-                            color: DesignTokens.textSecondaryDark,
-                            fontSize: 11,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Text(
-                    CurrencyFormatter.formatRupiah((event['amount'] as num?)?.toInt() ?? 0),
-                    style: GoogleFonts.poppins(
-                      color: isIncome ? DesignTokens.successColor : DesignTokens.errorColor,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ],
-              ),
-            );
-          }),
+          ListView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: events.length,
+            itemBuilder: (context, index) => _buildEventItem(events[index]),
+          ),
       ],
+    );
+  }
+
+  Widget _buildEventItem(Map<String, dynamic> event) {
+    final type = event['transaction_type'] ?? 'expense';
+    final isIncome = type == 'income';
+    return Container(
+      margin: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: DesignTokens.surfaceDark,
+        borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+        border: Border.all(color: DesignTokens.borderDark),
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color:
+                  isIncome
+                      ? DesignTokens.successColor.withValues(alpha: 0.15)
+                      : DesignTokens.errorColor.withValues(alpha: 0.15),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Icon(
+              isIncome ? Iconsax.arrow_up_1 : Iconsax.arrow_down,
+              color:
+                  isIncome
+                      ? DesignTokens.successColor
+                      : DesignTokens.errorColor,
+              size: 16,
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  event['title'] ?? '',
+                  style: GoogleFonts.poppins(
+                    fontWeight: FontWeight.w500,
+                    fontSize: 14,
+                    color: DesignTokens.textPrimaryDark,
+                  ),
+                ),
+                Text(
+                  event['description'] ?? '',
+                  style: GoogleFonts.poppins(
+                    color: DesignTokens.textSecondaryDark,
+                    fontSize: 12,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Text(
+            '${isIncome ? '+' : '-'}${CurrencyFormatter.formatRupiah((event['amount'] ?? 0).toInt())}',
+            style: GoogleFonts.poppins(
+              color:
+                  isIncome
+                      ? DesignTokens.successColor
+                      : DesignTokens.errorColor,
+              fontWeight: FontWeight.w600,
+              fontSize: 14,
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -442,11 +491,7 @@ class _FinancialCalendarScreenState extends State<FinancialCalendarScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            Iconsax.warning_2,
-            size: 64,
-            color: DesignTokens.errorColor,
-          ),
+          Icon(Iconsax.warning_2, size: 64, color: DesignTokens.errorColor),
           const SizedBox(height: 16),
           Text(
             l10n?.error ?? 'Terjadi kesalahan',

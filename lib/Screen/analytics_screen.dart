@@ -11,6 +11,7 @@ import '../services/error_handler_service.dart';
 import '../services/logger_service.dart';
 import '../utils/responsive_helper.dart';
 import '../l10n/app_localizations.dart';
+import '../widgets/common/offline_indicator.dart';
 
 class AnalyticsScreen extends StatefulWidget {
   const AnalyticsScreen({super.key});
@@ -30,8 +31,6 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
   @override
   void initState() {
     super.initState();
-    _selectedPeriod =
-        'Minggu Ini'; // Default value, will be updated in didChangeDependencies
     // Delay _loadData() until after the widget tree is built
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
@@ -43,12 +42,11 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    // Update period with localized value now that context is available
+    // Initialize period with localized value and reload
     final localizations = AppLocalizations.of(context);
-    if (localizations != null && _selectedPeriod == 'Minggu Ini') {
+    if (localizations != null && _selectedPeriod.isEmpty) {
       _selectedPeriod = localizations.this_week;
-      // Reload data with updated period if it was already loaded
-      if (!_isLoading && _transactions.isEmpty) {
+      if (!_isLoading) {
         _loadData();
       }
     }
@@ -192,6 +190,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
     final filtered = _getFilteredTransactions();
 
     if (filtered.isEmpty) {
+      final l10n = AppLocalizations.of(context)!;
       return ListView(
         physics: const AlwaysScrollableScrollPhysics(),
         padding: ResponsiveHelper.padding(context),
@@ -214,7 +213,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                 ),
                 SizedBox(height: ResponsiveHelper.verticalSpacing(context, 12)),
                 Text(
-                  'Belum ada data untuk periode ini',
+                  l10n.no_transactions_for_period,
                   style: GoogleFonts.poppins(
                     color: Colors.grey[400],
                     fontSize: ResponsiveHelper.fontSize(context, 16),
@@ -223,7 +222,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                 ),
                 SizedBox(height: ResponsiveHelper.verticalSpacing(context, 4)),
                 Text(
-                  'Tambahkan transaksi untuk melihat analitik keuangan Anda.',
+                  l10n.no_transactions_subtitle,
                   textAlign: TextAlign.center,
                   style: GoogleFonts.poppins(
                     color: Colors.grey[600],
@@ -257,11 +256,12 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0A0A0A),
+      backgroundColor: Colors.black,
       body: SafeArea(
         child: Column(
           children: [
             const AnalyticsHeader(),
+            const OfflineIndicator(),
             PeriodSelector(
               selectedPeriod: _selectedPeriod,
               onPeriodChanged: (period) {

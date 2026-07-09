@@ -17,7 +17,7 @@ class LocalizationService extends ChangeNotifier {
     try {
       final prefs = await SharedPreferences.getInstance();
       final localeString = prefs.getString(_localeKey);
-      
+
       if (localeString != null) {
         final parts = localeString.split('_');
         _currentLocale = Locale(parts[0], parts.length > 1 ? parts[1] : null);
@@ -32,10 +32,10 @@ class LocalizationService extends ChangeNotifier {
     try {
       _currentLocale = locale;
       notifyListeners();
-      
+
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString(_localeKey, locale.toString());
-      
+
       LoggerService.debug('Locale changed to: ${locale.toString()}');
     } catch (e) {
       LoggerService.error('Error setting locale', error: e);
@@ -58,4 +58,3 @@ class LocalizationService extends ChangeNotifier {
     }
   }
 }
-

@@ -131,10 +131,18 @@ class _AddBudgetModalState extends State<AddBudgetModal> {
           periodEnd = _startDate.add(const Duration(days: 7));
           break;
         case 'monthly':
-          periodEnd = DateTime(_startDate.year, _startDate.month + 1, _startDate.day);
+          periodEnd = DateTime(
+            _startDate.year,
+            _startDate.month + 1,
+            _startDate.day,
+          );
           break;
         case 'yearly':
-          periodEnd = DateTime(_startDate.year + 1, _startDate.month, _startDate.day);
+          periodEnd = DateTime(
+            _startDate.year + 1,
+            _startDate.month,
+            _startDate.day,
+          );
           break;
         default:
           periodEnd = _startDate.add(const Duration(days: 30));
@@ -154,7 +162,8 @@ class _AddBudgetModalState extends State<AddBudgetModal> {
       }
 
       if (_isEdit) {
-        final id = widget.initialBudget?['budget_id_232143']?.toString() ??
+        final id =
+            widget.initialBudget?['budget_id_232143']?.toString() ??
             widget.initialBudget?['id']?.toString();
         if (id == null) {
           throw Exception('ID budget tidak valid');

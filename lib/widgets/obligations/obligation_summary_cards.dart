@@ -16,7 +16,7 @@ class ObligationSummaryCards extends StatelessWidget {
         final summary = snapshot.data!;
 
         return Container(
-          padding: EdgeInsets.all(16),
+          padding: const EdgeInsets.all(16),
           child: Row(
             children: [
               // Monthly Obligations
@@ -59,7 +59,7 @@ class ObligationSummaryCards extends StatelessWidget {
     return Card(
       color: const Color(0xFF1A1A1A),
       child: Padding(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

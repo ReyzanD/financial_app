@@ -23,7 +23,9 @@ void main() {
       expect(find.byIcon(Iconsax.home), findsOneWidget);
     });
 
-    testWidgets('renders with action button when actionText is provided', (tester) async {
+    testWidgets('renders with action button when actionText is provided', (
+      tester,
+    ) async {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
@@ -41,7 +43,9 @@ void main() {
       expect(find.text('Add Data'), findsOneWidget);
     });
 
-    testWidgets('does not render action button when actionText is null', (tester) async {
+    testWidgets('does not render action button when actionText is null', (
+      tester,
+    ) async {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(

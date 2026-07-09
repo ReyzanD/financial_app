@@ -113,6 +113,7 @@ class _AccountsScreenState extends State<AccountsScreen> {
         heroTag: 'accounts_fab',
         backgroundColor: DesignTokens.primaryColor,
         onPressed: _showAddAccountModal,
+        tooltip: 'Tambah Akun',
         child: const Icon(Iconsax.add, color: Colors.white),
       ),
     );
@@ -127,7 +128,11 @@ class _AccountsScreenState extends State<AccountsScreen> {
           Row(
             children: [
               IconButton(
-                icon: const Icon(Iconsax.arrow_left, color: DesignTokens.textPrimaryDark),
+                icon: const Icon(
+                  Iconsax.arrow_left,
+                  color: DesignTokens.textPrimaryDark,
+                ),
+                tooltip: 'Kembali',
                 onPressed: () => Navigator.pop(context),
               ),
               const SizedBox(width: 8),
@@ -191,30 +196,33 @@ class _AccountsScreenState extends State<AccountsScreen> {
                 if (_balanceByType.isNotEmpty) ...[
                   const SizedBox(height: 12),
                   Row(
-                    children: _balanceByType.entries.map((entry) {
-                      return Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              _getTypeLabel(entry.key),
-                              style: GoogleFonts.poppins(
-                                color: DesignTokens.textTertiaryDark,
-                                fontSize: 10,
-                              ),
+                    children:
+                        _balanceByType.entries.map((entry) {
+                          return Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  _getTypeLabel(entry.key),
+                                  style: GoogleFonts.poppins(
+                                    color: DesignTokens.textTertiaryDark,
+                                    fontSize: 10,
+                                  ),
+                                ),
+                                Text(
+                                  CurrencyFormatter.formatRupiah(
+                                    entry.value.toInt(),
+                                  ),
+                                  style: GoogleFonts.poppins(
+                                    color: DesignTokens.textSecondaryDark,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ],
                             ),
-                            Text(
-                              CurrencyFormatter.formatRupiah(entry.value.toInt()),
-                              style: GoogleFonts.poppins(
-                                color: DesignTokens.textSecondaryDark,
-                                fontSize: 12,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ],
-                        ),
-                      );
-                    }).toList(),
+                          );
+                        }).toList(),
                   ),
                 ],
               ],
@@ -264,7 +272,11 @@ class _AccountsScreenState extends State<AccountsScreen> {
     );
   }
 
-  Widget _buildAccountCard(BuildContext context, dynamic account, AppLocalizations? l10n) {
+  Widget _buildAccountCard(
+    BuildContext context,
+    dynamic account,
+    AppLocalizations? l10n,
+  ) {
     final name = account.name ?? '';
     final type = account.type ?? 'cash';
     final balance = account.balance ?? 0.0;
@@ -331,21 +343,29 @@ class _AccountsScreenState extends State<AccountsScreen> {
               Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  InkWell(
-                    onTap: () => _editAccount(account),
-                    child: Icon(
-                      Iconsax.edit,
-                      size: 16,
-                      color: DesignTokens.textSecondaryDark,
+                  Semantics(
+                    label: 'Edit akun',
+                    button: true,
+                    child: InkWell(
+                      onTap: () => _editAccount(account),
+                      child: Icon(
+                        Iconsax.edit,
+                        size: 16,
+                        color: DesignTokens.textSecondaryDark,
+                      ),
                     ),
                   ),
                   const SizedBox(width: 8),
-                  InkWell(
-                    onTap: () => _deleteAccount(account),
-                    child: Icon(
-                      Iconsax.trash,
-                      size: 16,
-                      color: DesignTokens.errorColor,
+                  Semantics(
+                    label: 'Hapus akun',
+                    button: true,
+                    child: InkWell(
+                      onTap: () => _deleteAccount(account),
+                      child: Icon(
+                        Iconsax.trash,
+                        size: 16,
+                        color: DesignTokens.errorColor,
+                      ),
                     ),
                   ),
                 ],
@@ -362,11 +382,7 @@ class _AccountsScreenState extends State<AccountsScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            Iconsax.wallet,
-            size: 64,
-            color: DesignTokens.textTertiaryDark,
-          ),
+          Icon(Iconsax.wallet, size: 64, color: DesignTokens.textTertiaryDark),
           const SizedBox(height: 16),
           Text(
             l10n?.no_transactions_title ?? 'Belum Ada Akun',
@@ -394,11 +410,7 @@ class _AccountsScreenState extends State<AccountsScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            Iconsax.warning_2,
-            size: 64,
-            color: DesignTokens.errorColor,
-          ),
+          Icon(Iconsax.warning_2, size: 64, color: DesignTokens.errorColor),
           const SizedBox(height: 16),
           Text(
             l10n?.error ?? 'Terjadi kesalahan',
@@ -505,7 +517,9 @@ class _AccountsScreenState extends State<AccountsScreen> {
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(l10n?.transaction_deleted_successfully ?? 'Akun berhasil dihapus'),
+            content: Text(
+              l10n?.transaction_deleted_successfully ?? 'Akun berhasil dihapus',
+            ),
             backgroundColor: DesignTokens.primaryColor,
           ),
         );
@@ -548,7 +562,12 @@ class _AddAccountModalState extends State<_AddAccountModal> {
   ];
 
   final List<String> _colors = [
-    '#4CAF50', '#2196F3', '#FF9800', '#9C27B0', '#F44336', '#8B5FBF'
+    '#4CAF50',
+    '#2196F3',
+    '#FF9800',
+    '#9C27B0',
+    '#F44336',
+    '#8B5FBF',
   ];
 
   @override
@@ -601,9 +620,7 @@ class _AddAccountModalState extends State<_AddAccountModal> {
               ),
               const SizedBox(height: 20),
               Text(
-                isEditing
-                    ? 'Edit Akun'
-                    : l10n?.add ?? 'Tambah Akun',
+                isEditing ? 'Edit Akun' : l10n?.add ?? 'Tambah Akun',
                 style: GoogleFonts.poppins(
                   color: DesignTokens.textPrimaryDark,
                   fontSize: 18,
@@ -616,11 +633,15 @@ class _AddAccountModalState extends State<_AddAccountModal> {
                 style: GoogleFonts.poppins(color: DesignTokens.textPrimaryDark),
                 decoration: InputDecoration(
                   labelText: l10n?.name ?? 'Nama',
-                  labelStyle: GoogleFonts.poppins(color: DesignTokens.textSecondaryDark),
+                  labelStyle: GoogleFonts.poppins(
+                    color: DesignTokens.textSecondaryDark,
+                  ),
                   filled: true,
                   fillColor: DesignTokens.surfaceDark,
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                    borderRadius: BorderRadius.circular(
+                      DesignTokens.radiusMedium,
+                    ),
                     borderSide: BorderSide(color: DesignTokens.borderDark),
                   ),
                 ),
@@ -642,27 +663,31 @@ class _AddAccountModalState extends State<_AddAccountModal> {
               const SizedBox(height: 8),
               Wrap(
                 spacing: 8,
-                children: _types.map((type) {
-                  final isSelected = _selectedType == type['value'];
-                  return ChoiceChip(
-                    label: Text(
-                      type['label'],
-                      style: GoogleFonts.poppins(
-                        color: isSelected ? Colors.white : DesignTokens.textSecondaryDark,
-                        fontSize: 12,
-                      ),
-                    ),
-                    selected: isSelected,
-                    onSelected: (selected) {
-                      setState(() {
-                        _selectedType = type['value'];
-                        _selectedIcon = type['icon'];
-                      });
-                    },
-                    backgroundColor: DesignTokens.surfaceDark,
-                    selectedColor: DesignTokens.primaryColor,
-                  );
-                }).toList(),
+                children:
+                    _types.map((type) {
+                      final isSelected = _selectedType == type['value'];
+                      return ChoiceChip(
+                        label: Text(
+                          type['label'],
+                          style: GoogleFonts.poppins(
+                            color:
+                                isSelected
+                                    ? Colors.white
+                                    : DesignTokens.textSecondaryDark,
+                            fontSize: 12,
+                          ),
+                        ),
+                        selected: isSelected,
+                        onSelected: (selected) {
+                          setState(() {
+                            _selectedType = type['value'];
+                            _selectedIcon = type['icon'];
+                          });
+                        },
+                        backgroundColor: DesignTokens.surfaceDark,
+                        selectedColor: DesignTokens.primaryColor,
+                      );
+                    }).toList(),
               ),
               const SizedBox(height: 16),
               TextFormField(
@@ -671,14 +696,27 @@ class _AddAccountModalState extends State<_AddAccountModal> {
                 keyboardType: TextInputType.number,
                 decoration: InputDecoration(
                   labelText: l10n?.balance ?? 'Saldo',
-                  labelStyle: GoogleFonts.poppins(color: DesignTokens.textSecondaryDark),
+                  labelStyle: GoogleFonts.poppins(
+                    color: DesignTokens.textSecondaryDark,
+                  ),
                   filled: true,
                   fillColor: DesignTokens.surfaceDark,
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                    borderRadius: BorderRadius.circular(
+                      DesignTokens.radiusMedium,
+                    ),
                     borderSide: BorderSide(color: DesignTokens.borderDark),
                   ),
                 ),
+                validator: (value) {
+                  if (value == null || value.trim().isEmpty) {
+                    return 'Masukkan saldo';
+                  }
+                  if (double.tryParse(value.replaceAll(',', '.')) == null) {
+                    return 'Saldo harus berupa angka';
+                  }
+                  return null;
+                },
               ),
               const SizedBox(height: 16),
               Text(
@@ -691,27 +729,38 @@ class _AddAccountModalState extends State<_AddAccountModal> {
               const SizedBox(height: 8),
               Wrap(
                 spacing: 8,
-                children: _colors.map((color) {
-                  final isSelected = _selectedColor == color;
-                  return GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        _selectedColor = color;
-                      });
-                    },
-                    child: Container(
-                      width: 36,
-                      height: 36,
-                      decoration: BoxDecoration(
-                        color: Color(int.parse(color.replaceFirst('#', '0xFF'))),
-                        shape: BoxShape.circle,
-                        border: isSelected
-                            ? Border.all(color: Colors.white, width: 3)
-                            : null,
-                      ),
-                    ),
-                  );
-                }).toList(),
+                children:
+                    _colors.map((color) {
+                      final isSelected = _selectedColor == color;
+                      return Semantics(
+                        label: 'Pilih warna',
+                        button: true,
+                        child: GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              _selectedColor = color;
+                            });
+                          },
+                          child: Container(
+                            width: 36,
+                            height: 36,
+                            decoration: BoxDecoration(
+                              color: Color(
+                                int.parse(color.replaceFirst('#', '0xFF')),
+                              ),
+                              shape: BoxShape.circle,
+                              border:
+                                  isSelected
+                                      ? Border.all(
+                                        color: Colors.white,
+                                        width: 3,
+                                      )
+                                      : null,
+                            ),
+                          ),
+                        ),
+                      );
+                    }).toList(),
               ),
               const SizedBox(height: 24),
               SizedBox(
@@ -722,7 +771,9 @@ class _AddAccountModalState extends State<_AddAccountModal> {
                     backgroundColor: DesignTokens.primaryColor,
                     padding: const EdgeInsets.symmetric(vertical: 14),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                      borderRadius: BorderRadius.circular(
+                        DesignTokens.radiusMedium,
+                      ),
                     ),
                   ),
                   child: Text(

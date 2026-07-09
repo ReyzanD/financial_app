@@ -11,6 +11,8 @@ import 'package:financial_app/utils/responsive_helper.dart';
 import 'package:financial_app/utils/design_tokens.dart';
 import 'package:financial_app/utils/accessibility_helper.dart';
 import 'package:financial_app/services/logger_service.dart';
+import 'package:financial_app/services/error_handler_service.dart';
+import 'package:financial_app/widgets/common/offline_indicator.dart';
 
 /// Enhanced Onboarding Screen dengan interactive tutorial, feature highlights,
 /// permission requests dengan explanations, skip option, dan progress tracking
@@ -64,11 +66,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
           'Tetapkan batas anggaran untuk setiap kategori dan dapatkan notifikasi ketika Anda mendekati batas.',
       icon: Iconsax.chart_square,
       color: const Color(0xFFFF6B6B),
-      features: [
-        'Budget forecasting',
-        'Real-time alerts',
-        'Spending insights',
-      ],
+      features: ['Budget forecasting', 'Real-time alerts', 'Spending insights'],
     ),
     OnboardingItem(
       title: 'Capai Tujuan',
@@ -110,10 +108,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
     );
 
     _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(
-        parent: _fadeAnimationController,
-        curve: Curves.easeIn,
-      ),
+      CurvedAnimation(parent: _fadeAnimationController, curve: Curves.easeIn),
     );
 
     _iconAnimationController.forward();
@@ -129,10 +124,14 @@ class _OnboardingScreenState extends State<OnboardingScreen>
   }
 
   Future<void> _trackProgress() async {
-    await OnboardingFlowManager.saveProgress(
-      _currentPage,
-      _onboardingItems.length + 1, // +1 for permissions page
-    );
+    try {
+      await OnboardingFlowManager.saveProgress(
+        _currentPage,
+        _onboardingItems.length + 1, // +1 for permissions page
+      );
+    } catch (e) {
+      LoggerService.debug('Error tracking onboarding progress: $e');
+    }
   }
 
   @override
@@ -144,6 +143,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
       body: SafeArea(
         child: Column(
           children: [
+            const OfflineIndicator(),
             // Progress Bar
             _buildProgressBar(totalPages),
 
@@ -321,35 +321,37 @@ class _OnboardingScreenState extends State<OnboardingScreen>
             // Feature Highlights
             if (item.features.isNotEmpty) ...[
               SizedBox(height: ResponsiveHelper.verticalSpacing(context, 24)),
-              ...item.features.map((feature) => Padding(
-                    padding: EdgeInsets.only(
-                      bottom: ResponsiveHelper.verticalSpacing(context, 8),
-                    ),
-                    child: Row(
-                      children: [
-                        Icon(
-                          Iconsax.tick_circle,
-                          size: ResponsiveHelper.iconSize(context, 20),
-                          color: item.color,
-                        ),
-                        SizedBox(
-                          width: ResponsiveHelper.horizontalSpacing(context, 12),
-                        ),
-                        Expanded(
-                          child: Text(
-                            feature,
-                            style: GoogleFonts.poppins(
-                              color: Colors.grey[300],
-                              fontSize: ResponsiveHelper.fontSize(
-                                context,
-                                DesignTokens.fontSizeBodyMedium,
-                              ),
+              ...item.features.map(
+                (feature) => Padding(
+                  padding: EdgeInsets.only(
+                    bottom: ResponsiveHelper.verticalSpacing(context, 8),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(
+                        Iconsax.tick_circle,
+                        size: ResponsiveHelper.iconSize(context, 20),
+                        color: item.color,
+                      ),
+                      SizedBox(
+                        width: ResponsiveHelper.horizontalSpacing(context, 12),
+                      ),
+                      Expanded(
+                        child: Text(
+                          feature,
+                          style: GoogleFonts.poppins(
+                            color: Colors.grey[300],
+                            fontSize: ResponsiveHelper.fontSize(
+                              context,
+                              DesignTokens.fontSizeBodyMedium,
                             ),
                           ),
                         ),
-                      ],
-                    ),
-                  )),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
             ],
           ],
         ),
@@ -482,20 +484,25 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                   ),
                 ),
               if (_currentPage > 0)
-                SizedBox(width: ResponsiveHelper.horizontalSpacing(context, 12)),
+                SizedBox(
+                  width: ResponsiveHelper.horizontalSpacing(context, 12),
+                ),
               Expanded(
                 child: AccessibilityHelper.createAccessibleButton(
                   context: context,
-                  label: _currentPage == totalPages - 1
-                      ? 'Mulai Sekarang'
-                      : 'Selanjutnya',
-                  onPressed: _currentPage == totalPages - 1
-                      ? _completeOnboarding
-                      : _nextPage,
+                  label:
+                      _currentPage == totalPages - 1
+                          ? 'Mulai Sekarang'
+                          : 'Selanjutnya',
+                  onPressed:
+                      _currentPage == totalPages - 1
+                          ? _completeOnboarding
+                          : _nextPage,
                   backgroundColor: DesignTokens.primaryColor,
-                  icon: _currentPage == totalPages - 1
-                      ? Iconsax.arrow_right_3
-                      : Iconsax.arrow_right_1,
+                  icon:
+                      _currentPage == totalPages - 1
+                          ? Iconsax.arrow_right_3
+                          : Iconsax.arrow_right_1,
                 ),
               ),
             ],
@@ -512,14 +519,16 @@ class _OnboardingScreenState extends State<OnboardingScreen>
       margin: EdgeInsets.symmetric(
         horizontal: ResponsiveHelper.horizontalSpacing(context, 4),
       ),
-      width: isActive
-          ? ResponsiveHelper.horizontalSpacing(context, 24)
-          : ResponsiveHelper.horizontalSpacing(context, 8),
+      width:
+          isActive
+              ? ResponsiveHelper.horizontalSpacing(context, 24)
+              : ResponsiveHelper.horizontalSpacing(context, 8),
       height: 8,
       decoration: BoxDecoration(
-        color: isActive
-            ? DesignTokens.primaryColor
-            : Colors.grey[600]!.withValues(alpha: 0.5),
+        color:
+            isActive
+                ? DesignTokens.primaryColor
+                : Colors.grey[600]!.withValues(alpha: 0.5),
         borderRadius: BorderRadius.circular(
           ResponsiveHelper.borderRadius(context, DesignTokens.radiusRound),
         ),
@@ -546,7 +555,11 @@ class _OnboardingScreenState extends State<OnboardingScreen>
   }
 
   Future<void> _skipOnboarding() async {
-    await OnboardingFlowManager.skipOnboarding();
+    try {
+      await OnboardingFlowManager.skipOnboarding();
+    } catch (e) {
+      LoggerService.error('Error skipping onboarding', error: e);
+    }
     if (mounted) {
       Navigator.pushReplacementNamed(context, '/home');
     }
@@ -587,6 +600,14 @@ class _OnboardingScreenState extends State<OnboardingScreen>
       }
     } catch (e) {
       LoggerService.error('Error completing onboarding', error: e);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(ErrorHandlerService.getUserFriendlyMessage(e)),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
       // Still navigate to home even if there's an error
       if (mounted) {
         Navigator.pushReplacementNamed(context, '/home');

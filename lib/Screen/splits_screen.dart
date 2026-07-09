@@ -104,7 +104,10 @@ class _SplitsScreenState extends State<SplitsScreen> {
           Row(
             children: [
               IconButton(
-                icon: const Icon(Iconsax.arrow_left, color: DesignTokens.textPrimaryDark),
+                icon: const Icon(
+                  Iconsax.arrow_left,
+                  color: DesignTokens.textPrimaryDark,
+                ),
                 onPressed: () => Navigator.pop(context),
               ),
               const SizedBox(width: 8),
@@ -118,7 +121,9 @@ class _SplitsScreenState extends State<SplitsScreen> {
               ),
               const Spacer(),
               Text(
-                _showActiveOnly ? l10n?.active ?? 'Aktif' : l10n?.all ?? 'Semua',
+                _showActiveOnly
+                    ? l10n?.active ?? 'Aktif'
+                    : l10n?.all ?? 'Semua',
                 style: GoogleFonts.poppins(
                   color: DesignTokens.textSecondaryDark,
                   fontSize: 12,
@@ -175,7 +180,9 @@ class _SplitsScreenState extends State<SplitsScreen> {
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     color: DesignTokens.errorColor.withValues(alpha: 0.15),
-                    borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                    borderRadius: BorderRadius.circular(
+                      DesignTokens.radiusMedium,
+                    ),
                   ),
                   child: const Icon(
                     Iconsax.people,
@@ -217,7 +224,11 @@ class _SplitsScreenState extends State<SplitsScreen> {
     );
   }
 
-  Widget _buildSplitCard(BuildContext context, dynamic split, AppLocalizations? l10n) {
+  Widget _buildSplitCard(
+    BuildContext context,
+    dynamic split,
+    AppLocalizations? l10n,
+  ) {
     final participantName = split.participantName ?? '';
     final amount = split.amount ?? 0.0;
     final paidAmount = split.paidAmount ?? 0.0;
@@ -233,7 +244,10 @@ class _SplitsScreenState extends State<SplitsScreen> {
         color: DesignTokens.surfaceDark,
         borderRadius: BorderRadius.circular(DesignTokens.radiusLarge),
         border: Border.all(
-          color: isSettled ? DesignTokens.successColor.withValues(alpha: 0.3) : DesignTokens.borderDark,
+          color:
+              isSettled
+                  ? DesignTokens.successColor.withValues(alpha: 0.3)
+                  : DesignTokens.borderDark,
         ),
       ),
       child: Column(
@@ -244,14 +258,20 @@ class _SplitsScreenState extends State<SplitsScreen> {
               Container(
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: isSettled
-                      ? DesignTokens.successColor.withValues(alpha: 0.15)
-                      : DesignTokens.primaryColor.withValues(alpha: 0.15),
-                  borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                  color:
+                      isSettled
+                          ? DesignTokens.successColor.withValues(alpha: 0.15)
+                          : DesignTokens.primaryColor.withValues(alpha: 0.15),
+                  borderRadius: BorderRadius.circular(
+                    DesignTokens.radiusMedium,
+                  ),
                 ),
                 child: Icon(
                   isSettled ? Iconsax.tick_circle : Iconsax.people,
-                  color: isSettled ? DesignTokens.successColor : DesignTokens.primaryColor,
+                  color:
+                      isSettled
+                          ? DesignTokens.successColor
+                          : DesignTokens.primaryColor,
                   size: 20,
                 ),
               ),
@@ -271,7 +291,10 @@ class _SplitsScreenState extends State<SplitsScreen> {
                     Text(
                       isSettled ? 'Lunas' : 'Belum Lunas',
                       style: GoogleFonts.poppins(
-                        color: isSettled ? DesignTokens.successColor : DesignTokens.textSecondaryDark,
+                        color:
+                            isSettled
+                                ? DesignTokens.successColor
+                                : DesignTokens.textSecondaryDark,
                         fontSize: 12,
                       ),
                     ),
@@ -341,9 +364,14 @@ class _SplitsScreenState extends State<SplitsScreen> {
                   onPressed: () => _settleSplit(split),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: DesignTokens.successColor,
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
+                    ),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(DesignTokens.radiusSmall),
+                      borderRadius: BorderRadius.circular(
+                        DesignTokens.radiusSmall,
+                      ),
                     ),
                   ),
                   child: Text(
@@ -391,11 +419,7 @@ class _SplitsScreenState extends State<SplitsScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            Iconsax.people,
-            size: 64,
-            color: DesignTokens.textTertiaryDark,
-          ),
+          Icon(Iconsax.people, size: 64, color: DesignTokens.textTertiaryDark),
           const SizedBox(height: 16),
           Text(
             'Belum Ada Splits',
@@ -423,11 +447,7 @@ class _SplitsScreenState extends State<SplitsScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            Iconsax.warning_2,
-            size: 64,
-            color: DesignTokens.errorColor,
-          ),
+          Icon(Iconsax.warning_2, size: 64, color: DesignTokens.errorColor),
           const SizedBox(height: 16),
           Text(
             l10n?.error ?? 'Terjadi kesalahan',
@@ -542,7 +562,10 @@ class _SplitsScreenState extends State<SplitsScreen> {
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(l10n?.transaction_deleted_successfully ?? 'Split berhasil dihapus'),
+            content: Text(
+              l10n?.transaction_deleted_successfully ??
+                  'Split berhasil dihapus',
+            ),
             backgroundColor: DesignTokens.primaryColor,
           ),
         );
@@ -624,11 +647,15 @@ class _AddSplitModalState extends State<_AddSplitModal> {
                 style: GoogleFonts.poppins(color: DesignTokens.textPrimaryDark),
                 decoration: InputDecoration(
                   labelText: 'Nama Participant',
-                  labelStyle: GoogleFonts.poppins(color: DesignTokens.textSecondaryDark),
+                  labelStyle: GoogleFonts.poppins(
+                    color: DesignTokens.textSecondaryDark,
+                  ),
                   filled: true,
                   fillColor: DesignTokens.surfaceDark,
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                    borderRadius: BorderRadius.circular(
+                      DesignTokens.radiusMedium,
+                    ),
                     borderSide: BorderSide(color: DesignTokens.borderDark),
                   ),
                 ),
@@ -646,11 +673,15 @@ class _AddSplitModalState extends State<_AddSplitModal> {
                 keyboardType: TextInputType.number,
                 decoration: InputDecoration(
                   labelText: l10n?.amount ?? 'Jumlah',
-                  labelStyle: GoogleFonts.poppins(color: DesignTokens.textSecondaryDark),
+                  labelStyle: GoogleFonts.poppins(
+                    color: DesignTokens.textSecondaryDark,
+                  ),
                   filled: true,
                   fillColor: DesignTokens.surfaceDark,
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                    borderRadius: BorderRadius.circular(
+                      DesignTokens.radiusMedium,
+                    ),
                     borderSide: BorderSide(color: DesignTokens.borderDark),
                   ),
                 ),
@@ -670,7 +701,9 @@ class _AddSplitModalState extends State<_AddSplitModal> {
                     backgroundColor: DesignTokens.primaryColor,
                     padding: const EdgeInsets.symmetric(vertical: 14),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                      borderRadius: BorderRadius.circular(
+                        DesignTokens.radiusMedium,
+                      ),
                     ),
                   ),
                   child: Text(

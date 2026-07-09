@@ -103,7 +103,9 @@ class _TransactionCardState extends State<TransactionCard> {
         });
 
         final transactionId = widget.transaction['id']?.toString() ?? '';
-        LoggerService.debug('[TransactionCard] Dismissed, starting deletion for ID: $transactionId');
+        LoggerService.debug(
+          '[TransactionCard] Dismissed, starting deletion for ID: $transactionId',
+        );
 
         // Perform async deletion - onDeleted will be called after successful deletion
         _performDeletion(transactionId);
@@ -200,7 +202,8 @@ class _TransactionCardState extends State<TransactionCard> {
                     Text(
                       [
                         category,
-                        if (accountName != null && accountName.isNotEmpty) accountName,
+                        if (accountName != null && accountName.isNotEmpty)
+                          accountName,
                         if (location.isNotEmpty) location,
                       ].join(' • '),
                       style: GoogleFonts.poppins(
@@ -298,6 +301,7 @@ class _TransactionCardState extends State<TransactionCard> {
     // Check if biometric should be required
     final shouldRequire = await BiometricHelper.shouldRequireBiometric();
 
+    if (!context.mounted) return;
     if (shouldRequire) {
       // Biometric is available and enabled - require authentication
       final authenticated = await BiometricHelper.requestBiometricAuth(
@@ -315,7 +319,7 @@ class _TransactionCardState extends State<TransactionCard> {
         }
         // Refresh to restore the item in the list
         widget.onDeleted?.call();
-        
+
         // Check if context is still mounted before showing SnackBar
         if (currentContext.mounted) {
           ScaffoldMessenger.of(currentContext).showSnackBar(
@@ -336,7 +340,9 @@ class _TransactionCardState extends State<TransactionCard> {
     // Perform API call to delete from server
     final apiService = ApiService();
 
-    LoggerService.debug('[TransactionCard] Starting deletion for ID: $transactionId');
+    LoggerService.debug(
+      '[TransactionCard] Starting deletion for ID: $transactionId',
+    );
 
     try {
       await apiService.deleteTransaction(transactionId);
@@ -385,4 +391,3 @@ class _TransactionCardState extends State<TransactionCard> {
     }
   }
 }
-

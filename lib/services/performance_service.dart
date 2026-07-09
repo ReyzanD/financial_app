@@ -31,7 +31,7 @@ class PerformanceService {
         'timestamp': DateTime.now().toIso8601String(),
       });
       _screenStartTimes.remove(screenName);
-      
+
       LoggerService.debug('Screen $screenName loaded in ${loadTime}ms');
     }
   }
@@ -48,24 +48,23 @@ class PerformanceService {
 
   /// Get average API response time untuk endpoint
   double getAverageApiResponseTime(String endpoint) {
-    final times = _performanceMetrics
-        .where((m) => 
-            m['type'] == 'api_response_time' && 
-            m['endpoint'] == endpoint)
-        .map((m) => m['response_time_ms'] as int)
-        .toList();
-    
+    final times =
+        _performanceMetrics
+            .where(
+              (m) =>
+                  m['type'] == 'api_response_time' && m['endpoint'] == endpoint,
+            )
+            .map((m) => m['response_time_ms'] as int)
+            .toList();
+
     if (times.isEmpty) return 0.0;
     return times.reduce((a, b) => a + b) / times.length;
   }
 
   /// Record performance metric
   void _recordMetric(String type, Map<String, dynamic> data) {
-    _performanceMetrics.add({
-      'type': type,
-      ...data,
-    });
-    
+    _performanceMetrics.add({'type': type, ...data});
+
     // Keep only last 1000 metrics
     if (_performanceMetrics.length > 1000) {
       _performanceMetrics.removeAt(0);
@@ -75,12 +74,9 @@ class PerformanceService {
   /// Start memory monitoring
   void startMemoryMonitoring() {
     _memoryMonitorTimer?.cancel();
-    _memoryMonitorTimer = Timer.periodic(
-      const Duration(seconds: 30),
-      (timer) {
-        _recordMemoryUsage();
-      },
-    );
+    _memoryMonitorTimer = Timer.periodic(const Duration(seconds: 30), (timer) {
+      _recordMemoryUsage();
+    });
   }
 
   /// Stop memory monitoring
@@ -103,33 +99,51 @@ class PerformanceService {
 
   /// Get performance summary
   Map<String, dynamic> getPerformanceSummary() {
-    final screenLoadTimes = _performanceMetrics
-        .where((m) => m['type'] == 'screen_load_time')
-        .map((m) => m['load_time_ms'] as int)
-        .toList();
-    
-    final apiResponseTimes = _performanceMetrics
-        .where((m) => m['type'] == 'api_response_time')
-        .map((m) => m['response_time_ms'] as int)
-        .toList();
-    
+    final screenLoadTimes =
+        _performanceMetrics
+            .where((m) => m['type'] == 'screen_load_time')
+            .map((m) => m['load_time_ms'] as int)
+            .toList();
+
+    final apiResponseTimes =
+        _performanceMetrics
+            .where((m) => m['type'] == 'api_response_time')
+            .map((m) => m['response_time_ms'] as int)
+            .toList();
+
     return {
       'total_metrics': _performanceMetrics.length,
       'screen_load_times': {
         'count': screenLoadTimes.length,
-        'average_ms': screenLoadTimes.isEmpty 
-            ? 0 
-            : screenLoadTimes.reduce((a, b) => a + b) / screenLoadTimes.length,
-        'min_ms': screenLoadTimes.isEmpty ? 0 : screenLoadTimes.reduce((a, b) => a < b ? a : b),
-        'max_ms': screenLoadTimes.isEmpty ? 0 : screenLoadTimes.reduce((a, b) => a > b ? a : b),
+        'average_ms':
+            screenLoadTimes.isEmpty
+                ? 0
+                : screenLoadTimes.reduce((a, b) => a + b) /
+                    screenLoadTimes.length,
+        'min_ms':
+            screenLoadTimes.isEmpty
+                ? 0
+                : screenLoadTimes.reduce((a, b) => a < b ? a : b),
+        'max_ms':
+            screenLoadTimes.isEmpty
+                ? 0
+                : screenLoadTimes.reduce((a, b) => a > b ? a : b),
       },
       'api_response_times': {
         'count': apiResponseTimes.length,
-        'average_ms': apiResponseTimes.isEmpty 
-            ? 0 
-            : apiResponseTimes.reduce((a, b) => a + b) / apiResponseTimes.length,
-        'min_ms': apiResponseTimes.isEmpty ? 0 : apiResponseTimes.reduce((a, b) => a < b ? a : b),
-        'max_ms': apiResponseTimes.isEmpty ? 0 : apiResponseTimes.reduce((a, b) => a > b ? a : b),
+        'average_ms':
+            apiResponseTimes.isEmpty
+                ? 0
+                : apiResponseTimes.reduce((a, b) => a + b) /
+                    apiResponseTimes.length,
+        'min_ms':
+            apiResponseTimes.isEmpty
+                ? 0
+                : apiResponseTimes.reduce((a, b) => a < b ? a : b),
+        'max_ms':
+            apiResponseTimes.isEmpty
+                ? 0
+                : apiResponseTimes.reduce((a, b) => a > b ? a : b),
       },
     };
   }
@@ -185,4 +199,3 @@ class PerformanceService {
     });
   }
 }
-

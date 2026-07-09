@@ -166,7 +166,8 @@ class _BudgetProgressState extends State<BudgetProgress>
 
   Future<void> _loadRecommendations() async {
     try {
-      final recommendation = await _recommendationService.generateRecommendation();
+      final recommendation =
+          await _recommendationService.generateRecommendation();
       if (mounted && recommendation['categories'] != null) {
         final categories = recommendation['categories'] as List;
         if (categories.isNotEmpty) {
@@ -370,9 +371,7 @@ class _BudgetProgressState extends State<BudgetProgress>
       onTap: () {
         Navigator.push(
           context,
-          MaterialPageRoute(
-            builder: (context) => const BudgetsScreen(),
-          ),
+          MaterialPageRoute(builder: (context) => const BudgetsScreen()),
         );
       },
       child: Container(
@@ -404,9 +403,7 @@ class _BudgetProgressState extends State<BudgetProgress>
                   color: const Color(0xFF8B5FBF),
                   size: ResponsiveHelper.iconSize(context, 18),
                 ),
-                SizedBox(
-                  width: ResponsiveHelper.horizontalSpacing(context, 8),
-                ),
+                SizedBox(width: ResponsiveHelper.horizontalSpacing(context, 8)),
                 Text(
                   'Saran Budget AI',
                   style: GoogleFonts.poppins(
@@ -494,7 +491,10 @@ class _BudgetProgressState extends State<BudgetProgress>
           ResponsiveHelper.borderRadius(context, 16),
         ),
         border: Border.all(
-          color: isOverBudget ? Colors.red.withValues(alpha: 0.3) : Colors.grey[800]!,
+          color:
+              isOverBudget
+                  ? Colors.red.withValues(alpha: 0.3)
+                  : Colors.grey[800]!,
           width: isOverBudget ? 1.5 : 1,
         ),
         boxShadow:

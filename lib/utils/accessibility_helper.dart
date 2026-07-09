@@ -21,11 +21,7 @@ class AccessibilityHelper {
     VoidCallback? onTap,
   }) {
     final size = getTouchTargetSize(context);
-    final widget = SizedBox(
-      width: size,
-      height: size,
-      child: child,
-    );
+    final widget = SizedBox(width: size, height: size, child: child);
 
     if (onTap != null) {
       return InkWell(
@@ -46,23 +42,23 @@ class AccessibilityHelper {
     bool isHeader = false,
   }) {
     final buffer = StringBuffer();
-    
+
     if (isHeader) {
       buffer.write('Heading: ');
     } else if (isButton) {
       buffer.write('Button: ');
     }
-    
+
     buffer.write(label);
-    
+
     if (value != null) {
       buffer.write(', Value: $value');
     }
-    
+
     if (hint != null) {
       buffer.write(', Hint: $hint');
     }
-    
+
     return buffer.toString();
   }
 
@@ -70,32 +66,39 @@ class AccessibilityHelper {
   static double getContrastRatio(Color foreground, Color background) {
     final fgLuminance = _getLuminance(foreground);
     final bgLuminance = _getLuminance(background);
-    
+
     final lighter = fgLuminance > bgLuminance ? fgLuminance : bgLuminance;
     final darker = fgLuminance > bgLuminance ? bgLuminance : fgLuminance;
-    
+
     return (lighter + 0.05) / (darker + 0.05);
   }
 
   // Check if color combination meets WCAG AA (4.5:1 for normal text, 3:1 for large text)
-  static bool meetsWCAGAA(Color foreground, Color background, {bool isLargeText = false}) {
+  static bool meetsWCAGAA(
+    Color foreground,
+    Color background, {
+    bool isLargeText = false,
+  }) {
     final ratio = getContrastRatio(foreground, background);
     return isLargeText ? ratio >= 3.0 : ratio >= 4.5;
   }
 
   // Get accessible text color based on background
-  static Color getAccessibleTextColor(Color backgroundColor, {bool isLargeText = false}) {
+  static Color getAccessibleTextColor(
+    Color backgroundColor, {
+    bool isLargeText = false,
+  }) {
     final white = Colors.white;
     final black = Colors.black;
-    
+
     final whiteRatio = getContrastRatio(white, backgroundColor);
     final blackRatio = getContrastRatio(black, backgroundColor);
-    
+
     final minRatio = isLargeText ? 3.0 : 4.5;
-    
+
     if (whiteRatio >= minRatio) return white;
     if (blackRatio >= minRatio) return black;
-    
+
     // Fallback: return color with better contrast
     return whiteRatio > blackRatio ? white : black;
   }
@@ -131,18 +134,14 @@ class AccessibilityHelper {
     final size = getTouchTargetSize(context);
     final effectiveMinWidth = minWidth ?? size;
     final effectiveMinHeight = minHeight ?? size;
-    
+
     // Ensure accessible colors
     final bgColor = backgroundColor ?? Theme.of(context).primaryColor;
-    final fgColor = foregroundColor ?? 
-        getAccessibleTextColor(bgColor, isLargeText: true);
+    final fgColor =
+        foregroundColor ?? getAccessibleTextColor(bgColor, isLargeText: true);
 
     return Semantics(
-      label: createSemanticLabel(
-        label: label,
-        hint: hint,
-        isButton: true,
-      ),
+      label: createSemanticLabel(label: label, hint: hint, isButton: true),
       hint: hint,
       button: true,
       child: ElevatedButton(
@@ -156,16 +155,19 @@ class AccessibilityHelper {
             vertical: ResponsiveHelper.verticalSpacing(context, 12),
           ),
         ),
-        child: icon != null
-            ? Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(icon, size: ResponsiveHelper.iconSize(context, 20)),
-                  SizedBox(width: ResponsiveHelper.horizontalSpacing(context, 8)),
-                  Text(label),
-                ],
-              )
-            : Text(label),
+        child:
+            icon != null
+                ? Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(icon, size: ResponsiveHelper.iconSize(context, 20)),
+                    SizedBox(
+                      width: ResponsiveHelper.horizontalSpacing(context, 8),
+                    ),
+                    Text(label),
+                  ],
+                )
+                : Text(label),
       ),
     );
   }
@@ -181,14 +183,11 @@ class AccessibilityHelper {
     double? iconSize,
   }) {
     final size = getTouchTargetSize(context);
-    final effectiveIconSize = iconSize ?? ResponsiveHelper.iconSize(context, 24);
+    final effectiveIconSize =
+        iconSize ?? ResponsiveHelper.iconSize(context, 24);
 
     return Semantics(
-      label: createSemanticLabel(
-        label: label,
-        hint: hint,
-        isButton: true,
-      ),
+      label: createSemanticLabel(label: label, hint: hint, isButton: true),
       hint: hint,
       button: true,
       child: IconButton(
@@ -211,19 +210,17 @@ class AccessibilityHelper {
     return Semantics(
       label: semanticLabel ?? text,
       header: isHeader,
-      child: Text(
-        text,
-        style: style,
-      ),
+      child: Text(text, style: style),
     );
   }
 
   // Announce changes untuk screen readers
-  static void announce(BuildContext context, String message, {bool polite = true}) {
-    SemanticsService.announce(
-      message,
-      TextDirection.ltr,
-    );
+  static void announce(
+    BuildContext context,
+    String message, {
+    bool polite = true,
+  }) {
+    SemanticsService.announce(message, TextDirection.ltr);
   }
 
   // Get text scale factor dari MediaQuery
@@ -248,4 +245,3 @@ class AccessibilityHelper {
     return baseSize * effectiveScale;
   }
 }
-

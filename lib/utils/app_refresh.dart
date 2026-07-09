@@ -30,6 +30,7 @@ class AppRefresh {
       final appState = Provider.of<AppState>(context, listen: false);
       await appState.refreshData(forceRefresh: true);
 
+      if (!context.mounted) return;
       // Send notification to widgets listening for refresh
       DataRefreshNotification().dispatch(context);
 

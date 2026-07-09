@@ -180,15 +180,13 @@ class ReceiptScanningService {
 
       final amount = _extractAmount(line);
       if (amount > 0 && amount < parsed['total']) {
-        final description = line
-            .replaceAll(RegExp(r'[\d.,Rp]'), '')
-            .replaceAll(RegExp(r'\s+'), ' ')
-            .trim();
+        final description =
+            line
+                .replaceAll(RegExp(r'[\d.,Rp]'), '')
+                .replaceAll(RegExp(r'\s+'), ' ')
+                .trim();
         if (description.isNotEmpty && description.length > 1) {
-          parsed['items'].add({
-            'description': description,
-            'amount': amount,
-          });
+          parsed['items'].add({'description': description, 'amount': amount});
         }
       }
     }
@@ -224,9 +222,7 @@ class ReceiptScanningService {
     final match = rupiahPattern.firstMatch(text);
 
     if (match != null) {
-      var amountStr = match.group(0)!
-          .replaceAll('Rp', '')
-          .replaceAll(' ', '');
+      var amountStr = match.group(0)!.replaceAll('Rp', '').replaceAll(' ', '');
 
       if (amountStr.contains('.') && amountStr.contains(',')) {
         if (amountStr.lastIndexOf(',') > amountStr.lastIndexOf('.')) {

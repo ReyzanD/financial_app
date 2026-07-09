@@ -24,12 +24,14 @@ class BudgetEntity {
       categoryId: json['category_id']?.toString() ?? '',
       amount: (json['amount'] as num?)?.toDouble() ?? 0.0,
       spent: (json['spent'] as num?)?.toDouble() ?? 0.0,
-      startDate: json['start_date'] != null
-          ? DateTime.parse(json['start_date'].toString())
-          : DateTime.now(),
-      endDate: json['end_date'] != null
-          ? DateTime.parse(json['end_date'].toString())
-          : DateTime.now(),
+      startDate:
+          json['start_date'] != null
+              ? DateTime.parse(json['start_date'].toString())
+              : DateTime.now(),
+      endDate:
+          json['end_date'] != null
+              ? DateTime.parse(json['end_date'].toString())
+              : DateTime.now(),
       isActive: json['is_active'] as bool? ?? true,
     );
   }
@@ -50,4 +52,3 @@ class BudgetEntity {
   double get percentageUsed => amount > 0 ? (spent / amount) * 100 : 0.0;
   bool get isOverBudget => spent > amount;
 }
-

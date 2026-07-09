@@ -110,9 +110,12 @@ class _InvestmentsScreenState extends State<InvestmentsScreen> {
   }
 
   Widget _buildHeader(BuildContext context, AppLocalizations? l10n) {
-    final totalValue = (_portfolioSummary['total_value'] as num?)?.toDouble() ?? 0.0;
-    final totalPnL = (_portfolioSummary['total_pnl'] as num?)?.toDouble() ?? 0.0;
-    final pnlPercentage = (_portfolioSummary['pnl_percentage'] as num?)?.toDouble() ?? 0.0;
+    final totalValue =
+        (_portfolioSummary['total_value'] as num?)?.toDouble() ?? 0.0;
+    final totalPnL =
+        (_portfolioSummary['total_pnl'] as num?)?.toDouble() ?? 0.0;
+    final pnlPercentage =
+        (_portfolioSummary['pnl_percentage'] as num?)?.toDouble() ?? 0.0;
     final isPositive = totalPnL >= 0;
 
     return Container(
@@ -123,7 +126,10 @@ class _InvestmentsScreenState extends State<InvestmentsScreen> {
           Row(
             children: [
               IconButton(
-                icon: const Icon(Iconsax.arrow_left, color: DesignTokens.textPrimaryDark),
+                icon: const Icon(
+                  Iconsax.arrow_left,
+                  color: DesignTokens.textPrimaryDark,
+                ),
                 onPressed: () => Navigator.pop(context),
               ),
               const SizedBox(width: 8),
@@ -181,7 +187,10 @@ class _InvestmentsScreenState extends State<InvestmentsScreen> {
                           Text(
                             '${isPositive ? '+' : ''}${CurrencyFormatter.formatRupiah(totalPnL.toInt())}',
                             style: GoogleFonts.poppins(
-                              color: isPositive ? DesignTokens.successColor : DesignTokens.errorColor,
+                              color:
+                                  isPositive
+                                      ? DesignTokens.successColor
+                                      : DesignTokens.errorColor,
                               fontSize: 14,
                               fontWeight: FontWeight.w600,
                             ),
@@ -190,15 +199,26 @@ class _InvestmentsScreenState extends State<InvestmentsScreen> {
                       ),
                     ),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 6,
+                      ),
                       decoration: BoxDecoration(
-                        color: (isPositive ? DesignTokens.successColor : DesignTokens.errorColor).withValues(alpha: 0.15),
-                        borderRadius: BorderRadius.circular(DesignTokens.radiusSmall),
+                        color: (isPositive
+                                ? DesignTokens.successColor
+                                : DesignTokens.errorColor)
+                            .withValues(alpha: 0.15),
+                        borderRadius: BorderRadius.circular(
+                          DesignTokens.radiusSmall,
+                        ),
                       ),
                       child: Text(
                         '${isPositive ? '+' : ''}${pnlPercentage.toStringAsFixed(1)}%',
                         style: GoogleFonts.poppins(
-                          color: isPositive ? DesignTokens.successColor : DesignTokens.errorColor,
+                          color:
+                              isPositive
+                                  ? DesignTokens.successColor
+                                  : DesignTokens.errorColor,
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
                         ),
@@ -240,7 +260,11 @@ class _InvestmentsScreenState extends State<InvestmentsScreen> {
     );
   }
 
-  Widget _buildInvestmentCard(BuildContext context, dynamic investment, AppLocalizations? l10n) {
+  Widget _buildInvestmentCard(
+    BuildContext context,
+    dynamic investment,
+    AppLocalizations? l10n,
+  ) {
     final name = investment.name ?? '';
     final type = investment.type ?? 'other';
     final quantity = investment.quantity ?? 0.0;
@@ -270,7 +294,9 @@ class _InvestmentsScreenState extends State<InvestmentsScreen> {
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
                   color: _getInvestmentTypeColor(type).withValues(alpha: 0.15),
-                  borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                  borderRadius: BorderRadius.circular(
+                    DesignTokens.radiusMedium,
+                  ),
                 ),
                 child: Icon(
                   Iconsax.chart_success,
@@ -318,12 +344,18 @@ class _InvestmentsScreenState extends State<InvestmentsScreen> {
                       Icon(
                         isPositive ? Iconsax.arrow_up_1 : Iconsax.arrow_down,
                         size: 12,
-                        color: isPositive ? DesignTokens.successColor : DesignTokens.errorColor,
+                        color:
+                            isPositive
+                                ? DesignTokens.successColor
+                                : DesignTokens.errorColor,
                       ),
                       Text(
                         '${pnlPercentage.toStringAsFixed(1)}%',
                         style: GoogleFonts.poppins(
-                          color: isPositive ? DesignTokens.successColor : DesignTokens.errorColor,
+                          color:
+                              isPositive
+                                  ? DesignTokens.successColor
+                                  : DesignTokens.errorColor,
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
                         ),
@@ -338,10 +370,22 @@ class _InvestmentsScreenState extends State<InvestmentsScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              _buildDetailItem('Harga Beli', CurrencyFormatter.formatRupiah(buyPrice.toInt())),
-              _buildDetailItem(l10n?.current_balance ?? 'Harga Saat Ini', CurrencyFormatter.formatRupiah(currentPrice.toInt())),
-              _buildDetailItem('P&L', '${isPositive ? '+' : ''}${CurrencyFormatter.formatRupiah(pnl.toInt())}',
-                  valueColor: isPositive ? DesignTokens.successColor : DesignTokens.errorColor),
+              _buildDetailItem(
+                'Harga Beli',
+                CurrencyFormatter.formatRupiah(buyPrice.toInt()),
+              ),
+              _buildDetailItem(
+                l10n?.current_balance ?? 'Harga Saat Ini',
+                CurrencyFormatter.formatRupiah(currentPrice.toInt()),
+              ),
+              _buildDetailItem(
+                'P&L',
+                '${isPositive ? '+' : ''}${CurrencyFormatter.formatRupiah(pnl.toInt())}',
+                valueColor:
+                    isPositive
+                        ? DesignTokens.successColor
+                        : DesignTokens.errorColor,
+              ),
             ],
           ),
           const SizedBox(height: 8),
@@ -440,11 +484,7 @@ class _InvestmentsScreenState extends State<InvestmentsScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            Iconsax.warning_2,
-            size: 64,
-            color: DesignTokens.errorColor,
-          ),
+          Icon(Iconsax.warning_2, size: 64, color: DesignTokens.errorColor),
           const SizedBox(height: 16),
           Text(
             l10n?.error ?? 'Terjadi kesalahan',
@@ -508,7 +548,8 @@ class _InvestmentsScreenState extends State<InvestmentsScreen> {
             ),
           ),
           content: Text(
-            l10n?.confirm_delete_budget ?? 'Yakin ingin menghapus investasi ini?',
+            l10n?.confirm_delete_budget ??
+                'Yakin ingin menghapus investasi ini?',
             style: GoogleFonts.poppins(
               color: DesignTokens.textSecondaryDark,
               fontSize: 13,
@@ -537,7 +578,10 @@ class _InvestmentsScreenState extends State<InvestmentsScreen> {
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(l10n?.transaction_deleted_successfully ?? 'Investasi berhasil dihapus'),
+            content: Text(
+              l10n?.transaction_deleted_successfully ??
+                  'Investasi berhasil dihapus',
+            ),
             backgroundColor: DesignTokens.primaryColor,
           ),
         );
@@ -632,11 +676,15 @@ class _AddInvestmentModalState extends State<_AddInvestmentModal> {
                 style: GoogleFonts.poppins(color: DesignTokens.textPrimaryDark),
                 decoration: InputDecoration(
                   labelText: l10n?.name ?? 'Nama',
-                  labelStyle: GoogleFonts.poppins(color: DesignTokens.textSecondaryDark),
+                  labelStyle: GoogleFonts.poppins(
+                    color: DesignTokens.textSecondaryDark,
+                  ),
                   filled: true,
                   fillColor: DesignTokens.surfaceDark,
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                    borderRadius: BorderRadius.circular(
+                      DesignTokens.radiusMedium,
+                    ),
                     borderSide: BorderSide(color: DesignTokens.borderDark),
                   ),
                 ),
@@ -658,26 +706,30 @@ class _AddInvestmentModalState extends State<_AddInvestmentModal> {
               const SizedBox(height: 8),
               Wrap(
                 spacing: 8,
-                children: _types.map((type) {
-                  final isSelected = _selectedType == type['value'];
-                  return ChoiceChip(
-                    label: Text(
-                      type['label'],
-                      style: GoogleFonts.poppins(
-                        color: isSelected ? Colors.white : DesignTokens.textSecondaryDark,
-                        fontSize: 12,
-                      ),
-                    ),
-                    selected: isSelected,
-                    onSelected: (selected) {
-                      setState(() {
-                        _selectedType = type['value'];
-                      });
-                    },
-                    backgroundColor: DesignTokens.surfaceDark,
-                    selectedColor: DesignTokens.primaryColor,
-                  );
-                }).toList(),
+                children:
+                    _types.map((type) {
+                      final isSelected = _selectedType == type['value'];
+                      return ChoiceChip(
+                        label: Text(
+                          type['label'],
+                          style: GoogleFonts.poppins(
+                            color:
+                                isSelected
+                                    ? Colors.white
+                                    : DesignTokens.textSecondaryDark,
+                            fontSize: 12,
+                          ),
+                        ),
+                        selected: isSelected,
+                        onSelected: (selected) {
+                          setState(() {
+                            _selectedType = type['value'];
+                          });
+                        },
+                        backgroundColor: DesignTokens.surfaceDark,
+                        selectedColor: DesignTokens.primaryColor,
+                      );
+                    }).toList(),
               ),
               const SizedBox(height: 16),
               Row(
@@ -685,16 +737,24 @@ class _AddInvestmentModalState extends State<_AddInvestmentModal> {
                   Expanded(
                     child: TextFormField(
                       controller: _quantityController,
-                      style: GoogleFonts.poppins(color: DesignTokens.textPrimaryDark),
+                      style: GoogleFonts.poppins(
+                        color: DesignTokens.textPrimaryDark,
+                      ),
                       keyboardType: TextInputType.number,
                       decoration: InputDecoration(
                         labelText: 'Jumlah',
-                        labelStyle: GoogleFonts.poppins(color: DesignTokens.textSecondaryDark),
+                        labelStyle: GoogleFonts.poppins(
+                          color: DesignTokens.textSecondaryDark,
+                        ),
                         filled: true,
                         fillColor: DesignTokens.surfaceDark,
                         border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
-                          borderSide: BorderSide(color: DesignTokens.borderDark),
+                          borderRadius: BorderRadius.circular(
+                            DesignTokens.radiusMedium,
+                          ),
+                          borderSide: BorderSide(
+                            color: DesignTokens.borderDark,
+                          ),
                         ),
                       ),
                       validator: (value) {
@@ -709,16 +769,24 @@ class _AddInvestmentModalState extends State<_AddInvestmentModal> {
                   Expanded(
                     child: TextFormField(
                       controller: _buyPriceController,
-                      style: GoogleFonts.poppins(color: DesignTokens.textPrimaryDark),
+                      style: GoogleFonts.poppins(
+                        color: DesignTokens.textPrimaryDark,
+                      ),
                       keyboardType: TextInputType.number,
                       decoration: InputDecoration(
                         labelText: 'Harga Beli',
-                        labelStyle: GoogleFonts.poppins(color: DesignTokens.textSecondaryDark),
+                        labelStyle: GoogleFonts.poppins(
+                          color: DesignTokens.textSecondaryDark,
+                        ),
                         filled: true,
                         fillColor: DesignTokens.surfaceDark,
                         border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
-                          borderSide: BorderSide(color: DesignTokens.borderDark),
+                          borderRadius: BorderRadius.circular(
+                            DesignTokens.radiusMedium,
+                          ),
+                          borderSide: BorderSide(
+                            color: DesignTokens.borderDark,
+                          ),
                         ),
                       ),
                       validator: (value) {
@@ -738,11 +806,15 @@ class _AddInvestmentModalState extends State<_AddInvestmentModal> {
                 keyboardType: TextInputType.number,
                 decoration: InputDecoration(
                   labelText: 'Harga Saat Ini',
-                  labelStyle: GoogleFonts.poppins(color: DesignTokens.textSecondaryDark),
+                  labelStyle: GoogleFonts.poppins(
+                    color: DesignTokens.textSecondaryDark,
+                  ),
                   filled: true,
                   fillColor: DesignTokens.surfaceDark,
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                    borderRadius: BorderRadius.circular(
+                      DesignTokens.radiusMedium,
+                    ),
                     borderSide: BorderSide(color: DesignTokens.borderDark),
                   ),
                 ),
@@ -762,7 +834,9 @@ class _AddInvestmentModalState extends State<_AddInvestmentModal> {
                     backgroundColor: DesignTokens.primaryColor,
                     padding: const EdgeInsets.symmetric(vertical: 14),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                      borderRadius: BorderRadius.circular(
+                        DesignTokens.radiusMedium,
+                      ),
                     ),
                   ),
                   child: Text(

@@ -63,40 +63,37 @@ class _PinSetupScreenState extends State<PinSetupScreen> {
   Future<void> _savePin() async {
     setState(() => _isLoading = true);
 
+    final ctx = context;
+
     try {
       await _pinAuthService.createPin(_pin);
 
-      if (mounted) {
-        // Show success message
-        ErrorHandlerService.showSuccessSnackbar(
-          context,
-          'PIN berhasil dibuat!',
-        );
+      if (!ctx.mounted) return;
+      // Show success message
+      ErrorHandlerService.showSuccessSnackbar(ctx, 'PIN berhasil dibuat!');
 
-        // Check if onboarding is needed
-        final prefs = await SharedPreferences.getInstance();
-        final onboardingCompleted =
-            prefs.getBool('onboarding_completed') ?? false;
+      // Check if onboarding is needed
+      final prefs = await SharedPreferences.getInstance();
+      final onboardingCompleted =
+          prefs.getBool('onboarding_completed') ?? false;
 
-        if (!onboardingCompleted) {
-          Navigator.of(context).pushReplacementNamed('/onboarding');
-        } else {
-          Navigator.of(context).pushReplacementNamed('/home');
-        }
+      if (!ctx.mounted) return;
+      if (!onboardingCompleted) {
+        Navigator.of(ctx).pushReplacementNamed('/onboarding');
+      } else {
+        Navigator.of(ctx).pushReplacementNamed('/home');
       }
     } catch (e) {
       LoggerService.error('Error creating PIN', error: e);
-      if (mounted) {
-        ErrorHandlerService.showErrorSnackbar(
-          context,
-          ErrorHandlerService.getUserFriendlyMessage(e),
-          onRetry: _savePin,
-        );
-      }
+      if (!ctx.mounted) return;
+      ErrorHandlerService.showErrorSnackbar(
+        ctx,
+        ErrorHandlerService.getUserFriendlyMessage(e),
+        onRetry: _savePin,
+      );
     } finally {
-      if (mounted) {
-        setState(() => _isLoading = false);
-      }
+      if (!ctx.mounted) return;
+      setState(() => _isLoading = false);
     }
   }
 
@@ -133,119 +130,127 @@ class _PinSetupScreenState extends State<PinSetupScreen> {
               child:
                   _isLoading
                       ? const Center(
-                          child: CircularProgressIndicator(color: Color(0xFF8B5FBF)),
-                        )
-                      : SingleChildScrollView(
-                          padding: const EdgeInsets.all(24),
-                          child: Column(
-                            children: [
-                      const SizedBox(height: 20),
-
-                      // Icon
-                      Container(
-                        padding: const EdgeInsets.all(20),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF8B5FBF).withValues(alpha: 0.2),
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(
-                          Iconsax.lock,
-                          size: 60,
+                        child: CircularProgressIndicator(
                           color: Color(0xFF8B5FBF),
                         ),
-                      ),
-                      const SizedBox(height: 32),
-
-                      // Title
-                      Text(
-                        _isConfirmStep
-                            ? AppLocalizations.of(context)!.confirm_pin
-                            : AppLocalizations.of(context)!.create_pin,
-                        style: GoogleFonts.poppins(
-                          color: Colors.white,
-                          fontSize: 28,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-
-                      // Subtitle
-                      Text(
-                        _isConfirmStep
-                            ? AppLocalizations.of(context)!.enter_pin_again
-                            : AppLocalizations.of(
-                              context,
-                            )!.create_pin_to_secure,
-                        style: GoogleFonts.poppins(
-                          color: Colors.grey[400],
-                          fontSize: 14,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                      const SizedBox(height: 40),
-
-                      // PIN Length Selection (only on first step)
-                      if (!_isConfirmStep) ...[
-                        Text(
-                          AppLocalizations.of(context)!.select_pin_length,
-                          style: GoogleFonts.poppins(
-                            color: Colors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
+                      )
+                      : SingleChildScrollView(
+                        padding: const EdgeInsets.all(24),
+                        child: Column(
                           children: [
-                            _buildPinLengthButton(4),
-                            const SizedBox(width: 16),
-                            _buildPinLengthButton(6),
-                          ],
-                        ),
-                        const SizedBox(height: 40),
-                      ],
+                            const SizedBox(height: 20),
 
-                      // PIN Pad
-                      PinPad(
-                        pin: _isConfirmStep ? _confirmPin : _pin,
-                        pinLength: _selectedPinLength,
-                        onPinChanged: _onPinChanged,
-                        onComplete: _onPinComplete,
-                      ),
-                      const SizedBox(height: 32),
-
-                      // Info Text
-                      Container(
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF1A1A1A),
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: Colors.grey[800]!),
-                        ),
-                        child: Row(
-                          children: [
-                            Icon(
-                              Iconsax.info_circle,
-                              color: Colors.grey[400],
-                              size: 20,
+                            // Icon
+                            Container(
+                              padding: const EdgeInsets.all(20),
+                              decoration: BoxDecoration(
+                                color: const Color(
+                                  0xFF8B5FBF,
+                                ).withValues(alpha: 0.2),
+                                shape: BoxShape.circle,
+                              ),
+                              child: const Icon(
+                                Iconsax.lock,
+                                size: 60,
+                                color: Color(0xFF8B5FBF),
+                              ),
                             ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: Text(
-                                AppLocalizations.of(context)!.use_pin_to_unlock,
+                            const SizedBox(height: 32),
+
+                            // Title
+                            Text(
+                              _isConfirmStep
+                                  ? AppLocalizations.of(context)!.confirm_pin
+                                  : AppLocalizations.of(context)!.create_pin,
+                              style: GoogleFonts.poppins(
+                                color: Colors.white,
+                                fontSize: 28,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+
+                            // Subtitle
+                            Text(
+                              _isConfirmStep
+                                  ? AppLocalizations.of(
+                                    context,
+                                  )!.enter_pin_again
+                                  : AppLocalizations.of(
+                                    context,
+                                  )!.create_pin_to_secure,
+                              style: GoogleFonts.poppins(
+                                color: Colors.grey[400],
+                                fontSize: 14,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                            const SizedBox(height: 40),
+
+                            // PIN Length Selection (only on first step)
+                            if (!_isConfirmStep) ...[
+                              Text(
+                                AppLocalizations.of(context)!.select_pin_length,
                                 style: GoogleFonts.poppins(
-                                  color: Colors.grey[400],
-                                  fontSize: 12,
+                                  color: Colors.white,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
                                 ),
+                              ),
+                              const SizedBox(height: 16),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  _buildPinLengthButton(4),
+                                  const SizedBox(width: 16),
+                                  _buildPinLengthButton(6),
+                                ],
+                              ),
+                              const SizedBox(height: 40),
+                            ],
+
+                            // PIN Pad
+                            PinPad(
+                              pin: _isConfirmStep ? _confirmPin : _pin,
+                              pinLength: _selectedPinLength,
+                              onPinChanged: _onPinChanged,
+                              onComplete: _onPinComplete,
+                            ),
+                            const SizedBox(height: 32),
+
+                            // Info Text
+                            Container(
+                              padding: const EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFF1A1A1A),
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(color: Colors.grey[800]!),
+                              ),
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    Iconsax.info_circle,
+                                    color: Colors.grey[400],
+                                    size: 20,
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: Text(
+                                      AppLocalizations.of(
+                                        context,
+                                      )!.use_pin_to_unlock,
+                                      style: GoogleFonts.poppins(
+                                        color: Colors.grey[400],
+                                        fontSize: 12,
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
                           ],
                         ),
                       ),
-                    ],
-                  ),
-                ),
             ),
           ),
         ],

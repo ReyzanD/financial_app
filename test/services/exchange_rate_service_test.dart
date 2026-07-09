@@ -1,8 +1,22 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:get_it/get_it.dart';
 import 'package:financial_app/models/currency_model.dart';
 import 'package:financial_app/services/exchange_rate_service.dart';
+import 'package:financial_app/services/local_data_service.dart';
+import '../helpers/fake_local_data_service.dart';
+
+final getIt = GetIt.instance;
 
 void main() {
+  setUpAll(() {
+    TestWidgetsFlutterBinding.ensureInitialized();
+    getIt.registerLazySingleton<LocalDataService>(() => FakeLocalDataService());
+  });
+
+  tearDownAll(() {
+    getIt.unregister<LocalDataService>();
+  });
+
   group('CurrencyModel', () {
     test('should have correct IDR properties', () {
       expect(CurrencyModel.idr.code, 'IDR');
@@ -49,7 +63,13 @@ void main() {
     });
 
     test('should deserialize from JSON', () {
-      final json = {'code': 'EUR', 'name': 'Euro', 'symbol': '€', 'decimalPlaces': 2, 'countryCode': 'EU'};
+      final json = {
+        'code': 'EUR',
+        'name': 'Euro',
+        'symbol': '€',
+        'decimalPlaces': 2,
+        'countryCode': 'EU',
+      };
       final currency = CurrencyModel.fromJson(json);
       expect(currency.code, 'EUR');
       expect(currency.symbol, '€');
@@ -97,10 +117,7 @@ void main() {
     });
 
     test('should calculate portfolio value correctly', () async {
-      final balances = <String, double>{
-        'IDR': 16000000.0,
-        'USD': 100.0,
-      };
+      final balances = <String, double>{'IDR': 16000000.0, 'USD': 100.0};
 
       final total = await service.calculatePortfolioValue(balances);
 
@@ -109,15 +126,14 @@ void main() {
     });
 
     test('should return empty distribution for zero balances', () async {
-      final distribution = await service.getCurrencyDistribution(<String, double>{});
+      final distribution = await service.getCurrencyDistribution(
+        <String, double>{},
+      );
       expect(distribution, isEmpty);
     });
 
     test('should calculate currency distribution', () async {
-      final balances = <String, double>{
-        'IDR': 16000000.0,
-        'USD': 100.0,
-      };
+      final balances = <String, double>{'IDR': 16000000.0, 'USD': 100.0};
 
       final distribution = await service.getCurrencyDistribution(balances);
       expect(distribution.isNotEmpty, true);

@@ -46,10 +46,10 @@ class CacheService {
         if (age < duration) {
           // Cache is valid
           final data = jsonDecode(cachedData) as T;
-          
+
           // Store in memory cache
           _addToMemoryCache(key, data);
-          
+
           LoggerService.debug('[CacheService] Cache hit (disk): $key');
           return data;
         } else {
@@ -118,11 +118,15 @@ class CacheService {
       // Clear disk cache
       final prefs = await SharedPreferences.getInstance();
       final keys = prefs.getKeys();
-      final cacheKeys = keys.where((key) => 
-        key.startsWith(_cachePrefix) || 
-        key.startsWith(_cacheTimestampPrefix) ||
-        key.startsWith(_cacheVersionPrefix)
-      ).toList();
+      final cacheKeys =
+          keys
+              .where(
+                (key) =>
+                    key.startsWith(_cachePrefix) ||
+                    key.startsWith(_cacheTimestampPrefix) ||
+                    key.startsWith(_cacheVersionPrefix),
+              )
+              .toList();
 
       for (final key in cacheKeys) {
         await prefs.remove(key);
@@ -139,7 +143,8 @@ class CacheService {
     try {
       final prefs = await SharedPreferences.getInstance();
       final keys = prefs.getKeys();
-      final cacheKeys = keys.where((key) => key.startsWith(_cachePrefix)).toList();
+      final cacheKeys =
+          keys.where((key) => key.startsWith(_cachePrefix)).toList();
 
       for (final key in cacheKeys) {
         final cacheKey = key.substring(_cachePrefix.length);
@@ -157,7 +162,10 @@ class CacheService {
 
       LoggerService.debug('[CacheService] Expired cache cleared');
     } catch (e) {
-      LoggerService.error('[CacheService] Error clearing expired cache', error: e);
+      LoggerService.error(
+        '[CacheService] Error clearing expired cache',
+        error: e,
+      );
     }
   }
 
@@ -177,7 +185,8 @@ class CacheService {
     try {
       final prefs = await SharedPreferences.getInstance();
       final keys = prefs.getKeys();
-      final cacheKeys = keys.where((key) => key.startsWith(_cachePrefix)).toList();
+      final cacheKeys =
+          keys.where((key) => key.startsWith(_cachePrefix)).toList();
 
       int totalSize = 0;
       int expiredCount = 0;
@@ -218,19 +227,26 @@ class CacheService {
     try {
       final prefs = await SharedPreferences.getInstance();
       final keys = prefs.getKeys();
-      final cacheKeys = keys.where((key) => 
-        key.startsWith(_cachePrefix) && 
-        key.contains(pattern)
-      ).toList();
+      final cacheKeys =
+          keys
+              .where(
+                (key) => key.startsWith(_cachePrefix) && key.contains(pattern),
+              )
+              .toList();
 
       for (final key in cacheKeys) {
         final cacheKey = key.substring(_cachePrefix.length);
         await _remove(cacheKey);
       }
 
-      LoggerService.debug('[CacheService] Cache invalidated for pattern: $pattern');
+      LoggerService.debug(
+        '[CacheService] Cache invalidated for pattern: $pattern',
+      );
     } catch (e) {
-      LoggerService.error('[CacheService] Error invalidating pattern', error: e);
+      LoggerService.error(
+        '[CacheService] Error invalidating pattern',
+        error: e,
+      );
     }
   }
 }
@@ -247,4 +263,3 @@ class CacheItem {
     return age >= durationSeconds;
   }
 }
-

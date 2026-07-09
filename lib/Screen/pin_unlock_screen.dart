@@ -262,169 +262,179 @@ class _PinUnlockScreenState extends State<PinUnlockScreen> {
                 padding: const EdgeInsets.all(24),
                 child: Column(
                   children: [
-              const SizedBox(height: 60),
+                    const SizedBox(height: 60),
 
-              // App Logo/Icon
-              Container(
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: const Color(0xFF8B5FBF).withValues(alpha: 0.2),
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(
-                  Iconsax.lock_1,
-                  size: 60,
-                  color: Color(0xFF8B5FBF),
-                ),
-              ),
-              const SizedBox(height: 32),
+                    // App Logo/Icon
+                    Container(
+                      padding: const EdgeInsets.all(20),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF8B5FBF).withValues(alpha: 0.2),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Iconsax.lock_1,
+                        size: 60,
+                        color: Color(0xFF8B5FBF),
+                      ),
+                    ),
+                    const SizedBox(height: 32),
 
-              // Title
-              Text(
-                AppLocalizations.of(context)!.enter_pin,
-                style: GoogleFonts.poppins(
-                  color: Colors.white,
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 12),
+                    // Title
+                    Text(
+                      AppLocalizations.of(context)!.enter_pin,
+                      style: GoogleFonts.poppins(
+                        color: Colors.white,
+                        fontSize: 28,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
 
-              // Subtitle
-              Text(
-                _lockDuration != null
-                    ? '${AppLocalizations.of(context)!.wait} ${_formatDuration(_lockDuration!)}'
-                    : AppLocalizations.of(context)!.enter_pin_to_unlock,
-                style: GoogleFonts.poppins(
-                  color:
+                    // Subtitle
+                    Text(
                       _lockDuration != null
-                          ? Colors.red[400]
-                          : Colors.grey[400],
-                  fontSize: 14,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 40),
+                          ? '${AppLocalizations.of(context)!.wait} ${_formatDuration(_lockDuration!)}'
+                          : AppLocalizations.of(context)!.enter_pin_to_unlock,
+                      style: GoogleFonts.poppins(
+                        color:
+                            _lockDuration != null
+                                ? Colors.red[400]
+                                : Colors.grey[400],
+                        fontSize: 14,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 40),
 
-              // Biometric Authentication Button
-              if (_biometricAvailable &&
-                  _biometricEnabled &&
-                  _lockDuration == null)
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 24),
-                  child: FutureBuilder<List<BiometricType>>(
-                    future: _biometricService.getAvailableBiometrics(),
-                    builder: (context, snapshot) {
-                      if (!snapshot.hasData) return const SizedBox.shrink();
+                    // Biometric Authentication Button
+                    if (_biometricAvailable &&
+                        _biometricEnabled &&
+                        _lockDuration == null)
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 24),
+                        child: FutureBuilder<List<BiometricType>>(
+                          future: _biometricService.getAvailableBiometrics(),
+                          builder: (context, snapshot) {
+                            if (!snapshot.hasData)
+                              return const SizedBox.shrink();
 
-                      final biometrics = snapshot.data!;
-                      final hasFingerprint = biometrics.contains(
-                        BiometricType.fingerprint,
-                      );
-                      final hasFace = biometrics.contains(BiometricType.face);
-                      final hasIris = biometrics.contains(BiometricType.iris);
+                            final biometrics = snapshot.data!;
+                            final hasFingerprint = biometrics.contains(
+                              BiometricType.fingerprint,
+                            );
+                            final hasFace = biometrics.contains(
+                              BiometricType.face,
+                            );
+                            final hasIris = biometrics.contains(
+                              BiometricType.iris,
+                            );
 
-                      IconData icon;
-                      String label;
+                            IconData icon;
+                            String label;
 
-                      if (hasFace) {
-                        icon = Iconsax.scan_barcode;
-                        label = AppLocalizations.of(context)!.use_face_id;
-                      } else if (hasFingerprint) {
-                        icon = Iconsax.finger_scan;
-                        label = AppLocalizations.of(context)!.use_fingerprint;
-                      } else if (hasIris) {
-                        icon = Iconsax.scan;
-                        label = AppLocalizations.of(context)!.use_iris;
-                      } else {
-                        icon = Iconsax.scan_barcode;
-                        label = AppLocalizations.of(context)!.use_biometric;
-                      }
+                            if (hasFace) {
+                              icon = Iconsax.scan_barcode;
+                              label = AppLocalizations.of(context)!.use_face_id;
+                            } else if (hasFingerprint) {
+                              icon = Iconsax.finger_scan;
+                              label =
+                                  AppLocalizations.of(context)!.use_fingerprint;
+                            } else if (hasIris) {
+                              icon = Iconsax.scan;
+                              label = AppLocalizations.of(context)!.use_iris;
+                            } else {
+                              icon = Iconsax.scan_barcode;
+                              label =
+                                  AppLocalizations.of(context)!.use_biometric;
+                            }
 
-                      return ElevatedButton.icon(
-                        onPressed: _isVerifying ? null : _tryBiometricAuth,
-                        icon: Icon(icon, size: 20),
-                        label: Text(label),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF8B5FBF),
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 24,
-                            vertical: 16,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
+                            return ElevatedButton.icon(
+                              onPressed:
+                                  _isVerifying ? null : _tryBiometricAuth,
+                              icon: Icon(icon, size: 20),
+                              label: Text(label),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color(0xFF8B5FBF),
+                                foregroundColor: Colors.white,
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 24,
+                                  vertical: 16,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+
+                    // PIN Pad (disabled if locked)
+                    IgnorePointer(
+                      ignoring: _lockDuration != null || _isVerifying,
+                      child: Opacity(
+                        opacity: _lockDuration != null ? 0.4 : 1.0,
+                        child: PinPad(
+                          pin: _pin,
+                          pinLength: _pinLength,
+                          onPinChanged: _onPinChanged,
+                          onComplete: _onPinComplete,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+
+                    // Remaining Attempts
+                    if (_remainingAttempts < 5 && _lockDuration == null)
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 12,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.orange.withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: Colors.orange.withValues(alpha: 0.3),
                           ),
                         ),
-                      );
-                    },
-                  ),
-                ),
-
-              // PIN Pad (disabled if locked)
-              IgnorePointer(
-                ignoring: _lockDuration != null || _isVerifying,
-                child: Opacity(
-                  opacity: _lockDuration != null ? 0.4 : 1.0,
-                  child: PinPad(
-                    pin: _pin,
-                    pinLength: _pinLength,
-                    onPinChanged: _onPinChanged,
-                    onComplete: _onPinComplete,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 24),
-
-              // Remaining Attempts
-              if (_remainingAttempts < 5 && _lockDuration == null)
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 12,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Colors.orange.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: Colors.orange.withValues(alpha: 0.3)),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Icon(
-                        Iconsax.warning_2,
-                        color: Colors.orange,
-                        size: 20,
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(
+                              Iconsax.warning_2,
+                              color: Colors.orange,
+                              size: 20,
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              '$_remainingAttempts percobaan tersisa',
+                              style: GoogleFonts.poppins(
+                                color: Colors.orange,
+                                fontSize: 13,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                      const SizedBox(width: 8),
-                      Text(
-                        '$_remainingAttempts percobaan tersisa',
+                    const SizedBox(height: 32),
+
+                    // Forgot PIN / Logout
+                    TextButton(
+                      onPressed: _logout,
+                      child: Text(
+                        AppLocalizations.of(context)!.forgot_pin_logout,
                         style: GoogleFonts.poppins(
-                          color: Colors.orange,
-                          fontSize: 13,
-                          fontWeight: FontWeight.w500,
+                          color: const Color(0xFF8B5FBF),
+                          fontSize: 14,
                         ),
                       ),
-                    ],
-                  ),
-                ),
-              const SizedBox(height: 32),
-
-              // Forgot PIN / Logout
-              TextButton(
-                onPressed: _logout,
-                child: Text(
-                  AppLocalizations.of(context)!.forgot_pin_logout,
-                  style: GoogleFonts.poppins(
-                    color: const Color(0xFF8B5FBF),
-                    fontSize: 14,
-                  ),
+                    ),
+                  ],
                 ),
               ),
-            ],
-          ),
-        ),
-      ),
+            ),
           ),
         ],
       ),

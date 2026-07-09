@@ -19,6 +19,7 @@ import 'package:financial_app/Screen/ai_budget_recommendation_screen.dart';
 import 'package:financial_app/Screen/report_screen.dart';
 import 'package:financial_app/Screen/backup_screen.dart';
 import 'package:financial_app/Screen/financial_obligations_screen.dart';
+import 'package:financial_app/Screen/forecast_screen.dart';
 import 'package:financial_app/Screen/recurring_transactions_screen.dart';
 import 'package:financial_app/Screen/profile_screen.dart';
 import 'package:financial_app/Screen/transaction_history_screen.dart';
@@ -174,16 +175,18 @@ class MyApp extends StatelessWidget {
             '/analytics': (context) => const AnalyticsScreen(),
             '/goals': (context) => const GoalsScreen(),
             '/add-transaction': (context) => const AddTransactionScreen(),
-            '/ai-budget-recommendation': (context) =>
-                const AIBudgetRecommendationScreen(),
+            '/ai-budget-recommendation':
+                (context) => const AIBudgetRecommendationScreen(),
             '/reports': (context) => const ReportScreen(),
             '/backup': (context) => const BackupScreen(),
-            '/financial-obligations': (context) =>
-                const FinancialObligationsScreen(),
-            '/recurring-transactions': (context) =>
-                const RecurringTransactionsScreen(),
+            '/financial-obligations':
+                (context) => const FinancialObligationsScreen(),
+            '/forecast': (context) => const ForecastScreen(),
+            '/recurring-transactions':
+                (context) => const RecurringTransactionsScreen(),
             '/profile': (context) => const ProfileScreen(),
-            '/transaction-history': (context) => const TransactionHistoryScreen(),
+            '/transaction-history':
+                (context) => const TransactionHistoryScreen(),
             '/receipt-history': (context) => const ReceiptHistoryScreen(),
             '/financial-insights': (context) => const FinancialInsightsScreen(),
             '/accounts': (context) => const AccountsScreen(),

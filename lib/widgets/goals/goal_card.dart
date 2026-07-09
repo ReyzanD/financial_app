@@ -31,7 +31,8 @@ class _GoalCardState extends State<GoalCard> {
   }
 
   Future<void> _loadContributions() async {
-    final goalId = (widget.goal['goal_id_232143'] ?? widget.goal['id']).toString();
+    final goalId =
+        (widget.goal['goal_id_232143'] ?? widget.goal['id']).toString();
     if (goalId.isEmpty) return;
     try {
       final accountService = AccountService();
@@ -229,7 +230,8 @@ class _GoalCardState extends State<GoalCard> {
             children: [
               Center(
                 child: Container(
-                  width: 40, height: 4,
+                  width: 40,
+                  height: 4,
                   decoration: BoxDecoration(
                     color: Colors.grey[600],
                     borderRadius: BorderRadius.circular(2),
@@ -248,7 +250,10 @@ class _GoalCardState extends State<GoalCard> {
               const SizedBox(height: 4),
               Text(
                 goalName,
-                style: GoogleFonts.poppins(color: Colors.grey[400], fontSize: 12),
+                style: GoogleFonts.poppins(
+                  color: Colors.grey[400],
+                  fontSize: 12,
+                ),
               ),
               const SizedBox(height: 16),
               if (_contributions.isEmpty)
@@ -266,10 +271,12 @@ class _GoalCardState extends State<GoalCard> {
                   child: ListView.separated(
                     shrinkWrap: true,
                     itemCount: _contributions.length,
-                    separatorBuilder: (_, __) => const Divider(color: Color(0xFF2A2A2A)),
+                    separatorBuilder:
+                        (_, __) => const Divider(color: Color(0xFF2A2A2A)),
                     itemBuilder: (_, i) {
                       final c = _contributions[i];
-                      final amt = (c['amount_232143'] as num?)?.toDouble() ?? 0.0;
+                      final amt =
+                          (c['amount_232143'] as num?)?.toDouble() ?? 0.0;
                       final acctName = c['account_name']?.toString();
                       final date = c['contributed_at_232143']?.toString() ?? '';
                       final note = c['note_232143']?.toString();
@@ -279,10 +286,16 @@ class _GoalCardState extends State<GoalCard> {
                         leading: Container(
                           padding: const EdgeInsets.all(8),
                           decoration: BoxDecoration(
-                            color: const Color(0xFF8B5FBF).withValues(alpha: 0.2),
+                            color: const Color(
+                              0xFF8B5FBF,
+                            ).withValues(alpha: 0.2),
                             borderRadius: BorderRadius.circular(8),
                           ),
-                          child: const Icon(Iconsax.money_4, color: Color(0xFF8B5FBF), size: 20),
+                          child: const Icon(
+                            Iconsax.money_4,
+                            color: Color(0xFF8B5FBF),
+                            size: 20,
+                          ),
                         ),
                         title: Text(
                           CurrencyFormatter.formatRupiah(amt.toInt()),
@@ -294,11 +307,17 @@ class _GoalCardState extends State<GoalCard> {
                         ),
                         subtitle: Text(
                           '${acctName ?? 'Tanpa akun'}${note != null ? ' - $note' : ''}',
-                          style: GoogleFonts.poppins(color: Colors.grey[500], fontSize: 11),
+                          style: GoogleFonts.poppins(
+                            color: Colors.grey[500],
+                            fontSize: 11,
+                          ),
                         ),
                         trailing: Text(
                           _formatDate(date),
-                          style: GoogleFonts.poppins(color: Colors.grey[600], fontSize: 10),
+                          style: GoogleFonts.poppins(
+                            color: Colors.grey[600],
+                            fontSize: 10,
+                          ),
                         ),
                       );
                     },
@@ -345,7 +364,11 @@ class _GoalCardState extends State<GoalCard> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, color: color, size: ResponsiveHelper.iconSize(context, 16)),
+            Icon(
+              icon,
+              color: color,
+              size: ResponsiveHelper.iconSize(context, 16),
+            ),
             SizedBox(width: ResponsiveHelper.horizontalSpacing(context, 6)),
             Text(
               label,
@@ -381,7 +404,11 @@ class _GoalCardState extends State<GoalCard> {
           ),
           border: Border.all(color: color.withValues(alpha: 0.3)),
         ),
-        child: Icon(icon, color: color, size: ResponsiveHelper.iconSize(context, 16)),
+        child: Icon(
+          icon,
+          color: color,
+          size: ResponsiveHelper.iconSize(context, 16),
+        ),
       ),
     );
   }
@@ -421,13 +448,17 @@ class _GoalCardState extends State<GoalCard> {
   }
 
   void _showDeleteDialog(BuildContext context) {
-    final goalName = widget.goal['name_232143'] ?? widget.goal['name'] ?? 'Goal';
+    final goalName =
+        widget.goal['name_232143'] ?? widget.goal['name'] ?? 'Goal';
     showDialog(
       context: context,
       builder: (BuildContext dialogContext) {
         return AlertDialog(
           backgroundColor: const Color(0xFF1A1A1A),
-          title: Text('Hapus Goal?', style: GoogleFonts.poppins(color: Colors.white)),
+          title: Text(
+            'Hapus Goal?',
+            style: GoogleFonts.poppins(color: Colors.white),
+          ),
           content: Text(
             'Apakah Anda yakin ingin menghapus "$goalName"?',
             style: GoogleFonts.poppins(color: Colors.grey[400]),
@@ -435,7 +466,10 @@ class _GoalCardState extends State<GoalCard> {
           actions: [
             TextButton(
               onPressed: () => Navigator.of(dialogContext).pop(),
-              child: Text('Batal', style: GoogleFonts.poppins(color: Colors.grey)),
+              child: Text(
+                'Batal',
+                style: GoogleFonts.poppins(color: Colors.grey),
+              ),
             ),
             TextButton(
               onPressed: () async {
@@ -447,7 +481,10 @@ class _GoalCardState extends State<GoalCard> {
                   if (dialogContext.mounted) {
                     Navigator.of(dialogContext).pop();
                     if (context.mounted) {
-                      ErrorHandlerService.showSuccessSnackbar(context, 'Goal berhasil dihapus');
+                      ErrorHandlerService.showSuccessSnackbar(
+                        context,
+                        'Goal berhasil dihapus',
+                      );
                     }
                     widget.onUpdated?.call();
                   }
@@ -461,7 +498,10 @@ class _GoalCardState extends State<GoalCard> {
                   }
                 }
               },
-              child: Text('Hapus', style: GoogleFonts.poppins(color: Colors.red)),
+              child: Text(
+                'Hapus',
+                style: GoogleFonts.poppins(color: Colors.red),
+              ),
             ),
           ],
         );
@@ -473,19 +513,42 @@ class _GoalCardState extends State<GoalCard> {
     Color color;
     String text;
     switch (priority) {
-      case 5: color = Colors.red; text = 'Sangat Tinggi'; break;
-      case 4: color = Colors.orange; text = 'Tinggi'; break;
-      case 3: color = Colors.blue; text = 'Sedang'; break;
-      case 2: color = Colors.green; text = 'Rendah'; break;
-      case 1: color = Colors.grey; text = 'Sangat Rendah'; break;
-      default: color = Colors.blue; text = 'Sedang';
+      case 5:
+        color = Colors.red;
+        text = 'Sangat Tinggi';
+        break;
+      case 4:
+        color = Colors.orange;
+        text = 'Tinggi';
+        break;
+      case 3:
+        color = Colors.blue;
+        text = 'Sedang';
+        break;
+      case 2:
+        color = Colors.green;
+        text = 'Rendah';
+        break;
+      case 1:
+        color = Colors.grey;
+        text = 'Sangat Rendah';
+        break;
+      default:
+        color = Colors.blue;
+        text = 'Sedang';
     }
 
     return Container(
-      padding: ResponsiveHelper.symmetricPadding(context, horizontal: 8, vertical: 4),
+      padding: ResponsiveHelper.symmetricPadding(
+        context,
+        horizontal: 8,
+        vertical: 4,
+      ),
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.2),
-        borderRadius: BorderRadius.circular(ResponsiveHelper.borderRadius(context, 8)),
+        borderRadius: BorderRadius.circular(
+          ResponsiveHelper.borderRadius(context, 8),
+        ),
         border: Border.all(color: color.withValues(alpha: 0.5)),
       ),
       child: Text(

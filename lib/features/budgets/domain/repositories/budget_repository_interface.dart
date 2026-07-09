@@ -7,4 +7,3 @@ abstract class BudgetRepositoryInterface {
   Future<BudgetEntity> updateBudget(BudgetEntity budget);
   Future<void> deleteBudget(String id);
 }
-

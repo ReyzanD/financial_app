@@ -42,11 +42,13 @@ class FinancialFacade {
       }
 
       // Get default rates if not provided
-      final effectiveInflationRate = inflationRate ?? 
-          (await _getInflationRate()) ?? 
+      final effectiveInflationRate =
+          inflationRate ??
+          (await _getInflationRate()) ??
           _calculator.getIndonesiaDefaultRates()['inflationRate']!;
-      final effectiveTaxRate = taxRate ?? 
-          (await _getTaxRate()) ?? 
+      final effectiveTaxRate =
+          taxRate ??
+          (await _getTaxRate()) ??
           _calculator.getIndonesiaDefaultRates()['taxRate']!;
 
       // Calculate income and expenses
@@ -129,11 +131,12 @@ class FinancialFacade {
         if (budgets.isNotEmpty) {
           budgetStatus = {
             'totalBudgets': budgets.length,
-            'overBudget': budgets.where((b) {
-              final spent = (b['spent'] ?? 0).toDouble();
-              final limit = (b['limit'] ?? 1).toDouble();
-              return spent > limit;
-            }).length,
+            'overBudget':
+                budgets.where((b) {
+                  final spent = (b['spent'] ?? 0).toDouble();
+                  final limit = (b['limit'] ?? 1).toDouble();
+                  return spent > limit;
+                }).length,
           };
         }
       } catch (e) {
@@ -174,7 +177,7 @@ class FinancialFacade {
       final prefs = await SharedPreferences.getInstance();
       final timestampStr = prefs.getString('${_cacheKey}_timestamp');
       if (timestampStr == null) return null;
-      
+
       final timestamp = DateTime.parse(timestampStr);
       final age = DateTime.now().difference(timestamp);
       if (age >= _cacheTTL) {
@@ -183,15 +186,15 @@ class FinancialFacade {
         await prefs.remove('${_cacheKey}_timestamp');
         return null;
       }
-      
+
       // Get encrypted data from secure storage
       final encryptedData = await _secureStorage.read(key: _cacheKey);
       if (encryptedData == null) return null;
-      
+
       // Decrypt
       final decryptedJson = await _encryptionService.decrypt(encryptedData);
       final cached = FinancialOverview.fromJson(jsonDecode(decryptedJson));
-      
+
       return cached;
     } catch (e) {
       LoggerService.warning('Error reading cached overview', error: e);
@@ -205,13 +208,16 @@ class FinancialFacade {
       // Encrypt sensitive financial data before caching
       final jsonData = jsonEncode(overview.toJson());
       final encrypted = await _encryptionService.encrypt(jsonData);
-      
+
       // Store encrypted data in secure storage
       await _secureStorage.write(key: _cacheKey, value: encrypted);
-      
+
       // Also store timestamp in regular prefs for TTL checking
       final prefs = await SharedPreferences.getInstance();
-      await prefs.setString('${_cacheKey}_timestamp', DateTime.now().toIso8601String());
+      await prefs.setString(
+        '${_cacheKey}_timestamp',
+        DateTime.now().toIso8601String(),
+      );
     } catch (e) {
       LoggerService.warning('Error caching overview', error: e);
     }
@@ -251,7 +257,9 @@ class FinancialFacade {
   /// Store Money value securely (encrypted)
   Future<void> storeSecure(String key, Money value) async {
     try {
-      final encrypted = await _encryptionService.encrypt(value.minorUnits.toString());
+      final encrypted = await _encryptionService.encrypt(
+        value.minorUnits.toString(),
+      );
       await _secureStorage.write(key: key, value: encrypted);
     } catch (e) {
       LoggerService.warning('Error storing secure Money value', error: e);
@@ -263,7 +271,7 @@ class FinancialFacade {
     try {
       final encrypted = await _secureStorage.read(key: key);
       if (encrypted == null) return null;
-      
+
       final decrypted = await _encryptionService.decrypt(encrypted);
       final amount = int.parse(decrypted);
       return Money.fromInt(amount, isoCode: 'IDR');
@@ -278,4 +286,3 @@ class FinancialFacade {
     return await _aiService.parseNaturalLanguageQuery(query);
   }
 }
-

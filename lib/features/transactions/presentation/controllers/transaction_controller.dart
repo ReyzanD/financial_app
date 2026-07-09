@@ -67,4 +67,3 @@ class TransactionController extends ChangeNotifier {
     }
   }
 }
-

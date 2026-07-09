@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:financial_app/utils/formatters.dart';
 import 'package:financial_app/services/api_service.dart';
 import 'package:financial_app/services/logger_service.dart';
@@ -132,6 +133,90 @@ class _FinancialSummaryCardState extends State<FinancialSummaryCard>
     _loadFinancialSummary();
   }
 
+  /// Shimmer skeleton while data loads (replaces old spinner)
+  Widget _buildShimmerPlaceholder() {
+    return Container(
+      height: ResponsiveHelper.cardHeight(context, 200),
+      padding: ResponsiveHelper.padding(context, multiplier: 1.25),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: [Color(0xFF8B5FBF), Color(0xFF6A3093)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(
+          ResponsiveHelper.borderRadius(context, 20),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFF8B5FBF).withValues(alpha: 0.3),
+            blurRadius: 15,
+            spreadRadius: 2,
+          ),
+        ],
+      ),
+      child: Shimmer.fromColors(
+        baseColor: Colors.white.withValues(alpha: 0.08),
+        highlightColor: Colors.white.withValues(alpha: 0.2),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Title placeholder
+            Container(
+              height: 12,
+              width: 100,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(6),
+              ),
+            ),
+            SizedBox(height: ResponsiveHelper.verticalSpacing(context, 16)),
+            // Balance placeholder
+            Container(
+              height: 32,
+              width: 180,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+              ),
+            ),
+            SizedBox(height: ResponsiveHelper.verticalSpacing(context, 12)),
+            // Income / Expense row placeholders
+            Row(
+              children: [
+                Expanded(
+                  child: Container(
+                    height: ResponsiveHelper.cardHeight(context, 72),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(
+                        ResponsiveHelper.borderRadius(context, 12),
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  width: ResponsiveHelper.horizontalSpacing(context, 12),
+                ),
+                Expanded(
+                  child: Container(
+                    height: ResponsiveHelper.cardHeight(context, 72),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(
+                        ResponsiveHelper.borderRadius(context, 12),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   void didUpdateWidget(FinancialSummaryCard oldWidget) {
     super.didUpdateWidget(oldWidget);
@@ -160,30 +245,7 @@ class _FinancialSummaryCardState extends State<FinancialSummaryCard>
 
   Widget _buildContent() {
     if (_isLoading) {
-      return Container(
-        height: ResponsiveHelper.cardHeight(context, 200),
-        padding: ResponsiveHelper.padding(context, multiplier: 1.25),
-        decoration: BoxDecoration(
-          gradient: const LinearGradient(
-            colors: [Color(0xFF8B5FBF), Color(0xFF6A3093)],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-          borderRadius: BorderRadius.circular(
-            ResponsiveHelper.borderRadius(context, 20),
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: const Color(0xFF8B5FBF).withValues(alpha: 0.3),
-              blurRadius: 15,
-              spreadRadius: 2,
-            ),
-          ],
-        ),
-        child: const Center(
-          child: CircularProgressIndicator(color: Colors.white),
-        ),
-      );
+      return _buildShimmerPlaceholder();
     }
 
     if (_errorMessage != null) {
@@ -333,7 +395,9 @@ class _FinancialSummaryCardState extends State<FinancialSummaryCard>
                       borderRadius: BorderRadius.circular(
                         ResponsiveHelper.borderRadius(context, 20),
                       ),
-                      border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
+                      border: Border.all(
+                        color: Colors.white.withValues(alpha: 0.2),
+                      ),
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
@@ -460,8 +524,7 @@ class _FinancialSummaryCardState extends State<FinancialSummaryCard>
                 Expanded(
                   child: _buildMetricItem(
                     title: 'Skor Kesehatan',
-                    value:
-                        (healthScore['score'] as double).toStringAsFixed(0),
+                    value: (healthScore['score'] as double).toStringAsFixed(0),
                     color:
                         (healthScore['score'] as double) >= 80
                             ? const Color(0xFF4CAF50)

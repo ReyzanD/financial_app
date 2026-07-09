@@ -120,7 +120,8 @@ class _LocationInsightCardState extends State<LocationInsightCard> {
                         ),
                         children: [
                           TileLayer(
-                            urlTemplate: MapProviderService.getTileUrlTemplate(),
+                            urlTemplate:
+                                MapProviderService.getTileUrlTemplate(),
                             userAgentPackageName: 'com.example.financial_app',
                           ),
                           MarkerLayer(

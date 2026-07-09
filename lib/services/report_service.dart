@@ -43,8 +43,9 @@ class ReportService {
       }
     }
 
-    final sortedCategories = categoryExpenses.entries.toList()
-      ..sort((a, b) => b.value.compareTo(a.value));
+    final sortedCategories =
+        categoryExpenses.entries.toList()
+          ..sort((a, b) => b.value.compareTo(a.value));
 
     // Build PDF
     pdf.addPage(
@@ -83,10 +84,7 @@ class ReportService {
                   ),
                   pw.Text(
                     dateFormat.format(DateTime.now()),
-                    style: pw.TextStyle(
-                      fontSize: 12,
-                      color: PdfColors.grey600,
-                    ),
+                    style: pw.TextStyle(fontSize: 12, color: PdfColors.grey600),
                   ),
                 ],
               ),
@@ -121,10 +119,7 @@ class ReportService {
             // Summary Section
             pw.Text(
               'Ringkasan',
-              style: pw.TextStyle(
-                fontSize: 18,
-                fontWeight: pw.FontWeight.bold,
-              ),
+              style: pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold),
             ),
             pw.SizedBox(height: 12),
             pw.Row(
@@ -212,8 +207,8 @@ class ReportService {
                     ],
                   ),
                   ...sortedCategories.take(10).map((entry) {
-                    final percentage =
-                        (entry.value / totalExpense * 100).toStringAsFixed(1);
+                    final percentage = (entry.value / totalExpense * 100)
+                        .toStringAsFixed(1);
                     return pw.TableRow(
                       children: [
                         pw.Padding(
@@ -250,10 +245,7 @@ class ReportService {
             // Transaction List
             pw.Text(
               'Daftar Transaksi',
-              style: pw.TextStyle(
-                fontSize: 18,
-                fontWeight: pw.FontWeight.bold,
-              ),
+              style: pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold),
             ),
             pw.SizedBox(height: 12),
             pw.Table(
@@ -268,9 +260,7 @@ class ReportService {
               children: [
                 // Header
                 pw.TableRow(
-                  decoration: const pw.BoxDecoration(
-                    color: PdfColors.grey200,
-                  ),
+                  decoration: const pw.BoxDecoration(color: PdfColors.grey200),
                   children: [
                     _buildTableCell('Tanggal', isHeader: true),
                     _buildTableCell('Kategori', isHeader: true),
@@ -284,26 +274,31 @@ class ReportService {
                   return pw.TableRow(
                     children: [
                       _buildTableCell(
-                        DateFormat('dd/MM/yyyy', 'id_ID')
-                            .format(transaction.transactionDate),
+                        DateFormat(
+                          'dd/MM/yyyy',
+                          'id_ID',
+                        ).format(transaction.transactionDate),
                       ),
                       _buildTableCell(transaction.categoryName),
                       _buildTableCell(
-                        transaction.type == 'income' ? 'Pemasukan' : 'Pengeluaran',
+                        transaction.type == 'income'
+                            ? 'Pemasukan'
+                            : 'Pengeluaran',
                       ),
                       _buildTableCell(
                         transaction.paymentMethod == 'cash'
                             ? 'Tunai'
                             : transaction.paymentMethod == 'card'
-                                ? 'Kartu'
-                                : transaction.paymentMethod,
+                            ? 'Kartu'
+                            : transaction.paymentMethod,
                       ),
                       _buildTableCell(
                         '${transaction.type == 'income' ? '+' : '-'}${currencyFormat.format(transaction.amount)}',
                         alignRight: true,
-                        color: transaction.type == 'income'
-                            ? PdfColors.green
-                            : PdfColors.red,
+                        color:
+                            transaction.type == 'income'
+                                ? PdfColors.green
+                                : PdfColors.red,
                       ),
                     ],
                   );
@@ -332,9 +327,10 @@ class ReportService {
     // Save PDF to file
     final directory = await getApplicationDocumentsDirectory();
     final timestamp = DateTime.now().toIso8601String().replaceAll(':', '-');
-    final periodLabel = periodType == 'monthly'
-        ? DateFormat('MMM_yyyy', 'id_ID').format(startDate)
-        : '${startDate.year}';
+    final periodLabel =
+        periodType == 'monthly'
+            ? DateFormat('MMM_yyyy', 'id_ID').format(startDate)
+            : '${startDate.year}';
     final filename = 'laporan_keuangan_${periodLabel}_$timestamp.pdf';
     final file = File('${directory.path}/$filename');
     await file.writeAsBytes(await pdf.save());
@@ -360,10 +356,7 @@ class ReportService {
         children: [
           pw.Text(
             label,
-            style: pw.TextStyle(
-              fontSize: 11,
-              color: PdfColors.grey700,
-            ),
+            style: pw.TextStyle(fontSize: 11, color: PdfColors.grey700),
           ),
           pw.SizedBox(height: 4),
           pw.Text(
@@ -411,32 +404,39 @@ class ReportService {
     List<TransactionModel> filtered = List.from(transactions);
 
     if (typeFilter != null && typeFilter != 'all') {
-      filtered = filtered
-          .where((t) => t.type.toLowerCase() == typeFilter.toLowerCase())
-          .toList();
+      filtered =
+          filtered
+              .where((t) => t.type.toLowerCase() == typeFilter.toLowerCase())
+              .toList();
     }
 
     if (categoryFilter != null && categoryFilter != 'all') {
-      filtered = filtered
-          .where((t) => t.categoryName == categoryFilter)
-          .toList();
+      filtered =
+          filtered.where((t) => t.categoryName == categoryFilter).toList();
     }
 
     if (startDate != null) {
-      filtered = filtered
-          .where((t) => t.transactionDate.isAfter(startDate.subtract(
-                const Duration(days: 1),
-              )) ||
-              t.transactionDate.isAtSameMomentAs(startDate))
-          .toList();
+      filtered =
+          filtered
+              .where(
+                (t) =>
+                    t.transactionDate.isAfter(
+                      startDate.subtract(const Duration(days: 1)),
+                    ) ||
+                    t.transactionDate.isAtSameMomentAs(startDate),
+              )
+              .toList();
     }
 
     if (endDate != null) {
-      filtered = filtered
-          .where((t) => t.transactionDate.isBefore(endDate.add(
-                const Duration(days: 1),
-              )))
-          .toList();
+      filtered =
+          filtered
+              .where(
+                (t) => t.transactionDate.isBefore(
+                  endDate.add(const Duration(days: 1)),
+                ),
+              )
+              .toList();
     }
 
     // Sort by date descending
@@ -467,9 +467,11 @@ class ReportService {
           transaction.paymentMethod == 'cash'
               ? 'Tunai'
               : transaction.paymentMethod == 'card'
-                  ? 'Kartu'
-                  : transaction.paymentMethod,
-          transaction.locationData?['address'] ?? transaction.locationData?['place_name'] ?? '',
+              ? 'Kartu'
+              : transaction.paymentMethod,
+          transaction.locationData?['address'] ??
+              transaction.locationData?['place_name'] ??
+              '',
         ];
       }),
     ];
@@ -487,5 +489,3 @@ class ReportService {
     return file;
   }
 }
-
-

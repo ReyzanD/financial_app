@@ -81,13 +81,16 @@ void main() {
       expect(suggestions.isEmpty, true);
     });
 
-    test('should return multiple suggestions for ambiguous descriptions', () async {
-      final suggestions = await service.suggestCategory(
-        description: 'makan di mall belanja baju',
-      );
+    test(
+      'should return multiple suggestions for ambiguous descriptions',
+      () async {
+        final suggestions = await service.suggestCategory(
+          description: 'makan di mall belanja baju',
+        );
 
-      expect(suggestions.length, greaterThanOrEqualTo(2));
-    });
+        expect(suggestions.length, greaterThanOrEqualTo(2));
+      },
+    );
 
     test('should use merchant name for categorization', () async {
       final suggestions = await service.suggestCategory(
@@ -107,12 +110,15 @@ void main() {
       expect(result, isNull);
     });
 
-    test('predictBestCategory should return category for high confidence', () async {
-      final result = await service.predictBestCategory(
-        description: 'beli nasi goreng di warung',
-      );
+    test(
+      'predictBestCategory should return category for high confidence',
+      () async {
+        final result = await service.predictBestCategory(
+          description: 'beli nasi goreng di warung',
+        );
 
-      expect(result, 'makanan');
-    });
+        expect(result, 'makanan');
+      },
+    );
   });
 }

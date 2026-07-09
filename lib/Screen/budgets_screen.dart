@@ -124,6 +124,7 @@ class _BudgetsScreenState extends State<BudgetsScreen> {
         heroTag: 'budgets_fab',
         backgroundColor: const Color(0xFF8B5FBF),
         onPressed: _showAddBudgetModal,
+        tooltip: 'Tambah Anggaran',
         child: const Icon(Icons.add, color: Colors.white),
       ),
     );
@@ -143,6 +144,7 @@ class _BudgetsScreenState extends State<BudgetsScreen> {
             children: [
               IconButton(
                 icon: const Icon(Icons.arrow_back, color: Colors.white),
+                tooltip: 'Kembali',
                 onPressed: () => Navigator.pop(context),
               ),
               SizedBox(width: ResponsiveHelper.horizontalSpacing(context, 8)),
@@ -325,217 +327,229 @@ class _BudgetsScreenState extends State<BudgetsScreen> {
     final color = _getCategoryColor(category);
     final displayColor = isOverBudget ? Colors.red : color;
 
-    return InkWell(
-      onTap: () {
-        _openBudgetModal(budget);
-      },
-      onLongPress: () {
-        _confirmDeleteBudget(budget);
-      },
-      child: Container(
-        width: double.infinity,
-        margin: EdgeInsets.only(
-          bottom: ResponsiveHelper.verticalSpacing(context, 12),
-        ),
-        padding: ResponsiveHelper.padding(context),
-        decoration: BoxDecoration(
-          color: const Color(0xFF1A1A1A),
-          borderRadius: BorderRadius.circular(
-            ResponsiveHelper.borderRadius(context, 16),
+    return Semantics(
+      label: "Anggaran ${budget['category'] ?? ''}",
+      button: true,
+      child: InkWell(
+        onTap: () {
+          _openBudgetModal(budget);
+        },
+        onLongPress: () {
+          _confirmDeleteBudget(budget);
+        },
+        child: Container(
+          width: double.infinity,
+          margin: EdgeInsets.only(
+            bottom: ResponsiveHelper.verticalSpacing(context, 12),
           ),
-          border: Border.all(
-            color:
-                isOverBudget ? Colors.red.withValues(alpha: 0.4) : Colors.grey[800]!,
-            width: isOverBudget ? 1.5 : 1,
+          padding: ResponsiveHelper.padding(context),
+          decoration: BoxDecoration(
+            color: const Color(0xFF1A1A1A),
+            borderRadius: BorderRadius.circular(
+              ResponsiveHelper.borderRadius(context, 16),
+            ),
+            border: Border.all(
+              color:
+                  isOverBudget
+                      ? Colors.red.withValues(alpha: 0.4)
+                      : Colors.grey[800]!,
+              width: isOverBudget ? 1.5 : 1,
+            ),
           ),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Flexible(
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Container(
-                        padding: ResponsiveHelper.padding(
-                          context,
-                          multiplier: 0.375,
-                        ),
-                        decoration: BoxDecoration(
-                          color: displayColor.withValues(alpha: 0.15),
-                          borderRadius: BorderRadius.circular(
-                            ResponsiveHelper.borderRadius(context, 8),
-                          ),
-                          border: Border.all(
-                            color: displayColor.withValues(alpha: 0.3),
-                            width: 1,
-                          ),
-                        ),
-                        child: Icon(
-                          Icons.account_balance_wallet_rounded,
-                          color: displayColor,
-                          size: ResponsiveHelper.iconSize(context, 16),
-                        ),
-                      ),
-                      SizedBox(
-                        width: ResponsiveHelper.horizontalSpacing(context, 10),
-                      ),
-                      Flexible(
-                        child: Text(
-                          category,
-                          style: GoogleFonts.poppins(
-                            color: Colors.white,
-                            fontSize: ResponsiveHelper.fontSize(context, 14),
-                            fontWeight: FontWeight.w600,
-                          ),
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                      if (isOverBudget) ...[
-                        SizedBox(
-                          width: ResponsiveHelper.horizontalSpacing(context, 8),
-                        ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Flexible(
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
                         Container(
-                          padding: ResponsiveHelper.symmetricPadding(
+                          padding: ResponsiveHelper.padding(
                             context,
-                            horizontal: 6,
-                            vertical: 2,
+                            multiplier: 0.375,
                           ),
                           decoration: BoxDecoration(
-                            color: Colors.red.withValues(alpha: 0.2),
+                            color: displayColor.withValues(alpha: 0.15),
                             borderRadius: BorderRadius.circular(
                               ResponsiveHelper.borderRadius(context, 8),
                             ),
+                            border: Border.all(
+                              color: displayColor.withValues(alpha: 0.3),
+                              width: 1,
+                            ),
                           ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(
-                                Icons.warning_rounded,
-                                color: Colors.red,
-                                size: ResponsiveHelper.iconSize(context, 14),
-                              ),
-                              SizedBox(
-                                width: ResponsiveHelper.horizontalSpacing(
-                                  context,
-                                  4,
-                                ),
-                              ),
-                              Text(
-                                AppLocalizations.of(context)!.over,
-                                style: GoogleFonts.poppins(
-                                  color: Colors.red,
-                                  fontSize: ResponsiveHelper.fontSize(
-                                    context,
-                                    10,
-                                  ),
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ],
+                          child: Icon(
+                            Icons.account_balance_wallet_rounded,
+                            color: displayColor,
+                            size: ResponsiveHelper.iconSize(context, 16),
                           ),
                         ),
+                        SizedBox(
+                          width: ResponsiveHelper.horizontalSpacing(
+                            context,
+                            10,
+                          ),
+                        ),
+                        Flexible(
+                          child: Text(
+                            category,
+                            style: GoogleFonts.poppins(
+                              color: Colors.white,
+                              fontSize: ResponsiveHelper.fontSize(context, 14),
+                              fontWeight: FontWeight.w600,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        if (isOverBudget) ...[
+                          SizedBox(
+                            width: ResponsiveHelper.horizontalSpacing(
+                              context,
+                              8,
+                            ),
+                          ),
+                          Container(
+                            padding: ResponsiveHelper.symmetricPadding(
+                              context,
+                              horizontal: 6,
+                              vertical: 2,
+                            ),
+                            decoration: BoxDecoration(
+                              color: Colors.red.withValues(alpha: 0.2),
+                              borderRadius: BorderRadius.circular(
+                                ResponsiveHelper.borderRadius(context, 8),
+                              ),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  Icons.warning_rounded,
+                                  color: Colors.red,
+                                  size: ResponsiveHelper.iconSize(context, 14),
+                                ),
+                                SizedBox(
+                                  width: ResponsiveHelper.horizontalSpacing(
+                                    context,
+                                    4,
+                                  ),
+                                ),
+                                Text(
+                                  AppLocalizations.of(context)!.over,
+                                  style: GoogleFonts.poppins(
+                                    color: Colors.red,
+                                    fontSize: ResponsiveHelper.fontSize(
+                                      context,
+                                      10,
+                                    ),
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
                       ],
+                    ),
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        CurrencyFormatter.formatRupiah(spent.toInt()),
+                        style: GoogleFonts.poppins(
+                          color: displayColor,
+                          fontSize: ResponsiveHelper.fontSize(context, 13),
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      Text(
+                        'dari ${CurrencyFormatter.formatRupiah(amount.toInt())}',
+                        style: GoogleFonts.poppins(
+                          color: Colors.grey[600],
+                          fontSize: ResponsiveHelper.fontSize(context, 11),
+                        ),
+                      ),
                     ],
                   ),
-                ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      CurrencyFormatter.formatRupiah(spent.toInt()),
-                      style: GoogleFonts.poppins(
-                        color: displayColor,
-                        fontSize: ResponsiveHelper.fontSize(context, 13),
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    Text(
-                      'dari ${CurrencyFormatter.formatRupiah(amount.toInt())}',
-                      style: GoogleFonts.poppins(
-                        color: Colors.grey[600],
-                        fontSize: ResponsiveHelper.fontSize(context, 11),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-            SizedBox(height: ResponsiveHelper.verticalSpacing(context, 8)),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Periode: $period',
-                  style: GoogleFonts.poppins(
-                    color: Colors.grey[500],
-                    fontSize: ResponsiveHelper.fontSize(context, 11),
-                  ),
-                ),
-                if (!isActive)
-                  Container(
-                    padding: ResponsiveHelper.symmetricPadding(
-                      context,
-                      horizontal: 8,
-                      vertical: 4,
-                    ),
-                    decoration: BoxDecoration(
-                      color: Colors.grey[800],
-                      borderRadius: BorderRadius.circular(
-                        ResponsiveHelper.borderRadius(context, 12),
-                      ),
-                    ),
-                    child: Text(
-                      AppLocalizations.of(context)!.inactive,
-                      style: GoogleFonts.poppins(
-                        color: Colors.grey[300],
-                        fontSize: ResponsiveHelper.fontSize(context, 10),
-                      ),
-                    ),
-                  ),
-              ],
-            ),
-            SizedBox(height: ResponsiveHelper.verticalSpacing(context, 12)),
-            ClipRRect(
-              borderRadius: BorderRadius.circular(
-                ResponsiveHelper.borderRadius(context, 10),
+                ],
               ),
-              child: LinearProgressIndicator(
-                value: percentage,
-                backgroundColor: Colors.grey[850],
-                valueColor: AlwaysStoppedAnimation(displayColor),
-                minHeight: ResponsiveHelper.verticalSpacing(context, 8),
+              SizedBox(height: ResponsiveHelper.verticalSpacing(context, 8)),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Periode: $period',
+                    style: GoogleFonts.poppins(
+                      color: Colors.grey[500],
+                      fontSize: ResponsiveHelper.fontSize(context, 11),
+                    ),
+                  ),
+                  if (!isActive)
+                    Container(
+                      padding: ResponsiveHelper.symmetricPadding(
+                        context,
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.grey[800],
+                        borderRadius: BorderRadius.circular(
+                          ResponsiveHelper.borderRadius(context, 12),
+                        ),
+                      ),
+                      child: Text(
+                        AppLocalizations.of(context)!.inactive,
+                        style: GoogleFonts.poppins(
+                          color: Colors.grey[300],
+                          fontSize: ResponsiveHelper.fontSize(context, 10),
+                        ),
+                      ),
+                    ),
+                ],
               ),
-            ),
-            SizedBox(height: ResponsiveHelper.verticalSpacing(context, 8)),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  isOverBudget
-                      ? 'Melebihi ${CurrencyFormatter.formatRupiah((spent - amount).toInt())}'
-                      : 'Sisa ${CurrencyFormatter.formatRupiah(remaining.toInt())}',
-                  style: GoogleFonts.poppins(
-                    color: isOverBudget ? Colors.red[300] : Colors.green[300],
-                    fontSize: ResponsiveHelper.fontSize(context, 11),
-                    fontWeight: FontWeight.w500,
-                  ),
+              SizedBox(height: ResponsiveHelper.verticalSpacing(context, 12)),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(
+                  ResponsiveHelper.borderRadius(context, 10),
                 ),
-                Text(
-                  '${(percentage * 100).toStringAsFixed(0)}%',
-                  style: GoogleFonts.poppins(
-                    color: displayColor,
-                    fontSize: ResponsiveHelper.fontSize(context, 12),
-                    fontWeight: FontWeight.w600,
-                  ),
+                child: LinearProgressIndicator(
+                  value: percentage,
+                  backgroundColor: Colors.grey[850],
+                  valueColor: AlwaysStoppedAnimation(displayColor),
+                  minHeight: ResponsiveHelper.verticalSpacing(context, 8),
                 ),
-              ],
-            ),
-          ],
+              ),
+              SizedBox(height: ResponsiveHelper.verticalSpacing(context, 8)),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    isOverBudget
+                        ? 'Melebihi ${CurrencyFormatter.formatRupiah((spent - amount).toInt())}'
+                        : 'Sisa ${CurrencyFormatter.formatRupiah(remaining.toInt())}',
+                    style: GoogleFonts.poppins(
+                      color: isOverBudget ? Colors.red[300] : Colors.green[300],
+                      fontSize: ResponsiveHelper.fontSize(context, 11),
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  Text(
+                    '${(percentage * 100).toStringAsFixed(0)}%',
+                    style: GoogleFonts.poppins(
+                      color: displayColor,
+                      fontSize: ResponsiveHelper.fontSize(context, 12),
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -559,9 +573,10 @@ class _BudgetsScreenState extends State<BudgetsScreen> {
       if (!mounted) return;
       showDialog(
         context: context,
-        builder: (context) => const Center(
-          child: CircularProgressIndicator(color: Color(0xFF8B5FBF)),
-        ),
+        builder:
+            (context) => const Center(
+              child: CircularProgressIndicator(color: Color(0xFF8B5FBF)),
+            ),
       );
 
       final predictor = BudgetPredictor();
@@ -575,90 +590,97 @@ class _BudgetsScreenState extends State<BudgetsScreen> {
         context: context,
         isScrollControlled: true,
         backgroundColor: Colors.transparent,
-        builder: (context) => DraggableScrollableSheet(
-          initialChildSize: 0.6,
-          minChildSize: 0.4,
-          maxChildSize: 0.85,
-          expand: false,
-          builder: (context, scrollController) => Container(
-            decoration: const BoxDecoration(
-              color: Color(0xFF1A1A1A),
-              borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-            ),
-            padding: const EdgeInsets.all(20),
-            child: ListView(
-              controller: scrollController,
-              children: [
-                Center(
-                  child: Container(
-                    width: 40,
-                    height: 4,
-                    decoration: BoxDecoration(
-                      color: Colors.grey[600],
-                      borderRadius: BorderRadius.circular(2),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                Row(
-                  children: [
-                    const Icon(
-                      Icons.auto_awesome,
-                      color: Color(0xFF8B5FBF),
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      'Saran Budget Optimal',
-                      style: GoogleFonts.poppins(
-                        color: Colors.white,
-                        fontSize: 18,
-                        fontWeight: FontWeight.w600,
+        builder:
+            (context) => DraggableScrollableSheet(
+              initialChildSize: 0.6,
+              minChildSize: 0.4,
+              maxChildSize: 0.85,
+              expand: false,
+              builder:
+                  (context, scrollController) => Container(
+                    decoration: const BoxDecoration(
+                      color: Color(0xFF1A1A1A),
+                      borderRadius: BorderRadius.vertical(
+                        top: Radius.circular(20),
                       ),
                     ),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Berdasarkan rata-rata pengeluaran 3 bulan terakhir + buffer 10%',
-                  style: GoogleFonts.poppins(
-                    color: Colors.grey[400],
-                    fontSize: 12,
-                  ),
-                ),
-                const SizedBox(height: 16),
-                if (suggestedBudgets.isNotEmpty) ...[
-                  ...suggestedBudgets.entries
-                      .map((e) => _buildSuggestionItem(e.key, e.value))
-                      ,
-                ] else
-                  Center(
-                    child: Text(
-                      'Belum ada data untuk rekomendasi',
-                      style: GoogleFonts.poppins(color: Colors.grey[500]),
+                    padding: const EdgeInsets.all(20),
+                    child: ListView(
+                      controller: scrollController,
+                      children: [
+                        Center(
+                          child: Container(
+                            width: 40,
+                            height: 4,
+                            decoration: BoxDecoration(
+                              color: Colors.grey[600],
+                              borderRadius: BorderRadius.circular(2),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        Row(
+                          children: [
+                            const Icon(
+                              Icons.auto_awesome,
+                              color: Color(0xFF8B5FBF),
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              'Saran Budget Optimal',
+                              style: GoogleFonts.poppins(
+                                color: Colors.white,
+                                fontSize: 18,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Berdasarkan rata-rata pengeluaran 3 bulan terakhir + buffer 10%',
+                          style: GoogleFonts.poppins(
+                            color: Colors.grey[400],
+                            fontSize: 12,
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        if (suggestedBudgets.isNotEmpty) ...[
+                          ...suggestedBudgets.entries.map(
+                            (e) => _buildSuggestionItem(e.key, e.value),
+                          ),
+                        ] else
+                          Center(
+                            child: Text(
+                              'Belum ada data untuk rekomendasi',
+                              style: GoogleFonts.poppins(
+                                color: Colors.grey[500],
+                              ),
+                            ),
+                          ),
+                        if (risks.isNotEmpty) ...[
+                          const SizedBox(height: 20),
+                          Text(
+                            'Peringatan Budget',
+                            style: GoogleFonts.poppins(
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          ...risks
+                              .where(
+                                (r) =>
+                                    r['risk_level'] == 'critical' ||
+                                    r['risk_level'] == 'high',
+                              )
+                              .map((risk) => _buildRiskItem(risk)),
+                        ],
+                      ],
                     ),
                   ),
-                if (risks.isNotEmpty) ...[
-                  const SizedBox(height: 20),
-                  Text(
-                    'Peringatan Budget',
-                    style: GoogleFonts.poppins(
-                      color: Colors.white,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  ...risks
-                      .where((r) =>
-                          r['risk_level'] == 'critical' ||
-                          r['risk_level'] == 'high')
-                      .map((risk) => _buildRiskItem(risk))
-                      ,
-                ],
-              ],
             ),
-          ),
-        ),
       );
     } catch (e) {
       if (mounted) {
@@ -678,7 +700,9 @@ class _BudgetsScreenState extends State<BudgetsScreen> {
       decoration: BoxDecoration(
         color: const Color(0xFF2A2A2A),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFF8B5FBF).withValues(alpha: 0.3)),
+        border: Border.all(
+          color: const Color(0xFF8B5FBF).withValues(alpha: 0.3),
+        ),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -686,10 +710,7 @@ class _BudgetsScreenState extends State<BudgetsScreen> {
           Expanded(
             child: Text(
               category,
-              style: GoogleFonts.poppins(
-                color: Colors.white,
-                fontSize: 14,
-              ),
+              style: GoogleFonts.poppins(color: Colors.white, fontSize: 14),
             ),
           ),
           Text(
@@ -711,7 +732,8 @@ class _BudgetsScreenState extends State<BudgetsScreen> {
     final riskLevel = risk['risk_level'] as String? ?? 'unknown';
     final remaining = (risk['remaining'] as num?)?.toDouble() ?? 0.0;
 
-    final color = riskLevel == 'critical' ? Colors.red[400] : Colors.orange[400];
+    final color =
+        riskLevel == 'critical' ? Colors.red[400] : Colors.orange[400];
 
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
@@ -757,10 +779,7 @@ class _BudgetsScreenState extends State<BudgetsScreen> {
           const SizedBox(height: 4),
           Text(
             'Sisa: ${CurrencyFormatter.formatRupiah(remaining.toInt())}',
-            style: GoogleFonts.poppins(
-              color: Colors.grey[400],
-              fontSize: 12,
-            ),
+            style: GoogleFonts.poppins(color: Colors.grey[400], fontSize: 12),
           ),
         ],
       ),

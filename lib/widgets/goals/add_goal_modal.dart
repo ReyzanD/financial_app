@@ -23,7 +23,8 @@ class _AddGoalModalState extends State<AddGoalModal> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _targetAmountController = TextEditingController();
-  final TextEditingController _monthlyTargetController = TextEditingController();
+  final TextEditingController _monthlyTargetController =
+      TextEditingController();
 
   String _selectedType = 'emergency_fund';
   DateTime _targetDate = DateTime.now().add(const Duration(days: 365));
@@ -106,7 +107,8 @@ class _AddGoalModalState extends State<AddGoalModal> {
         _targetAmountController.text = targetAmount.toStringAsFixed(0);
       }
 
-      final monthlyTargetValue = initial['monthly_target'] ?? initial['monthly_target_232143'];
+      final monthlyTargetValue =
+          initial['monthly_target'] ?? initial['monthly_target_232143'];
       if (monthlyTargetValue != null) {
         _monthlyTargetController.text = monthlyTargetValue.toString();
       }

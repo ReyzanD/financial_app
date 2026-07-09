@@ -101,7 +101,10 @@ class _TagsScreenState extends State<TagsScreen> {
       child: Row(
         children: [
           IconButton(
-            icon: const Icon(Iconsax.arrow_left, color: DesignTokens.textPrimaryDark),
+            icon: const Icon(
+              Iconsax.arrow_left,
+              color: DesignTokens.textPrimaryDark,
+            ),
             onPressed: () => Navigator.pop(context),
           ),
           const SizedBox(width: 8),
@@ -160,7 +163,11 @@ class _TagsScreenState extends State<TagsScreen> {
     );
   }
 
-  Widget _buildTagCard(BuildContext context, dynamic tag, AppLocalizations? l10n) {
+  Widget _buildTagCard(
+    BuildContext context,
+    dynamic tag,
+    AppLocalizations? l10n,
+  ) {
     final name = tag.name ?? '';
     final usageCount = tag.usageCount ?? 0;
     final color = tag.color;
@@ -182,11 +189,7 @@ class _TagsScreenState extends State<TagsScreen> {
               color: _getTagColor(color).withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
             ),
-            child: Icon(
-              Iconsax.tag,
-              color: _getTagColor(color),
-              size: 20,
-            ),
+            child: Icon(Iconsax.tag, color: _getTagColor(color), size: 20),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -229,11 +232,7 @@ class _TagsScreenState extends State<TagsScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            Iconsax.tag,
-            size: 64,
-            color: DesignTokens.textTertiaryDark,
-          ),
+          Icon(Iconsax.tag, size: 64, color: DesignTokens.textTertiaryDark),
           const SizedBox(height: 16),
           Text(
             'Belum Ada Tags',
@@ -261,11 +260,7 @@ class _TagsScreenState extends State<TagsScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            Iconsax.warning_2,
-            size: 64,
-            color: DesignTokens.errorColor,
-          ),
+          Icon(Iconsax.warning_2, size: 64, color: DesignTokens.errorColor),
           const SizedBox(height: 16),
           Text(
             l10n?.error ?? 'Terjadi kesalahan',
@@ -358,7 +353,9 @@ class _TagsScreenState extends State<TagsScreen> {
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(l10n?.transaction_deleted_successfully ?? 'Tag berhasil dihapus'),
+            content: Text(
+              l10n?.transaction_deleted_successfully ?? 'Tag berhasil dihapus',
+            ),
             backgroundColor: DesignTokens.primaryColor,
           ),
         );
@@ -391,7 +388,12 @@ class _AddTagModalState extends State<_AddTagModal> {
   String _selectedColor = '#8B5FBF';
 
   final List<String> _colors = [
-    '#8B5FBF', '#4CAF50', '#2196F3', '#FF9800', '#F44336', '#9C27B0'
+    '#8B5FBF',
+    '#4CAF50',
+    '#2196F3',
+    '#FF9800',
+    '#F44336',
+    '#9C27B0',
   ];
 
   @override
@@ -443,11 +445,15 @@ class _AddTagModalState extends State<_AddTagModal> {
                 style: GoogleFonts.poppins(color: DesignTokens.textPrimaryDark),
                 decoration: InputDecoration(
                   labelText: l10n?.name ?? 'Nama',
-                  labelStyle: GoogleFonts.poppins(color: DesignTokens.textSecondaryDark),
+                  labelStyle: GoogleFonts.poppins(
+                    color: DesignTokens.textSecondaryDark,
+                  ),
                   filled: true,
                   fillColor: DesignTokens.surfaceDark,
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                    borderRadius: BorderRadius.circular(
+                      DesignTokens.radiusMedium,
+                    ),
                     borderSide: BorderSide(color: DesignTokens.borderDark),
                   ),
                 ),
@@ -469,27 +475,31 @@ class _AddTagModalState extends State<_AddTagModal> {
               const SizedBox(height: 8),
               Wrap(
                 spacing: 8,
-                children: _colors.map((color) {
-                  final isSelected = _selectedColor == color;
-                  return GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        _selectedColor = color;
-                      });
-                    },
-                    child: Container(
-                      width: 36,
-                      height: 36,
-                      decoration: BoxDecoration(
-                        color: Color(int.parse(color.replaceFirst('#', '0xFF'))),
-                        shape: BoxShape.circle,
-                        border: isSelected
-                            ? Border.all(color: Colors.white, width: 3)
-                            : null,
-                      ),
-                    ),
-                  );
-                }).toList(),
+                children:
+                    _colors.map((color) {
+                      final isSelected = _selectedColor == color;
+                      return GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            _selectedColor = color;
+                          });
+                        },
+                        child: Container(
+                          width: 36,
+                          height: 36,
+                          decoration: BoxDecoration(
+                            color: Color(
+                              int.parse(color.replaceFirst('#', '0xFF')),
+                            ),
+                            shape: BoxShape.circle,
+                            border:
+                                isSelected
+                                    ? Border.all(color: Colors.white, width: 3)
+                                    : null,
+                          ),
+                        ),
+                      );
+                    }).toList(),
               ),
               const SizedBox(height: 24),
               SizedBox(
@@ -500,7 +510,9 @@ class _AddTagModalState extends State<_AddTagModal> {
                     backgroundColor: DesignTokens.primaryColor,
                     padding: const EdgeInsets.symmetric(vertical: 14),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                      borderRadius: BorderRadius.circular(
+                        DesignTokens.radiusMedium,
+                      ),
                     ),
                   ),
                   child: Text(

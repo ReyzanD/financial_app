@@ -40,7 +40,9 @@ class _ChallengesScreenState extends State<ChallengesScreen> {
         });
       }
 
-      final results = await _localData.getChallenges(activeOnly: _showActiveOnly);
+      final results = await _localData.getChallenges(
+        activeOnly: _showActiveOnly,
+      );
 
       if (!mounted) return;
 
@@ -107,7 +109,8 @@ class _ChallengesScreenState extends State<ChallengesScreen> {
   }
 
   Widget _buildHeader(BuildContext context, AppLocalizations? l10n) {
-    final activeChallenges = (_stats['active_challenges'] as num?)?.toInt() ?? 0;
+    final activeChallenges =
+        (_stats['active_challenges'] as num?)?.toInt() ?? 0;
     final totalStreak = (_stats['total_streak'] as num?)?.toInt() ?? 0;
 
     return Container(
@@ -118,7 +121,10 @@ class _ChallengesScreenState extends State<ChallengesScreen> {
           Row(
             children: [
               IconButton(
-                icon: const Icon(Iconsax.arrow_left, color: DesignTokens.textPrimaryDark),
+                icon: const Icon(
+                  Iconsax.arrow_left,
+                  color: DesignTokens.textPrimaryDark,
+                ),
                 onPressed: () => Navigator.pop(context),
               ),
               const SizedBox(width: 8),
@@ -132,7 +138,9 @@ class _ChallengesScreenState extends State<ChallengesScreen> {
               ),
               const Spacer(),
               Text(
-                _showActiveOnly ? l10n?.active ?? 'Aktif' : l10n?.all ?? 'Semua',
+                _showActiveOnly
+                    ? l10n?.active ?? 'Aktif'
+                    : l10n?.all ?? 'Semua',
                 style: GoogleFonts.poppins(
                   color: DesignTokens.textSecondaryDark,
                   fontSize: 12,
@@ -160,7 +168,9 @@ class _ChallengesScreenState extends State<ChallengesScreen> {
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     color: DesignTokens.surfaceDark,
-                    borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                    borderRadius: BorderRadius.circular(
+                      DesignTokens.radiusMedium,
+                    ),
                     border: Border.all(color: DesignTokens.borderDark),
                   ),
                   child: Column(
@@ -191,7 +201,9 @@ class _ChallengesScreenState extends State<ChallengesScreen> {
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     color: DesignTokens.surfaceDark,
-                    borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                    borderRadius: BorderRadius.circular(
+                      DesignTokens.radiusMedium,
+                    ),
                     border: Border.all(color: DesignTokens.borderDark),
                   ),
                   child: Column(
@@ -249,7 +261,11 @@ class _ChallengesScreenState extends State<ChallengesScreen> {
     );
   }
 
-  Widget _buildChallengeCard(BuildContext context, dynamic challenge, AppLocalizations? l10n) {
+  Widget _buildChallengeCard(
+    BuildContext context,
+    dynamic challenge,
+    AppLocalizations? l10n,
+  ) {
     final name = challenge.name ?? '';
     final type = challenge.type ?? 'no_spend';
     final target = challenge.target ?? 0.0;
@@ -257,7 +273,8 @@ class _ChallengesScreenState extends State<ChallengesScreen> {
     final streak = challenge.streak ?? 0;
     final daysRemaining = challenge.daysRemaining ?? 0;
 
-    final progress = target > 0 ? (currentProgress / target).clamp(0.0, 1.0) : 0.0;
+    final progress =
+        target > 0 ? (currentProgress / target).clamp(0.0, 1.0) : 0.0;
     final percentage = (progress * 100).toStringAsFixed(0);
 
     return Container(
@@ -277,7 +294,9 @@ class _ChallengesScreenState extends State<ChallengesScreen> {
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
                   color: _getChallengeTypeColor(type).withValues(alpha: 0.15),
-                  borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                  borderRadius: BorderRadius.circular(
+                    DesignTokens.radiusMedium,
+                  ),
                 ),
                 child: Icon(
                   Iconsax.medal,
@@ -411,11 +430,7 @@ class _ChallengesScreenState extends State<ChallengesScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            Iconsax.medal,
-            size: 64,
-            color: DesignTokens.textTertiaryDark,
-          ),
+          Icon(Iconsax.medal, size: 64, color: DesignTokens.textTertiaryDark),
           const SizedBox(height: 16),
           Text(
             'Belum Ada Challenges',
@@ -443,11 +458,7 @@ class _ChallengesScreenState extends State<ChallengesScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            Iconsax.warning_2,
-            size: 64,
-            color: DesignTokens.errorColor,
-          ),
+          Icon(Iconsax.warning_2, size: 64, color: DesignTokens.errorColor),
           const SizedBox(height: 16),
           Text(
             l10n?.error ?? 'Terjadi kesalahan',
@@ -511,7 +522,8 @@ class _ChallengesScreenState extends State<ChallengesScreen> {
             ),
           ),
           content: Text(
-            l10n?.confirm_delete_budget ?? 'Yakin ingin menghapus challenge ini?',
+            l10n?.confirm_delete_budget ??
+                'Yakin ingin menghapus challenge ini?',
             style: GoogleFonts.poppins(
               color: DesignTokens.textSecondaryDark,
               fontSize: 13,
@@ -540,7 +552,10 @@ class _ChallengesScreenState extends State<ChallengesScreen> {
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(l10n?.transaction_deleted_successfully ?? 'Challenge berhasil dihapus'),
+            content: Text(
+              l10n?.transaction_deleted_successfully ??
+                  'Challenge berhasil dihapus',
+            ),
             backgroundColor: DesignTokens.primaryColor,
           ),
         );
@@ -629,11 +644,15 @@ class _AddChallengeModalState extends State<_AddChallengeModal> {
                 style: GoogleFonts.poppins(color: DesignTokens.textPrimaryDark),
                 decoration: InputDecoration(
                   labelText: l10n?.name ?? 'Nama',
-                  labelStyle: GoogleFonts.poppins(color: DesignTokens.textSecondaryDark),
+                  labelStyle: GoogleFonts.poppins(
+                    color: DesignTokens.textSecondaryDark,
+                  ),
                   filled: true,
                   fillColor: DesignTokens.surfaceDark,
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                    borderRadius: BorderRadius.circular(
+                      DesignTokens.radiusMedium,
+                    ),
                     borderSide: BorderSide(color: DesignTokens.borderDark),
                   ),
                 ),
@@ -655,26 +674,30 @@ class _AddChallengeModalState extends State<_AddChallengeModal> {
               const SizedBox(height: 8),
               Wrap(
                 spacing: 8,
-                children: _types.map((type) {
-                  final isSelected = _selectedType == type['value'];
-                  return ChoiceChip(
-                    label: Text(
-                      type['label'],
-                      style: GoogleFonts.poppins(
-                        color: isSelected ? Colors.white : DesignTokens.textSecondaryDark,
-                        fontSize: 12,
-                      ),
-                    ),
-                    selected: isSelected,
-                    onSelected: (selected) {
-                      setState(() {
-                        _selectedType = type['value'];
-                      });
-                    },
-                    backgroundColor: DesignTokens.surfaceDark,
-                    selectedColor: DesignTokens.primaryColor,
-                  );
-                }).toList(),
+                children:
+                    _types.map((type) {
+                      final isSelected = _selectedType == type['value'];
+                      return ChoiceChip(
+                        label: Text(
+                          type['label'],
+                          style: GoogleFonts.poppins(
+                            color:
+                                isSelected
+                                    ? Colors.white
+                                    : DesignTokens.textSecondaryDark,
+                            fontSize: 12,
+                          ),
+                        ),
+                        selected: isSelected,
+                        onSelected: (selected) {
+                          setState(() {
+                            _selectedType = type['value'];
+                          });
+                        },
+                        backgroundColor: DesignTokens.surfaceDark,
+                        selectedColor: DesignTokens.primaryColor,
+                      );
+                    }).toList(),
               ),
               const SizedBox(height: 16),
               TextFormField(
@@ -683,11 +706,15 @@ class _AddChallengeModalState extends State<_AddChallengeModal> {
                 keyboardType: TextInputType.number,
                 decoration: InputDecoration(
                   labelText: 'Target Amount',
-                  labelStyle: GoogleFonts.poppins(color: DesignTokens.textSecondaryDark),
+                  labelStyle: GoogleFonts.poppins(
+                    color: DesignTokens.textSecondaryDark,
+                  ),
                   filled: true,
                   fillColor: DesignTokens.surfaceDark,
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                    borderRadius: BorderRadius.circular(
+                      DesignTokens.radiusMedium,
+                    ),
                     borderSide: BorderSide(color: DesignTokens.borderDark),
                   ),
                 ),
@@ -707,7 +734,9 @@ class _AddChallengeModalState extends State<_AddChallengeModal> {
                     backgroundColor: DesignTokens.primaryColor,
                     padding: const EdgeInsets.symmetric(vertical: 14),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                      borderRadius: BorderRadius.circular(
+                        DesignTokens.radiusMedium,
+                      ),
                     ),
                   ),
                   child: Text(
@@ -737,7 +766,11 @@ class _AddChallengeModalState extends State<_AddChallengeModal> {
         'type': _selectedType,
         'target_amount': double.tryParse(_targetController.text) ?? 0.0,
         'start_date': DateTime.now().toIso8601String().split('T')[0],
-        'end_date': DateTime.now().add(const Duration(days: 30)).toIso8601String().split('T')[0],
+        'end_date':
+            DateTime.now()
+                .add(const Duration(days: 30))
+                .toIso8601String()
+                .split('T')[0],
       });
 
       if (!mounted) return;

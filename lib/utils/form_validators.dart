@@ -3,11 +3,11 @@ class FormValidators {
   // Max amount: 999,999,999,999 (999 triliun)
   static const double maxAmount = 999999999999.0;
   static const double minAmount = 1.0;
-  
+
   // Max description length
   static const int maxDescriptionLength = 500;
   static const int maxNotesLength = 1000;
-  
+
   // Max name/title length
   static const int maxNameLength = 100;
 
@@ -128,9 +128,10 @@ class FormValidators {
     for (var transaction in recentTransactions) {
       final txAmount = (transaction['amount'] as num?)?.toDouble() ?? 0.0;
       final txDescription = transaction['description']?.toString() ?? '';
-      final txDate = transaction['date'] != null
-          ? DateTime.tryParse(transaction['date'].toString())
-          : null;
+      final txDate =
+          transaction['date'] != null
+              ? DateTime.tryParse(transaction['date'].toString())
+              : null;
 
       if (txDate == null) continue;
 
@@ -160,4 +161,3 @@ class FormValidators {
     return amount.toStringAsFixed(0);
   }
 }
-

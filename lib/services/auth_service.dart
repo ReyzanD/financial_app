@@ -3,6 +3,7 @@ import 'package:financial_app/services/pin_auth_service.dart';
 import 'package:financial_app/services/api_service.dart';
 import 'package:financial_app/services/local_auth_service.dart';
 import 'package:financial_app/services/local_database_service.dart';
+import 'package:financial_app/services/encryption_service.dart';
 import 'package:financial_app/services/logger_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -19,10 +20,10 @@ class AuthService {
       ApiService.clearCache();
 
       final result = await _localAuth.login(email, password);
-      
-      // Store token (user_id) in secure storage
+
+      // #full-stack-sync: token is now a session UUID, not the raw user_id
       await _storage.write(key: 'auth_token', value: result['access_token']);
-      
+
       return result;
     } catch (e) {
       LoggerService.error('Login error', error: e);
@@ -37,25 +38,23 @@ class AuthService {
     String fullName,
   ) async {
     try {
-      LoggerService.info('Registering user locally: $email');
-      
       final result = await _localAuth.register(
         email: email,
         password: password,
         fullName: fullName,
       );
 
-      // Auto-login: store auth token
+      // Auto-login: store auth token (redundant with local_auth but defensive)
+      final sessionToken = result['access_token'] as String;
       final userId = result['user_id'] as String;
-      await _storage.write(key: 'auth_token', value: userId);
-      
-      // Also store in SharedPreferences for quick access
       final prefs = await SharedPreferences.getInstance();
+
+      await _storage.write(key: 'auth_token', value: sessionToken);
       await prefs.setString('current_user_id', userId);
 
-      LoggerService.info('Registration successful and auto-logged in: $email');
+      LoggerService.info('Registration successful');
       return {
-        'access_token': userId,
+        'access_token': sessionToken,
         'message': 'User registered successfully',
         'user': result,
       };
@@ -75,9 +74,10 @@ class AuthService {
     // Logout from local auth
     await _localAuth.logout();
 
-    // Clear auth token and secure storage
+    // Clear auth token only — do NOT call deleteAll() which would wipe
+    // AES-256 encryption keys stored by EncryptionService, making all
+    // encrypted data permanently unrecoverable.
     await _storage.delete(key: 'auth_token');
-    await _storage.deleteAll();
 
     // Clear user-specific SharedPreferences data
     final prefs = await SharedPreferences.getInstance();
@@ -90,10 +90,10 @@ class AuthService {
     return await _storage.read(key: 'auth_token');
   }
 
-  /// Validates if token exists (for local auth, token is user_id)
+  /// Validates if token looks like a well-formed UUID (length 36)
   bool isValidTokenFormat(String? token) {
     if (token == null || token.isEmpty) return false;
-    // For local auth, token is UUID (36 chars)
+    // Session tokens and user IDs are both UUIDs (36 chars with hyphens)
     return token.length == 36;
   }
 
@@ -101,7 +101,7 @@ class AuthService {
   Future<bool> hasValidToken() async {
     final token = await getToken();
     if (token == null || token.isEmpty) return false;
-    
+
     // Verify user still exists in database
     try {
       final user = await _localAuth.getCurrentUser();
@@ -126,6 +126,9 @@ class AuthService {
         where: 'user_id_232143 = ?',
         whereArgs: [userId],
       );
+
+      // Explicitly clear encryption keys since the account is being deleted
+      EncryptionService().clearKey();
 
       await logout();
       LoggerService.info('Account deleted successfully');

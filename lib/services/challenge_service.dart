@@ -14,11 +14,14 @@ class ChallengeService {
       if (challengesJson == null) return [];
 
       final List<dynamic> decoded = jsonDecode(challengesJson);
-      var challenges = decoded
-          .map((e) => ChallengeModel.fromJson(e as Map<String, dynamic>))
-          .toList();
+      var challenges =
+          decoded
+              .map((e) => ChallengeModel.fromJson(e as Map<String, dynamic>))
+              .toList();
 
-      return activeOnly ? challenges.where((c) => c.isActive).toList() : challenges;
+      return activeOnly
+          ? challenges.where((c) => c.isActive).toList()
+          : challenges;
     } catch (e) {
       LoggerService.error('Error getting challenges', error: e);
       return [];
@@ -38,7 +41,10 @@ class ChallengeService {
     }
   }
 
-  Future<ChallengeModel> updateProgress(String challengeId, double progress) async {
+  Future<ChallengeModel> updateProgress(
+    String challengeId,
+    double progress,
+  ) async {
     try {
       final challenges = await getChallenges(activeOnly: false);
       final index = challenges.indexWhere((c) => c.id == challengeId);
@@ -75,7 +81,8 @@ class ChallengeService {
 
       final existing = challenges[index];
       final newStreak = existing.streak + 1;
-      final newBest = newStreak > existing.bestStreak ? newStreak : existing.bestStreak;
+      final newBest =
+          newStreak > existing.bestStreak ? newStreak : existing.bestStreak;
 
       challenges[index] = ChallengeModel(
         id: existing.id,
@@ -143,7 +150,10 @@ class ChallengeService {
   Future<Map<String, dynamic>> getChallengeStats() async {
     final challenges = await getChallenges();
     final totalStreak = challenges.fold<int>(0, (sum, c) => sum + c.streak);
-    final bestStreak = challenges.fold<int>(0, (max, c) => c.bestStreak > max ? c.bestStreak : max);
+    final bestStreak = challenges.fold<int>(
+      0,
+      (max, c) => c.bestStreak > max ? c.bestStreak : max,
+    );
     final completed = challenges.where((c) => c.isCompleted).length;
 
     return {

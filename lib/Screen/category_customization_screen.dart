@@ -10,11 +10,14 @@ class CategoryCustomizationScreen extends StatefulWidget {
   const CategoryCustomizationScreen({super.key});
 
   @override
-  State<CategoryCustomizationScreen> createState() => _CategoryCustomizationScreenState();
+  State<CategoryCustomizationScreen> createState() =>
+      _CategoryCustomizationScreenState();
 }
 
-class _CategoryCustomizationScreenState extends State<CategoryCustomizationScreen> {
-  final CategoryCustomizationService _categoryService = CategoryCustomizationService();
+class _CategoryCustomizationScreenState
+    extends State<CategoryCustomizationScreen> {
+  final CategoryCustomizationService _categoryService =
+      CategoryCustomizationService();
 
   bool _isLoading = true;
   String? _errorMessage;
@@ -48,10 +51,15 @@ class _CategoryCustomizationScreenState extends State<CategoryCustomizationScree
       final customCategories = results[1] as List<dynamic>;
 
       setState(() {
-        _defaultCategories = allCategories.where((c) {
-          final isSystemDefault = (c['is_system_default_232143'] ?? c['is_system_default'] as int? ?? 0) == 1;
-          return isSystemDefault;
-        }).toList();
+        _defaultCategories =
+            allCategories.where((c) {
+              final isSystemDefault =
+                  (c['is_system_default_232143'] ??
+                      c['is_system_default'] as int? ??
+                      0) ==
+                  1;
+              return isSystemDefault;
+            }).toList();
         _customCategories = customCategories;
         _isLoading = false;
       });
@@ -110,7 +118,10 @@ class _CategoryCustomizationScreenState extends State<CategoryCustomizationScree
       child: Row(
         children: [
           IconButton(
-            icon: const Icon(Iconsax.arrow_left, color: DesignTokens.textPrimaryDark),
+            icon: const Icon(
+              Iconsax.arrow_left,
+              color: DesignTokens.textPrimaryDark,
+            ),
             onPressed: () => Navigator.pop(context),
           ),
           const SizedBox(width: 8),
@@ -154,41 +165,76 @@ class _CategoryCustomizationScreenState extends State<CategoryCustomizationScree
       return _buildErrorState(context, l10n);
     }
 
-    return ListView(
+    // Build flat item list to use with lazy ListView.builder
+    // Each item is either: 'header', 'spacing', or a category map
+    final items = <Object>[];
+
+    if (_customCategories.isNotEmpty) {
+      items.add('custom_header');
+      items.add('spacing_12');
+      for (final cat in _customCategories) {
+        items.add(_CategoryListItem(cat, isCustom: true));
+      }
+      items.add('spacing_16');
+    }
+
+    items.add('default_header');
+    items.add('spacing_12');
+    for (final cat in _defaultCategories) {
+      items.add(_CategoryListItem(cat, isCustom: false));
+    }
+
+    return ListView.builder(
       padding: const EdgeInsets.all(16),
-      children: [
-        if (_customCategories.isNotEmpty) ...[
-          Text(
-            'Custom Categories',
-            style: GoogleFonts.poppins(
-              color: DesignTokens.textPrimaryDark,
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-            ),
+      itemCount: items.length,
+      itemBuilder: (context, index) {
+        final item = items[index];
+        if (item is String) {
+          if (item == 'custom_header') {
+            return Text(
+              'Custom Categories',
+              style: GoogleFonts.poppins(
+                color: DesignTokens.textPrimaryDark,
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+              ),
+            );
+          }
+          if (item == 'default_header') {
+            return Text(
+              'Default Categories',
+              style: GoogleFonts.poppins(
+                color: DesignTokens.textPrimaryDark,
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+              ),
+            );
+          }
+          if (item == 'spacing_12') return const SizedBox(height: 12);
+          if (item == 'spacing_16') return const SizedBox(height: 16);
+          return const SizedBox.shrink();
+        }
+
+        final listItem = item as _CategoryListItem;
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 8),
+          child: _buildCategoryCard(
+            context,
+            listItem.category,
+            l10n,
+            isCustom: listItem.isCustom,
           ),
-          const SizedBox(height: 12),
-          ..._customCategories.map((category) {
-            return _buildCategoryCard(context, category, l10n, isCustom: true);
-          }),
-          const SizedBox(height: 16),
-        ],
-        Text(
-          'Default Categories',
-          style: GoogleFonts.poppins(
-            color: DesignTokens.textPrimaryDark,
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        const SizedBox(height: 12),
-        ..._defaultCategories.map((category) {
-          return _buildCategoryCard(context, category, l10n, isCustom: false);
-        }),
-      ],
+        );
+      },
     );
   }
 
-  Widget _buildCategoryCard(BuildContext context, dynamic category, AppLocalizations? l10n, {required bool isCustom}) {
+  Widget _buildCategoryCard(
+    BuildContext context,
+    dynamic category,
+    AppLocalizations? l10n, {
+    required bool isCustom,
+  }) {
     final name = category['name_232143'] ?? category['name'] ?? '';
     final type = category['type_232143'] ?? category['type'] ?? '';
     final icon = category['icon_232143'] ?? category['icon'] ?? 'category';
@@ -285,11 +331,7 @@ class _CategoryCustomizationScreenState extends State<CategoryCustomizationScree
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            Iconsax.warning_2,
-            size: 64,
-            color: DesignTokens.errorColor,
-          ),
+          Icon(Iconsax.warning_2, size: 64, color: DesignTokens.errorColor),
           const SizedBox(height: 16),
           Text(
             l10n?.error ?? 'Terjadi kesalahan',
@@ -354,7 +396,8 @@ class _CategoryCustomizationScreenState extends State<CategoryCustomizationScree
             ),
           ),
           content: Text(
-            l10n?.confirm_delete_budget ?? 'Yakin ingin menghapus kategori ini?',
+            l10n?.confirm_delete_budget ??
+                'Yakin ingin menghapus kategori ini?',
             style: GoogleFonts.poppins(
               color: DesignTokens.textSecondaryDark,
               fontSize: 13,
@@ -383,7 +426,10 @@ class _CategoryCustomizationScreenState extends State<CategoryCustomizationScree
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(l10n?.transaction_deleted_successfully ?? 'Kategori berhasil dihapus'),
+            content: Text(
+              l10n?.transaction_deleted_successfully ??
+                  'Kategori berhasil dihapus',
+            ),
             backgroundColor: DesignTokens.primaryColor,
           ),
         );
@@ -399,6 +445,13 @@ class _CategoryCustomizationScreenState extends State<CategoryCustomizationScree
       }
     }
   }
+}
+
+/// Lightweight value holder for category list items (no widget created)
+class _CategoryListItem {
+  final dynamic category;
+  final bool isCustom;
+  const _CategoryListItem(this.category, {required this.isCustom});
 }
 
 class _AddCategoryModal extends StatefulWidget {
@@ -423,7 +476,12 @@ class _AddCategoryModalState extends State<_AddCategoryModal> {
   ];
 
   final List<String> _colors = [
-    '#8B5FBF', '#4CAF50', '#2196F3', '#FF9800', '#F44336', '#9C27B0'
+    '#8B5FBF',
+    '#4CAF50',
+    '#2196F3',
+    '#FF9800',
+    '#F44336',
+    '#9C27B0',
   ];
 
   final List<Map<String, dynamic>> _icons = [
@@ -486,11 +544,15 @@ class _AddCategoryModalState extends State<_AddCategoryModal> {
                 style: GoogleFonts.poppins(color: DesignTokens.textPrimaryDark),
                 decoration: InputDecoration(
                   labelText: l10n?.name ?? 'Nama',
-                  labelStyle: GoogleFonts.poppins(color: DesignTokens.textSecondaryDark),
+                  labelStyle: GoogleFonts.poppins(
+                    color: DesignTokens.textSecondaryDark,
+                  ),
                   filled: true,
                   fillColor: DesignTokens.surfaceDark,
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                    borderRadius: BorderRadius.circular(
+                      DesignTokens.radiusMedium,
+                    ),
                     borderSide: BorderSide(color: DesignTokens.borderDark),
                   ),
                 ),
@@ -512,26 +574,30 @@ class _AddCategoryModalState extends State<_AddCategoryModal> {
               const SizedBox(height: 8),
               Wrap(
                 spacing: 8,
-                children: _types.map((type) {
-                  final isSelected = _selectedType == type['value'];
-                  return ChoiceChip(
-                    label: Text(
-                      type['label'],
-                      style: GoogleFonts.poppins(
-                        color: isSelected ? Colors.white : DesignTokens.textSecondaryDark,
-                        fontSize: 12,
-                      ),
-                    ),
-                    selected: isSelected,
-                    onSelected: (selected) {
-                      setState(() {
-                        _selectedType = type['value'];
-                      });
-                    },
-                    backgroundColor: DesignTokens.surfaceDark,
-                    selectedColor: DesignTokens.primaryColor,
-                  );
-                }).toList(),
+                children:
+                    _types.map((type) {
+                      final isSelected = _selectedType == type['value'];
+                      return ChoiceChip(
+                        label: Text(
+                          type['label'],
+                          style: GoogleFonts.poppins(
+                            color:
+                                isSelected
+                                    ? Colors.white
+                                    : DesignTokens.textSecondaryDark,
+                            fontSize: 12,
+                          ),
+                        ),
+                        selected: isSelected,
+                        onSelected: (selected) {
+                          setState(() {
+                            _selectedType = type['value'];
+                          });
+                        },
+                        backgroundColor: DesignTokens.surfaceDark,
+                        selectedColor: DesignTokens.primaryColor,
+                      );
+                    }).toList(),
               ),
               const SizedBox(height: 16),
               Text(
@@ -544,33 +610,45 @@ class _AddCategoryModalState extends State<_AddCategoryModal> {
               const SizedBox(height: 8),
               Wrap(
                 spacing: 8,
-                children: _icons.map((icon) {
-                  final isSelected = _selectedIcon == icon['value'];
-                  return GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        _selectedIcon = icon['value'];
-                      });
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        color: isSelected
-                            ? DesignTokens.primaryColor.withValues(alpha: 0.15)
-                            : DesignTokens.surfaceDark,
-                        borderRadius: BorderRadius.circular(DesignTokens.radiusSmall),
-                        border: Border.all(
-                          color: isSelected ? DesignTokens.primaryColor : DesignTokens.borderDark,
+                children:
+                    _icons.map((icon) {
+                      final isSelected = _selectedIcon == icon['value'];
+                      return GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            _selectedIcon = icon['value'];
+                          });
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color:
+                                isSelected
+                                    ? DesignTokens.primaryColor.withValues(
+                                      alpha: 0.15,
+                                    )
+                                    : DesignTokens.surfaceDark,
+                            borderRadius: BorderRadius.circular(
+                              DesignTokens.radiusSmall,
+                            ),
+                            border: Border.all(
+                              color:
+                                  isSelected
+                                      ? DesignTokens.primaryColor
+                                      : DesignTokens.borderDark,
+                            ),
+                          ),
+                          child: Icon(
+                            _getIconData(icon['value']),
+                            color:
+                                isSelected
+                                    ? DesignTokens.primaryColor
+                                    : DesignTokens.textSecondaryDark,
+                            size: 20,
+                          ),
                         ),
-                      ),
-                      child: Icon(
-                        _getIconData(icon['value']),
-                        color: isSelected ? DesignTokens.primaryColor : DesignTokens.textSecondaryDark,
-                        size: 20,
-                      ),
-                    ),
-                  );
-                }).toList(),
+                      );
+                    }).toList(),
               ),
               const SizedBox(height: 16),
               Text(
@@ -583,27 +661,31 @@ class _AddCategoryModalState extends State<_AddCategoryModal> {
               const SizedBox(height: 8),
               Wrap(
                 spacing: 8,
-                children: _colors.map((color) {
-                  final isSelected = _selectedColor == color;
-                  return GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        _selectedColor = color;
-                      });
-                    },
-                    child: Container(
-                      width: 36,
-                      height: 36,
-                      decoration: BoxDecoration(
-                        color: Color(int.parse(color.replaceFirst('#', '0xFF'))),
-                        shape: BoxShape.circle,
-                        border: isSelected
-                            ? Border.all(color: Colors.white, width: 3)
-                            : null,
-                      ),
-                    ),
-                  );
-                }).toList(),
+                children:
+                    _colors.map((color) {
+                      final isSelected = _selectedColor == color;
+                      return GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            _selectedColor = color;
+                          });
+                        },
+                        child: Container(
+                          width: 36,
+                          height: 36,
+                          decoration: BoxDecoration(
+                            color: Color(
+                              int.parse(color.replaceFirst('#', '0xFF')),
+                            ),
+                            shape: BoxShape.circle,
+                            border:
+                                isSelected
+                                    ? Border.all(color: Colors.white, width: 3)
+                                    : null,
+                          ),
+                        ),
+                      );
+                    }).toList(),
               ),
               const SizedBox(height: 24),
               SizedBox(
@@ -614,7 +696,9 @@ class _AddCategoryModalState extends State<_AddCategoryModal> {
                     backgroundColor: DesignTokens.primaryColor,
                     padding: const EdgeInsets.symmetric(vertical: 14),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                      borderRadius: BorderRadius.circular(
+                        DesignTokens.radiusMedium,
+                      ),
                     ),
                   ),
                   child: Text(

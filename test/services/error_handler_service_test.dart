@@ -8,7 +8,11 @@ void main() {
         'SocketException: Failed host lookup',
       );
 
-      expect(message.toLowerCase().contains('koneksi') || message.toLowerCase().contains('internet'), true);
+      expect(
+        message.toLowerCase().contains('koneksi') ||
+            message.toLowerCase().contains('internet'),
+        true,
+      );
     });
 
     test('should return Indonesian message for timeout errors', () {
@@ -75,7 +79,10 @@ void main() {
         '503 Service Unavailable',
       );
 
-      expect(message.contains('tidak tersedia') || message.contains('mencoba'), true);
+      expect(
+        message.contains('tidak tersedia') || message.contains('mencoba'),
+        true,
+      );
     });
 
     test('should return default message for unknown errors', () {

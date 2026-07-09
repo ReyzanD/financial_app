@@ -89,6 +89,7 @@ class _QuickAddModalState extends State<QuickAddModal> {
   }
 
   Future<bool> _checkBalanceBeforeExpense(double expenseAmount) async {
+    final ctx = context;
     try {
       // Get current financial summary
       final summary = await _apiService.getFinancialSummary();
@@ -110,8 +111,9 @@ class _QuickAddModalState extends State<QuickAddModal> {
 
       // If balance would go below the minimum, block the transaction
       if (newBalance < minimumBalance) {
+        if (!ctx.mounted) return false;
         await showDialog(
-          context: context,
+          context: ctx,
           builder:
               (context) => AlertDialog(
                 backgroundColor: const Color(0xFF1A1A1A),
@@ -154,7 +156,9 @@ class _QuickAddModalState extends State<QuickAddModal> {
                       decoration: BoxDecoration(
                         color: Colors.red.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: Colors.red.withValues(alpha: 0.3)),
+                        border: Border.all(
+                          color: Colors.red.withValues(alpha: 0.3),
+                        ),
                       ),
                       child: Column(
                         children: [
@@ -191,7 +195,9 @@ class _QuickAddModalState extends State<QuickAddModal> {
                       decoration: BoxDecoration(
                         color: Colors.blue.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: Colors.blue.withValues(alpha: 0.3)),
+                        border: Border.all(
+                          color: Colors.blue.withValues(alpha: 0.3),
+                        ),
                       ),
                       child: Row(
                         children: [
@@ -309,6 +315,8 @@ class _QuickAddModalState extends State<QuickAddModal> {
       _amountController.text.replaceAll(RegExp(r'[^0-9.]'), ''),
     );
 
+    final ctx = context;
+
     // Check balance before adding expense
     if (widget.type == 'expense') {
       final shouldContinue = await _checkBalanceBeforeExpense(amount);
@@ -317,6 +325,7 @@ class _QuickAddModalState extends State<QuickAddModal> {
       }
     }
 
+    if (!ctx.mounted) return;
     setState(() => _isLoading = true);
 
     try {
@@ -324,8 +333,8 @@ class _QuickAddModalState extends State<QuickAddModal> {
         'description':
             description.isEmpty
                 ? widget.type == 'income'
-                    ? AppLocalizations.of(context)!.quick_income
-                    : AppLocalizations.of(context)!.quick_expense
+                    ? AppLocalizations.of(ctx)!.quick_income
+                    : AppLocalizations.of(ctx)!.quick_expense
                 : description,
         'amount': amount,
         'type': widget.type,
@@ -333,34 +342,32 @@ class _QuickAddModalState extends State<QuickAddModal> {
         'date': DateTime.now().toIso8601String(),
       });
 
-      if (mounted) {
-        // Trigger immediate refresh
-        await AppRefresh.refreshAll(context);
+      if (!ctx.mounted) return;
+      // Trigger immediate refresh
+      await AppRefresh.refreshAll(ctx);
 
-        Navigator.pop(context);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              '✅ Transaksi berhasil ditambahkan!',
-              style: GoogleFonts.poppins(),
-            ),
-            backgroundColor: Colors.green,
+      if (!ctx.mounted) return;
+      Navigator.pop(ctx);
+      if (!ctx.mounted) return;
+      ScaffoldMessenger.of(ctx).showSnackBar(
+        SnackBar(
+          content: Text(
+            '✅ Transaksi berhasil ditambahkan!',
+            style: GoogleFonts.poppins(),
           ),
-        );
-        widget.onTransactionAdded?.call();
-      }
+          backgroundColor: Colors.green,
+        ),
+      );
+      widget.onTransactionAdded?.call();
     } catch (e) {
       setState(() => _isLoading = false);
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              '${AppLocalizations.of(context)!.failed}: ${e.toString()}',
-            ),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
+      if (!ctx.mounted) return;
+      ScaffoldMessenger.of(ctx).showSnackBar(
+        SnackBar(
+          content: Text('${AppLocalizations.of(ctx)!.failed}: ${e.toString()}'),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
   }
 
@@ -473,7 +480,9 @@ class _QuickAddModalState extends State<QuickAddModal> {
                   decoration: BoxDecoration(
                     color: Colors.orange.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: Colors.orange.withValues(alpha: 0.3)),
+                    border: Border.all(
+                      color: Colors.orange.withValues(alpha: 0.3),
+                    ),
                   ),
                   child: Row(
                     children: [

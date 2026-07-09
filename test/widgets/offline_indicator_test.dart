@@ -5,11 +5,7 @@ import 'package:financial_app/widgets/common/offline_indicator.dart';
 void main() {
   testWidgets('OfflineIndicator renders correctly', (tester) async {
     await tester.pumpWidget(
-      const MaterialApp(
-        home: Scaffold(
-          body: OfflineIndicator(),
-        ),
-      ),
+      const MaterialApp(home: Scaffold(body: OfflineIndicator())),
     );
 
     expect(find.byType(OfflineIndicator), findsOneWidget);
@@ -17,11 +13,7 @@ void main() {
 
   testWidgets('OfflineIndicator does not crash when offline', (tester) async {
     await tester.pumpWidget(
-      const MaterialApp(
-        home: Scaffold(
-          body: OfflineIndicator(),
-        ),
-      ),
+      const MaterialApp(home: Scaffold(body: OfflineIndicator())),
     );
 
     await tester.pump();

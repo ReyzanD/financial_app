@@ -53,16 +53,11 @@ class EnhancedErrorState extends StatelessWidget {
               ),
               child: Icon(
                 errorIcon,
-                size: ResponsiveHelper.iconSize(
-                  context,
-                  isCompact ? 48 : 64,
-                ),
+                size: ResponsiveHelper.iconSize(context, isCompact ? 48 : 64),
                 color: DesignTokens.errorColor,
               ),
             ),
-            SizedBox(
-              height: ResponsiveHelper.verticalSpacing(context, 24),
-            ),
+            SizedBox(height: ResponsiveHelper.verticalSpacing(context, 24)),
 
             // Title
             AccessibilityHelper.createAccessibleText(
@@ -79,9 +74,7 @@ class EnhancedErrorState extends StatelessWidget {
                 fontWeight: DesignTokens.weightBold,
               ),
             ),
-            SizedBox(
-              height: ResponsiveHelper.verticalSpacing(context, 12),
-            ),
+            SizedBox(height: ResponsiveHelper.verticalSpacing(context, 12)),
 
             // Message
             AccessibilityHelper.createAccessibleText(
@@ -100,9 +93,7 @@ class EnhancedErrorState extends StatelessWidget {
 
             // Retry Button
             if (onRetry != null) ...[
-              SizedBox(
-                height: ResponsiveHelper.verticalSpacing(context, 24),
-              ),
+              SizedBox(height: ResponsiveHelper.verticalSpacing(context, 24)),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -171,4 +162,3 @@ class EnhancedErrorState extends StatelessWidget {
     );
   }
 }
-

@@ -3,10 +3,12 @@ import 'package:financial_app/services/auth_service.dart';
 import 'package:financial_app/services/pin_auth_service.dart';
 import 'package:financial_app/services/biometric_service.dart';
 import 'package:financial_app/services/logger_service.dart';
+import 'package:financial_app/services/error_handler_service.dart';
 import 'package:financial_app/Screen/login_screen.dart';
 import 'package:financial_app/Screen/pin_setup_screen.dart';
 import 'package:financial_app/Screen/pin_unlock_screen.dart';
 import 'package:financial_app/Screen/home_screen.dart';
+import 'package:financial_app/widgets/common/offline_indicator.dart';
 
 /// Authentication Gate - Routes users based on their auth status
 ///
@@ -64,7 +66,7 @@ class _AuthGateState extends State<AuthGate> {
 
       // Has token and PIN → Check if should auto-lock
       final shouldLock = await _pinAuthService.shouldAutoLock();
-      
+
       // Also check biometric auto-lock
       final biometricShouldLock = await _biometricService.shouldLock();
 
@@ -83,6 +85,14 @@ class _AuthGateState extends State<AuthGate> {
       }
     } catch (e) {
       LoggerService.error('Error determining route', error: e);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(ErrorHandlerService.getUserFriendlyMessage(e)),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
       // On error, default to login
       setState(() {
         _targetScreen = const LoginScreen();
@@ -94,20 +104,27 @@ class _AuthGateState extends State<AuthGate> {
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
-      return const Scaffold(
+      return Scaffold(
         backgroundColor: Colors.black,
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              CircularProgressIndicator(color: Color(0xFF8B5FBF)),
-              SizedBox(height: 16),
-              Text(
-                'Loading...',
-                style: TextStyle(color: Colors.white, fontSize: 16),
+        body: Column(
+          children: [
+            const OfflineIndicator(),
+            Expanded(
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const CircularProgressIndicator(color: Color(0xFF8B5FBF)),
+                    const SizedBox(height: 16),
+                    const Text(
+                      'Loading...',
+                      style: TextStyle(color: Colors.white, fontSize: 16),
+                    ),
+                  ],
+                ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       );
     }

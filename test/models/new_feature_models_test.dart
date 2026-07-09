@@ -313,18 +313,21 @@ void main() {
       expect(split.isSettled, false);
     });
 
-    test('remainingAmount should calculate correctly after partial payment', () {
-      final split = SplitModel(
-        id: 'split_1',
-        transactionId: 'txn_1',
-        participantName: 'John',
-        amount: 100000.0,
-        paidAmount: 30000.0,
-        createdAt: testDate,
-      );
+    test(
+      'remainingAmount should calculate correctly after partial payment',
+      () {
+        final split = SplitModel(
+          id: 'split_1',
+          transactionId: 'txn_1',
+          participantName: 'John',
+          amount: 100000.0,
+          paidAmount: 30000.0,
+          createdAt: testDate,
+        );
 
-      expect(split.remainingAmount, 70000.0);
-    });
+        expect(split.remainingAmount, 70000.0);
+      },
+    );
 
     test('toMap should return SQLite-compatible data', () {
       final split = SplitModel(

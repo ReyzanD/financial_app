@@ -55,20 +55,20 @@ class UserFeedbackService {
     try {
       final prefs = await SharedPreferences.getInstance();
       final queueJson = prefs.getString(_feedbackKey);
-      
+
       List<Map<String, dynamic>> queue = [];
       if (queueJson != null) {
         final decoded = json.decode(queueJson) as List;
         queue = decoded.cast<Map<String, dynamic>>();
       }
-      
+
       queue.add(feedback);
-      
+
       // Keep only last 50 feedbacks
       if (queue.length > 50) {
         queue.removeAt(0);
       }
-      
+
       await prefs.setString(_feedbackKey, json.encode(queue));
     } catch (e) {
       LoggerService.error('Error queueing feedback', error: e);
@@ -80,11 +80,12 @@ class UserFeedbackService {
     try {
       final prefs = await SharedPreferences.getInstance();
       final queueJson = prefs.getString(_feedbackKey);
-      
+
       if (queueJson == null) return;
-      
-      final queue = (json.decode(queueJson) as List).cast<Map<String, dynamic>>();
-      
+
+      final queue =
+          (json.decode(queueJson) as List).cast<Map<String, dynamic>>();
+
       for (var feedbackData in queue) {
         try {
           // Try to send to backend
@@ -96,7 +97,7 @@ class UserFeedbackService {
           break; // Stop on first error
         }
       }
-      
+
       // Clear queue if all synced
       await prefs.remove(_feedbackKey);
     } catch (e) {
@@ -109,7 +110,10 @@ class UserFeedbackService {
     try {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setInt(_ratingKey, rating);
-      await prefs.setString('${_ratingKey}_date', DateTime.now().toIso8601String());
+      await prefs.setString(
+        '${_ratingKey}_date',
+        DateTime.now().toIso8601String(),
+      );
     } catch (e) {
       LoggerService.error('Error saving rating', error: e);
     }
@@ -161,10 +165,7 @@ class UserFeedbackService {
     return await submitFeedback(
       type: 'feature',
       message: feature,
-      metadata: {
-        'description': description,
-        'use_case': useCase,
-      },
+      metadata: {'description': description, 'use_case': useCase},
     );
   }
 
@@ -197,11 +198,11 @@ class UserFeedbackService {
     try {
       // Don't prompt if already rated
       if (await hasRated()) return false;
-      
+
       // Check app usage (number of opens)
       final prefs = await SharedPreferences.getInstance();
       final openCount = prefs.getInt('app_open_count') ?? 0;
-      
+
       // Prompt after 10 opens
       if (openCount >= 10) {
         // Check last prompt date
@@ -209,14 +210,14 @@ class UserFeedbackService {
         if (lastPromptDate != null) {
           final lastPrompt = DateTime.parse(lastPromptDate);
           final daysSincePrompt = DateTime.now().difference(lastPrompt).inDays;
-          
+
           // Don't prompt if prompted in last 30 days
           if (daysSincePrompt < 30) return false;
         }
-        
+
         return true;
       }
-      
+
       return false;
     } catch (e) {
       LoggerService.error('Error checking rating prompt', error: e);
@@ -228,10 +229,12 @@ class UserFeedbackService {
   Future<void> recordRatingPromptShown() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      await prefs.setString('last_rating_prompt_date', DateTime.now().toIso8601String());
+      await prefs.setString(
+        'last_rating_prompt_date',
+        DateTime.now().toIso8601String(),
+      );
     } catch (e) {
       LoggerService.error('Error recording rating prompt', error: e);
     }
   }
 }
-

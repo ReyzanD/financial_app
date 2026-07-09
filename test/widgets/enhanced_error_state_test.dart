@@ -36,7 +36,9 @@ void main() {
       expect(find.byType(ElevatedButton), findsOneWidget);
     });
 
-    testWidgets('does not show retry button when onRetry is null', (tester) async {
+    testWidgets('does not show retry button when onRetry is null', (
+      tester,
+    ) async {
       await tester.pumpWidget(
         const MaterialApp(
           home: Scaffold(

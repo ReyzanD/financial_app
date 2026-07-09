@@ -280,7 +280,11 @@ void main() {
         final trends = result['trends'] as Map;
         expect(trends['expense_trend'], isA<String>());
         expect(
-          ['increasing', 'decreasing', 'stable'].contains(trends['expense_trend']),
+          [
+            'increasing',
+            'decreasing',
+            'stable',
+          ].contains(trends['expense_trend']),
           true,
         );
       });
@@ -403,26 +407,31 @@ void main() {
         expect(anomalies, isEmpty);
       });
 
-      test('should return empty list for transactions with insufficient data', () {
-        final now = DateTime.now();
-        final currentMonth =
-            '${now.year}-${now.month.toString().padLeft(2, '0')}';
-        final transactions = [
-          createTransaction(
-            date: '$currentMonth-01',
-            amount: 50000,
-            type: 'expense',
-          ),
-          createTransaction(
-            date: '$currentMonth-05',
-            amount: 60000,
-            type: 'expense',
-          ),
-        ];
+      test(
+        'should return empty list for transactions with insufficient data',
+        () {
+          final now = DateTime.now();
+          final currentMonth =
+              '${now.year}-${now.month.toString().padLeft(2, '0')}';
+          final transactions = [
+            createTransaction(
+              date: '$currentMonth-01',
+              amount: 50000,
+              type: 'expense',
+            ),
+            createTransaction(
+              date: '$currentMonth-05',
+              amount: 60000,
+              type: 'expense',
+            ),
+          ];
 
-        final anomalies = analyzer.detectAnomalies(transactions: transactions);
-        expect(anomalies, isEmpty);
-      });
+          final anomalies = analyzer.detectAnomalies(
+            transactions: transactions,
+          );
+          expect(anomalies, isEmpty);
+        },
+      );
 
       test('should detect unusually high spending', () {
         final now = DateTime.now();

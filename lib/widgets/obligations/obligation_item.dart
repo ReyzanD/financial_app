@@ -186,7 +186,9 @@ class ObligationItem extends StatelessWidget {
                   ),
                   borderRadius: BorderRadius.circular(14),
                   border: Border.all(
-                    color: _getObligationColor(obligation).withValues(alpha: 0.3),
+                    color: _getObligationColor(
+                      obligation,
+                    ).withValues(alpha: 0.3),
                     width: 1,
                   ),
                 ),

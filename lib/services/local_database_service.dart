@@ -10,6 +10,10 @@ class LocalDatabaseService {
 
   LocalDatabaseService._internal();
 
+  /// Named constructor for creating instances in tests or subclasses.
+  /// For normal use, prefer the factory constructor [LocalDatabaseService()].
+  LocalDatabaseService.test() : super();
+
   factory LocalDatabaseService() {
     _instance ??= LocalDatabaseService._internal();
     return _instance!;
@@ -33,8 +37,10 @@ class LocalDatabaseService {
       return await openDatabase(
         path,
         version: currentVersion,
+        onConfigure: _onConfigure,
         onCreate: _onCreate,
         onUpgrade: _onUpgrade,
+        onDowngrade: _onDowngrade,
       );
     } catch (e) {
       LoggerService.error('Error initializing database', error: e);
@@ -42,12 +48,15 @@ class LocalDatabaseService {
     }
   }
 
+  /// Called on every database connection open — enables foreign keys per-connection
+  Future<void> _onConfigure(Database db) async {
+    // Enable foreign keys on every connection (required by SQLite)
+    await db.execute('PRAGMA foreign_keys=ON');
+  }
+
   /// Create database schema
   Future<void> _onCreate(Database db, int version) async {
     LoggerService.info('📱 Creating database schema...');
-
-    // Enable foreign keys
-    await db.execute('PRAGMA foreign_keys=ON');
 
     // Users table
     await db.execute('''
@@ -522,8 +531,10 @@ class LocalDatabaseService {
       '📱 Upgrading database from version $oldVersion to $newVersion',
     );
 
-    if (oldVersion < 2) {
-      await db.execute('''
+    // Wrap all migrations in a transaction for atomicity
+    await db.transaction((txn) async {
+      if (oldVersion < 2) {
+        await db.execute('''
         CREATE TABLE IF NOT EXISTS receipt_scans_232143 (
           receipt_id_232143 TEXT PRIMARY KEY,
           user_id_232143 TEXT NOT NULL,
@@ -544,11 +555,13 @@ class LocalDatabaseService {
           FOREIGN KEY (transaction_id_232143) REFERENCES transactions_232143(transaction_id_232143)
         )
       ''');
-      LoggerService.info('✅ Migrated to version 2: added receipt_scans table');
-    }
+        LoggerService.info(
+          '✅ Migrated to version 2: added receipt_scans table',
+        );
+      }
 
-    if (oldVersion < 3) {
-      await db.execute('''
+      if (oldVersion < 3) {
+        await db.execute('''
         CREATE TABLE IF NOT EXISTS accounts_232143 (
           account_id_232143 TEXT PRIMARY KEY,
           user_id_232143 TEXT NOT NULL,
@@ -568,7 +581,7 @@ class LocalDatabaseService {
         )
       ''');
 
-      await db.execute('''
+        await db.execute('''
         CREATE TABLE IF NOT EXISTS debts_232143 (
           debt_id_232143 TEXT PRIMARY KEY,
           user_id_232143 TEXT NOT NULL,
@@ -588,7 +601,7 @@ class LocalDatabaseService {
         )
       ''');
 
-      await db.execute('''
+        await db.execute('''
         CREATE TABLE IF NOT EXISTS debt_payments_232143 (
           payment_id_232143 TEXT PRIMARY KEY,
           debt_id_232143 TEXT NOT NULL,
@@ -603,7 +616,7 @@ class LocalDatabaseService {
         )
       ''');
 
-      await db.execute('''
+        await db.execute('''
         CREATE TABLE IF NOT EXISTS subscriptions_232143 (
           subscription_id_232143 TEXT PRIMARY KEY,
           user_id_232143 TEXT NOT NULL,
@@ -623,7 +636,7 @@ class LocalDatabaseService {
         )
       ''');
 
-      await db.execute('''
+        await db.execute('''
         CREATE TABLE IF NOT EXISTS tags_232143 (
           tag_id_232143 TEXT PRIMARY KEY,
           user_id_232143 TEXT NOT NULL,
@@ -634,7 +647,7 @@ class LocalDatabaseService {
         )
       ''');
 
-      await db.execute('''
+        await db.execute('''
         CREATE TABLE IF NOT EXISTS transaction_tags_232143 (
           transaction_id_232143 TEXT NOT NULL,
           tag_id_232143 TEXT NOT NULL,
@@ -644,7 +657,7 @@ class LocalDatabaseService {
         )
       ''');
 
-      await db.execute('''
+        await db.execute('''
         CREATE TABLE IF NOT EXISTS expense_splits_232143 (
           split_id_232143 TEXT PRIMARY KEY,
           transaction_id_232143 TEXT,
@@ -662,7 +675,7 @@ class LocalDatabaseService {
         )
       ''');
 
-      await db.execute('''
+        await db.execute('''
         CREATE TABLE IF NOT EXISTS challenges_232143 (
           challenge_id_232143 TEXT PRIMARY KEY,
           user_id_232143 TEXT NOT NULL,
@@ -684,7 +697,7 @@ class LocalDatabaseService {
         )
       ''');
 
-      await db.execute('''
+        await db.execute('''
         CREATE TABLE IF NOT EXISTS investments_232143 (
           investment_id_232143 TEXT PRIMARY KEY,
           user_id_232143 TEXT NOT NULL,
@@ -702,7 +715,7 @@ class LocalDatabaseService {
         )
       ''');
 
-      await db.execute('''
+        await db.execute('''
         CREATE TABLE IF NOT EXISTS transaction_templates_232143 (
           template_id_232143 TEXT PRIMARY KEY,
           user_id_232143 TEXT NOT NULL,
@@ -724,7 +737,7 @@ class LocalDatabaseService {
         )
       ''');
 
-      await db.execute('''
+        await db.execute('''
         CREATE TABLE IF NOT EXISTS net_worth_history_232143 (
           snapshot_id_232143 TEXT PRIMARY KEY,
           user_id_232143 TEXT NOT NULL,
@@ -739,7 +752,7 @@ class LocalDatabaseService {
         )
       ''');
 
-      await db.execute('''
+        await db.execute('''
         CREATE TABLE IF NOT EXISTS exchange_rates_232143 (
           rate_id_232143 TEXT PRIMARY KEY,
           from_currency_232143 TEXT NOT NULL,
@@ -750,43 +763,47 @@ class LocalDatabaseService {
         )
       ''');
 
-      await db.execute(
-        'CREATE INDEX IF NOT EXISTS idx_accounts_user ON accounts_232143(user_id_232143)',
-      );
-      await db.execute(
-        'CREATE INDEX IF NOT EXISTS idx_debts_user ON debts_232143(user_id_232143)',
-      );
-      await db.execute(
-        'CREATE INDEX IF NOT EXISTS idx_debt_payments_debt ON debt_payments_232143(debt_id_232143)',
-      );
-      await db.execute(
-        'CREATE INDEX IF NOT EXISTS idx_subscriptions_user ON subscriptions_232143(user_id_232143)',
-      );
-      await db.execute(
-        'CREATE INDEX IF NOT EXISTS idx_splits_user ON expense_splits_232143(user_id_232143)',
-      );
-      await db.execute(
-        'CREATE INDEX IF NOT EXISTS idx_investments_user ON investments_232143(user_id_232143)',
-      );
-      await db.execute(
-        'CREATE INDEX IF NOT EXISTS idx_challenges_user ON challenges_232143(user_id_232143)',
-      );
-      await db.execute(
-        'CREATE INDEX IF NOT EXISTS idx_net_worth_user_date ON net_worth_history_232143(user_id_232143, snapshot_date_232143)',
-      );
+        await db.execute(
+          'CREATE INDEX IF NOT EXISTS idx_accounts_user ON accounts_232143(user_id_232143)',
+        );
+        await db.execute(
+          'CREATE INDEX IF NOT EXISTS idx_debts_user ON debts_232143(user_id_232143)',
+        );
+        await db.execute(
+          'CREATE INDEX IF NOT EXISTS idx_debt_payments_debt ON debt_payments_232143(debt_id_232143)',
+        );
+        await db.execute(
+          'CREATE INDEX IF NOT EXISTS idx_subscriptions_user ON subscriptions_232143(user_id_232143)',
+        );
+        await db.execute(
+          'CREATE INDEX IF NOT EXISTS idx_splits_user ON expense_splits_232143(user_id_232143)',
+        );
+        await db.execute(
+          'CREATE INDEX IF NOT EXISTS idx_investments_user ON investments_232143(user_id_232143)',
+        );
+        await db.execute(
+          'CREATE INDEX IF NOT EXISTS idx_challenges_user ON challenges_232143(user_id_232143)',
+        );
+        await db.execute(
+          'CREATE INDEX IF NOT EXISTS idx_net_worth_user_date ON net_worth_history_232143(user_id_232143, snapshot_date_232143)',
+        );
 
-      LoggerService.info('✅ Migrated to version 3: added accounts, debts, subscriptions, tags, splits, challenges, investments, templates, net worth, exchange rates');
-    }
+        LoggerService.info(
+          '✅ Migrated to version 3: added accounts, debts, subscriptions, tags, splits, challenges, investments, templates, net worth, exchange rates',
+        );
+      }
 
-    if (oldVersion < 4) {
-      await db.execute(
-        'ALTER TABLE transactions_232143 ADD COLUMN account_id_232143 TEXT',
-      );
-      LoggerService.info('✅ Migrated to version 4: added account_id to transactions');
-    }
+      if (oldVersion < 4) {
+        await db.execute(
+          'ALTER TABLE transactions_232143 ADD COLUMN account_id_232143 TEXT',
+        );
+        LoggerService.info(
+          '✅ Migrated to version 4: added account_id to transactions',
+        );
+      }
 
-    if (oldVersion < 5) {
-      await db.execute('''
+      if (oldVersion < 5) {
+        await db.execute('''
         CREATE TABLE IF NOT EXISTS goal_contributions_232143 (
           contribution_id_232143 TEXT PRIMARY KEY,
           goal_id_232143 TEXT NOT NULL,
@@ -799,15 +816,34 @@ class LocalDatabaseService {
         )
       ''');
 
-      await db.execute(
-        'CREATE INDEX IF NOT EXISTS idx_goal_contributions_goal ON goal_contributions_232143(goal_id_232143)',
-      );
-      await db.execute(
-        'CREATE INDEX IF NOT EXISTS idx_goal_contributions_account ON goal_contributions_232143(account_id_232143)',
-      );
+        await db.execute(
+          'CREATE INDEX IF NOT EXISTS idx_goal_contributions_goal ON goal_contributions_232143(goal_id_232143)',
+        );
+        await db.execute(
+          'CREATE INDEX IF NOT EXISTS idx_goal_contributions_account ON goal_contributions_232143(account_id_232143)',
+        );
 
-      LoggerService.info('✅ Migrated to version 5: added goal_contributions table');
+        LoggerService.info(
+          '✅ Migrated to version 5: added goal_contributions table',
+        );
+      }
+    });
+  }
+
+  /// Handle database downgrade (prevents opening with older app version)
+  Future<void> _onDowngrade(Database db, int oldVersion, int newVersion) async {
+    LoggerService.warning(
+      '⚠️ Database downgrade detected: $oldVersion → $newVersion. '
+      'This is not supported — re-creating schema.',
+    );
+    // Drop all user-created tables and re-create to prevent data corruption
+    final tables = await db.rawQuery(
+      "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%' AND name NOT LIKE 'android_%'",
+    );
+    for (final table in tables) {
+      await db.execute('DROP TABLE IF EXISTS ${table['name']}');
     }
+    await _onCreate(db, currentVersion);
   }
 
   /// Close database

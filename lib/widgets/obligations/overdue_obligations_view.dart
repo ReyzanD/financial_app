@@ -41,11 +41,7 @@ class _OverdueObligationsViewState extends State<OverdueObligationsView> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(
-                  Iconsax.tick_circle,
-                  size: 64,
-                  color: Colors.green[400],
-                ),
+                Icon(Iconsax.tick_circle, size: 64, color: Colors.green[400]),
                 const SizedBox(height: 16),
                 Text(
                   'Tidak Ada Tagihan Terlambat',
@@ -70,40 +66,43 @@ class _OverdueObligationsViewState extends State<OverdueObligationsView> {
 
         overdue.sort((a, b) => a.daysUntilDue.compareTo(b.daysUntilDue));
 
-        return ListView(
+        return ListView.builder(
           padding: const EdgeInsets.all(16),
-          children: [
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: Colors.red.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.red.withValues(alpha: 0.3)),
-              ),
-              child: Row(
-                children: [
-                  Icon(Iconsax.warning_2, color: Colors.red[400], size: 20),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      '${overdue.length} tagihan terlambat - segera bayar untuk menghindari denda',
-                      style: GoogleFonts.poppins(
-                        color: Colors.red[300],
-                        fontSize: 13,
-                        fontWeight: FontWeight.w500,
+          itemCount: overdue.length + 1, // +1 for warning banner
+          itemBuilder: (context, index) {
+            if (index == 0) {
+              return Container(
+                margin: const EdgeInsets.only(bottom: 16),
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.red.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: Colors.red.withValues(alpha: 0.3)),
+                ),
+                child: Row(
+                  children: [
+                    Icon(Iconsax.warning_2, color: Colors.red[400], size: 20),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        '${overdue.length} tagihan terlambat - segera bayar untuk menghindari denda',
+                        style: GoogleFonts.poppins(
+                          color: Colors.red[300],
+                          fontSize: 13,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
                     ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 16),
-            ...overdue.map((o) => ObligationItem(
-              obligation: o,
+                  ],
+                ),
+              );
+            }
+            return ObligationItem(
+              obligation: overdue[index - 1],
               onTap: () {},
               onPaymentRecorded: _refreshData,
-            )),
-          ],
+            );
+          },
         );
       },
     );

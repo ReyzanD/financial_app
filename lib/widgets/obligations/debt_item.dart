@@ -12,7 +12,7 @@ class DebtItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       color: const Color(0xFF1A1A1A),
-      margin: EdgeInsets.only(bottom: 12),
+      margin: const EdgeInsets.only(bottom: 12),
       child: ListTile(
         leading: Container(
           width: 40,

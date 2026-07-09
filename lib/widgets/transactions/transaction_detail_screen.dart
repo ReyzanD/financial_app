@@ -62,7 +62,10 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
 
       setState(() => _alternativeRecommendations = recommendations);
     } catch (e) {
-      LoggerService.error('Error loading alternative recommendations', error: e);
+      LoggerService.error(
+        'Error loading alternative recommendations',
+        error: e,
+      );
     } finally {
       setState(() => _isLoadingRecommendations = false);
     }
@@ -73,7 +76,9 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
   @override
   Widget build(BuildContext context) {
     // Debug: Log the entire transaction data
-    LoggerService.debug('TransactionDetailScreen Data: ${json.encode(widget.transaction)}');
+    LoggerService.debug(
+      'TransactionDetailScreen Data: ${json.encode(widget.transaction)}',
+    );
 
     final isIncome = widget.transaction['type'] == 'income';
     final amount =

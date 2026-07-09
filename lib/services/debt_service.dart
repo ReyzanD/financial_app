@@ -6,14 +6,12 @@ class DebtService {
   final LocalDataService _localData;
 
   DebtService({LocalDataService? localData})
-      : _localData = localData ?? LocalDataService();
+    : _localData = localData ?? LocalDataService();
 
   Future<List<DebtModel>> getDebts({bool activeOnly = true}) async {
     try {
       final debtsData = await _localData.getDebts(activeOnly: activeOnly);
-      return debtsData
-          .map((d) => DebtModel.fromMap(d))
-          .toList();
+      return debtsData.map((d) => DebtModel.fromMap(d)).toList();
     } catch (e) {
       LoggerService.error('Error getting debts', error: e);
       return [];
@@ -32,7 +30,11 @@ class DebtService {
     }
   }
 
-  Future<void> recordPayment(String debtId, double amount, {String? notes}) async {
+  Future<void> recordPayment(
+    String debtId,
+    double amount, {
+    String? notes,
+  }) async {
     try {
       await _localData.recordDebtPayment(debtId, amount, notes: notes);
       LoggerService.success('Payment recorded: $amount for debt $debtId');
@@ -68,13 +70,17 @@ class DebtService {
       final debtsByType = <String, double>{};
 
       for (var debt in debts) {
-        debtsByType[debt.type] = (debtsByType[debt.type] ?? 0) + debt.currentBalance;
+        debtsByType[debt.type] =
+            (debtsByType[debt.type] ?? 0) + debt.currentBalance;
       }
 
       return {
         ...summary,
         'debts_by_type': debtsByType,
-        'total_interest': debts.fold<double>(0, (sum, d) => sum + d.totalInterest),
+        'total_interest': debts.fold<double>(
+          0,
+          (sum, d) => sum + d.totalInterest,
+        ),
       };
     } catch (e) {
       LoggerService.error('Error getting debt summary', error: e);

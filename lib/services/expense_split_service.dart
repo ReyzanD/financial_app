@@ -6,17 +6,18 @@ class ExpenseSplitService {
   final LocalDataService _localData;
 
   ExpenseSplitService({LocalDataService? localData})
-      : _localData = localData ?? LocalDataService();
+    : _localData = localData ?? LocalDataService();
 
-  Future<List<SplitModel>> getSplits({String? transactionId, bool activeOnly = true}) async {
+  Future<List<SplitModel>> getSplits({
+    String? transactionId,
+    bool activeOnly = true,
+  }) async {
     try {
       final splitsData = await _localData.getSplits(
         transactionId: transactionId,
         activeOnly: activeOnly,
       );
-      return splitsData
-          .map((s) => SplitModel.fromMap(s))
-          .toList();
+      return splitsData.map((s) => SplitModel.fromMap(s)).toList();
     } catch (e) {
       LoggerService.error('Error getting splits', error: e);
       return [];
@@ -26,7 +27,9 @@ class ExpenseSplitService {
   Future<SplitModel> createSplit(SplitModel split) async {
     try {
       final result = await _localData.addSplit(split.toMap());
-      final created = SplitModel.fromMap(result['split'] as Map<String, dynamic>);
+      final created = SplitModel.fromMap(
+        result['split'] as Map<String, dynamic>,
+      );
       LoggerService.success('Split created for ${created.participantName}');
       return created;
     } catch (e) {
@@ -40,7 +43,9 @@ class ExpenseSplitService {
       final createdSplits = <SplitModel>[];
       for (var split in splits) {
         final result = await _localData.addSplit(split.toMap());
-        createdSplits.add(SplitModel.fromMap(result['split'] as Map<String, dynamic>));
+        createdSplits.add(
+          SplitModel.fromMap(result['split'] as Map<String, dynamic>),
+        );
       }
       LoggerService.success('${splits.length} splits created');
       return createdSplits;

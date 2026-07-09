@@ -13,8 +13,10 @@ class AppConfig {
   /// Call this once at app startup (in main.dart)
   static Future<void> initialize() async {
     if (_initialized) return;
-    
-    LoggerService.info('📱 App running in standalone mode (no backend required)');
+
+    LoggerService.info(
+      '📱 App running in standalone mode (no backend required)',
+    );
     _initialized = true;
   }
 

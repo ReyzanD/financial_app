@@ -76,4 +76,3 @@ class BudgetTipsSection extends StatelessWidget {
     );
   }
 }
-

@@ -10,7 +10,9 @@ class BudgetRepository implements BudgetRepositoryInterface {
   Future<List<BudgetEntity>> getBudgets({bool activeOnly = false}) async {
     try {
       final budgets = await _apiService.getBudgets(activeOnly: activeOnly);
-      return budgets.map((b) => BudgetEntity.fromJson(b as Map<String, dynamic>)).toList();
+      return budgets
+          .map((b) => BudgetEntity.fromJson(b as Map<String, dynamic>))
+          .toList();
     } catch (e) {
       rethrow;
     }
@@ -45,4 +47,3 @@ class BudgetRepository implements BudgetRepositoryInterface {
     }
   }
 }
-

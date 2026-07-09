@@ -51,14 +51,6 @@ import 'package:financial_app/services/expense_split_service.dart';
 import 'package:financial_app/services/financial_calendar_service.dart';
 import 'package:financial_app/services/investment_service.dart';
 import 'package:financial_app/services/subscription_tracker_service.dart';
-import 'package:financial_app/services/account_service.dart';
-import 'package:financial_app/services/debt_service.dart';
-import 'package:financial_app/services/subscription_tracker_service.dart';
-import 'package:financial_app/services/investment_service.dart';
-import 'package:financial_app/services/expense_split_service.dart';
-import 'package:financial_app/services/cash_flow_forecast_service.dart';
-import 'package:financial_app/services/financial_calendar_service.dart';
-
 
 /// Service Locator untuk Dependency Injection menggunakan get_it
 final getIt = GetIt.instance;
@@ -79,7 +71,9 @@ Future<void> setupServiceLocator() async {
 
   // ========== Network & Data Services ==========
   getIt.registerLazySingleton<NetworkService>(() => NetworkService());
-  getIt.registerLazySingleton<DataService>(() => DataService(getIt<ApiService>()));
+  getIt.registerLazySingleton<DataService>(
+    () => DataService(getIt<ApiService>()),
+  );
   getIt.registerLazySingleton<CacheService>(() => CacheService());
   getIt.registerLazySingleton<SearchService>(() => SearchService());
   getIt.registerLazySingleton<ExportService>(() => ExportService());

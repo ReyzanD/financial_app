@@ -9,7 +9,13 @@ class CategoryCustomizationService {
     try {
       final categories = await _localData.getCategories();
       return categories
-          .where((c) => (c['is_system_default_232143'] as int? ?? c['is_system_default'] as int? ?? 0) == 0)
+          .where(
+            (c) =>
+                (c['is_system_default_232143'] as int? ??
+                    c['is_system_default'] as int? ??
+                    0) ==
+                0,
+          )
           .toList();
     } catch (e) {
       LoggerService.error('Error getting custom categories', error: e);
@@ -73,7 +79,8 @@ class CategoryCustomizationService {
         (c) => (c['category_id_232143'] ?? c['id']) == categoryId,
         orElse: () => {},
       );
-      return (category['icon_232143'] ?? category['icon'])?.toString() ?? 'category';
+      return (category['icon_232143'] ?? category['icon'])?.toString() ??
+          'category';
     } catch (e) {
       return 'category';
     }
@@ -94,7 +101,8 @@ class CategoryCustomizationService {
         (c) => (c['category_id_232143'] ?? c['id']) == categoryId,
         orElse: () => {},
       );
-      return (category['color_232143'] ?? category['color'])?.toString() ?? '#8B5FBF';
+      return (category['color_232143'] ?? category['color'])?.toString() ??
+          '#8B5FBF';
     } catch (e) {
       return '#8B5FBF';
     }
@@ -108,32 +116,113 @@ class CategoryCustomizationService {
     }
   }
 
-  Future<List<Map<String, dynamic>>> getAllCategoriesWithCustomizations() async {
+  Future<List<Map<String, dynamic>>>
+  getAllCategoriesWithCustomizations() async {
     return await _localData.getCategories();
   }
 
   static List<Map<String, dynamic>> getDefaultCategories() {
     return [
-      {'id': 'food', 'name': 'Makanan', 'icon': 'restaurant', 'color': '#FF5722', 'type': 'expense'},
-      {'id': 'transport', 'name': 'Transportasi', 'icon': 'directions_car', 'color': '#2196F3', 'type': 'expense'},
-      {'id': 'shopping', 'name': 'Belanja', 'icon': 'shopping_cart', 'color': '#9C27B0', 'type': 'expense'},
-      {'id': 'entertainment', 'name': 'Hiburan', 'icon': 'movie', 'color': '#FF9800', 'type': 'expense'},
-      {'id': 'bills', 'name': 'Tagihan', 'icon': 'receipt', 'color': '#607D8B', 'type': 'expense'},
-      {'id': 'health', 'name': 'Kesehatan', 'icon': 'local_hospital', 'color': '#4CAF50', 'type': 'expense'},
-      {'id': 'education', 'name': 'Pendidikan', 'icon': 'school', 'color': '#3F51B5', 'type': 'expense'},
-      {'id': 'salary', 'name': 'Gaji', 'icon': 'work', 'color': '#4CAF50', 'type': 'income'},
-      {'id': 'freelance', 'name': 'Freelance', 'icon': 'laptop', 'color': '#00BCD4', 'type': 'income'},
-      {'id': 'investment', 'name': 'Investasi', 'icon': 'trending_up', 'color': '#8BC34A', 'type': 'income'},
+      {
+        'id': 'food',
+        'name': 'Makanan',
+        'icon': 'restaurant',
+        'color': '#FF5722',
+        'type': 'expense',
+      },
+      {
+        'id': 'transport',
+        'name': 'Transportasi',
+        'icon': 'directions_car',
+        'color': '#2196F3',
+        'type': 'expense',
+      },
+      {
+        'id': 'shopping',
+        'name': 'Belanja',
+        'icon': 'shopping_cart',
+        'color': '#9C27B0',
+        'type': 'expense',
+      },
+      {
+        'id': 'entertainment',
+        'name': 'Hiburan',
+        'icon': 'movie',
+        'color': '#FF9800',
+        'type': 'expense',
+      },
+      {
+        'id': 'bills',
+        'name': 'Tagihan',
+        'icon': 'receipt',
+        'color': '#607D8B',
+        'type': 'expense',
+      },
+      {
+        'id': 'health',
+        'name': 'Kesehatan',
+        'icon': 'local_hospital',
+        'color': '#4CAF50',
+        'type': 'expense',
+      },
+      {
+        'id': 'education',
+        'name': 'Pendidikan',
+        'icon': 'school',
+        'color': '#3F51B5',
+        'type': 'expense',
+      },
+      {
+        'id': 'salary',
+        'name': 'Gaji',
+        'icon': 'work',
+        'color': '#4CAF50',
+        'type': 'income',
+      },
+      {
+        'id': 'freelance',
+        'name': 'Freelance',
+        'icon': 'laptop',
+        'color': '#00BCD4',
+        'type': 'income',
+      },
+      {
+        'id': 'investment',
+        'name': 'Investasi',
+        'icon': 'trending_up',
+        'color': '#8BC34A',
+        'type': 'income',
+      },
     ];
   }
 
   static List<String> getAvailableIcons() {
     return [
-      'restaurant', 'directions_car', 'shopping_cart', 'movie', 'receipt',
-      'local_hospital', 'school', 'work', 'laptop', 'trending_up',
-      'home', 'flight', 'pets', 'fitness_center', 'coffee',
-      'phone_android', 'gamepad', 'music_note', 'favorite', 'star',
-      'category', 'wallet', 'account_balance', 'payments', 'savings',
+      'restaurant',
+      'directions_car',
+      'shopping_cart',
+      'movie',
+      'receipt',
+      'local_hospital',
+      'school',
+      'work',
+      'laptop',
+      'trending_up',
+      'home',
+      'flight',
+      'pets',
+      'fitness_center',
+      'coffee',
+      'phone_android',
+      'gamepad',
+      'music_note',
+      'favorite',
+      'star',
+      'category',
+      'wallet',
+      'account_balance',
+      'payments',
+      'savings',
     ];
   }
 }

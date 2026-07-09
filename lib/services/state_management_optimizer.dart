@@ -27,14 +27,15 @@ class StateManagementOptimizer {
     required List<ChangeNotifierProvider> providers,
     required Widget child,
   }) {
-    return MultiProvider(
-      providers: providers,
-      child: child,
-    );
+    return MultiProvider(providers: providers, child: child);
   }
 
   /// Optimize rebuild dengan shouldRebuild callback
-  static bool shouldRebuild<T>(T oldValue, T newValue, bool Function(T, T) compare) {
+  static bool shouldRebuild<T>(
+    T oldValue,
+    T newValue,
+    bool Function(T, T) compare,
+  ) {
     return !compare(oldValue, newValue);
   }
 
@@ -51,4 +52,3 @@ extension ProviderOptimizations on BuildContext {
     return select(selector);
   }
 }
-

@@ -13,9 +13,14 @@ class TransactionTemplateService {
       if (templatesJson == null) return [];
 
       final List<dynamic> decoded = jsonDecode(templatesJson);
-      var templates = decoded
-          .map((e) => TransactionTemplateModel.fromJson(e as Map<String, dynamic>))
-          .toList();
+      var templates =
+          decoded
+              .map(
+                (e) => TransactionTemplateModel.fromJson(
+                  e as Map<String, dynamic>,
+                ),
+              )
+              .toList();
 
       templates.sort((a, b) => b.usageCount.compareTo(a.usageCount));
 
@@ -30,7 +35,9 @@ class TransactionTemplateService {
     }
   }
 
-  Future<TransactionTemplateModel> createTemplate(TransactionTemplateModel template) async {
+  Future<TransactionTemplateModel> createTemplate(
+    TransactionTemplateModel template,
+  ) async {
     try {
       final templates = await getTemplates();
       templates.add(template);
@@ -70,7 +77,9 @@ class TransactionTemplateService {
     }
   }
 
-  Future<TransactionTemplateModel> createFromTransaction(Map<String, dynamic> transaction) async {
+  Future<TransactionTemplateModel> createFromTransaction(
+    Map<String, dynamic> transaction,
+  ) async {
     final template = TransactionTemplateModel(
       id: 'template_${DateTime.now().millisecondsSinceEpoch}',
       name: transaction['category_name']?.toString() ?? 'Transaction',
@@ -99,7 +108,9 @@ class TransactionTemplateService {
     }
   }
 
-  Map<String, dynamic> templateToTransactionData(TransactionTemplateModel template) {
+  Map<String, dynamic> templateToTransactionData(
+    TransactionTemplateModel template,
+  ) {
     return {
       'amount': template.amount,
       'type': template.type,

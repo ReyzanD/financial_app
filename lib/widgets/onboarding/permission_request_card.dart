@@ -59,7 +59,7 @@ class _PermissionRequestCardState extends State<PermissionRequestCard> {
 
     try {
       final status = await widget.permission.request();
-      
+
       if (mounted) {
         setState(() {
           _status = status;
@@ -106,9 +106,10 @@ class _PermissionRequestCardState extends State<PermissionRequestCard> {
             ResponsiveHelper.borderRadius(context, DesignTokens.radiusLarge),
           ),
           border: Border.all(
-            color: isGranted
-                ? DesignTokens.successColor
-                : DesignTokens.getBorderColor(context),
+            color:
+                isGranted
+                    ? DesignTokens.successColor
+                    : DesignTokens.getBorderColor(context),
             width: isGranted ? 2 : 1,
           ),
         ),
@@ -123,7 +124,10 @@ class _PermissionRequestCardState extends State<PermissionRequestCard> {
                   decoration: BoxDecoration(
                     color: widget.iconColor.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(
-                      ResponsiveHelper.borderRadius(context, DesignTokens.radiusMedium),
+                      ResponsiveHelper.borderRadius(
+                        context,
+                        DesignTokens.radiusMedium,
+                      ),
                     ),
                   ),
                   child: Icon(
@@ -132,7 +136,9 @@ class _PermissionRequestCardState extends State<PermissionRequestCard> {
                     size: ResponsiveHelper.iconSize(context, 24),
                   ),
                 ),
-                SizedBox(width: ResponsiveHelper.horizontalSpacing(context, 12)),
+                SizedBox(
+                  width: ResponsiveHelper.horizontalSpacing(context, 12),
+                ),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -151,7 +157,9 @@ class _PermissionRequestCardState extends State<PermissionRequestCard> {
                         ),
                       ),
                       if (isGranted) ...[
-                        SizedBox(height: ResponsiveHelper.verticalSpacing(context, 4)),
+                        SizedBox(
+                          height: ResponsiveHelper.verticalSpacing(context, 4),
+                        ),
                         Row(
                           children: [
                             Icon(
@@ -159,7 +167,12 @@ class _PermissionRequestCardState extends State<PermissionRequestCard> {
                               size: ResponsiveHelper.iconSize(context, 16),
                               color: DesignTokens.successColor,
                             ),
-                            SizedBox(width: ResponsiveHelper.horizontalSpacing(context, 4)),
+                            SizedBox(
+                              width: ResponsiveHelper.horizontalSpacing(
+                                context,
+                                4,
+                              ),
+                            ),
                             Text(
                               'Diizinkan',
                               style: GoogleFonts.poppins(
@@ -201,7 +214,10 @@ class _PermissionRequestCardState extends State<PermissionRequestCard> {
               decoration: BoxDecoration(
                 color: DesignTokens.infoColor.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(
-                  ResponsiveHelper.borderRadius(context, DesignTokens.radiusSmall),
+                  ResponsiveHelper.borderRadius(
+                    context,
+                    DesignTokens.radiusSmall,
+                  ),
                 ),
               ),
               child: Row(
@@ -211,7 +227,9 @@ class _PermissionRequestCardState extends State<PermissionRequestCard> {
                     size: ResponsiveHelper.iconSize(context, 16),
                     color: DesignTokens.infoColor,
                   ),
-                  SizedBox(width: ResponsiveHelper.horizontalSpacing(context, 8)),
+                  SizedBox(
+                    width: ResponsiveHelper.horizontalSpacing(context, 8),
+                  ),
                   Expanded(
                     child: Text(
                       widget.benefit,
@@ -233,34 +251,35 @@ class _PermissionRequestCardState extends State<PermissionRequestCard> {
               SizedBox(height: ResponsiveHelper.verticalSpacing(context, 12)),
               SizedBox(
                 width: double.infinity,
-                child: isPermanentlyDenied
-                    ? AccessibilityHelper.createAccessibleButton(
-                        context: context,
-                        label: 'Buka Pengaturan',
-                        onPressed: () {
-                          _openSettings();
-                        },
-                        backgroundColor: DesignTokens.warningColor,
-                        icon: Iconsax.setting_2,
-                      )
-                    : _isRequesting
+                child:
+                    isPermanentlyDenied
+                        ? AccessibilityHelper.createAccessibleButton(
+                          context: context,
+                          label: 'Buka Pengaturan',
+                          onPressed: () {
+                            _openSettings();
+                          },
+                          backgroundColor: DesignTokens.warningColor,
+                          icon: Iconsax.setting_2,
+                        )
+                        : _isRequesting
                         ? Container(
-                            padding: ResponsiveHelper.padding(context),
-                            child: Center(
-                              child: CircularProgressIndicator(
-                                color: widget.iconColor,
-                              ),
+                          padding: ResponsiveHelper.padding(context),
+                          child: Center(
+                            child: CircularProgressIndicator(
+                              color: widget.iconColor,
                             ),
-                          )
-                        : AccessibilityHelper.createAccessibleButton(
-                            context: context,
-                            label: 'Izinkan',
-                            onPressed: () {
-                              _requestPermission();
-                            },
-                            backgroundColor: widget.iconColor,
-                            icon: Iconsax.tick_circle,
                           ),
+                        )
+                        : AccessibilityHelper.createAccessibleButton(
+                          context: context,
+                          label: 'Izinkan',
+                          onPressed: () {
+                            _requestPermission();
+                          },
+                          backgroundColor: widget.iconColor,
+                          icon: Iconsax.tick_circle,
+                        ),
               ),
             ],
           ],
@@ -269,4 +288,3 @@ class _PermissionRequestCardState extends State<PermissionRequestCard> {
     );
   }
 }
-

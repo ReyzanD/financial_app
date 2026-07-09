@@ -26,15 +26,17 @@ class LocationRecommendation {
 
   factory LocationRecommendation.fromMap(Map<String, dynamic> map) {
     return LocationRecommendation(
-      id: map['id'] as String,
-      title: map['title'] as String,
-      description: map['description'] as String,
+      id: map['id'] as String? ?? '',
+      title: map['title'] as String? ?? '',
+      description: map['description'] as String? ?? '',
       type: RecommendationType.values.firstWhere(
         (e) => e.name == map['type'],
         orElse: () => RecommendationType.general,
       ),
       estimatedSavings: map['estimatedSavings'] as int? ?? 0,
-      createdAt: DateTime.parse(map['createdAt'] as String),
+      createdAt:
+          DateTime.tryParse(map['createdAt'] as String? ?? '') ??
+          DateTime.now(),
       metadata: map['metadata'] as Map<String, dynamic>?,
     );
   }

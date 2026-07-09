@@ -2,11 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:financial_app/services/logger_service.dart';
 
-enum MapProvider {
-  maptiler,
-  mapbox,
-  openstreetmap,
-}
+enum MapProvider { maptiler, mapbox, openstreetmap }
 
 class MapProviderService {
   static MapProvider _currentProvider = MapProvider.maptiler;
@@ -29,7 +25,7 @@ class MapProviderService {
       if (env != null) {
         _maptilerApiKey = env['MAPTILER_API_KEY'];
         _mapboxAccessToken = env['MAPBOX_ACCESS_TOKEN'];
-        
+
         // Debug logging
         LoggerService.debug(
           '[MapProvider] Env map loaded: ${env.keys.length} keys',
@@ -43,13 +39,11 @@ class MapProviderService {
       } else {
         LoggerService.warning('[MapProvider] Env map is null');
       }
-      
+
       // Priority: MapTiler > Mapbox > OpenStreetMap
       if (_maptilerApiKey != null && _maptilerApiKey!.isNotEmpty) {
         _currentProvider = MapProvider.maptiler;
-        LoggerService.info(
-          '[MapProvider] Using MapTiler as primary provider',
-        );
+        LoggerService.info('[MapProvider] Using MapTiler as primary provider');
       } else if (_mapboxAccessToken != null && _mapboxAccessToken!.isNotEmpty) {
         _currentProvider = MapProvider.mapbox;
         LoggerService.info('[MapProvider] Using Mapbox as primary provider');
@@ -131,8 +125,7 @@ class MapProviderService {
     }
 
     // Try Mapbox if available
-    if (_currentProvider == MapProvider.mapbox &&
-        _mapboxAccessToken != null) {
+    if (_currentProvider == MapProvider.mapbox && _mapboxAccessToken != null) {
       try {
         results = await _searchMapbox(query, countryCode, limit);
         if (results.isNotEmpty) {
@@ -189,15 +182,12 @@ class MapProviderService {
       '&limit=$limit',
     );
 
-    final response = await http.get(
-      url,
-      headers: {
-        'Accept': 'application/json',
-      },
-    ).timeout(
-      const Duration(seconds: 10),
-      onTimeout: () => throw Exception('MapTiler request timeout'),
-    );
+    final response = await http
+        .get(url, headers: {'Accept': 'application/json'})
+        .timeout(
+          const Duration(seconds: 10),
+          onTimeout: () => throw Exception('MapTiler request timeout'),
+        );
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body) as Map<String, dynamic>;
@@ -211,13 +201,14 @@ class MapProviderService {
         final geometry = feature['geometry'] as Map<String, dynamic>;
         final coordinates = geometry['coordinates'] as List;
         final properties = feature['properties'] as Map<String, dynamic>;
-        
+
         return {
           'lat': (coordinates[1] as num).toDouble(),
           'lng': (coordinates[0] as num).toDouble(),
-          'displayName': properties['name'] as String? ?? 
-                        properties['place_name'] as String? ?? 
-                        query,
+          'displayName':
+              properties['name'] as String? ??
+              properties['place_name'] as String? ??
+              query,
           'type': properties['type'] as String? ?? 'place',
         };
       }).toList();
@@ -247,15 +238,12 @@ class MapProviderService {
       '&limit=$limit',
     );
 
-    final response = await http.get(
-      url,
-      headers: {
-        'Accept': 'application/json',
-      },
-    ).timeout(
-      const Duration(seconds: 10),
-      onTimeout: () => throw Exception('Mapbox request timeout'),
-    );
+    final response = await http
+        .get(url, headers: {'Accept': 'application/json'})
+        .timeout(
+          const Duration(seconds: 10),
+          onTimeout: () => throw Exception('Mapbox request timeout'),
+        );
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body) as Map<String, dynamic>;
@@ -288,10 +276,11 @@ class MapProviderService {
     int limit,
   ) async {
     // Add location context for better results in Indonesia
-    final searchQuery = query.toLowerCase().contains('makassar') ||
-            query.toLowerCase().contains('indonesia')
-        ? query
-        : '$query, Makassar, Sulawesi Selatan, Indonesia';
+    final searchQuery =
+        query.toLowerCase().contains('makassar') ||
+                query.toLowerCase().contains('indonesia')
+            ? query
+            : '$query, Makassar, Sulawesi Selatan, Indonesia';
 
     final encodedQuery = Uri.encodeComponent(searchQuery);
     final countryParam =
@@ -303,16 +292,18 @@ class MapProviderService {
       '$countryParam',
     );
 
-    final response = await http.get(
-      url,
-      headers: {
-        'User-Agent': 'FinancialApp/1.0 (financial.app.makassar)',
-        'Accept': 'application/json',
-      },
-    ).timeout(
-      const Duration(seconds: 10),
-      onTimeout: () => throw Exception('Nominatim request timeout'),
-    );
+    final response = await http
+        .get(
+          url,
+          headers: {
+            'User-Agent': 'FinancialApp/1.0 (financial.app.makassar)',
+            'Accept': 'application/json',
+          },
+        )
+        .timeout(
+          const Duration(seconds: 10),
+          onTimeout: () => throw Exception('Nominatim request timeout'),
+        );
 
     if (response.statusCode == 200) {
       final results = json.decode(response.body) as List;
@@ -360,4 +351,3 @@ class MapProviderService {
   static bool isMapboxAvailable() =>
       _mapboxAccessToken != null && _mapboxAccessToken!.isNotEmpty;
 }
-

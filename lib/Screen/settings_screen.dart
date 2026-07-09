@@ -78,25 +78,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
             _defaultTab = localizations.analytics;
             break;
         }
-      } else {
-        // Fallback jika localization belum tersedia
-        final localizations = AppLocalizations.of(context);
-        if (localizations != null) {
-          switch (defaultTabIndex) {
-            case 0:
-              _defaultTab = localizations.dashboard;
-              break;
-            case 1:
-              _defaultTab = localizations.transactions;
-              break;
-            case 2:
-              _defaultTab = localizations.goals;
-              break;
-            case 3:
-              _defaultTab = localizations.analytics;
-              break;
-          }
-        }
       }
     });
   }
@@ -244,7 +225,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 showDialog(
                   context: context,
                   builder:
-                      (context) => AlertDialog(
+                      (dialogContext) => AlertDialog(
                         backgroundColor: const Color(0xFF1A1A1A),
                         title: Text(
                           localizations.data_privacy,
@@ -580,45 +561,47 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         groupValue: currentLocale,
                         onChanged: (value) async {
                           if (value != null) {
+                            final ctx = context;
                             await localizationService.setLocale(value);
-                            if (mounted) {
-                              setState(() {
-                                _currentLocale = value;
-                              });
-                              Navigator.of(context).pop();
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text(
-                                    '${localizations.language_changed_to} ${localizationService.getLanguageName(value)}',
-                                    style: GoogleFonts.poppins(),
-                                  ),
-                                  backgroundColor: const Color(0xFF8B5FBF),
-                                  duration: const Duration(seconds: 2),
+                            if (!ctx.mounted) return;
+                            setState(() {
+                              _currentLocale = value;
+                            });
+                            if (!ctx.mounted) return;
+                            Navigator.of(ctx).pop();
+                            ScaffoldMessenger.of(ctx).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  '${localizations.language_changed_to} ${localizationService.getLanguageName(value)}',
+                                  style: GoogleFonts.poppins(),
                                 ),
-                              );
-                            }
+                                backgroundColor: const Color(0xFF8B5FBF),
+                                duration: const Duration(seconds: 2),
+                              ),
+                            );
                           }
                         },
                         activeColor: const Color(0xFF8B5FBF),
                       ),
                       onTap: () async {
+                        final ctx = context;
                         await localizationService.setLocale(locale);
-                        if (mounted) {
-                          setState(() {
-                            _currentLocale = locale;
-                          });
-                          Navigator.of(context).pop();
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(
-                                '${localizations.language_changed_to} ${localizationService.getLanguageName(locale)}',
-                                style: GoogleFonts.poppins(),
-                              ),
-                              backgroundColor: const Color(0xFF8B5FBF),
-                              duration: const Duration(seconds: 2),
+                        if (!ctx.mounted) return;
+                        setState(() {
+                          _currentLocale = locale;
+                        });
+                        if (!ctx.mounted) return;
+                        Navigator.of(ctx).pop();
+                        ScaffoldMessenger.of(ctx).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              '${localizations.language_changed_to} ${localizationService.getLanguageName(locale)}',
+                              style: GoogleFonts.poppins(),
                             ),
-                          );
-                        }
+                            backgroundColor: const Color(0xFF8B5FBF),
+                            duration: const Duration(seconds: 2),
+                          ),
+                        );
                       },
                     );
                   }).toList(),
@@ -715,39 +698,39 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
               TextButton(
                 onPressed: () async {
-                  Navigator.of(context).pop();
+                  final ctx = context;
+                  Navigator.of(ctx).pop();
 
                   // Request biometric authentication before delete account
                   final authenticated =
                       await BiometricHelper.requestBiometricAuth(
-                        context: context,
+                        context: ctx,
                         reason:
                             AppLocalizations.of(
-                              context,
+                              ctx,
                             )!.authentication_required_for_delete,
                       );
 
                   if (!authenticated) {
-                    if (mounted) {
-                      ErrorHandlerService.showWarningSnackbar(
-                        context,
-                        AppLocalizations.of(context)!.authentication_cancelled,
-                      );
-                    }
+                    if (!ctx.mounted) return;
+                    ErrorHandlerService.showWarningSnackbar(
+                      ctx,
+                      AppLocalizations.of(ctx)!.authentication_cancelled,
+                    );
                     return;
                   }
 
                   try {
                     await _authService.deleteAccount();
-                    if (!mounted) return;
+                    if (!ctx.mounted) return;
                     Navigator.of(
-                      context,
+                      ctx,
                     ).pushNamedAndRemoveUntil('/login', (route) => false);
                   } catch (e) {
                     LoggerService.error('Error deleting account', error: e);
-                    if (!mounted) return;
+                    if (!ctx.mounted) return;
                     ErrorHandlerService.showErrorSnackbar(
-                      context,
+                      ctx,
                       ErrorHandlerService.getUserFriendlyMessage(e),
                     );
                   }
@@ -763,28 +746,27 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Future<void> _exportData() async {
+    final ctx = context;
+
     // Request biometric authentication before export
     final authenticated = await BiometricHelper.requestBiometricAuth(
-      context: context,
-      reason: AppLocalizations.of(context)!.authentication_required_for_export,
+      context: ctx,
+      reason: AppLocalizations.of(ctx)!.authentication_required_for_export,
     );
 
     if (!authenticated) {
-      if (mounted) {
-        ErrorHandlerService.showWarningSnackbar(
-          context,
-          AppLocalizations.of(context)!.authentication_cancelled,
-        );
-      }
+      if (!ctx.mounted) return;
+      ErrorHandlerService.showWarningSnackbar(
+        ctx,
+        AppLocalizations.of(ctx)!.authentication_cancelled,
+      );
       return;
     }
 
-    final localizations = AppLocalizations.of(context)!;
+    if (!ctx.mounted) return;
+    final localizations = AppLocalizations.of(ctx)!;
     try {
-      ErrorHandlerService.showInfoSnackbar(
-        context,
-        localizations.exporting_data,
-      );
+      ErrorHandlerService.showInfoSnackbar(ctx, localizations.exporting_data);
 
       // Get data from local database
       final transactionsData = await _apiService.getTransactions(limit: 10000);
@@ -802,15 +784,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
       };
 
       // Show export data in dialog (in a real app, save to file)
-      if (!mounted) return;
+      if (!ctx.mounted) return;
 
       final exportedAt = response['exported_at'] ?? '';
       final stats = response['stats'] as Map<String, dynamic>;
 
       showDialog(
-        context: context,
+        context: ctx,
         builder:
-            (context) => AlertDialog(
+            (dialogContext) => AlertDialog(
               backgroundColor: const Color(0xFF1A1A1A),
               title: Text(
                 localizations.data_exported_successfully,
@@ -927,13 +909,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
       showDialog(
         context: context,
         barrierDismissible: false,
-        builder: (context) => const Center(
-          child: CircularProgressIndicator(color: Color(0xFF8B5FBF)),
-        ),
+        builder:
+            (context) => const Center(
+              child: CircularProgressIndicator(color: Color(0xFF8B5FBF)),
+            ),
       );
 
       final exportService = ExportService();
-      final importResult = await exportService.importTransactionsFromCSV(filePath);
+      final importResult = await exportService.importTransactionsFromCSV(
+        filePath,
+      );
 
       if (!mounted) return;
       Navigator.pop(context);
@@ -944,46 +929,74 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
       showDialog(
         context: context,
-        builder: (context) => AlertDialog(
-          backgroundColor: const Color(0xFF1A1A1A),
-          title: Text(
-            importResult['success'] == true ? 'Import Berhasil' : 'Import Selesai',
-            style: GoogleFonts.poppins(color: Colors.white),
-          ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                'Berhasil: $imported transaksi',
-                style: GoogleFonts.poppins(color: Colors.green[400], fontSize: 16, fontWeight: FontWeight.w600),
+        builder:
+            (context) => AlertDialog(
+              backgroundColor: const Color(0xFF1A1A1A),
+              title: Text(
+                importResult['success'] == true
+                    ? 'Import Berhasil'
+                    : 'Import Selesai',
+                style: GoogleFonts.poppins(color: Colors.white),
               ),
-              if (failed > 0) ...[
-                const SizedBox(height: 8),
-                Text(
-                  'Gagal: $failed transaksi',
-                  style: GoogleFonts.poppins(color: Colors.red[400], fontSize: 16, fontWeight: FontWeight.w600),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    'Berhasil: $imported transaksi',
+                    style: GoogleFonts.poppins(
+                      color: Colors.green[400],
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  if (failed > 0) ...[
+                    const SizedBox(height: 8),
+                    Text(
+                      'Gagal: $failed transaksi',
+                      style: GoogleFonts.poppins(
+                        color: Colors.red[400],
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                  if (errors.isNotEmpty && errors.length <= 5) ...[
+                    const SizedBox(height: 12),
+                    ...errors.map(
+                      (e) => Padding(
+                        padding: const EdgeInsets.only(bottom: 4),
+                        child: Text(
+                          e,
+                          style: GoogleFonts.poppins(
+                            color: Colors.red[300],
+                            fontSize: 12,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                  if (errors.length > 5) ...[
+                    const SizedBox(height: 8),
+                    Text(
+                      '...dan ${errors.length - 5} error lainnya',
+                      style: GoogleFonts.poppins(
+                        color: Colors.grey[400],
+                        fontSize: 12,
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: Text(
+                    'Tutup',
+                    style: GoogleFonts.poppins(color: const Color(0xFF8B5FBF)),
+                  ),
                 ),
               ],
-              if (errors.isNotEmpty && errors.length <= 5) ...[
-                const SizedBox(height: 12),
-                ...errors.map((e) => Padding(
-                  padding: const EdgeInsets.only(bottom: 4),
-                  child: Text(e, style: GoogleFonts.poppins(color: Colors.red[300], fontSize: 12)),
-                )),
-              ],
-              if (errors.length > 5) ...[
-                const SizedBox(height: 8),
-                Text('...dan ${errors.length - 5} error lainnya', style: GoogleFonts.poppins(color: Colors.grey[400], fontSize: 12)),
-              ],
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: Text('Tutup', style: GoogleFonts.poppins(color: const Color(0xFF8B5FBF))),
             ),
-          ],
-        ),
       );
     } catch (e) {
       if (!mounted) return;
@@ -1155,10 +1168,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           isChanging
                               ? null
                               : () {
-                                oldPasswordController.dispose();
-                                newPasswordController.dispose();
-                                confirmPasswordController.dispose();
                                 Navigator.pop(context);
+                                // Dispose controllers after pop to avoid
+                                // "dispose called during dialog lifecycle" errors
+                                WidgetsBinding.instance.addPostFrameCallback((
+                                  _,
+                                ) {
+                                  oldPasswordController.dispose();
+                                  newPasswordController.dispose();
+                                  confirmPasswordController.dispose();
+                                });
                               },
                       child: Text(
                         localizations.cancel,
@@ -1177,10 +1196,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                     // For now, show success message immediately
 
                                     if (context.mounted) {
-                                      oldPasswordController.dispose();
-                                      newPasswordController.dispose();
-                                      confirmPasswordController.dispose();
                                       Navigator.pop(context);
+                                      // Dispose controllers after pop completes
+                                      WidgetsBinding.instance
+                                          .addPostFrameCallback((_) {
+                                            oldPasswordController.dispose();
+                                            newPasswordController.dispose();
+                                            confirmPasswordController.dispose();
+                                          });
                                       ErrorHandlerService.showSuccessSnackbar(
                                         context,
                                         localizations

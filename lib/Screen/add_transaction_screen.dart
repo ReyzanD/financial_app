@@ -61,6 +61,7 @@ import 'package:financial_app/widgets/add_transaction/notes_field.dart';
 import 'package:financial_app/utils/form_validators.dart';
 import 'package:financial_app/l10n/app_localizations.dart';
 import 'package:financial_app/Screen/receipt_history_screen.dart';
+import 'package:financial_app/widgets/common/offline_indicator.dart';
 
 class AddTransactionScreen extends StatefulWidget {
   final Map<String, dynamic>? transaction; // Optional for edit mode
@@ -200,21 +201,22 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
       return;
     }
 
-    _categorizationService
-        .suggestCategory(description: desc)
-        .then((suggestions) {
-          if (mounted && suggestions.isNotEmpty) {
-            final categoryIds = suggestions
+    _categorizationService.suggestCategory(description: desc).then((
+      suggestions,
+    ) {
+      if (mounted && suggestions.isNotEmpty) {
+        final categoryIds =
+            suggestions
                 .where((s) => s['confidence'] > 0.3)
                 .map((s) => _findCategoryId(s['category'] as String))
                 .where((id) => id != null)
                 .toList();
 
-            if (categoryIds.isNotEmpty) {
-              setState(() => _categorySuggestions = suggestions);
-            }
-          }
-        });
+        if (categoryIds.isNotEmpty) {
+          setState(() => _categorySuggestions = suggestions);
+        }
+      }
+    });
   }
 
   String? _findCategoryId(String categoryName) {
@@ -583,6 +585,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
   }
 
   Future<bool> _checkBalanceBeforeExpense(double expenseAmount) async {
+    final ctx = context;
     try {
       // Get current financial summary
       final summary = await _apiService.getFinancialSummary();
@@ -604,8 +607,9 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
 
       // If balance would go below the minimum, block the transaction
       if (newBalance < minimumBalance) {
+        if (!ctx.mounted) return false;
         await showDialog(
-          context: context,
+          context: ctx,
           builder:
               (context) => AlertDialog(
                 backgroundColor: const Color(0xFF1A1A1A),
@@ -646,7 +650,9 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                       decoration: BoxDecoration(
                         color: Colors.red.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: Colors.red.withValues(alpha: 0.3)),
+                        border: Border.all(
+                          color: Colors.red.withValues(alpha: 0.3),
+                        ),
                       ),
                       child: Column(
                         children: [
@@ -683,7 +689,9 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                       decoration: BoxDecoration(
                         color: Colors.blue.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: Colors.blue.withValues(alpha: 0.3)),
+                        border: Border.all(
+                          color: Colors.blue.withValues(alpha: 0.3),
+                        ),
                       ),
                       child: Row(
                         children: [
@@ -779,6 +787,8 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
         return;
       }
 
+      final ctx = context;
+
       // Check for duplicate transactions
       try {
         final recentTransactionsData = await _apiService.getTransactions(
@@ -787,9 +797,11 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
         final recentTransactions = List<Map<String, dynamic>>.from(
           recentTransactionsData['transactions'] ?? [],
         );
-        final amount = double.parse(
-          _amountController.text.replaceAll(RegExp(r'[^0-9.]'), ''),
-        );
+        final amount =
+            double.tryParse(
+              _amountController.text.replaceAll(RegExp(r'[^0-9.]'), ''),
+            ) ??
+            0.0;
         final isDuplicate = FormValidators.isDuplicateTransaction(
           amount: amount,
           description: _descriptionController.text.trim(),
@@ -798,30 +810,31 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
         );
 
         if (isDuplicate) {
+          if (!ctx.mounted) return;
           final shouldContinue = await showDialog<bool>(
-            context: context,
+            context: ctx,
             builder:
-                (context) => AlertDialog(
+                (dialogContext) => AlertDialog(
                   backgroundColor: const Color(0xFF1A1A1A),
                   title: Text(
-                    AppLocalizations.of(context)!.duplicate_transaction,
+                    AppLocalizations.of(ctx)!.duplicate_transaction,
                     style: const TextStyle(color: Colors.white),
                   ),
                   content: Text(
-                    AppLocalizations.of(context)!.similar_transaction_added,
+                    AppLocalizations.of(ctx)!.similar_transaction_added,
                     style: const TextStyle(color: Colors.white70),
                   ),
                   actions: [
                     TextButton(
-                      onPressed: () => Navigator.pop(context, false),
-                      child: Text(AppLocalizations.of(context)!.cancel),
+                      onPressed: () => Navigator.pop(dialogContext, false),
+                      child: Text(AppLocalizations.of(ctx)!.cancel),
                     ),
                     ElevatedButton(
-                      onPressed: () => Navigator.pop(context, true),
+                      onPressed: () => Navigator.pop(dialogContext, true),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF8B5FBF),
                       ),
-                      child: Text(AppLocalizations.of(context)!.continueText),
+                      child: Text(AppLocalizations.of(ctx)!.continueText),
                     ),
                   ],
                 ),
@@ -848,14 +861,10 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
           'description': _descriptionController.text,
           'notes': _notesController.text,
           'payment_method': _selectedPaymentMethod,
-          'transaction_date':
-              _selectedDate.toIso8601String().split(
-                'T',
-              )[0],
+          'transaction_date': _selectedDate.toIso8601String().split('T')[0],
           'time':
               '${_selectedTime.hour.toString().padLeft(2, '0')}:${_selectedTime.minute.toString().padLeft(2, '0')}',
-          if (_receiptImagePath != null)
-            'receipt_image_url': _receiptImagePath,
+          if (_receiptImagePath != null) 'receipt_image_url': _receiptImagePath,
           if (_currentLocation != null)
             'location_name':
                 _currentLocation!.placeName ?? _currentLocation!.address ?? '',
@@ -899,26 +908,25 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
         LoggerService.success('Transaction saved successfully');
 
         // Show success message
-        if (context.mounted) {
-          ErrorHandlerService.showSuccessSnackbar(
-            context,
-            AppLocalizations.of(context)!.transaction_saved_successfully,
-          );
-        }
+        if (!ctx.mounted) return;
+        ErrorHandlerService.showSuccessSnackbar(
+          ctx,
+          AppLocalizations.of(ctx)!.transaction_saved_successfully,
+        );
 
-        // Trigger immediate app-wide refresh
-        await AppRefresh.refreshAll(context);
+        if (!ctx.mounted) return;
+        await AppRefresh.refreshAll(ctx);
 
-        Navigator.pop(context, true); // Return true to indicate success
+        if (!ctx.mounted) return;
+        Navigator.pop(ctx, true); // Return true to indicate success
       } catch (e) {
         LoggerService.error('Error adding transaction', error: e);
-        if (context.mounted) {
-          ErrorHandlerService.showErrorSnackbar(
-            context,
-            ErrorHandlerService.getUserFriendlyMessage(e),
-            onRetry: () => _submitForm(),
-          );
-        }
+        if (!ctx.mounted) return;
+        ErrorHandlerService.showErrorSnackbar(
+          ctx,
+          ErrorHandlerService.getUserFriendlyMessage(e),
+          onRetry: () => _submitForm(),
+        );
       } finally {
         setState(() => _isSubmitting = false);
       }
@@ -972,159 +980,198 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
           ),
         ],
       ),
-      body: Form(
-        key: _formKey,
-        child: SingleChildScrollView(
-          padding: ResponsiveHelper.padding(context),
-          child: Column(
-            children: [
-              // Amount Input
-              AmountField(controller: _amountController),
-              SizedBox(height: ResponsiveHelper.verticalSpacing(context, 20)),
+      body: Column(
+        children: [
+          const OfflineIndicator(),
+          Expanded(
+            child: Form(
+              key: _formKey,
+              child: SingleChildScrollView(
+                padding: ResponsiveHelper.padding(context),
+                child: Column(
+                  children: [
+                    // Amount Input
+                    AmountField(controller: _amountController),
+                    SizedBox(
+                      height: ResponsiveHelper.verticalSpacing(context, 20),
+                    ),
 
-              // Transaction Type Selector
-              TypeSelector(
-                selectedType: _selectedType,
-                onTypeChanged: (type) {
-                  setState(() {
-                    _selectedType = type;
-                    _selectedCategory = null;
+                    // Transaction Type Selector
+                    TypeSelector(
+                      selectedType: _selectedType,
+                      onTypeChanged: (type) {
+                        setState(() {
+                          _selectedType = type;
+                          _selectedCategory = null;
 
-                    // Clear location when switching to income
-                    if (type == 'income') {
-                      _currentLocation = null;
-                    } else if (type == 'expense' && _currentLocation == null) {
-                      // Auto-get location when switching to expense
-                      _getCurrentLocation();
-                    }
-                  });
-                },
-              ),
-              SizedBox(height: ResponsiveHelper.verticalSpacing(context, 20)),
+                          // Clear location when switching to income
+                          if (type == 'income') {
+                            _currentLocation = null;
+                          } else if (type == 'expense' &&
+                              _currentLocation == null) {
+                            // Auto-get location when switching to expense
+                            _getCurrentLocation();
+                          }
+                        });
+                      },
+                    ),
+                    SizedBox(
+                      height: ResponsiveHelper.verticalSpacing(context, 20),
+                    ),
 
-              // Category Selection
-              CategorySection(
-                selectedType: _selectedType,
-                selectedCategory: _selectedCategory,
-                categories: _categories,
-                isLoading: _isLoadingCategories,
-                onCategorySelected: (categoryId) {
-                  setState(() => _selectedCategory = categoryId);
-                },
-              ),
-              SizedBox(height: ResponsiveHelper.verticalSpacing(context, 20)),
+                    // Category Selection
+                    CategorySection(
+                      selectedType: _selectedType,
+                      selectedCategory: _selectedCategory,
+                      categories: _categories,
+                      isLoading: _isLoadingCategories,
+                      onCategorySelected: (categoryId) {
+                        setState(() => _selectedCategory = categoryId);
+                      },
+                    ),
+                    SizedBox(
+                      height: ResponsiveHelper.verticalSpacing(context, 20),
+                    ),
 
-              // Account Selection
-              AccountSection(
-                selectedAccountId: _selectedAccountId,
-                onAccountSelected: (accountId) {
-                  setState(() => _selectedAccountId = accountId);
-                },
-              ),
-              SizedBox(height: ResponsiveHelper.verticalSpacing(context, 20)),
+                    // Account Selection
+                    AccountSection(
+                      selectedAccountId: _selectedAccountId,
+                      onAccountSelected: (accountId) {
+                        setState(() => _selectedAccountId = accountId);
+                      },
+                    ),
+                    SizedBox(
+                      height: ResponsiveHelper.verticalSpacing(context, 20),
+                    ),
 
-              // Description
-              DescriptionField(controller: _descriptionController),
-              if (_categorySuggestions.isNotEmpty) ...[
-                const SizedBox(height: 12),
-                Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
-                  children: _categorySuggestions.map((suggestion) {
-                    final confidence = suggestion['confidence'] as double;
-                    final category = suggestion['category'] as String;
-                    return Material(
-                      color: DesignTokens.primaryColor.withValues(alpha: 0.15),
-                      borderRadius: BorderRadius.circular(20),
-                      child: InkWell(
-                        onTap: () => _selectSuggestedCategory(suggestion),
-                        borderRadius: BorderRadius.circular(20),
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 14,
-                            vertical: 8,
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(
-                                Iconsax.tag,
-                                size: 14,
-                                color: DesignTokens.primaryColor,
-                              ),
-                              const SizedBox(width: 6),
-                              Text(
-                                category,
-                                style: GoogleFonts.poppins(
-                                  color: DesignTokens.primaryColor,
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w500,
+                    // Description
+                    DescriptionField(controller: _descriptionController),
+                    if (_categorySuggestions.isNotEmpty) ...[
+                      const SizedBox(height: 12),
+                      Wrap(
+                        spacing: 8,
+                        runSpacing: 8,
+                        children:
+                            _categorySuggestions.map((suggestion) {
+                              final confidence =
+                                  suggestion['confidence'] as double;
+                              final category = suggestion['category'] as String;
+                              return Material(
+                                color: DesignTokens.primaryColor.withValues(
+                                  alpha: 0.15,
                                 ),
-                              ),
-                              const SizedBox(width: 4),
-                              Text(
-                                '${(confidence * 100).toInt()}%',
-                                style: GoogleFonts.poppins(
-                                  color: DesignTokens.textTertiaryDark,
-                                  fontSize: 11,
+                                borderRadius: BorderRadius.circular(20),
+                                child: InkWell(
+                                  onTap:
+                                      () =>
+                                          _selectSuggestedCategory(suggestion),
+                                  borderRadius: BorderRadius.circular(20),
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 14,
+                                      vertical: 8,
+                                    ),
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Icon(
+                                          Iconsax.tag,
+                                          size: 14,
+                                          color: DesignTokens.primaryColor,
+                                        ),
+                                        const SizedBox(width: 6),
+                                        Text(
+                                          category,
+                                          style: GoogleFonts.poppins(
+                                            color: DesignTokens.primaryColor,
+                                            fontSize: 13,
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
+                                        const SizedBox(width: 4),
+                                        Text(
+                                          '${(confidence * 100).toInt()}%',
+                                          style: GoogleFonts.poppins(
+                                            color:
+                                                DesignTokens.textTertiaryDark,
+                                            fontSize: 11,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
                                 ),
-                              ),
-                            ],
-                          ),
-                        ),
+                              );
+                            }).toList(),
                       ),
-                    );
-                  }).toList(),
+                    ],
+                    SizedBox(
+                      height: ResponsiveHelper.verticalSpacing(context, 20),
+                    ),
+
+                    // Location Section (only for expenses, not for income)
+                    if (_selectedType == 'expense') ...[
+                      LocationSection(
+                        currentLocation: _currentLocation,
+                        isGettingLocation: _isGettingLocation,
+                        onGetLocation: _getCurrentLocation,
+                        onPickFromMap: _pickLocationFromMap,
+                        onClearLocation: _clearLocation,
+                      ),
+                      SizedBox(
+                        height: ResponsiveHelper.verticalSpacing(context, 20),
+                      ),
+                    ],
+
+                    // Date & Time
+                    DateTimeSection(
+                      selectedDate: _selectedDate,
+                      selectedTime: _selectedTime,
+                      onSelectDate: _selectDate,
+                      onSelectTime: _selectTime,
+                    ),
+                    SizedBox(
+                      height: ResponsiveHelper.verticalSpacing(context, 20),
+                    ),
+
+                    // Payment Method
+                    PaymentMethodSection(
+                      selectedPaymentMethod: _selectedPaymentMethod,
+                      onPaymentMethodSelected: (method) {
+                        setState(() => _selectedPaymentMethod = method);
+                      },
+                    ),
+                    SizedBox(
+                      height: ResponsiveHelper.verticalSpacing(context, 20),
+                    ),
+
+                    // Additional Options
+                    AdditionalOptions(
+                      isRecurring: _isRecurring,
+                      onChanged:
+                          (value) => setState(() => _isRecurring = value),
+                    ),
+                    SizedBox(
+                      height: ResponsiveHelper.verticalSpacing(context, 20),
+                    ),
+
+                    // Notes
+                    NotesField(controller: _notesController),
+                    SizedBox(
+                      height: ResponsiveHelper.verticalSpacing(context, 30),
+                    ),
+
+                    // Save Button
+                    SubmitButton(
+                      onPressed: _submitForm,
+                      isLoading: _isSubmitting,
+                    ),
+                  ],
                 ),
-              ],
-              SizedBox(height: ResponsiveHelper.verticalSpacing(context, 20)),
-
-              // Location Section (only for expenses, not for income)
-              if (_selectedType == 'expense') ...[
-                LocationSection(
-                  currentLocation: _currentLocation,
-                  isGettingLocation: _isGettingLocation,
-                  onGetLocation: _getCurrentLocation,
-                  onPickFromMap: _pickLocationFromMap,
-                  onClearLocation: _clearLocation,
-                ),
-                SizedBox(height: ResponsiveHelper.verticalSpacing(context, 20)),
-              ],
-
-              // Date & Time
-              DateTimeSection(
-                selectedDate: _selectedDate,
-                selectedTime: _selectedTime,
-                onSelectDate: _selectDate,
-                onSelectTime: _selectTime,
               ),
-              SizedBox(height: ResponsiveHelper.verticalSpacing(context, 20)),
-
-              // Payment Method
-              PaymentMethodSection(
-                selectedPaymentMethod: _selectedPaymentMethod,
-                onPaymentMethodSelected: (method) {
-                  setState(() => _selectedPaymentMethod = method);
-                },
-              ),
-              SizedBox(height: ResponsiveHelper.verticalSpacing(context, 20)),
-
-              // Additional Options
-              AdditionalOptions(
-                isRecurring: _isRecurring,
-                onChanged: (value) => setState(() => _isRecurring = value),
-              ),
-              SizedBox(height: ResponsiveHelper.verticalSpacing(context, 20)),
-
-              // Notes
-              NotesField(controller: _notesController),
-              SizedBox(height: ResponsiveHelper.verticalSpacing(context, 30)),
-
-              // Save Button
-              SubmitButton(onPressed: _submitForm, isLoading: _isSubmitting),
-            ],
+            ),
           ),
-        ),
+        ],
       ),
     );
   }

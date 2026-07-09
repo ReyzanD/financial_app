@@ -77,33 +77,82 @@ class SubscriptionModel {
 
   factory SubscriptionModel.fromJson(Map<String, dynamic> json) {
     return SubscriptionModel(
-      id: json['id']?.toString() ?? json['subscription_id_232143']?.toString() ?? '',
+      id:
+          json['id']?.toString() ??
+          json['subscription_id_232143']?.toString() ??
+          '',
       name: json['name']?.toString() ?? json['name_232143']?.toString() ?? '',
-      cost: (json['cost'] as num?)?.toDouble() ?? (json['cost_232143'] as num?)?.toDouble() ?? 0.0,
-      cycle: json['cycle']?.toString() ?? json['cycle_232143']?.toString() ?? 'monthly',
-      category: json['category']?.toString() ?? json['category_232143']?.toString() ?? 'subscription',
-      startDate: _parseDate(json['start_date']) ?? _parseDate(json['start_date_232143']) ?? DateTime.now(),
-      nextRenewal: _parseDate(json['next_renewal']) ?? _parseDate(json['next_renewal_232143']),
-      isActive: _parseBool(json['is_active']) ?? _parseBool(json['is_active_232143']) ?? true,
+      cost:
+          (json['cost'] as num?)?.toDouble() ??
+          (json['cost_232143'] as num?)?.toDouble() ??
+          0.0,
+      cycle:
+          json['cycle']?.toString() ??
+          json['cycle_232143']?.toString() ??
+          'monthly',
+      category:
+          json['category']?.toString() ??
+          json['category_232143']?.toString() ??
+          'subscription',
+      startDate:
+          _parseDate(json['start_date']) ??
+          _parseDate(json['start_date_232143']) ??
+          DateTime.now(),
+      nextRenewal:
+          _parseDate(json['next_renewal']) ??
+          _parseDate(json['next_renewal_232143']),
+      isActive:
+          _parseBool(json['is_active']) ??
+          _parseBool(json['is_active_232143']) ??
+          true,
       notes: json['notes']?.toString() ?? json['notes_232143']?.toString(),
-      accountId: json['account_id']?.toString() ?? json['account_id_232143']?.toString(),
-      createdAt: _parseDate(json['created_at']) ?? _parseDate(json['created_at_232143']) ?? DateTime.now(),
+      accountId:
+          json['account_id']?.toString() ??
+          json['account_id_232143']?.toString(),
+      createdAt:
+          _parseDate(json['created_at']) ??
+          _parseDate(json['created_at_232143']) ??
+          DateTime.now(),
     );
   }
 
   factory SubscriptionModel.fromMap(Map<String, dynamic> map) {
     return SubscriptionModel(
-      id: map['subscription_id_232143']?.toString() ?? map['id']?.toString() ?? '',
+      id:
+          map['subscription_id_232143']?.toString() ??
+          map['id']?.toString() ??
+          '',
       name: map['name_232143']?.toString() ?? map['name']?.toString() ?? '',
-      cost: (map['cost_232143'] as num?)?.toDouble() ?? (map['cost'] as num?)?.toDouble() ?? 0.0,
-      cycle: map['cycle_232143']?.toString() ?? map['cycle']?.toString() ?? 'monthly',
-      category: map['category_232143']?.toString() ?? map['category']?.toString() ?? 'subscription',
-      startDate: _parseDate(map['start_date_232143']) ?? _parseDate(map['start_date']) ?? DateTime.now(),
-      nextRenewal: _parseDate(map['next_renewal_232143']) ?? _parseDate(map['next_renewal']),
-      isActive: _parseBool(map['is_active_232143']) ?? _parseBool(map['is_active']) ?? true,
+      cost:
+          (map['cost_232143'] as num?)?.toDouble() ??
+          (map['cost'] as num?)?.toDouble() ??
+          0.0,
+      cycle:
+          map['cycle_232143']?.toString() ??
+          map['cycle']?.toString() ??
+          'monthly',
+      category:
+          map['category_232143']?.toString() ??
+          map['category']?.toString() ??
+          'subscription',
+      startDate:
+          _parseDate(map['start_date_232143']) ??
+          _parseDate(map['start_date']) ??
+          DateTime.now(),
+      nextRenewal:
+          _parseDate(map['next_renewal_232143']) ??
+          _parseDate(map['next_renewal']),
+      isActive:
+          _parseBool(map['is_active_232143']) ??
+          _parseBool(map['is_active']) ??
+          true,
       notes: map['notes_232143']?.toString() ?? map['notes']?.toString(),
-      accountId: map['account_id_232143']?.toString() ?? map['account_id']?.toString(),
-      createdAt: _parseDate(map['created_at_232143']) ?? _parseDate(map['created_at']) ?? DateTime.now(),
+      accountId:
+          map['account_id_232143']?.toString() ?? map['account_id']?.toString(),
+      createdAt:
+          _parseDate(map['created_at_232143']) ??
+          _parseDate(map['created_at']) ??
+          DateTime.now(),
     );
   }
 

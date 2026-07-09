@@ -13,7 +13,10 @@ class PrefetchHelper {
   }) async {
     try {
       // Check if data already in cache
-      final cached = await _cacheService.get<T>(cacheKey, cacheDuration: cacheDuration);
+      final cached = await _cacheService.get<T>(
+        cacheKey,
+        cacheDuration: cacheDuration,
+      );
       if (cached != null) {
         LoggerService.debug('[PrefetchHelper] Data already cached: $cacheKey');
         return;
@@ -23,9 +26,14 @@ class PrefetchHelper {
       LoggerService.debug('[PrefetchHelper] Prefetching: $cacheKey');
       final data = await fetchFunction();
       await _cacheService.set(cacheKey, data, cacheDuration: cacheDuration);
-      LoggerService.success('[PrefetchHelper] Prefetched and cached: $cacheKey');
+      LoggerService.success(
+        '[PrefetchHelper] Prefetched and cached: $cacheKey',
+      );
     } catch (e) {
-      LoggerService.error('[PrefetchHelper] Error prefetching $cacheKey', error: e);
+      LoggerService.error(
+        '[PrefetchHelper] Error prefetching $cacheKey',
+        error: e,
+      );
       // Don't throw - prefetch failures shouldn't block UI
     }
   }
@@ -33,16 +41,26 @@ class PrefetchHelper {
   /// Prefetch multiple items in parallel
   static Future<void> prefetchMultiple(List<PrefetchTask> tasks) async {
     try {
-      final futures = tasks.map((task) => prefetchIfNeeded(
-        cacheKey: task.cacheKey,
-        fetchFunction: task.fetchFunction,
-        cacheDuration: task.cacheDuration,
-      )).toList();
+      final futures =
+          tasks
+              .map(
+                (task) => prefetchIfNeeded(
+                  cacheKey: task.cacheKey,
+                  fetchFunction: task.fetchFunction,
+                  cacheDuration: task.cacheDuration,
+                ),
+              )
+              .toList();
 
       await Future.wait(futures);
-      LoggerService.success('[PrefetchHelper] Prefetched ${tasks.length} items');
+      LoggerService.success(
+        '[PrefetchHelper] Prefetched ${tasks.length} items',
+      );
     } catch (e) {
-      LoggerService.error('[PrefetchHelper] Error prefetching multiple items', error: e);
+      LoggerService.error(
+        '[PrefetchHelper] Error prefetching multiple items',
+        error: e,
+      );
     }
   }
 
@@ -56,14 +74,17 @@ class PrefetchHelper {
     try {
       final nextPage = currentPage + 1;
       final cacheKey = '$baseCacheKey:page:$nextPage';
-      
+
       await prefetchIfNeeded(
         cacheKey: cacheKey,
         fetchFunction: () => fetchFunction(nextPage),
         cacheDuration: cacheDuration,
       );
     } catch (e) {
-      LoggerService.error('[PrefetchHelper] Error prefetching next page', error: e);
+      LoggerService.error(
+        '[PrefetchHelper] Error prefetching next page',
+        error: e,
+      );
     }
   }
 }
@@ -80,4 +101,3 @@ class PrefetchTask<T> {
     this.cacheDuration,
   });
 }
-

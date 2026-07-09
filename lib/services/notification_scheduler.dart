@@ -40,7 +40,10 @@ class NotificationScheduler {
         }
       }
     } catch (e) {
-      LoggerService.error('Error scheduling subscription notifications', error: e);
+      LoggerService.error(
+        'Error scheduling subscription notifications',
+        error: e,
+      );
     }
   }
 
@@ -50,8 +53,10 @@ class NotificationScheduler {
 
       for (final challenge in challenges) {
         final name = challenge['name_232143']?.toString() ?? '';
-        final target = (challenge['target_amount_232143'] as num?)?.toDouble() ?? 0.0;
-        final progress = (challenge['current_amount_232143'] as num?)?.toDouble() ?? 0.0;
+        final target =
+            (challenge['target_amount_232143'] as num?)?.toDouble() ?? 0.0;
+        final progress =
+            (challenge['current_amount_232143'] as num?)?.toDouble() ?? 0.0;
         final endDateStr = challenge['end_date_232143']?.toString();
 
         if (endDateStr != null) {
@@ -85,7 +90,8 @@ class NotificationScheduler {
 
       for (final debt in debts) {
         final name = debt['name_232143']?.toString() ?? '';
-        final monthlyPayment = (debt['monthly_payment_232143'] as num?)?.toDouble() ?? 0.0;
+        final monthlyPayment =
+            (debt['monthly_payment_232143'] as num?)?.toDouble() ?? 0.0;
         final dueDateStr = debt['due_date_232143']?.toString();
 
         if (dueDateStr != null && monthlyPayment > 0) {
@@ -112,16 +118,18 @@ class NotificationScheduler {
         final isSettled = _parseBool(split['is_settled_232143']) ?? false;
 
         if (!isSettled) {
-          final participantName = split['participant_name_232143']?.toString() ?? '';
+          final participantName =
+              split['participant_name_232143']?.toString() ?? '';
           final amount = (split['amount_232143'] as num?)?.toDouble() ?? 0.0;
           final notes = split['notes_232143']?.toString() ?? 'Split bill';
 
           final createdAtStr = split['created_at_232143']?.toString();
           if (createdAtStr != null) {
             final createdAt = DateTime.tryParse(createdAtStr);
-            final daysSinceCreated = createdAt != null
-                ? DateTime.now().difference(createdAt).inDays
-                : 0;
+            final daysSinceCreated =
+                createdAt != null
+                    ? DateTime.now().difference(createdAt).inDays
+                    : 0;
 
             if (daysSinceCreated > 7) {
               await _notifications.sendSplitPaymentReminder(

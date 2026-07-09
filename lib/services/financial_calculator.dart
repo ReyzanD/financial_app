@@ -6,7 +6,12 @@ import 'package:financial_app/services/logger_service.dart';
 /// Menggunakan Money objects untuk menghindari floating-point errors
 class FinancialCalculator {
   // IDR Currency definition
-  static final Currency idr = Currency.create('IDR', 0, symbol: 'Rp ', pattern: '#,###');
+  static final Currency idr = Currency.create(
+    'IDR',
+    0,
+    symbol: 'Rp ',
+    pattern: '#,###',
+  );
 
   // Singleton pattern
   static final FinancialCalculator _instance = FinancialCalculator._internal();
@@ -40,12 +45,12 @@ class FinancialCalculator {
   double _toDouble(Money money) {
     return money.minorUnits.toDouble();
   }
-  
+
   /// Check if Money is negative
   bool _isNegative(Money money) {
     return money.minorUnits < BigInt.zero;
   }
-  
+
   /// Check if Money is positive
   bool _isPositive(Money money) {
     return money.minorUnits > BigInt.zero;
@@ -62,9 +67,8 @@ class FinancialCalculator {
     final expensesMoney = _toMoney(expenses);
     final balanceMoney = incomeMoney - expensesMoney;
     final isNegative = _isNegative(balanceMoney);
-    final warning = isNegative
-        ? 'Saldo Anda negatif. Perhatikan pengeluaran Anda.'
-        : null;
+    final warning =
+        isNegative ? 'Saldo Anda negatif. Perhatikan pengeluaran Anda.' : null;
 
     LoggerService.debug(
       '[FinancialCalculator] Balance calculated: ${balanceMoney.toString()} (Income: ${incomeMoney.toString()}, Expenses: ${expensesMoney.toString()})',
@@ -90,7 +94,7 @@ class FinancialCalculator {
   }) {
     final incomeMoney = _toMoney(income);
     final expensesMoney = _toMoney(expenses);
-    
+
     if (incomeMoney.minorUnits <= BigInt.zero) {
       LoggerService.warning('[FinancialCalculator] Income is zero or negative');
       return 0.0;
@@ -98,8 +102,13 @@ class FinancialCalculator {
 
     final savingsMoney = incomeMoney - expensesMoney;
     // Calculate percentage: (savings / income) * 100
-    final rate = (savingsMoney.minorUnits.toDouble() / incomeMoney.minorUnits.toDouble()) * 100;
-    LoggerService.debug('[FinancialCalculator] Savings rate: ${rate.toStringAsFixed(2)}%');
+    final rate =
+        (savingsMoney.minorUnits.toDouble() /
+            incomeMoney.minorUnits.toDouble()) *
+        100;
+    LoggerService.debug(
+      '[FinancialCalculator] Savings rate: ${rate.toStringAsFixed(2)}%',
+    );
     return rate;
   }
 
@@ -118,34 +127,44 @@ class FinancialCalculator {
   }) {
     final incomeMoney = _toMoney(income);
     final savingsMoney = _toMoney(savings);
-    
+
     // Apply inflation and tax if provided
     final effectiveInflationRate = inflationRate ?? 0.0;
     final effectiveTaxRate = taxRate ?? 0.0;
-    
+
     // After-tax income
-    final afterTaxIncome = effectiveTaxRate > 0
-        ? incomeMoney * (1 - effectiveTaxRate / 100)
-        : incomeMoney;
-    
+    final afterTaxIncome =
+        effectiveTaxRate > 0
+            ? incomeMoney * (1 - effectiveTaxRate / 100)
+            : incomeMoney;
+
     // Real savings (adjusted for inflation)
-    final realSavings = effectiveInflationRate > 0
-        ? savingsMoney / (1 + effectiveInflationRate / 100)
-        : savingsMoney;
-    
+    final realSavings =
+        effectiveInflationRate > 0
+            ? savingsMoney / (1 + effectiveInflationRate / 100)
+            : savingsMoney;
+
     double score = 0.0;
     final factors = <String, double>{};
     final recommendations = <String>[];
 
     // Factor 1: Savings Rate (40 points) - using after-tax income
     if (afterTaxIncome.minorUnits > BigInt.zero) {
-      final savingsRate = (realSavings.minorUnits.toDouble() / afterTaxIncome.minorUnits.toDouble()) * 100;
-      final savingsScore = (savingsRate / 20).clamp(0.0, 40.0); // 20% = perfect score
+      final savingsRate =
+          (realSavings.minorUnits.toDouble() /
+              afterTaxIncome.minorUnits.toDouble()) *
+          100;
+      final savingsScore = (savingsRate / 20).clamp(
+        0.0,
+        40.0,
+      ); // 20% = perfect score
       score += savingsScore;
       factors['Savings Rate'] = savingsScore;
-      
+
       if (savingsRate < 10) {
-        recommendations.add('Tingkatkan tabungan Anda. Target minimal 10% dari pendapatan.');
+        recommendations.add(
+          'Tingkatkan tabungan Anda. Target minimal 10% dari pendapatan.',
+        );
       }
     }
 
@@ -153,13 +172,17 @@ class FinancialCalculator {
     if (budgetTotal != null && budgetTotal > 0) {
       final budgetTotalMoney = _toMoney(budgetTotal);
       final budgetSpentMoney = _toMoney(budgetSpent ?? expenses);
-      final budgetRatio = budgetSpentMoney.minorUnits.toDouble() / budgetTotalMoney.minorUnits.toDouble();
+      final budgetRatio =
+          budgetSpentMoney.minorUnits.toDouble() /
+          budgetTotalMoney.minorUnits.toDouble();
       final budgetScore = (1 - budgetRatio.clamp(0.0, 1.0)) * 30;
       score += budgetScore;
       factors['Budget Adherence'] = budgetScore;
-      
+
       if (budgetRatio > 0.9) {
-        recommendations.add('Anda hampir melebihi budget. Perhatikan pengeluaran.');
+        recommendations.add(
+          'Anda hampir melebihi budget. Perhatikan pengeluaran.',
+        );
       }
     } else {
       // No budget set, give neutral score
@@ -169,15 +192,22 @@ class FinancialCalculator {
     }
 
     // Factor 3: Debt Ratio (20 points)
-    if (debtAmount != null && debtAmount > 0 && afterTaxIncome.minorUnits > BigInt.zero) {
+    if (debtAmount != null &&
+        debtAmount > 0 &&
+        afterTaxIncome.minorUnits > BigInt.zero) {
       final debtMoney = _toMoney(debtAmount);
-      final debtRatio = (debtMoney.minorUnits.toDouble() / afterTaxIncome.minorUnits.toDouble()) * 100;
+      final debtRatio =
+          (debtMoney.minorUnits.toDouble() /
+              afterTaxIncome.minorUnits.toDouble()) *
+          100;
       final debtScore = (1 - (debtRatio / 50).clamp(0.0, 1.0)) * 20;
       score += debtScore;
       factors['Debt Ratio'] = debtScore;
-      
+
       if (debtRatio > 30) {
-        recommendations.add('Rasio utang Anda tinggi. Pertimbangkan untuk mengurangi utang.');
+        recommendations.add(
+          'Rasio utang Anda tinggi. Pertimbangkan untuk mengurangi utang.',
+        );
       }
     } else {
       // No debt, give full score
@@ -226,7 +256,8 @@ class FinancialCalculator {
   Map<String, double> getIndonesiaDefaultRates() {
     return {
       'inflationRate': 3.5,
-      'taxRate': 15.0, // Average tax rate (progressive brackets: 5%, 15%, 25%, 30%, 35%)
+      'taxRate':
+          15.0, // Average tax rate (progressive brackets: 5%, 15%, 25%, 30%, 35%)
     };
   }
 
@@ -235,42 +266,42 @@ class FinancialCalculator {
   double calculateProgressiveTax(double income) {
     final incomeMoney = _toMoney(income);
     final incomeAmount = incomeMoney.minorUnits.toDouble();
-    
+
     if (incomeAmount <= 0) return 0.0;
-    
+
     double tax = 0.0;
-    
+
     // 0-50M: 5%
     if (incomeAmount > 50000000) {
       tax += 50000000 * 0.05;
     } else {
       return incomeAmount * 0.05;
     }
-    
+
     // 50M-250M: 15%
     if (incomeAmount > 250000000) {
       tax += (250000000 - 50000000) * 0.15;
     } else {
       return tax + (incomeAmount - 50000000) * 0.15;
     }
-    
+
     // 250M-500M: 25%
     if (incomeAmount > 500000000) {
       tax += (500000000 - 250000000) * 0.25;
     } else {
       return tax + (incomeAmount - 250000000) * 0.25;
     }
-    
+
     // 500M-5B: 30%
     if (incomeAmount > 5000000000) {
       tax += (5000000000 - 500000000) * 0.30;
     } else {
       return tax + (incomeAmount - 500000000) * 0.30;
     }
-    
+
     // >5B: 35%
     tax += (incomeAmount - 5000000000) * 0.35;
-    
+
     return tax;
   }
 
@@ -286,7 +317,7 @@ class FinancialCalculator {
     final currentExpensesMoney = _toMoney(currentExpenses);
     final previousIncomeMoney = _toMoney(previousIncome);
     final previousExpensesMoney = _toMoney(previousExpenses);
-    
+
     final currentBalanceMoney = currentIncomeMoney - currentExpensesMoney;
     final previousBalanceMoney = previousIncomeMoney - previousExpensesMoney;
 
@@ -294,19 +325,26 @@ class FinancialCalculator {
     final expenseChangeMoney = currentExpensesMoney - previousExpensesMoney;
     final balanceChangeMoney = currentBalanceMoney - previousBalanceMoney;
 
-    final incomeChangePercent = previousIncomeMoney.minorUnits > BigInt.zero
-        ? (incomeChangeMoney.minorUnits.toDouble() / previousIncomeMoney.minorUnits.toDouble()) * 100
-        : 0.0;
-    final expenseChangePercent = previousExpensesMoney.minorUnits > BigInt.zero
-        ? (expenseChangeMoney.minorUnits.toDouble() / previousExpensesMoney.minorUnits.toDouble()) * 100
-        : 0.0;
-    final balanceChangePercent = previousBalanceMoney.minorUnits != BigInt.zero
-        ? (balanceChangeMoney.minorUnits.toDouble() / previousBalanceMoney.minorUnits.abs().toDouble()) * 100
-        : 0.0;
+    final incomeChangePercent =
+        previousIncomeMoney.minorUnits > BigInt.zero
+            ? (incomeChangeMoney.minorUnits.toDouble() /
+                    previousIncomeMoney.minorUnits.toDouble()) *
+                100
+            : 0.0;
+    final expenseChangePercent =
+        previousExpensesMoney.minorUnits > BigInt.zero
+            ? (expenseChangeMoney.minorUnits.toDouble() /
+                    previousExpensesMoney.minorUnits.toDouble()) *
+                100
+            : 0.0;
+    final balanceChangePercent =
+        previousBalanceMoney.minorUnits != BigInt.zero
+            ? (balanceChangeMoney.minorUnits.toDouble() /
+                    previousBalanceMoney.minorUnits.abs().toDouble()) *
+                100
+            : 0.0;
 
-    LoggerService.debug(
-      '[FinancialCalculator] Month comparison calculated',
-    );
+    LoggerService.debug('[FinancialCalculator] Month comparison calculated');
 
     return {
       'current': {
@@ -343,9 +381,24 @@ class FinancialCalculator {
         },
       },
       'trends': {
-        'income': _isPositive(incomeChangeMoney) ? 'up' : _isNegative(incomeChangeMoney) ? 'down' : 'stable',
-        'expenses': _isPositive(expenseChangeMoney) ? 'up' : _isNegative(expenseChangeMoney) ? 'down' : 'stable',
-        'balance': _isPositive(balanceChangeMoney) ? 'up' : _isNegative(balanceChangeMoney) ? 'down' : 'stable',
+        'income':
+            _isPositive(incomeChangeMoney)
+                ? 'up'
+                : _isNegative(incomeChangeMoney)
+                ? 'down'
+                : 'stable',
+        'expenses':
+            _isPositive(expenseChangeMoney)
+                ? 'up'
+                : _isNegative(expenseChangeMoney)
+                ? 'down'
+                : 'stable',
+        'balance':
+            _isPositive(balanceChangeMoney)
+                ? 'up'
+                : _isNegative(balanceChangeMoney)
+                ? 'down'
+                : 'stable',
       },
     };
   }
@@ -397,21 +450,26 @@ class FinancialCalculator {
     final currentBalanceMoney = _toMoney(currentBalance);
     final avgIncomeMoney = _toMoney(averageMonthlyIncome);
     final avgExpensesMoney = _toMoney(averageMonthlyExpenses);
-    
+
     final monthlyChangeMoney = avgIncomeMoney - avgExpensesMoney;
     final effectiveInflationRate = inflationRate ?? 0.0;
-    
+
     // Apply inflation to monthly change
     Money projectedBalanceMoney;
     if (effectiveInflationRate > 0) {
       // Apply inflation: monthlyChange * (1 + inflationRate/100)^months
-      final inflationMultiplier = math.pow(1 + effectiveInflationRate / 100, months);
+      final inflationMultiplier = math.pow(
+        1 + effectiveInflationRate / 100,
+        months,
+      );
       final adjustedMonthlyChange = monthlyChangeMoney * inflationMultiplier;
-      projectedBalanceMoney = currentBalanceMoney + (adjustedMonthlyChange * months);
+      projectedBalanceMoney =
+          currentBalanceMoney + (adjustedMonthlyChange * months);
     } else {
-      projectedBalanceMoney = currentBalanceMoney + (monthlyChangeMoney * months);
+      projectedBalanceMoney =
+          currentBalanceMoney + (monthlyChangeMoney * months);
     }
-    
+
     final isPositive = !projectedBalanceMoney.isNegative;
 
     LoggerService.debug(
@@ -427,9 +485,10 @@ class FinancialCalculator {
       'monthlyChangeAmount': _toDouble(monthlyChangeMoney),
       'months': months,
       'isPositive': isPositive,
-      'warning': isPositive
-          ? null
-          : 'Proyeksi saldo negatif dalam $months bulan. Perhatikan pengeluaran.',
+      'warning':
+          isPositive
+              ? null
+              : 'Proyeksi saldo negatif dalam $months bulan. Perhatikan pengeluaran.',
       'inflationRate': effectiveInflationRate,
     };
   }
@@ -445,7 +504,9 @@ class FinancialCalculator {
       final category = expense['category'] as String? ?? 'Uncategorized';
       final amountMoney = _toMoney(expense['amount']);
 
-      breakdown[category] = (breakdown[category] ?? Money.fromInt(0, isoCode: 'IDR')) + amountMoney;
+      breakdown[category] =
+          (breakdown[category] ?? Money.fromInt(0, isoCode: 'IDR')) +
+          amountMoney;
     }
 
     LoggerService.debug(
@@ -466,7 +527,9 @@ class FinancialCalculator {
       final category = income['category'] as String? ?? 'Uncategorized';
       final amountMoney = _toMoney(income['amount']);
 
-      breakdown[category] = (breakdown[category] ?? Money.fromInt(0, isoCode: 'IDR')) + amountMoney;
+      breakdown[category] =
+          (breakdown[category] ?? Money.fromInt(0, isoCode: 'IDR')) +
+          amountMoney;
     }
 
     LoggerService.debug(

@@ -131,6 +131,8 @@ class _QuickAddWidgetEnhancedState extends State<QuickAddWidgetEnhanced> {
       _isListening = true;
     });
 
+    final ctx = context;
+
     try {
       final result = await _voiceService.startListening(
         localeId: 'id_ID',
@@ -163,11 +165,10 @@ class _QuickAddWidgetEnhancedState extends State<QuickAddWidgetEnhanced> {
       setState(() {
         _isListening = false;
       });
-      ScaffoldMessenger.of(context).showSnackBar(
+      if (!ctx.mounted) return;
+      ScaffoldMessenger.of(ctx).showSnackBar(
         SnackBar(
-          content: Text(
-            '${AppLocalizations.of(context)!.error}: ${e.toString()}',
-          ),
+          content: Text('${AppLocalizations.of(ctx)!.error}: ${e.toString()}'),
           backgroundColor: Colors.red,
         ),
       );
@@ -190,6 +191,8 @@ class _QuickAddWidgetEnhancedState extends State<QuickAddWidgetEnhanced> {
   Future<void> _scanReceipt() async {
     setState(() => _isScanning = true);
 
+    final ctx = context;
+
     try {
       // Pick image
       final imageFile = await _receiptService.pickImage(fromCamera: true);
@@ -205,26 +208,29 @@ class _QuickAddWidgetEnhancedState extends State<QuickAddWidgetEnhanced> {
         final amount = (parsedData['total'] as num?)?.toDouble() ?? 0.0;
         final merchant = parsedData['merchant'] as String? ?? '';
 
+        if (!ctx.mounted) return;
         _showQuickAddModal(
           type: 'expense',
           presetAmount: amount,
           presetDescription: merchant,
         );
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
+        if (!ctx.mounted) return;
+        ScaffoldMessenger.of(ctx).showSnackBar(
           SnackBar(
             content: Text(
-              AppLocalizations.of(context)!.cannot_scan_receipt_try_again,
+              AppLocalizations.of(ctx)!.cannot_scan_receipt_try_again,
             ),
             backgroundColor: Colors.orange,
           ),
         );
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
+      if (!ctx.mounted) return;
+      ScaffoldMessenger.of(ctx).showSnackBar(
         SnackBar(
           content: Text(
-            '${AppLocalizations.of(context)!.error_scanning}: ${e.toString()}',
+            '${AppLocalizations.of(ctx)!.error_scanning}: ${e.toString()}',
           ),
           backgroundColor: Colors.red,
         ),
@@ -300,7 +306,9 @@ class _QuickAddWidgetEnhancedState extends State<QuickAddWidgetEnhanced> {
         borderRadius: BorderRadius.circular(
           ResponsiveHelper.borderRadius(context, 16),
         ),
-        border: Border.all(color: const Color(0xFF8B5FBF).withValues(alpha: 0.3)),
+        border: Border.all(
+          color: const Color(0xFF8B5FBF).withValues(alpha: 0.3),
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -623,7 +631,9 @@ class _QuickAddWidgetEnhancedState extends State<QuickAddWidgetEnhanced> {
           borderRadius: BorderRadius.circular(
             ResponsiveHelper.borderRadius(context, 20),
           ),
-          border: Border.all(color: const Color(0xFF8B5FBF).withValues(alpha: 0.5)),
+          border: Border.all(
+            color: const Color(0xFF8B5FBF).withValues(alpha: 0.5),
+          ),
         ),
         child: Text(
           CurrencyFormatter.formatRupiah(amount),

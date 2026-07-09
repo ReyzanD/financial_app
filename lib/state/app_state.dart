@@ -103,7 +103,9 @@ class AppState extends ChangeNotifier {
 
   // Methods
   Future<void> refreshData({bool forceRefresh = false}) async {
-    LoggerService.debug('[AppState] refreshData called (forceRefresh: $forceRefresh)');
+    LoggerService.debug(
+      '[AppState] refreshData called (forceRefresh: $forceRefresh)',
+    );
     _isLoading = true;
     _error = null;
     notifyListeners();

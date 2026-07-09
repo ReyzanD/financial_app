@@ -15,14 +15,16 @@ class RecentTransactionsEnhanced extends StatefulWidget {
   const RecentTransactionsEnhanced({super.key});
 
   @override
-  State<RecentTransactionsEnhanced> createState() => _RecentTransactionsEnhancedState();
+  State<RecentTransactionsEnhanced> createState() =>
+      _RecentTransactionsEnhancedState();
 }
 
-class _RecentTransactionsEnhancedState extends State<RecentTransactionsEnhanced> {
+class _RecentTransactionsEnhancedState
+    extends State<RecentTransactionsEnhanced> {
   final SearchService _searchService = SearchService();
   final ApiService _apiService = ApiService();
   final TextEditingController _searchController = TextEditingController();
-  
+
   String _searchQuery = '';
   String? _selectedType; // 'income', 'expense', null for all
   String? _selectedCategoryId;
@@ -71,7 +73,10 @@ class _RecentTransactionsEnhancedState extends State<RecentTransactionsEnhanced>
     }
   }
 
-  Widget _buildTransactionItem(TransactionModel transaction, BuildContext context) {
+  Widget _buildTransactionItem(
+    TransactionModel transaction,
+    BuildContext context,
+  ) {
     final isIncome = transaction.type == 'income';
 
     return Dismissible(
@@ -134,35 +139,37 @@ class _RecentTransactionsEnhancedState extends State<RecentTransactionsEnhanced>
         if (direction == DismissDirection.endToStart) {
           // Delete action
           return await showDialog<bool>(
-            context: context,
-            builder: (context) => AlertDialog(
-              backgroundColor: const Color(0xFF1A1A1A),
-              title: Text(
-                'Hapus Transaksi?',
-                style: GoogleFonts.poppins(color: Colors.white),
-              ),
-              content: Text(
-                'Apakah Anda yakin ingin menghapus transaksi ini?',
-                style: GoogleFonts.poppins(color: Colors.grey[400]),
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(context, false),
-                  child: Text(
-                    'Batal',
-                    style: GoogleFonts.poppins(color: Colors.grey),
-                  ),
-                ),
-                TextButton(
-                  onPressed: () => Navigator.pop(context, true),
-                  child: Text(
-                    'Hapus',
-                    style: GoogleFonts.poppins(color: Colors.red),
-                  ),
-                ),
-              ],
-            ),
-          ) ?? false;
+                context: context,
+                builder:
+                    (context) => AlertDialog(
+                      backgroundColor: const Color(0xFF1A1A1A),
+                      title: Text(
+                        'Hapus Transaksi?',
+                        style: GoogleFonts.poppins(color: Colors.white),
+                      ),
+                      content: Text(
+                        'Apakah Anda yakin ingin menghapus transaksi ini?',
+                        style: GoogleFonts.poppins(color: Colors.grey[400]),
+                      ),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(context, false),
+                          child: Text(
+                            'Batal',
+                            style: GoogleFonts.poppins(color: Colors.grey),
+                          ),
+                        ),
+                        TextButton(
+                          onPressed: () => Navigator.pop(context, true),
+                          child: Text(
+                            'Hapus',
+                            style: GoogleFonts.poppins(color: Colors.red),
+                          ),
+                        ),
+                      ],
+                    ),
+              ) ??
+              false;
         } else {
           // Edit action - navigate to edit screen
           // Navigator.push(...);
@@ -174,30 +181,28 @@ class _RecentTransactionsEnhancedState extends State<RecentTransactionsEnhanced>
           // Delete transaction
           try {
             await _apiService.deleteTransaction(transaction.id.toString());
-            if (mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(
-                    'Transaksi berhasil dihapus',
-                    style: GoogleFonts.poppins(),
-                  ),
-                  backgroundColor: Colors.green,
+            if (!context.mounted) return;
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  'Transaksi berhasil dihapus',
+                  style: GoogleFonts.poppins(),
                 ),
-              );
-            }
+                backgroundColor: Colors.green,
+              ),
+            );
             _applyFilters(); // Refresh list
           } catch (e) {
-            if (mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(
-                    'Gagal menghapus transaksi',
-                    style: GoogleFonts.poppins(),
-                  ),
-                  backgroundColor: Colors.red,
+            if (!context.mounted) return;
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  'Gagal menghapus transaksi',
+                  style: GoogleFonts.poppins(),
                 ),
-              );
-            }
+                backgroundColor: Colors.red,
+              ),
+            );
           }
         }
       },
@@ -290,9 +295,12 @@ class _RecentTransactionsEnhancedState extends State<RecentTransactionsEnhanced>
     return Consumer<AppState>(
       builder: (context, appState, child) {
         // Use filtered transactions if searching, otherwise use recent transactions
-        final transactions = _searchQuery.isNotEmpty || _selectedType != null || _selectedCategoryId != null
-            ? _filteredTransactions
-            : appState.transactions.take(10).toList();
+        final transactions =
+            _searchQuery.isNotEmpty ||
+                    _selectedType != null ||
+                    _selectedCategoryId != null
+                ? _filteredTransactions
+                : appState.transactions.take(10).toList();
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -340,15 +348,19 @@ class _RecentTransactionsEnhancedState extends State<RecentTransactionsEnhanced>
                 decoration: InputDecoration(
                   hintText: 'Search transactions...',
                   hintStyle: GoogleFonts.poppins(color: Colors.grey[600]),
-                  prefixIcon: Icon(Iconsax.search_normal, color: Colors.grey[600]),
-                  suffixIcon: _searchQuery.isNotEmpty
-                      ? IconButton(
-                          icon: Icon(Icons.clear, color: Colors.grey[600]),
-                          onPressed: () {
-                            _searchController.clear();
-                          },
-                        )
-                      : null,
+                  prefixIcon: Icon(
+                    Iconsax.search_normal,
+                    color: Colors.grey[600],
+                  ),
+                  suffixIcon:
+                      _searchQuery.isNotEmpty
+                          ? IconButton(
+                            icon: Icon(Icons.clear, color: Colors.grey[600]),
+                            onPressed: () {
+                              _searchController.clear();
+                            },
+                          )
+                          : null,
                   filled: true,
                   fillColor: const Color(0xFF1A1A1A),
                   border: OutlineInputBorder(
@@ -361,7 +373,10 @@ class _RecentTransactionsEnhancedState extends State<RecentTransactionsEnhanced>
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(color: Color(0xFF8B5FBF), width: 2),
+                    borderSide: const BorderSide(
+                      color: Color(0xFF8B5FBF),
+                      width: 2,
+                    ),
                   ),
                 ),
               ),
@@ -380,14 +395,18 @@ class _RecentTransactionsEnhancedState extends State<RecentTransactionsEnhanced>
                       });
                       _applyFilters();
                     }),
-                    SizedBox(width: ResponsiveHelper.horizontalSpacing(context, 8)),
+                    SizedBox(
+                      width: ResponsiveHelper.horizontalSpacing(context, 8),
+                    ),
                     _buildFilterChip('Income', _selectedType == 'income', () {
                       setState(() {
                         _selectedType = 'income';
                       });
                       _applyFilters();
                     }),
-                    SizedBox(width: ResponsiveHelper.horizontalSpacing(context, 8)),
+                    SizedBox(
+                      width: ResponsiveHelper.horizontalSpacing(context, 8),
+                    ),
                     _buildFilterChip('Expense', _selectedType == 'expense', () {
                       setState(() {
                         _selectedType = 'expense';
@@ -443,12 +462,13 @@ class _RecentTransactionsEnhancedState extends State<RecentTransactionsEnhanced>
             else
               Padding(
                 padding: ResponsiveHelper.horizontalPadding(context),
-                child: Column(
-                  children: transactions
-                      .map(
-                        (transaction) => _buildTransactionItem(transaction, context),
-                      )
-                      .toList(),
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: transactions.length,
+                  itemBuilder:
+                      (context, index) =>
+                          _buildTransactionItem(transactions[index], context),
                 ),
               ),
           ],
@@ -485,4 +505,3 @@ class _RecentTransactionsEnhancedState extends State<RecentTransactionsEnhanced>
     );
   }
 }
-

@@ -21,7 +21,8 @@ class BudgetCategoryCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final categoryName = category['name'] as String;
-    final percentage = editedPercentages[categoryName] ??
+    final percentage =
+        editedPercentages[categoryName] ??
         ((category['percentage'] as num?)?.toDouble() ?? 0.0);
     final currentPercentage = percentage.toInt();
     final currentAmount = totalIncome * (percentage / 100);
@@ -91,7 +92,9 @@ class BudgetCategoryCard extends StatelessWidget {
                       vertical: 4,
                     ),
                     decoration: BoxDecoration(
-                      color: (category['color'] as Color).withValues(alpha: 0.2),
+                      color: (category['color'] as Color).withValues(
+                        alpha: 0.2,
+                      ),
                       borderRadius: BorderRadius.circular(6),
                     ),
                     child: Text(
@@ -188,4 +191,3 @@ class BudgetCategoryCard extends StatelessWidget {
     );
   }
 }
-
