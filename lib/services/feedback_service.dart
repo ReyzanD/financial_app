@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:vibration/vibration.dart';
+import 'package:financial_app/utils/design_tokens.dart';
 
 /// Unified feedback service for snackbars, toasts, and haptic feedback
 class FeedbackService {
@@ -172,12 +173,12 @@ class FeedbackService {
             Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: const Color(0xFF8B5FBF).withValues(alpha: 0.2),
+                color: DesignTokens.primaryColor.withValues(alpha: 0.2),
                 shape: BoxShape.circle,
               ),
               child: const Icon(
                 Iconsax.info_circle,
-                color: Color(0xFF8B5FBF),
+                color: DesignTokens.primaryColor,
                 size: 20,
               ),
             ),
@@ -198,7 +199,7 @@ class FeedbackService {
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
-          side: const BorderSide(color: Color(0xFF8B5FBF), width: 1),
+          side: const BorderSide(color: DesignTokens.primaryColor, width: 1),
         ),
         duration: const Duration(seconds: 2),
       ),
@@ -216,7 +217,7 @@ class FeedbackService {
               height: 20,
               child: CircularProgressIndicator(
                 strokeWidth: 2,
-                valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF8B5FBF)),
+                valueColor: AlwaysStoppedAnimation<Color>(DesignTokens.primaryColor),
               ),
             ),
             const SizedBox(width: 16),

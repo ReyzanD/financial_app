@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:financial_app/widgets/goals/goals_helpers.dart';
-import 'package:financial_app/services/api_service.dart';
+import 'package:financial_app/services/data/goal_data_service.dart';
 import 'package:financial_app/services/account_service.dart';
 import 'package:financial_app/services/error_handler_service.dart';
 import 'package:financial_app/services/logger_service.dart';
@@ -10,6 +10,7 @@ import 'package:financial_app/widgets/goals/add_goal_modal.dart';
 import 'package:financial_app/widgets/goals/contribute_modal.dart';
 import 'package:financial_app/utils/responsive_helper.dart';
 import 'package:financial_app/utils/formatters.dart';
+import 'package:financial_app/utils/design_tokens.dart';
 
 class GoalCard extends StatefulWidget {
   final Map<String, dynamic> goal;
@@ -67,11 +68,11 @@ class _GoalCardState extends State<GoalCard> {
       ),
       padding: ResponsiveHelper.padding(context),
       decoration: BoxDecoration(
-        color: const Color(0xFF1A1A1A),
+        color: DesignTokens.surfaceDark,
         borderRadius: BorderRadius.circular(
           ResponsiveHelper.borderRadius(context, 16),
         ),
-        border: Border.all(color: Colors.grey[800]!),
+        border: Border.all(color: DesignTokens.borderDark),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -176,7 +177,7 @@ class _GoalCardState extends State<GoalCard> {
                   context,
                   icon: Iconsax.wallet_add,
                   label: 'Tambah Dana',
-                  color: const Color(0xFF8B5FBF),
+                  color: DesignTokens.primaryColor,
                   onTap: () => _showContributeDialog(context),
                 ),
               ),
@@ -216,7 +217,7 @@ class _GoalCardState extends State<GoalCard> {
 
     showModalBottomSheet(
       context: context,
-      backgroundColor: const Color(0xFF1A1A1A),
+      backgroundColor: DesignTokens.surfaceDark,
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
@@ -293,7 +294,7 @@ class _GoalCardState extends State<GoalCard> {
                           ),
                           child: const Icon(
                             Iconsax.money_4,
-                            color: Color(0xFF8B5FBF),
+                            color: DesignTokens.primaryColor,
                             size: 20,
                           ),
                         ),
@@ -416,7 +417,7 @@ class _GoalCardState extends State<GoalCard> {
   void _showContributeDialog(BuildContext context) async {
     final result = await showModalBottomSheet(
       context: context,
-      backgroundColor: Colors.black,
+      backgroundColor: DesignTokens.backgroundDark,
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
@@ -434,7 +435,7 @@ class _GoalCardState extends State<GoalCard> {
   void _showEditDialog(BuildContext context) {
     showModalBottomSheet(
       context: context,
-      backgroundColor: Colors.black,
+      backgroundColor: DesignTokens.backgroundDark,
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
@@ -454,7 +455,7 @@ class _GoalCardState extends State<GoalCard> {
       context: context,
       builder: (BuildContext dialogContext) {
         return AlertDialog(
-          backgroundColor: const Color(0xFF1A1A1A),
+          backgroundColor: DesignTokens.surfaceDark,
           title: Text(
             'Hapus Goal?',
             style: GoogleFonts.poppins(color: Colors.white),
@@ -474,8 +475,8 @@ class _GoalCardState extends State<GoalCard> {
             TextButton(
               onPressed: () async {
                 try {
-                  final apiService = ApiService();
-                  await apiService.deleteGoal(
+                  final goalService = GoalDataService();
+                  await goalService.deleteGoal(
                     widget.goal['goal_id_232143'] ?? widget.goal['id'],
                   );
                   if (dialogContext.mounted) {

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:financial_app/utils/design_tokens.dart';
 
 class AdditionalOptions extends StatelessWidget {
   final bool isRecurring;
@@ -30,7 +31,7 @@ class AdditionalOptions extends StatelessWidget {
             Switch(
               value: isRecurring,
               onChanged: onChanged,
-              activeThumbColor: const Color(0xFF8B5FBF),
+              activeThumbColor: DesignTokens.primaryColor,
             ),
             const SizedBox(width: 8),
             Text(

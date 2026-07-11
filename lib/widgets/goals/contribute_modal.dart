@@ -2,12 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
-import 'package:financial_app/services/api_service.dart';
+import 'package:financial_app/services/data/goal_data_service.dart';
 import 'package:financial_app/services/account_service.dart';
 import 'package:financial_app/models/account_model.dart';
 import 'package:financial_app/services/error_handler_service.dart';
 import 'package:financial_app/services/logger_service.dart';
 import 'package:financial_app/utils/formatters.dart';
+import 'package:financial_app/utils/design_tokens.dart';
 
 class ContributeModal extends StatefulWidget {
   final Map<String, dynamic> goal;
@@ -21,7 +22,7 @@ class ContributeModal extends StatefulWidget {
 class _ContributeModalState extends State<ContributeModal> {
   final TextEditingController _amountController = TextEditingController();
   final TextEditingController _noteController = TextEditingController();
-  final ApiService _apiService = ApiService();
+  final GoalDataService _goalService = GoalDataService();
   final AccountService _accountService = AccountService();
   bool _isLoading = false;
 
@@ -104,7 +105,7 @@ class _ContributeModalState extends State<ContributeModal> {
     setState(() => _isLoading = true);
 
     try {
-      await _apiService.addGoalContribution(
+      await _goalService.addGoalContribution(
         (widget.goal['goal_id_232143'] ?? widget.goal['id']).toString(),
         amount,
         accountId: _selectedAccount?.id,
@@ -113,18 +114,15 @@ class _ContributeModalState extends State<ContributeModal> {
 
       if (!mounted) return;
 
+      ErrorHandlerService.showSuccessSnackbar(
+        context,
+        'Berhasil menambah ${CurrencyFormatter.formatRupiah(amount)}${_selectedAccount != null ? ' dari ${_selectedAccount!.name}' : ''}',
+      );
       Navigator.pop(context, true);
-
-      if (context.mounted) {
-        ErrorHandlerService.showSuccessSnackbar(
-          context,
-          'Berhasil menambah ${CurrencyFormatter.formatRupiah(amount)}${_selectedAccount != null ? ' dari ${_selectedAccount!.name}' : ''}',
-        );
-      }
     } catch (e) {
       LoggerService.error('Error contributing to goal', error: e);
-      setState(() => _isLoading = false);
       if (!mounted) return;
+      setState(() => _isLoading = false);
 
       if (context.mounted) {
         ErrorHandlerService.showErrorSnackbar(
@@ -192,10 +190,10 @@ class _ContributeModalState extends State<ContributeModal> {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: const Color(0xFF1A1A1A),
+                color: DesignTokens.surfaceDark,
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
-                  color: const Color(0xFF8B5FBF).withValues(alpha: 0.3),
+                  color: DesignTokens.primaryColor.withValues(alpha: 0.3),
                 ),
               ),
               child: Column(
@@ -274,15 +272,15 @@ class _ContributeModalState extends State<ContributeModal> {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 12),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF1A1A1A),
+                  color: DesignTokens.surfaceDark,
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.grey[800]!),
+                  border: Border.all(color: DesignTokens.borderDark),
                 ),
                 child: DropdownButtonHideUnderline(
                   child: DropdownButton<AccountModel>(
                     value: _selectedAccount,
                     isExpanded: true,
-                    dropdownColor: const Color(0xFF1A1A1A),
+                    dropdownColor: DesignTokens.surfaceDark,
                     hint: Text(
                       'Pilih akun',
                       style: GoogleFonts.poppins(color: Colors.grey[600]),
@@ -296,7 +294,7 @@ class _ContributeModalState extends State<ContributeModal> {
                                 Icon(
                                   _getAccountIcon(account.icon),
                                   size: 18,
-                                  color: const Color(0xFF8B5FBF),
+                                  color: DesignTokens.primaryColor,
                                 ),
                                 const SizedBox(width: 8),
                                 Expanded(
@@ -335,10 +333,10 @@ class _ContributeModalState extends State<ContributeModal> {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF8B5FBF).withValues(alpha: 0.1),
+                  color: DesignTokens.primaryColor.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(
-                    color: const Color(0xFF8B5FBF).withValues(alpha: 0.2),
+                    color: DesignTokens.primaryColor.withValues(alpha: 0.2),
                   ),
                 ),
                 child: Row(
@@ -346,7 +344,7 @@ class _ContributeModalState extends State<ContributeModal> {
                     const Icon(
                       Iconsax.info_circle,
                       size: 16,
-                      color: Color(0xFF8B5FBF),
+                      color: DesignTokens.primaryColor,
                     ),
                     const SizedBox(width: 8),
                     Expanded(
@@ -429,7 +427,7 @@ class _ContributeModalState extends State<ContributeModal> {
                           vertical: 10,
                         ),
                         decoration: BoxDecoration(
-                          color: const Color(0xFF8B5FBF).withValues(alpha: 0.2),
+                          color: DesignTokens.primaryColor.withValues(alpha: 0.2),
                           borderRadius: BorderRadius.circular(20),
                           border: Border.all(
                             color: const Color(
@@ -440,7 +438,7 @@ class _ContributeModalState extends State<ContributeModal> {
                         child: Text(
                           CurrencyFormatter.formatRupiah(amount),
                           style: GoogleFonts.poppins(
-                            color: const Color(0xFF8B5FBF),
+                            color: DesignTokens.primaryColor,
                             fontSize: 12,
                             fontWeight: FontWeight.w600,
                           ),
@@ -469,25 +467,25 @@ class _ContributeModalState extends State<ContributeModal> {
                 hintText: 'Rp 0',
                 hintStyle: GoogleFonts.poppins(color: Colors.grey[600]),
                 filled: true,
-                fillColor: const Color(0xFF1A1A1A),
+                fillColor: DesignTokens.surfaceDark,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: Colors.grey[800]!),
+                  borderSide: BorderSide(color: DesignTokens.borderDark),
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: Colors.grey[800]!),
+                  borderSide: BorderSide(color: DesignTokens.borderDark),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                   borderSide: const BorderSide(
-                    color: Color(0xFF8B5FBF),
+                    color: DesignTokens.primaryColor,
                     width: 2,
                   ),
                 ),
                 prefixIcon: const Icon(
                   Iconsax.money_4,
-                  color: Color(0xFF8B5FBF),
+                  color: DesignTokens.primaryColor,
                 ),
               ),
               inputFormatters: [FilteringTextInputFormatter.digitsOnly],
@@ -512,19 +510,19 @@ class _ContributeModalState extends State<ContributeModal> {
                 hintText: 'Tambahkan catatan...',
                 hintStyle: GoogleFonts.poppins(color: Colors.grey[600]),
                 filled: true,
-                fillColor: const Color(0xFF1A1A1A),
+                fillColor: DesignTokens.surfaceDark,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: Colors.grey[800]!),
+                  borderSide: BorderSide(color: DesignTokens.borderDark),
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: Colors.grey[800]!),
+                  borderSide: BorderSide(color: DesignTokens.borderDark),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                   borderSide: const BorderSide(
-                    color: Color(0xFF8B5FBF),
+                    color: DesignTokens.primaryColor,
                     width: 2,
                   ),
                 ),
@@ -539,7 +537,7 @@ class _ContributeModalState extends State<ContributeModal> {
               child: ElevatedButton(
                 onPressed: _isLoading ? null : _contributeToGoal,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF8B5FBF),
+                  backgroundColor: DesignTokens.primaryColor,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),

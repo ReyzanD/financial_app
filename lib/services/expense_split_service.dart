@@ -1,32 +1,32 @@
-import 'package:financial_app/services/local_data_service.dart';
 import 'package:financial_app/services/logger_service.dart';
+import 'package:financial_app/services/data/expense_split_data_service.dart';
 import 'package:financial_app/models/feature_models.dart';
 
 class ExpenseSplitService {
-  final LocalDataService _localData;
+  final ExpenseSplitDataService _splitData;
 
-  ExpenseSplitService({LocalDataService? localData})
-    : _localData = localData ?? LocalDataService();
+  ExpenseSplitService({ExpenseSplitDataService? splitData})
+    : _splitData = splitData ?? ExpenseSplitDataService();
 
   Future<List<SplitModel>> getSplits({
     String? transactionId,
     bool activeOnly = true,
   }) async {
     try {
-      final splitsData = await _localData.getSplits(
+      final splitsData = await _splitData.getSplits(
         transactionId: transactionId,
         activeOnly: activeOnly,
       );
       return splitsData.map((s) => SplitModel.fromMap(s)).toList();
     } catch (e) {
       LoggerService.error('Error getting splits', error: e);
-      return [];
+      rethrow;
     }
   }
 
   Future<SplitModel> createSplit(SplitModel split) async {
     try {
-      final result = await _localData.addSplit(split.toMap());
+      final result = await _splitData.addSplit(split.toMap());
       final created = SplitModel.fromMap(
         result['split'] as Map<String, dynamic>,
       );
@@ -42,7 +42,7 @@ class ExpenseSplitService {
     try {
       final createdSplits = <SplitModel>[];
       for (var split in splits) {
-        final result = await _localData.addSplit(split.toMap());
+        final result = await _splitData.addSplit(split.toMap());
         createdSplits.add(
           SplitModel.fromMap(result['split'] as Map<String, dynamic>),
         );
@@ -77,7 +77,7 @@ class ExpenseSplitService {
 
   Future<void> settleSplit(String splitId) async {
     try {
-      await _localData.settleSplit(splitId);
+      await _splitData.settleSplit(splitId);
       LoggerService.success('Split settled');
     } catch (e) {
       LoggerService.error('Error settling split', error: e);
@@ -87,7 +87,7 @@ class ExpenseSplitService {
 
   Future<Map<String, dynamic>> getSplitSummary() async {
     try {
-      return await _localData.getSplitSummary();
+      return await _splitData.getSplitSummary();
     } catch (e) {
       LoggerService.error('Error getting split summary', error: e);
       return {};
@@ -96,7 +96,7 @@ class ExpenseSplitService {
 
   Future<void> deleteSplit(String splitId) async {
     try {
-      await _localData.deleteSplit(splitId);
+      await _splitData.deleteSplit(splitId);
       LoggerService.success('Split deleted');
     } catch (e) {
       LoggerService.error('Error deleting split', error: e);

@@ -5,6 +5,7 @@ import 'package:financial_app/services/error_handler_service.dart';
 import 'package:financial_app/services/logger_service.dart';
 import 'package:financial_app/utils/form_validators.dart';
 import 'package:intl/intl.dart';
+import 'package:financial_app/utils/design_tokens.dart';
 
 class AddBudgetModal extends StatefulWidget {
   final Map<String, String> categories;
@@ -97,9 +98,9 @@ class _AddBudgetModalState extends State<AddBudgetModal> {
         return Theme(
           data: ThemeData.dark().copyWith(
             colorScheme: const ColorScheme.dark(
-              primary: Color(0xFF8B5FBF),
+              primary: DesignTokens.primaryColor,
               onPrimary: Colors.white,
-              surface: Color(0xFF1A1A1A),
+              surface: DesignTokens.surfaceDark,
               onSurface: Colors.white,
             ),
           ),
@@ -242,13 +243,13 @@ class _AddBudgetModalState extends State<AddBudgetModal> {
               const SizedBox(height: 24),
               DropdownButtonFormField<String?>(
                 initialValue: _selectedCategoryId,
-                dropdownColor: const Color(0xFF1A1A1A),
+                dropdownColor: DesignTokens.surfaceDark,
                 style: const TextStyle(color: Colors.white),
                 decoration: InputDecoration(
                   labelText: 'Kategori',
                   labelStyle: TextStyle(color: Colors.grey[400]),
                   filled: true,
-                  fillColor: const Color(0xFF1A1A1A),
+                  fillColor: DesignTokens.surfaceDark,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide: BorderSide.none,
@@ -281,7 +282,7 @@ class _AddBudgetModalState extends State<AddBudgetModal> {
                   labelText: 'Jumlah Budget (Rp)',
                   labelStyle: TextStyle(color: Colors.grey[400]),
                   filled: true,
-                  fillColor: const Color(0xFF1A1A1A),
+                  fillColor: DesignTokens.surfaceDark,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide: BorderSide.none,
@@ -292,13 +293,13 @@ class _AddBudgetModalState extends State<AddBudgetModal> {
               const SizedBox(height: 16),
               DropdownButtonFormField<String>(
                 initialValue: _selectedPeriod,
-                dropdownColor: const Color(0xFF1A1A1A),
+                dropdownColor: DesignTokens.surfaceDark,
                 style: const TextStyle(color: Colors.white),
                 decoration: InputDecoration(
                   labelText: 'Periode',
                   labelStyle: TextStyle(color: Colors.grey[400]),
                   filled: true,
-                  fillColor: const Color(0xFF1A1A1A),
+                  fillColor: DesignTokens.surfaceDark,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide: BorderSide.none,
@@ -326,7 +327,7 @@ class _AddBudgetModalState extends State<AddBudgetModal> {
                 child: Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF1A1A1A),
+                    color: DesignTokens.surfaceDark,
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Row(
@@ -352,7 +353,7 @@ class _AddBudgetModalState extends State<AddBudgetModal> {
                     _rolloverEnabled = value;
                   });
                 },
-                activeThumbColor: const Color(0xFF8B5FBF),
+                activeThumbColor: DesignTokens.primaryColor,
                 title: Text(
                   'Rollover sisa ke periode berikutnya',
                   style: TextStyle(color: Colors.white),
@@ -372,7 +373,7 @@ class _AddBudgetModalState extends State<AddBudgetModal> {
                     min: 50,
                     max: 100,
                     divisions: 10,
-                    activeColor: const Color(0xFF8B5FBF),
+                    activeColor: DesignTokens.primaryColor,
                     inactiveColor: Colors.grey[800],
                     onChanged: (value) {
                       setState(() {
@@ -390,7 +391,7 @@ class _AddBudgetModalState extends State<AddBudgetModal> {
                     _isActive = value;
                   });
                 },
-                activeThumbColor: const Color(0xFF8B5FBF),
+                activeThumbColor: DesignTokens.primaryColor,
                 title: Text('Aktif', style: TextStyle(color: Colors.white)),
                 contentPadding: EdgeInsets.zero,
               ),
@@ -398,7 +399,7 @@ class _AddBudgetModalState extends State<AddBudgetModal> {
               ElevatedButton(
                 onPressed: _isLoading ? null : _submit,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF8B5FBF),
+                  backgroundColor: DesignTokens.primaryColor,
                   foregroundColor: Colors.white,
                   disabledBackgroundColor: Colors.grey[800],
                   shape: RoundedRectangleBorder(

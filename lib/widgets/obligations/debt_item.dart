@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:financial_app/models/financial_obligation.dart';
 import 'package:financial_app/utils/formatters.dart';
+import 'package:financial_app/utils/design_tokens.dart';
 
 class DebtItem extends StatelessWidget {
   final FinancialObligation debt;
@@ -11,7 +12,7 @@ class DebtItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      color: const Color(0xFF1A1A1A),
+      color: DesignTokens.surfaceDark,
       margin: const EdgeInsets.only(bottom: 12),
       child: ListTile(
         leading: Container(

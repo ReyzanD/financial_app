@@ -5,10 +5,12 @@ import 'package:financial_app/utils/formatters.dart';
 import 'package:provider/provider.dart';
 import 'package:financial_app/state/app_state.dart';
 import 'package:financial_app/models/transaction_model.dart';
-import 'package:financial_app/Screen/transaction_screen.dart';
+import 'package:financial_app/features/transactions/presentation/screens/transaction_screen.dart';
 import 'package:financial_app/utils/responsive_helper.dart';
 import 'package:financial_app/services/search_service.dart';
 import 'package:financial_app/services/api_service.dart';
+import 'package:financial_app/services/error_handler_service.dart';
+import 'package:financial_app/utils/design_tokens.dart';
 
 /// Enhanced Recent Transactions dengan search, filter, dan swipe actions
 class RecentTransactionsEnhanced extends StatefulWidget {
@@ -142,7 +144,7 @@ class _RecentTransactionsEnhancedState
                 context: context,
                 builder:
                     (context) => AlertDialog(
-                      backgroundColor: const Color(0xFF1A1A1A),
+                      backgroundColor: DesignTokens.surfaceDark,
                       title: Text(
                         'Hapus Transaksi?',
                         style: GoogleFonts.poppins(color: Colors.white),
@@ -182,26 +184,16 @@ class _RecentTransactionsEnhancedState
           try {
             await _apiService.deleteTransaction(transaction.id.toString());
             if (!context.mounted) return;
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(
-                  'Transaksi berhasil dihapus',
-                  style: GoogleFonts.poppins(),
-                ),
-                backgroundColor: Colors.green,
-              ),
+            ErrorHandlerService.showSuccessSnackbar(
+              context,
+              'Transaksi berhasil dihapus',
             );
             _applyFilters(); // Refresh list
           } catch (e) {
             if (!context.mounted) return;
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(
-                  'Gagal menghapus transaksi',
-                  style: GoogleFonts.poppins(),
-                ),
-                backgroundColor: Colors.red,
-              ),
+            ErrorHandlerService.showErrorSnackbar(
+              context,
+              'Gagal menghapus transaksi',
             );
           }
         }
@@ -212,11 +204,11 @@ class _RecentTransactionsEnhancedState
         ),
         padding: ResponsiveHelper.padding(context, multiplier: 0.75),
         decoration: BoxDecoration(
-          color: const Color(0xFF1A1A1A),
+          color: DesignTokens.surfaceDark,
           borderRadius: BorderRadius.circular(
             ResponsiveHelper.borderRadius(context, 12),
           ),
-          border: Border.all(color: Colors.grey[800]!),
+          border: Border.all(color: DesignTokens.borderDark),
         ),
         child: Row(
           children: [
@@ -330,7 +322,7 @@ class _RecentTransactionsEnhancedState
                     child: Text(
                       'View All',
                       style: GoogleFonts.poppins(
-                        color: const Color(0xFF8B5FBF),
+                        color: DesignTokens.primaryColor,
                         fontSize: ResponsiveHelper.fontSize(context, 12),
                       ),
                     ),
@@ -362,19 +354,19 @@ class _RecentTransactionsEnhancedState
                           )
                           : null,
                   filled: true,
-                  fillColor: const Color(0xFF1A1A1A),
+                  fillColor: DesignTokens.surfaceDark,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(color: Colors.grey[800]!),
+                    borderSide: BorderSide(color: DesignTokens.borderDark),
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(color: Colors.grey[800]!),
+                    borderSide: BorderSide(color: DesignTokens.borderDark),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide: const BorderSide(
-                      color: Color(0xFF8B5FBF),
+                      color: DesignTokens.primaryColor,
                       width: 2,
                     ),
                   ),
@@ -422,7 +414,7 @@ class _RecentTransactionsEnhancedState
               Padding(
                 padding: ResponsiveHelper.padding(context, multiplier: 2.0),
                 child: const Center(
-                  child: CircularProgressIndicator(color: Color(0xFF8B5FBF)),
+                  child: CircularProgressIndicator(color: DesignTokens.primaryColor),
                 ),
               )
             else if (transactions.isEmpty)
@@ -431,11 +423,11 @@ class _RecentTransactionsEnhancedState
                 child: Container(
                   padding: ResponsiveHelper.padding(context, multiplier: 1.5),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF1A1A1A),
+                    color: DesignTokens.surfaceDark,
                     borderRadius: BorderRadius.circular(
                       ResponsiveHelper.borderRadius(context, 12),
                     ),
-                    border: Border.all(color: Colors.grey[800]!),
+                    border: Border.all(color: DesignTokens.borderDark),
                   ),
                   child: Column(
                     children: [
@@ -487,10 +479,10 @@ class _RecentTransactionsEnhancedState
           vertical: 8,
         ),
         decoration: BoxDecoration(
-          color: isSelected ? const Color(0xFF8B5FBF) : const Color(0xFF1A1A1A),
+          color: isSelected ? DesignTokens.primaryColor : DesignTokens.surfaceDark,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
-            color: isSelected ? const Color(0xFF8B5FBF) : Colors.grey[800]!,
+            color: isSelected ? DesignTokens.primaryColor : DesignTokens.borderDark,
           ),
         ),
         child: Text(

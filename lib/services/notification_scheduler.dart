@@ -1,9 +1,15 @@
-import 'package:financial_app/services/local_data_service.dart';
 import 'package:financial_app/services/notification_service.dart';
+import 'package:financial_app/services/data/subscription_data_service.dart';
+import 'package:financial_app/services/data/challenge_data_service.dart';
+import 'package:financial_app/services/data/debt_data_service.dart';
+import 'package:financial_app/services/data/expense_split_data_service.dart';
 import 'package:financial_app/services/logger_service.dart';
 
 class NotificationScheduler {
-  final LocalDataService _localData = LocalDataService();
+  final SubscriptionDataService _subscriptionData = SubscriptionDataService();
+  final ChallengeDataService _challengeData = ChallengeDataService();
+  final DebtDataService _debtData = DebtDataService();
+  final ExpenseSplitDataService _splitData = ExpenseSplitDataService();
   final NotificationService _notifications = NotificationService();
 
   Future<void> scheduleAllNotifications() async {
@@ -19,7 +25,7 @@ class NotificationScheduler {
 
   Future<void> scheduleSubscriptionNotifications() async {
     try {
-      final subscriptions = await _localData.getSubscriptions(activeOnly: true);
+      final subscriptions = await _subscriptionData.getSubscriptions(activeOnly: true);
 
       for (final sub in subscriptions) {
         final name = sub['name_232143']?.toString() ?? '';
@@ -49,7 +55,7 @@ class NotificationScheduler {
 
   Future<void> scheduleChallengeNotifications() async {
     try {
-      final challenges = await _localData.getChallenges(activeOnly: true);
+      final challenges = await _challengeData.getChallenges(activeOnly: true);
 
       for (final challenge in challenges) {
         final name = challenge['name_232143']?.toString() ?? '';
@@ -86,7 +92,7 @@ class NotificationScheduler {
 
   Future<void> scheduleDebtNotifications() async {
     try {
-      final debts = await _localData.getDebts();
+      final debts = await _debtData.getDebts();
 
       for (final debt in debts) {
         final name = debt['name_232143']?.toString() ?? '';
@@ -112,7 +118,7 @@ class NotificationScheduler {
 
   Future<void> scheduleSplitNotifications() async {
     try {
-      final splits = await _localData.getSplits();
+      final splits = await _splitData.getSplits();
 
       for (final split in splits) {
         final isSettled = _parseBool(split['is_settled_232143']) ?? false;

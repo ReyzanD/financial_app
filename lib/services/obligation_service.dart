@@ -1,9 +1,12 @@
+import 'package:financial_app/core/di/service_locator.dart';
 import 'package:financial_app/models/financial_obligation.dart';
 import 'package:financial_app/services/api_service.dart';
 import 'package:financial_app/services/logger_service.dart';
 
 class ObligationService {
-  final ApiService _apiService = ApiService();
+  final ApiService _apiService;
+  ObligationService({ApiService? apiService})
+      : _apiService = apiService ?? getIt<ApiService>();
 
   Future<Map<String, dynamic>> getObligationsSummary() async {
     try {

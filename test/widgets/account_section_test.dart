@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:financial_app/widgets/add_transaction/account_section.dart';
-import 'package:iconsax_flutter/iconsax_flutter.dart';
 
 class MockAccountSection extends StatefulWidget {
   final String? selectedAccountId;
@@ -45,8 +43,6 @@ class _MockAccountSectionState extends State<MockAccountSection> {
               ),
             ),
             ...widget.accounts.map((account) {
-              final isSelected =
-                  widget.selectedAccountId == account['account_id_232143'];
               return GestureDetector(
                 onTap:
                     () =>

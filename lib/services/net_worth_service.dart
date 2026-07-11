@@ -1,12 +1,12 @@
-import 'package:financial_app/services/local_data_service.dart';
 import 'package:financial_app/services/logger_service.dart';
 import 'package:financial_app/services/account_service.dart';
 import 'package:financial_app/services/debt_service.dart';
 import 'package:financial_app/services/investment_service.dart';
+import 'package:financial_app/services/data/net_worth_data_service.dart';
 import 'package:financial_app/core/di/service_locator.dart';
 
 class NetWorthService {
-  final LocalDataService _localData = getIt<LocalDataService>();
+  final NetWorthDataService _netWorthData = NetWorthDataService();
   final AccountService _accountService = getIt<AccountService>();
   final DebtService _debtService = getIt<DebtService>();
   final InvestmentService _investmentService = getIt<InvestmentService>();
@@ -71,7 +71,7 @@ class NetWorthService {
     return investments.fold<double>(0, (sum, i) => sum + i.totalValue);
   }
 
-  Future<void> recordSnapshot() async {
+  Future<bool> recordSnapshot() async {
     try {
       final netWorth = await calculateNetWorth();
       final snapshot = {
@@ -83,16 +83,18 @@ class NetWorthService {
         'liability_breakdown': netWorth['liability_breakdown'],
       };
 
-      await _localData.recordNetWorthSnapshot(snapshot);
+      await _netWorthData.recordNetWorthSnapshot(snapshot);
       LoggerService.success('Net worth snapshot recorded');
+      return true;
     } catch (e) {
       LoggerService.error('Error recording net worth snapshot', error: e);
+      return false;
     }
   }
 
   Future<List<Map<String, dynamic>>> getHistory({int limit = 90}) async {
     try {
-      return await _localData.getNetWorthHistory(limit: limit);
+      return await _netWorthData.getNetWorthHistory(limit: limit);
     } catch (e) {
       LoggerService.error('Error getting net worth history', error: e);
       return [];
@@ -101,7 +103,7 @@ class NetWorthService {
 
   Future<Map<String, dynamic>> getNetWorthTrend() async {
     try {
-      return await _localData.getNetWorthTrend();
+      return await _netWorthData.getNetWorthTrend();
     } catch (e) {
       LoggerService.error('Error getting net worth trend', error: e);
       return {'trend': 'no_data', 'change': 0.0};

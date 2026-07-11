@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:financial_app/l10n/app_localizations.dart';
+import 'package:financial_app/utils/design_tokens.dart';
 
 /// Beautiful empty state widget with icon, message, and optional action
 class EmptyState extends StatelessWidget {
@@ -37,10 +38,10 @@ class EmptyState extends StatelessWidget {
                 shape: BoxShape.circle,
                 gradient: LinearGradient(
                   colors: [
-                    (iconColor ?? const Color(0xFF8B5FBF)).withValues(
+                    (iconColor ?? DesignTokens.primaryColor).withValues(
                       alpha: 0.2,
                     ),
-                    (iconColor ?? const Color(0xFF8B5FBF)).withValues(
+                    (iconColor ?? DesignTokens.primaryColor).withValues(
                       alpha: 0.05,
                     ),
                   ],
@@ -51,7 +52,7 @@ class EmptyState extends StatelessWidget {
               child: Icon(
                 icon,
                 size: 64,
-                color: iconColor ?? const Color(0xFF8B5FBF),
+                color: iconColor ?? DesignTokens.primaryColor,
               ),
             ),
 
@@ -91,7 +92,7 @@ class EmptyState extends StatelessWidget {
                   ),
                 ),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: iconColor ?? const Color(0xFF8B5FBF),
+                  backgroundColor: iconColor ?? DesignTokens.primaryColor,
                   padding: const EdgeInsets.symmetric(
                     horizontal: 24,
                     vertical: 12,

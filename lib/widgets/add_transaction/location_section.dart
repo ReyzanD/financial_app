@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:financial_app/models/location_data.dart';
+import 'package:financial_app/utils/design_tokens.dart';
 
 class LocationSection extends StatelessWidget {
   final LocationData? currentLocation;
@@ -41,7 +42,7 @@ class LocationSection extends StatelessWidget {
                 height: 16,
                 child: CircularProgressIndicator(
                   strokeWidth: 2,
-                  color: const Color(0xFF8B5FBF),
+                  color: DesignTokens.primaryColor,
                 ),
               ),
           ],
@@ -68,7 +69,7 @@ class LocationSection extends StatelessWidget {
                       height: 16,
                       child: CircularProgressIndicator(
                         strokeWidth: 2,
-                        color: Color(0xFF8B5FBF),
+                        color: DesignTokens.primaryColor,
                       ),
                     )
                     : const Icon(Iconsax.location, size: 16),
@@ -77,8 +78,8 @@ class LocationSection extends StatelessWidget {
               style: GoogleFonts.poppins(fontSize: 12),
             ),
             style: OutlinedButton.styleFrom(
-              foregroundColor: const Color(0xFF8B5FBF),
-              side: const BorderSide(color: Color(0xFF8B5FBF)),
+              foregroundColor: DesignTokens.primaryColor,
+              side: const BorderSide(color: DesignTokens.primaryColor),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(8),
               ),
@@ -113,7 +114,7 @@ class LocationSection extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: const Color(0xFF1A1A1A),
+        color: DesignTokens.surfaceDark,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
           color: Color.lerp(Colors.green, Colors.transparent, 0.3)!,
@@ -165,7 +166,7 @@ class LocationSection extends StatelessWidget {
                 icon: const Icon(
                   Iconsax.edit,
                   size: 18,
-                  color: Color(0xFF8B5FBF),
+                  color: DesignTokens.primaryColor,
                 ),
                 onPressed: onPickFromMap,
                 tooltip: 'Edit di peta',

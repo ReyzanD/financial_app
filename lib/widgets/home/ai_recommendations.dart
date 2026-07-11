@@ -3,6 +3,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:financial_app/utils/formatters.dart';
 import 'package:financial_app/services/ai_service.dart';
+import 'package:financial_app/services/error_handler_service.dart';
+import 'package:financial_app/utils/design_tokens.dart';
 
 class AIRecommendations extends StatefulWidget {
   const AIRecommendations({super.key});
@@ -80,7 +82,7 @@ class _AIRecommendationsState extends State<AIRecommendations> {
       case 'low':
         return Colors.green;
       default:
-        return const Color(0xFF8B5FBF);
+        return DesignTokens.primaryColor;
     }
   }
 
@@ -90,14 +92,14 @@ class _AIRecommendationsState extends State<AIRecommendations> {
       return Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: const Color(0xFF1A1A1A),
+          color: DesignTokens.surfaceDark,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: const Color(0xFF8B5FBF).withValues(alpha: 0.3),
+            color: DesignTokens.primaryColor.withValues(alpha: 0.3),
           ),
         ),
         child: const Center(
-          child: CircularProgressIndicator(color: Color(0xFF8B5FBF)),
+          child: CircularProgressIndicator(color: DesignTokens.primaryColor),
         ),
       );
     }
@@ -106,10 +108,10 @@ class _AIRecommendationsState extends State<AIRecommendations> {
       return Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: const Color(0xFF1A1A1A),
+          color: DesignTokens.surfaceDark,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: const Color(0xFF8B5FBF).withValues(alpha: 0.3),
+            color: DesignTokens.primaryColor.withValues(alpha: 0.3),
           ),
         ),
         child: Center(
@@ -135,7 +137,7 @@ class _AIRecommendationsState extends State<AIRecommendations> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0xFF1A1A1A),
+        color: DesignTokens.surfaceDark,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: priorityColor.withValues(alpha: 0.3)),
         gradient: LinearGradient(
@@ -276,7 +278,8 @@ class _AIRecommendationsState extends State<AIRecommendations> {
                     onPressed: () {
                       setState(() {
                         _currentIndex =
-                            (_currentIndex - 1) % _recommendations.length;
+                            (_currentIndex - 1 + _recommendations.length) %
+                                _recommendations.length;
                       });
                     },
                     iconSize: 20,
@@ -388,11 +391,9 @@ class _AIRecommendationsState extends State<AIRecommendations> {
     // Navigate based on action
     // Note: This would need proper navigation context
     // For now, just show a snackbar
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Aksi: ${_getActionLabel(action)}'),
-        duration: const Duration(seconds: 2),
-      ),
+    ErrorHandlerService.showInfoSnackbar(
+      context,
+      'Aksi: ${_getActionLabel(action)}',
     );
   }
 }

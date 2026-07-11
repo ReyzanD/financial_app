@@ -8,6 +8,7 @@ import 'package:financial_app/services/logger_service.dart';
 import 'package:financial_app/services/error_handler_service.dart';
 import 'package:financial_app/utils/responsive_helper.dart';
 import 'package:financial_app/utils/biometric_helper.dart';
+import 'package:financial_app/utils/design_tokens.dart';
 
 class TransactionCard extends StatefulWidget {
   final Map<String, dynamic> transaction;
@@ -44,16 +45,19 @@ class _TransactionCardState extends State<TransactionCard> {
         double.tryParse(widget.transaction['amount']?.toString() ?? '0') ?? 0.0;
     final category =
         widget.transaction['category'] as String? ?? 'Uncategorized';
-    final categoryColor =
-        widget.transaction['category_color'] != null
-            ? Color(
-              int.parse(
-                    widget.transaction['category_color'].substring(1, 7),
-                    radix: 16,
-                  ) +
-                  0xFF000000,
-            )
-            : Colors.grey;
+    Color categoryColor = Colors.grey;
+    if (widget.transaction['category_color'] != null) {
+      final hex = widget.transaction['category_color'].toString();
+      try {
+        // Handle formats: #RRGGBB, #RGB, RRGGBB, or just a color name
+        final cleanHex = hex.startsWith('#') ? hex.substring(1) : hex;
+        if (cleanHex.length >= 6) {
+          categoryColor = Color(int.parse(cleanHex.substring(0, 6), radix: 16) + 0xFF000000);
+        }
+      } catch (_) {
+        categoryColor = Colors.grey;
+      }
+    }
     final date = widget.transaction['date'] as String? ?? '';
     final location = widget.transaction['location'] as String? ?? '';
     final accountName = widget.transaction['account_name'] as String?;
@@ -66,7 +70,7 @@ class _TransactionCardState extends State<TransactionCard> {
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
-              backgroundColor: const Color(0xFF1A1A1A),
+              backgroundColor: DesignTokens.surfaceDark,
               title: Text(
                 'Hapus Transaksi?',
                 style: GoogleFonts.poppins(color: Colors.white),
@@ -138,7 +142,7 @@ class _TransactionCardState extends State<TransactionCard> {
           ),
           padding: ResponsiveHelper.padding(context),
           decoration: BoxDecoration(
-            color: const Color(0xFF1A1A1A),
+            color: DesignTokens.surfaceDark,
             borderRadius: BorderRadius.circular(
               ResponsiveHelper.borderRadius(context, 16),
             ),
@@ -322,14 +326,9 @@ class _TransactionCardState extends State<TransactionCard> {
 
         // Check if context is still mounted before showing SnackBar
         if (currentContext.mounted) {
-          ScaffoldMessenger.of(currentContext).showSnackBar(
-            SnackBar(
-              content: Text(
-                'Autentikasi dibatalkan',
-                style: GoogleFonts.poppins(),
-              ),
-              backgroundColor: Colors.orange,
-            ),
+          ErrorHandlerService.showWarningSnackbar(
+            currentContext,
+            'Autentikasi dibatalkan',
           );
         }
         return;
@@ -352,15 +351,9 @@ class _TransactionCardState extends State<TransactionCard> {
       widget.onDeleted?.call();
 
       if (currentContext.mounted) {
-        ScaffoldMessenger.of(currentContext).showSnackBar(
-          SnackBar(
-            content: Text(
-              'Transaksi berhasil dihapus',
-              style: GoogleFonts.poppins(),
-            ),
-            backgroundColor: Colors.green,
-            duration: const Duration(seconds: 2),
-          ),
+        ErrorHandlerService.showSuccessSnackbar(
+          currentContext,
+          'Transaksi berhasil dihapus',
         );
       }
     } catch (e) {
@@ -377,15 +370,9 @@ class _TransactionCardState extends State<TransactionCard> {
       widget.onDeleted?.call();
 
       if (currentContext.mounted) {
-        ScaffoldMessenger.of(currentContext).showSnackBar(
-          SnackBar(
-            content: Text(
-              'Gagal menghapus transaksi: ${ErrorHandlerService.getUserFriendlyMessage(e)}',
-              style: GoogleFonts.poppins(),
-            ),
-            backgroundColor: Colors.red,
-            duration: const Duration(seconds: 3),
-          ),
+        ErrorHandlerService.showErrorSnackbar(
+          currentContext,
+          'Gagal menghapus transaksi: ${ErrorHandlerService.getUserFriendlyMessage(e)}',
         );
       }
     }

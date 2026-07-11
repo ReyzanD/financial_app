@@ -7,6 +7,7 @@ import 'package:financial_app/utils/responsive_helper.dart';
 import 'package:financial_app/services/logger_service.dart';
 import 'package:financial_app/widgets/home/quick_add/quick_add_modal.dart';
 import 'package:financial_app/l10n/app_localizations.dart';
+import 'package:financial_app/utils/design_tokens.dart';
 
 class QuickAddWidget extends StatefulWidget {
   final VoidCallback? onTransactionAdded;
@@ -100,7 +101,7 @@ class _QuickAddWidgetState extends State<QuickAddWidget> {
   }) {
     showModalBottomSheet(
       context: context,
-      backgroundColor: Colors.black,
+      backgroundColor: DesignTokens.backgroundDark,
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
@@ -121,12 +122,12 @@ class _QuickAddWidgetState extends State<QuickAddWidget> {
       margin: ResponsiveHelper.horizontalPadding(context),
       padding: ResponsiveHelper.padding(context),
       decoration: BoxDecoration(
-        color: const Color(0xFF1A1A1A),
+        color: DesignTokens.surfaceDark,
         borderRadius: BorderRadius.circular(
           ResponsiveHelper.borderRadius(context, 16),
         ),
         border: Border.all(
-          color: const Color(0xFF8B5FBF).withValues(alpha: 0.3),
+          color: DesignTokens.primaryColor.withValues(alpha: 0.3),
         ),
       ),
       child: Column(
@@ -137,7 +138,7 @@ class _QuickAddWidgetState extends State<QuickAddWidget> {
             children: [
               Icon(
                 Iconsax.flash_1,
-                color: Color(0xFF8B5FBF),
+                color: DesignTokens.primaryColor,
                 size: ResponsiveHelper.iconSize(context, 20),
               ),
               SizedBox(width: ResponsiveHelper.horizontalSpacing(context, 8)),
@@ -214,7 +215,7 @@ class _QuickAddWidgetState extends State<QuickAddWidget> {
               child: Padding(
                 padding: ResponsiveHelper.padding(context, multiplier: 0.5),
                 child: const CircularProgressIndicator(
-                  color: Color(0xFF8B5FBF),
+                  color: DesignTokens.primaryColor,
                   strokeWidth: 2,
                 ),
               ),
@@ -301,18 +302,18 @@ class _QuickAddWidgetState extends State<QuickAddWidget> {
           vertical: 8,
         ),
         decoration: BoxDecoration(
-          color: const Color(0xFF8B5FBF).withValues(alpha: 0.2),
+          color: DesignTokens.primaryColor.withValues(alpha: 0.2),
           borderRadius: BorderRadius.circular(
             ResponsiveHelper.borderRadius(context, 20),
           ),
           border: Border.all(
-            color: const Color(0xFF8B5FBF).withValues(alpha: 0.5),
+            color: DesignTokens.primaryColor.withValues(alpha: 0.5),
           ),
         ),
         child: Text(
           CurrencyFormatter.formatRupiah(amount),
           style: GoogleFonts.poppins(
-            color: const Color(0xFF8B5FBF),
+            color: DesignTokens.primaryColor,
             fontSize: ResponsiveHelper.fontSize(context, 12),
             fontWeight: FontWeight.w600,
           ),

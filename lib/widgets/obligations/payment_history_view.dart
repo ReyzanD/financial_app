@@ -5,7 +5,9 @@ import 'package:financial_app/services/payment_history_service.dart';
 import 'package:financial_app/utils/formatters.dart';
 import 'package:financial_app/services/logger_service.dart';
 import 'package:financial_app/l10n/app_localizations.dart';
+import 'package:financial_app/services/error_handler_service.dart';
 import 'package:intl/intl.dart';
+import 'package:financial_app/utils/design_tokens.dart';
 
 /// Widget untuk menampilkan payment history untuk obligation
 class PaymentHistoryView extends StatefulWidget {
@@ -60,7 +62,7 @@ class _PaymentHistoryViewState extends State<PaymentHistoryView> {
       context: context,
       builder:
           (context) => AlertDialog(
-            backgroundColor: const Color(0xFF1A1A1A),
+            backgroundColor: DesignTokens.surfaceDark,
             title: Text(
               AppLocalizations.of(context)!.delete_payment,
               style: GoogleFonts.poppins(color: Colors.white),
@@ -89,26 +91,16 @@ class _PaymentHistoryViewState extends State<PaymentHistoryView> {
         await _loadPaymentHistory();
 
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                AppLocalizations.of(context)!.payment_deleted,
-                style: GoogleFonts.poppins(),
-              ),
-              backgroundColor: Colors.green,
-            ),
+          ErrorHandlerService.showSuccessSnackbar(
+            context,
+            AppLocalizations.of(context)!.payment_deleted,
           );
         }
       } catch (e) {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                AppLocalizations.of(context)!.payment_delete_failed,
-                style: GoogleFonts.poppins(),
-              ),
-              backgroundColor: Colors.red,
-            ),
+          ErrorHandlerService.showErrorSnackbar(
+            context,
+            AppLocalizations.of(context)!.payment_delete_failed,
           );
         }
       }
@@ -119,7 +111,7 @@ class _PaymentHistoryViewState extends State<PaymentHistoryView> {
   Widget build(BuildContext context) {
     if (_isLoading) {
       return const Center(
-        child: CircularProgressIndicator(color: Color(0xFF8B5FBF)),
+        child: CircularProgressIndicator(color: DesignTokens.primaryColor),
       );
     }
 
@@ -132,10 +124,10 @@ class _PaymentHistoryViewState extends State<PaymentHistoryView> {
             padding: const EdgeInsets.all(16),
             margin: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: const Color(0xFF1A1A1A),
+              color: DesignTokens.surfaceDark,
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
-                color: const Color(0xFF8B5FBF).withValues(alpha: 0.3),
+                color: DesignTokens.primaryColor.withValues(alpha: 0.3),
               ),
             ),
             child: Column(
@@ -338,7 +330,7 @@ class _PaymentHistoryViewState extends State<PaymentHistoryView> {
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0xFF1A1A1A),
+        color: DesignTokens.surfaceDark,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
           color:

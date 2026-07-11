@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:financial_app/l10n/app_localizations.dart';
+import 'package:financial_app/utils/design_tokens.dart';
 
 class ObligationViewTabs extends StatelessWidget {
   final String selectedView;
@@ -50,7 +51,7 @@ class ObligationViewTabs extends StatelessWidget {
           decoration: BoxDecoration(
             border: Border(
               bottom: BorderSide(
-                color: isSelected ? Color(0xFF8B5FBF) : Colors.transparent,
+                color: isSelected ? DesignTokens.primaryColor : Colors.transparent,
                 width: 2,
               ),
             ),
@@ -59,7 +60,7 @@ class ObligationViewTabs extends StatelessWidget {
             label,
             textAlign: TextAlign.center,
             style: TextStyle(
-              color: isSelected ? Color(0xFF8B5FBF) : Colors.grey[600],
+              color: isSelected ? DesignTokens.primaryColor : Colors.grey[600],
               fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
             ),
           ),

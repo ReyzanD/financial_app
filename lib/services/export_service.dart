@@ -7,14 +7,14 @@ import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:intl/intl.dart';
 import 'package:financial_app/services/api_service.dart';
-import 'package:financial_app/services/local_data_service.dart';
 import 'package:financial_app/services/logger_service.dart';
+import 'package:financial_app/services/data/transaction_data_service.dart';
 import 'package:financial_app/utils/formatters.dart';
 
 /// Service untuk export/import data dengan multiple formats
 class ExportService {
   final ApiService _apiService = ApiService();
-  final LocalDataService _localData = LocalDataService();
+  final TransactionDataService _transactionData = TransactionDataService();
   final DateFormat _dateTimeFormat = DateFormat('yyyy-MM-dd HH:mm:ss');
 
   /// Export transactions ke CSV
@@ -45,9 +45,12 @@ class ExportService {
                 if (tDateStr != null) {
                   try {
                     final tDate = DateTime.parse(tDateStr);
-                    if (startDate != null && tDate.isBefore(startDate))
+                    if (startDate != null && tDate.isBefore(startDate)) {
                       return false;
-                    if (endDate != null && tDate.isAfter(endDate)) return false;
+                    }
+                    if (endDate != null && tDate.isAfter(endDate)) {
+                      return false;
+                    }
                   } catch (e) {
                     return false;
                   }
@@ -55,12 +58,15 @@ class ExportService {
               }
 
               if (categoryId != null) {
-                if (transaction['category_id']?.toString() != categoryId)
+                if (transaction['category_id']?.toString() != categoryId) {
                   return false;
+                }
               }
 
               if (type != null) {
-                if (transaction['type']?.toString() != type) return false;
+                if (transaction['type']?.toString() != type) {
+                  return false;
+                }
               }
 
               return true;
@@ -132,9 +138,12 @@ class ExportService {
                 if (tDateStr != null) {
                   try {
                     final tDate = DateTime.parse(tDateStr);
-                    if (startDate != null && tDate.isBefore(startDate))
+                    if (startDate != null && tDate.isBefore(startDate)) {
                       return false;
-                    if (endDate != null && tDate.isAfter(endDate)) return false;
+                    }
+                    if (endDate != null && tDate.isAfter(endDate)) {
+                      return false;
+                    }
                   } catch (e) {
                     return false;
                   }
@@ -142,12 +151,15 @@ class ExportService {
               }
 
               if (categoryId != null) {
-                if (transaction['category_id']?.toString() != categoryId)
+                if (transaction['category_id']?.toString() != categoryId) {
                   return false;
+                }
               }
 
               if (type != null) {
-                if (transaction['type']?.toString() != type) return false;
+                if (transaction['type']?.toString() != type) {
+                  return false;
+                }
               }
 
               return true;
@@ -206,9 +218,12 @@ class ExportService {
                 if (tDateStr != null) {
                   try {
                     final tDate = DateTime.parse(tDateStr);
-                    if (startDate != null && tDate.isBefore(startDate))
+                    if (startDate != null && tDate.isBefore(startDate)) {
                       return false;
-                    if (endDate != null && tDate.isAfter(endDate)) return false;
+                    }
+                    if (endDate != null && tDate.isAfter(endDate)) {
+                      return false;
+                    }
                   } catch (e) {
                     return false;
                   }
@@ -216,12 +231,15 @@ class ExportService {
               }
 
               if (categoryId != null) {
-                if (transaction['category_id']?.toString() != categoryId)
+                if (transaction['category_id']?.toString() != categoryId) {
                   return false;
+                }
               }
 
               if (type != null) {
-                if (transaction['type']?.toString() != type) return false;
+                if (transaction['type']?.toString() != type) {
+                  return false;
+                }
               }
 
               return true;
@@ -456,7 +474,7 @@ class ExportService {
           };
 
           try {
-            await _localData.addTransaction(transactionData);
+            await _transactionData.addTransaction(transactionData);
             imported++;
           } catch (e) {
             failed++;

@@ -63,6 +63,7 @@ class SubscriptionModel {
 
   Map<String, dynamic> toMap() {
     return {
+      'subscription_id_232143': id,
       'name': name,
       'cost': cost,
       'cycle': cycle,
@@ -72,6 +73,7 @@ class SubscriptionModel {
       'is_active': isActive ? 1 : 0,
       'notes': notes,
       'account_id': accountId,
+      'created_at': createdAt.toIso8601String().split('T')[0],
     };
   }
 

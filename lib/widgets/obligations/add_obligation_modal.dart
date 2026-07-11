@@ -5,6 +5,7 @@ import 'package:financial_app/services/error_handler_service.dart';
 import 'package:financial_app/services/logger_service.dart';
 import 'package:financial_app/utils/form_validators.dart';
 import 'package:financial_app/l10n/app_localizations.dart';
+import 'package:financial_app/utils/design_tokens.dart';
 
 class AddObligationModal extends StatefulWidget {
   final Map<String, dynamic>? initialObligation;
@@ -221,7 +222,7 @@ class _AddObligationModalState extends State<AddObligationModal> {
                   labelText: AppLocalizations.of(context)!.obligation_name,
                   labelStyle: TextStyle(color: Colors.grey[400]),
                   filled: true,
-                  fillColor: const Color(0xFF1A1A1A),
+                  fillColor: DesignTokens.surfaceDark,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide: BorderSide.none,
@@ -238,13 +239,13 @@ class _AddObligationModalState extends State<AddObligationModal> {
               // Type
               DropdownButtonFormField<String>(
                 initialValue: _selectedType,
-                dropdownColor: const Color(0xFF1A1A1A),
+                dropdownColor: DesignTokens.surfaceDark,
                 style: const TextStyle(color: Colors.white),
                 decoration: InputDecoration(
                   labelText: AppLocalizations.of(context)!.type,
                   labelStyle: TextStyle(color: Colors.grey[400]),
                   filled: true,
-                  fillColor: const Color(0xFF1A1A1A),
+                  fillColor: DesignTokens.surfaceDark,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide: BorderSide.none,
@@ -277,13 +278,13 @@ class _AddObligationModalState extends State<AddObligationModal> {
               // Category
               DropdownButtonFormField<String>(
                 initialValue: _selectedCategory,
-                dropdownColor: const Color(0xFF1A1A1A),
+                dropdownColor: DesignTokens.surfaceDark,
                 style: const TextStyle(color: Colors.white),
                 decoration: InputDecoration(
                   labelText: AppLocalizations.of(context)!.category,
                   labelStyle: TextStyle(color: Colors.grey[400]),
                   filled: true,
-                  fillColor: const Color(0xFF1A1A1A),
+                  fillColor: DesignTokens.surfaceDark,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide: BorderSide.none,
@@ -354,7 +355,7 @@ class _AddObligationModalState extends State<AddObligationModal> {
                   labelText: AppLocalizations.of(context)!.monthly_amount_rp,
                   labelStyle: TextStyle(color: Colors.grey[400]),
                   filled: true,
-                  fillColor: const Color(0xFF1A1A1A),
+                  fillColor: DesignTokens.surfaceDark,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide: BorderSide.none,
@@ -367,13 +368,13 @@ class _AddObligationModalState extends State<AddObligationModal> {
               // Due Day of Month
               DropdownButtonFormField<int>(
                 initialValue: _dueDayOfMonth,
-                dropdownColor: const Color(0xFF1A1A1A),
+                dropdownColor: DesignTokens.surfaceDark,
                 style: const TextStyle(color: Colors.white),
                 decoration: InputDecoration(
                   labelText: AppLocalizations.of(context)!.due_date_day,
                   labelStyle: TextStyle(color: Colors.grey[400]),
                   filled: true,
-                  fillColor: const Color(0xFF1A1A1A),
+                  fillColor: DesignTokens.surfaceDark,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide: BorderSide.none,
@@ -409,7 +410,7 @@ class _AddObligationModalState extends State<AddObligationModal> {
                         )!.original_debt_amount_optional,
                     labelStyle: TextStyle(color: Colors.grey[400]),
                     filled: true,
-                    fillColor: const Color(0xFF1A1A1A),
+                    fillColor: DesignTokens.surfaceDark,
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                       borderSide: BorderSide.none,
@@ -426,7 +427,7 @@ class _AddObligationModalState extends State<AddObligationModal> {
                         AppLocalizations.of(context)!.current_balance_optional,
                     labelStyle: TextStyle(color: Colors.grey[400]),
                     filled: true,
-                    fillColor: const Color(0xFF1A1A1A),
+                    fillColor: DesignTokens.surfaceDark,
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                       borderSide: BorderSide.none,
@@ -445,7 +446,7 @@ class _AddObligationModalState extends State<AddObligationModal> {
                         )!.interest_rate_percent_optional,
                     labelStyle: TextStyle(color: Colors.grey[400]),
                     filled: true,
-                    fillColor: const Color(0xFF1A1A1A),
+                    fillColor: DesignTokens.surfaceDark,
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                       borderSide: BorderSide.none,
@@ -462,7 +463,7 @@ class _AddObligationModalState extends State<AddObligationModal> {
                         AppLocalizations.of(context)!.minimum_payment_optional,
                     labelStyle: TextStyle(color: Colors.grey[400]),
                     filled: true,
-                    fillColor: const Color(0xFF1A1A1A),
+                    fillColor: DesignTokens.surfaceDark,
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                       borderSide: BorderSide.none,
@@ -476,14 +477,14 @@ class _AddObligationModalState extends State<AddObligationModal> {
               if (_selectedType == 'subscription') ...[
                 DropdownButtonFormField<String>(
                   initialValue: _subscriptionCycle,
-                  dropdownColor: const Color(0xFF1A1A1A),
+                  dropdownColor: DesignTokens.surfaceDark,
                   style: const TextStyle(color: Colors.white),
                   decoration: InputDecoration(
                     labelText:
                         AppLocalizations.of(context)!.subscription_cycle_label,
                     labelStyle: TextStyle(color: Colors.grey[400]),
                     filled: true,
-                    fillColor: const Color(0xFF1A1A1A),
+                    fillColor: DesignTokens.surfaceDark,
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                       borderSide: BorderSide.none,
@@ -516,7 +517,7 @@ class _AddObligationModalState extends State<AddObligationModal> {
               ElevatedButton(
                 onPressed: _isLoading ? null : _submit,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF8B5FBF),
+                  backgroundColor: DesignTokens.primaryColor,
                   foregroundColor: Colors.white,
                   disabledBackgroundColor: Colors.grey[800],
                   shape: RoundedRectangleBorder(

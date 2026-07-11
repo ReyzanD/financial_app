@@ -10,6 +10,7 @@ import 'package:financial_app/utils/responsive_helper.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:money2/money2.dart';
+import 'package:financial_app/utils/design_tokens.dart';
 
 class FinancialSummaryCard extends StatefulWidget {
   const FinancialSummaryCard({super.key});
@@ -63,6 +64,7 @@ class _FinancialSummaryCardState extends State<FinancialSummaryCard>
 
   Future<void> _loadSettings() async {
     final prefs = await SharedPreferences.getInstance();
+    if (!mounted) return;
     setState(() {
       _inflationRate = prefs.getDouble('inflation_rate') ?? 3.5;
       _taxRate = prefs.getDouble('tax_rate') ?? 15.0;
@@ -112,8 +114,8 @@ class _FinancialSummaryCardState extends State<FinancialSummaryCard>
         return Theme(
           data: ThemeData.dark().copyWith(
             colorScheme: const ColorScheme.dark(
-              primary: Color(0xFF8B5FBF),
-              surface: Color(0xFF1A1A1A),
+              primary: DesignTokens.primaryColor,
+              surface: DesignTokens.surfaceDark,
             ),
           ),
           child: child!,
@@ -121,7 +123,7 @@ class _FinancialSummaryCardState extends State<FinancialSummaryCard>
       },
     );
 
-    if (picked != null && picked != _selectedDate) {
+    if (picked != null && picked != _selectedDate && mounted) {
       setState(() {
         _selectedDate = picked;
       });
@@ -140,7 +142,7 @@ class _FinancialSummaryCardState extends State<FinancialSummaryCard>
       padding: ResponsiveHelper.padding(context, multiplier: 1.25),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
-          colors: [Color(0xFF8B5FBF), Color(0xFF6A3093)],
+          colors: [DesignTokens.primaryColor, Color(0xFF6A3093)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -149,7 +151,7 @@ class _FinancialSummaryCardState extends State<FinancialSummaryCard>
         ),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF8B5FBF).withValues(alpha: 0.3),
+            color: DesignTokens.primaryColor.withValues(alpha: 0.3),
             blurRadius: 15,
             spreadRadius: 2,
           ),
@@ -256,7 +258,7 @@ class _FinancialSummaryCardState extends State<FinancialSummaryCard>
           padding: ResponsiveHelper.padding(context, multiplier: 1.25),
           decoration: BoxDecoration(
             gradient: const LinearGradient(
-              colors: [Color(0xFF8B5FBF), Color(0xFF6A3093)],
+              colors: [DesignTokens.primaryColor, Color(0xFF6A3093)],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
@@ -265,7 +267,7 @@ class _FinancialSummaryCardState extends State<FinancialSummaryCard>
             ),
             boxShadow: [
               BoxShadow(
-                color: const Color(0xFF8B5FBF).withValues(alpha: 0.3),
+                color: DesignTokens.primaryColor.withValues(alpha: 0.3),
                 blurRadius: 15,
                 spreadRadius: 2,
               ),
@@ -354,7 +356,7 @@ class _FinancialSummaryCardState extends State<FinancialSummaryCard>
         padding: ResponsiveHelper.padding(context, multiplier: 1.25),
         decoration: BoxDecoration(
           gradient: const LinearGradient(
-            colors: [Color(0xFF8B5FBF), Color(0xFF6A3093)],
+            colors: [DesignTokens.primaryColor, Color(0xFF6A3093)],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
@@ -363,7 +365,7 @@ class _FinancialSummaryCardState extends State<FinancialSummaryCard>
           ),
           boxShadow: [
             BoxShadow(
-              color: const Color(0xFF8B5FBF).withValues(alpha: 0.3),
+              color: DesignTokens.primaryColor.withValues(alpha: 0.3),
               blurRadius: 15,
               spreadRadius: 2,
             ),

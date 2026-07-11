@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:financial_app/models/financial_obligation.dart';
 import 'package:financial_app/utils/formatters.dart';
+import 'package:financial_app/utils/design_tokens.dart';
 
 class SubscriptionItem extends StatelessWidget {
   final FinancialObligation subscription;
@@ -10,7 +11,7 @@ class SubscriptionItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      color: const Color(0xFF1A1A1A),
+      color: DesignTokens.surfaceDark,
       margin: const EdgeInsets.only(bottom: 12),
       child: ListTile(
         leading: Container(

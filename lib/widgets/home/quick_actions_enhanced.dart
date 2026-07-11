@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
-import 'package:financial_app/Screen/financial_obligations_screen.dart';
-import 'package:financial_app/Screen/transaction_history_screen.dart';
-import 'package:financial_app/Screen/recurring_transactions_screen.dart';
-import 'package:financial_app/Screen/backup_screen.dart';
-import 'package:financial_app/Screen/ai_budget_recommendation_screen.dart';
+import 'package:financial_app/features/obligations/presentation/screens/financial_obligations_screen.dart';
+import 'package:financial_app/features/transactions/presentation/screens/transaction_history_screen.dart';
+import 'package:financial_app/features/recurring_transactions/presentation/screens/recurring_transactions_screen.dart';
+import 'package:financial_app/features/backup/presentation/screens/backup_screen.dart';
+import 'package:financial_app/features/ai_budget_recommendation/presentation/screens/ai_budget_recommendation_screen.dart';
 import 'package:financial_app/utils/responsive_helper.dart';
 import 'package:financial_app/services/quick_actions_analytics_service.dart';
 import 'package:financial_app/core/di/service_locator.dart';
+import 'package:financial_app/utils/design_tokens.dart';
 
 /// Enhanced Quick Actions dengan customization, analytics, swipe gestures, dan categories
 class QuickActionsEnhanced extends StatefulWidget {
@@ -44,33 +45,47 @@ class _QuickActionsEnhancedState extends State<QuickActionsEnhanced> {
       if (preferences.isNotEmpty) {
         // Merge saved preferences with defaults to restore icon, color, onTap
         _actions =
-            preferences.map((pref) {
-              // Find matching default action by id
-              final defaultAction = defaultActions.firstWhere(
-                (action) => action['id'] == pref['id'],
-                orElse: () => <String, dynamic>{},
-              );
+            preferences
+                .where((pref) => pref['id'] != null)
+                .map((pref) {
+                  // Find matching default action by id
+                  final defaultAction = defaultActions.firstWhere(
+                    (action) => action['id'] == pref['id'],
+                    orElse: () => <String, dynamic>{},
+                  );
 
-              // Merge: use saved preferences for visible/order, defaults for icon/color/onTap
-              return {
-                'id': pref['id'] ?? defaultAction['id'],
-                'label': pref['label'] ?? defaultAction['label'],
-                'category': pref['category'] ?? defaultAction['category'],
-                'visible': pref['visible'] ?? defaultAction['visible'] ?? true,
-                'order': pref['order'] ?? defaultAction['order'] ?? 0,
-                // Restore non-encodable fields from defaults
-                'icon': defaultAction['icon'],
-                'color':
-                    pref['colorHex'] != null
-                        ? Color(
-                          int.parse(
-                            pref['colorHex'].toString().replaceFirst('#', '0x'),
-                          ),
-                        )
-                        : defaultAction['color'],
-                'onTap': defaultAction['onTap'],
-              };
-            }).toList();
+                  // Skip if no matching default action found (stale preference)
+                  if (defaultAction.isEmpty) {
+                    return <String, dynamic>{};
+                  }
+
+                  // Parse colorHex safely
+                  Color? resolvedColor;
+                  if (pref['colorHex'] != null && defaultAction['color'] != null) {
+                    try {
+                      final hex = pref['colorHex'].toString().replaceFirst('#', '0x');
+                      resolvedColor = Color(int.parse(hex));
+                    } catch (_) {
+                      resolvedColor = defaultAction['color'] as Color?;
+                    }
+                  } else {
+                    resolvedColor = defaultAction['color'] as Color?;
+                  }
+
+                  // Merge: use saved preferences for visible/order, defaults for icon/color/onTap
+                  return {
+                    'id': pref['id'] ?? defaultAction['id'],
+                    'label': pref['label'] ?? defaultAction['label'],
+                    'category': pref['category'] ?? defaultAction['category'],
+                    'visible': pref['visible'] ?? defaultAction['visible'] ?? true,
+                    'order': pref['order'] ?? defaultAction['order'] ?? 0,
+                    'icon': defaultAction['icon'],
+                    'color': resolvedColor,
+                    'onTap': defaultAction['onTap'],
+                  };
+                })
+                .where((action) => action.isNotEmpty)
+                .toList();
 
         // Add any new default actions that weren't in preferences
         final savedIds = preferences.map((p) => p['id']).toSet();
@@ -113,7 +128,7 @@ class _QuickActionsEnhancedState extends State<QuickActionsEnhanced> {
         'id': 'riwayat',
         'icon': Iconsax.note_2,
         'label': 'Riwayat',
-        'color': const Color(0xFF8B5FBF),
+        'color': DesignTokens.primaryColor,
         'category': 'Transactions',
         'visible': true,
         'order': 1,
@@ -179,7 +194,10 @@ class _QuickActionsEnhancedState extends State<QuickActionsEnhanced> {
     await _analyticsService.trackAction(action['id']);
 
     // Execute action
-    (action['onTap'] as VoidCallback)();
+    final onTap = action['onTap'];
+    if (onTap is VoidCallback) {
+      onTap();
+    }
   }
 
   List<Map<String, dynamic>> get _filteredActions {
@@ -197,7 +215,7 @@ class _QuickActionsEnhancedState extends State<QuickActionsEnhanced> {
   Widget build(BuildContext context) {
     if (_isLoading) {
       return const Center(
-        child: CircularProgressIndicator(color: Color(0xFF8B5FBF)),
+        child: CircularProgressIndicator(color: DesignTokens.primaryColor),
       );
     }
 
@@ -216,7 +234,7 @@ class _QuickActionsEnhancedState extends State<QuickActionsEnhanced> {
               ),
             ),
             IconButton(
-              icon: const Icon(Iconsax.setting_2, color: Color(0xFF8B5FBF)),
+              icon: const Icon(Iconsax.setting_2, color: DesignTokens.primaryColor),
               onPressed: () => _showCustomizationDialog(),
             ),
           ],
@@ -284,17 +302,17 @@ class _QuickActionsEnhancedState extends State<QuickActionsEnhanced> {
         decoration: BoxDecoration(
           color:
               isSelected
-                  ? const Color(0xFF8B5FBF).withValues(alpha: 0.2)
-                  : const Color(0xFF1A1A1A),
+                  ? DesignTokens.primaryColor.withValues(alpha: 0.2)
+                  : DesignTokens.surfaceDark,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
-            color: isSelected ? const Color(0xFF8B5FBF) : Colors.grey[800]!,
+            color: isSelected ? DesignTokens.primaryColor : DesignTokens.borderDark,
           ),
         ),
         child: Text(
           label,
           style: GoogleFonts.poppins(
-            color: isSelected ? const Color(0xFF8B5FBF) : Colors.white70,
+            color: isSelected ? DesignTokens.primaryColor : Colors.white70,
             fontSize: ResponsiveHelper.fontSize(context, 11),
             fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
           ),
@@ -317,27 +335,27 @@ class _QuickActionsEnhancedState extends State<QuickActionsEnhanced> {
             width: iconSize,
             height: iconSize,
             decoration: BoxDecoration(
-              color: (action['color'] as Color).withValues(alpha: 0.1),
+              color: (action['color'] as Color?)?.withValues(alpha: 0.1) ?? DesignTokens.primaryColor.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(
                 ResponsiveHelper.borderRadius(context, 14),
               ),
               border: Border.all(
-                color: (action['color'] as Color).withValues(alpha: 0.3),
+                color: (action['color'] as Color?)?.withValues(alpha: 0.3) ?? DesignTokens.primaryColor.withValues(alpha: 0.3),
               ),
             ),
             child: Icon(
-              action['icon'] as IconData,
-              color: action['color'] as Color,
+              action['icon'] as IconData? ?? Iconsax.category,
+              color: action['color'] as Color? ?? DesignTokens.primaryColor,
               size: ResponsiveHelper.iconSize(context, 22),
             ),
           ),
           SizedBox(height: ResponsiveHelper.verticalSpacing(context, 6)),
           Flexible(
             child: Text(
-              action['label'] as String,
+              action['label'] as String? ?? '',
               style: GoogleFonts.poppins(
                 color: Colors.white70,
-                fontSize: ResponsiveHelper.fontSize(context, 9),
+                fontSize: ResponsiveHelper.fontSize(context, 12),
               ),
               textAlign: TextAlign.center,
               maxLines: 2,
@@ -354,7 +372,7 @@ class _QuickActionsEnhancedState extends State<QuickActionsEnhanced> {
       context: context,
       builder:
           (context) => AlertDialog(
-            backgroundColor: const Color(0xFF1A1A1A),
+            backgroundColor: DesignTokens.surfaceDark,
             title: Text(
               'Customize Quick Actions',
               style: GoogleFonts.poppins(color: Colors.white),
@@ -387,7 +405,7 @@ class _QuickActionsEnhancedState extends State<QuickActionsEnhanced> {
                 onPressed: () => Navigator.pop(context),
                 child: Text(
                   'Done',
-                  style: GoogleFonts.poppins(color: const Color(0xFF8B5FBF)),
+                  style: GoogleFonts.poppins(color: DesignTokens.primaryColor),
                 ),
               ),
             ],

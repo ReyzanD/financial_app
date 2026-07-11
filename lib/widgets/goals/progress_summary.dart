@@ -1,37 +1,69 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
-import 'package:financial_app/services/api_service.dart';
+import 'package:financial_app/services/data/goal_data_service.dart';
 import 'package:financial_app/services/error_handler_service.dart';
 import 'package:financial_app/services/logger_service.dart';
 import 'package:financial_app/utils/formatters.dart';
+import 'package:financial_app/utils/design_tokens.dart';
 
 class ProgressSummary extends StatefulWidget {
-  const ProgressSummary({super.key});
+  final List<Map<String, dynamic>>? initialGoals;
+
+  const ProgressSummary({super.key, this.initialGoals});
 
   @override
   State<ProgressSummary> createState() => _ProgressSummaryState();
 }
 
 class _ProgressSummaryState extends State<ProgressSummary> {
-  final ApiService _apiService = ApiService();
+  final GoalDataService _goalService = GoalDataService();
   Map<String, dynamic> _summary = {};
   bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    _loadSummary();
+    if (widget.initialGoals != null) {
+      _computeSummary(widget.initialGoals!);
+    } else {
+      _loadSummary();
+    }
+  }
+
+  void _computeSummary(List<Map<String, dynamic>> goals) {
+    double totalTarget = 0.0;
+    double totalCurrent = 0.0;
+    int completedCount = 0;
+
+    for (final goal in goals) {
+      totalTarget +=
+          (goal['target_amount_232143'] as num?)?.toDouble() ?? 0.0;
+      totalCurrent +=
+          (goal['current_amount_232143'] as num?)?.toDouble() ?? 0.0;
+      if (goal['is_completed_232143'] == 1) {
+        completedCount++;
+      }
+    }
+
+    _summary = {
+      'total_goals': goals.length,
+      'total_target': totalTarget,
+      'total_saved': totalCurrent,
+      'completed_goals': completedCount,
+      'avg_progress':
+          totalTarget > 0 ? (totalCurrent / totalTarget) * 100 : 0.0,
+    };
+    _isLoading = false;
   }
 
   Future<void> _loadSummary() async {
     try {
-      final summary = await _apiService.getGoalsSummary();
+      final goals = await _goalService.getGoals();
+      _computeSummary(goals);
+
       if (mounted) {
-        setState(() {
-          _summary = summary;
-          _isLoading = false;
-        });
+        setState(() {});
       }
     } catch (e) {
       LoggerService.error('Error loading goals summary', error: e);
@@ -59,7 +91,7 @@ class _ProgressSummaryState extends State<ProgressSummary> {
         height: 120,
         decoration: BoxDecoration(
           gradient: const LinearGradient(
-            colors: [Color(0xFF8B5FBF), Color(0xFF6A3093)],
+            colors: [DesignTokens.primaryColor, Color(0xFF6A3093)],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
@@ -83,7 +115,7 @@ class _ProgressSummaryState extends State<ProgressSummary> {
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
-          colors: [Color(0xFF8B5FBF), Color(0xFF6A3093)],
+          colors: [DesignTokens.primaryColor, Color(0xFF6A3093)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),

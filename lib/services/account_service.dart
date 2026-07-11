@@ -1,26 +1,29 @@
-import 'package:financial_app/services/local_data_service.dart';
 import 'package:financial_app/services/logger_service.dart';
+import 'package:financial_app/services/data/account_data_service.dart';
+import 'package:financial_app/services/data/goal_data_service.dart';
 import 'package:financial_app/models/account_model.dart';
 
 class AccountService {
-  final LocalDataService _localData;
+  final AccountDataService _accountData;
+  final GoalDataService _goalData;
 
-  AccountService({LocalDataService? localData})
-    : _localData = localData ?? LocalDataService();
+  AccountService({AccountDataService? accountData, GoalDataService? goalData})
+    : _accountData = accountData ?? AccountDataService(),
+      _goalData = goalData ?? GoalDataService();
 
   Future<List<AccountModel>> getAccounts({bool activeOnly = true}) async {
     try {
-      final accountsData = await _localData.getAccounts(activeOnly: activeOnly);
+      final accountsData = await _accountData.getAccounts(activeOnly: activeOnly);
       return accountsData.map((a) => AccountModel.fromMap(a)).toList();
     } catch (e) {
       LoggerService.error('Error getting accounts', error: e);
-      return _getDefaultAccounts();
+      rethrow;
     }
   }
 
   Future<AccountModel> createAccount(AccountModel account) async {
     try {
-      final result = await _localData.addAccount(account.toMap());
+      final result = await _accountData.addAccount(account.toMap());
       final created = AccountModel.fromMap(
         result['account'] as Map<String, dynamic>,
       );
@@ -37,7 +40,7 @@ class AccountService {
     Map<String, dynamic> updates,
   ) async {
     try {
-      final result = await _localData.updateAccount(id, updates);
+      final result = await _accountData.updateAccount(id, updates);
       final updated = AccountModel.fromMap(
         result['account'] as Map<String, dynamic>,
       );
@@ -51,7 +54,7 @@ class AccountService {
 
   Future<void> deleteAccount(String id) async {
     try {
-      await _localData.deleteAccount(id);
+      await _accountData.deleteAccount(id);
       LoggerService.success('Account deleted');
     } catch (e) {
       LoggerService.error('Error deleting account', error: e);
@@ -110,12 +113,13 @@ class AccountService {
 
   Future<AccountModel?> getAccountById(String id) async {
     try {
-      final result = await _localData.getAccount(id);
+      final result = await _accountData.getAccount(id);
       final accountData = result['account'];
       if (accountData == null) return null;
       return AccountModel.fromMap(accountData as Map<String, dynamic>);
     } catch (e) {
-      return null;
+      LoggerService.error('Error getting account by id', error: e);
+      rethrow;
     }
   }
 
@@ -141,7 +145,8 @@ class AccountService {
       final defaultAccount = accounts.where((a) => a.isDefault).firstOrNull;
       return defaultAccount?.id ?? '';
     } catch (e) {
-      return '';
+      LoggerService.error('Error getting default account id', error: e);
+      rethrow;
     }
   }
 
@@ -154,39 +159,24 @@ class AccountService {
   }
 
   Future<Map<String, dynamic>> getAccountSummary() async {
-    return await _localData.getAccountSummary();
+    return await _accountData.getAccountSummary();
   }
 
   /// Calculate available balance (total balance minus goal allocations)
   Future<double> getAvailableBalance() async {
     try {
       final totalBalance = await getTotalBalance();
-      final totalGoals = await _localData.getTotalGoalContributions();
+      final totalGoals = await _goalData.getTotalGoalContributions();
       final available = totalBalance - totalGoals;
       return available < 0 ? 0 : available;
     } catch (e) {
       LoggerService.error('Error calculating available balance', error: e);
-      return await getTotalBalance();
+      rethrow;
     }
   }
 
   /// Get contributions for a goal
   Future<List<Map<String, dynamic>>> getGoalContributions(String goalId) async {
-    return await _localData.getGoalContributions(goalId);
-  }
-
-  List<AccountModel> _getDefaultAccounts() {
-    final now = DateTime.now();
-    return AccountModel.defaultAccounts.map((data) {
-      return AccountModel(
-        id: 'default_${data['type']}',
-        name: data['name'] as String,
-        type: data['type'] as String,
-        icon: data['icon'] as String?,
-        color: data['color'] as String?,
-        balance: 0,
-        createdAt: now,
-      );
-    }).toList();
+    return await _goalData.getGoalContributions(goalId);
   }
 }

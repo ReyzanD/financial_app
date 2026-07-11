@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
+import 'package:financial_app/utils/design_tokens.dart';
 
 class QuickCategorySelector extends StatelessWidget {
   final List<dynamic> categories;
@@ -14,13 +15,33 @@ class QuickCategorySelector extends StatelessWidget {
     this.isLoading = false,
   });
 
+  /// Normalizes a category map to use clean keys ('id', 'name') regardless
+  /// of whether the source map uses suffixed DB keys (e.g. 'category_id_232143').
+  static Map<String, dynamic> _normalize(Map<String, dynamic> src) {
+    return {
+      'id': src['id']?.toString() ??
+          src['category_id']?.toString() ??
+          src.values.firstWhere(
+            (v) => v.toString().startsWith('cat_'),
+            orElse: () => '',
+          ).toString(),
+      'name': (src['name'] ??
+              src['category_name'] ??
+              src.values.firstWhere(
+                (v) => v is String && !v.toString().startsWith('cat_'),
+                orElse: () => '',
+              ))
+          .toString(),
+    };
+  }
+
   @override
   Widget build(BuildContext context) {
     if (isLoading) {
       return const Center(
         child: Padding(
           padding: EdgeInsets.all(16.0),
-          child: CircularProgressIndicator(color: Color(0xFF8B5FBF)),
+          child: CircularProgressIndicator(color: DesignTokens.primaryColor),
         ),
       );
     }
@@ -37,21 +58,30 @@ class QuickCategorySelector extends StatelessWidget {
     return Wrap(
       spacing: 8,
       runSpacing: 8,
-      children:
-          categories.map((category) => _buildCategoryChip(category)).toList(),
+      children: categories
+          .map((c) => _buildCategoryChip(
+              c is Map<String, dynamic> ? _normalize(c) : c))
+          .toList(),
     );
   }
 
   Widget _buildCategoryChip(dynamic category) {
+    final id = category is Map<String, dynamic>
+        ? (category['id']?.toString() ?? '')
+        : category.toString();
+    final name = category is Map<String, dynamic>
+        ? (category['name']?.toString() ?? 'Unknown')
+        : category.toString();
+
     return InkWell(
-      onTap: () => onCategorySelected(category['id'].toString()),
+      onTap: () => onCategorySelected(id),
       borderRadius: BorderRadius.circular(20),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
         decoration: BoxDecoration(
-          color: const Color(0xFF1A1A1A),
+          color: DesignTokens.surfaceDark,
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: Colors.grey[800]!),
+          border: Border.all(color: DesignTokens.borderDark),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
@@ -59,7 +89,7 @@ class QuickCategorySelector extends StatelessWidget {
             Icon(Iconsax.category, size: 14, color: Colors.grey[400]),
             const SizedBox(width: 6),
             Text(
-              category['name'].toString(),
+              name,
               style: GoogleFonts.poppins(
                 color: Colors.white,
                 fontSize: 11,

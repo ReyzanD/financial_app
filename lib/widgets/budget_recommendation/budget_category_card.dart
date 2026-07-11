@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:financial_app/utils/formatters.dart';
+import 'package:financial_app/utils/design_tokens.dart';
 
 /// Widget untuk menampilkan budget category card dengan expansion tile
 class BudgetCategoryCard extends StatelessWidget {
@@ -30,9 +31,9 @@ class BudgetCategoryCard extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
-        color: const Color(0xFF1A1A1A),
+        color: DesignTokens.surfaceDark,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey[800]!),
+        border: Border.all(color: DesignTokens.borderDark),
       ),
       child: Theme(
         data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
@@ -56,7 +57,7 @@ class BudgetCategoryCard extends StatelessWidget {
               IconButton(
                 onPressed: onEdit,
                 icon: const Icon(Iconsax.edit, size: 20),
-                color: const Color(0xFF8B5FBF),
+                color: DesignTokens.primaryColor,
                 padding: EdgeInsets.zero,
                 constraints: const BoxConstraints(),
               ),

@@ -7,6 +7,8 @@ import 'package:financial_app/utils/formatters.dart';
 import 'package:financial_app/widgets/obligations/add_obligation_modal.dart';
 import 'package:financial_app/widgets/obligations/reminder_settings.dart';
 import 'package:financial_app/l10n/app_localizations.dart';
+import 'package:financial_app/services/error_handler_service.dart';
+import 'package:financial_app/utils/design_tokens.dart';
 
 class ObligationDetailsModal extends StatefulWidget {
   final FinancialObligation obligation;
@@ -26,7 +28,7 @@ class _ObligationDetailsModalState extends State<ObligationDetailsModal> {
       context: context,
       builder:
           (context) => AlertDialog(
-            backgroundColor: const Color(0xFF1A1A1A),
+            backgroundColor: DesignTokens.surfaceDark,
             title: Text(
               AppLocalizations.of(context)!.delete_obligation,
               style: GoogleFonts.poppins(color: Colors.white),
@@ -61,26 +63,18 @@ class _ObligationDetailsModalState extends State<ObligationDetailsModal> {
       if (!mounted) return;
 
       Navigator.pop(context, true);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            AppLocalizations.of(context)!.obligation_deleted_successfully,
-          ),
-          backgroundColor: Color(0xFF8B5FBF),
-        ),
+      ErrorHandlerService.showSuccessSnackbar(
+        context,
+        AppLocalizations.of(context)!.obligation_deleted_successfully,
       );
     } catch (e) {
       if (!mounted) return;
       setState(() {
         _isDeleting = false;
       });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            '${AppLocalizations.of(context)!.error}: ${e.toString()}',
-          ),
-          backgroundColor: Colors.red,
-        ),
+      ErrorHandlerService.showErrorSnackbar(
+        context,
+        '${AppLocalizations.of(context)!.error}: ${ErrorHandlerService.getUserFriendlyMessage(e)}',
       );
     }
   }
@@ -218,7 +212,7 @@ class _ObligationDetailsModalState extends State<ObligationDetailsModal> {
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [const Color(0xFF1F1F1F), const Color(0xFF1A1A1A)],
+                  colors: [const Color(0xFF1F1F1F), DesignTokens.surfaceDark],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
@@ -367,7 +361,7 @@ class _ObligationDetailsModalState extends State<ObligationDetailsModal> {
                     icon: const Icon(Iconsax.edit, size: 18),
                     label: Text(AppLocalizations.of(context)!.edit),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF8B5FBF),
+                      backgroundColor: DesignTokens.primaryColor,
                       foregroundColor: Colors.white,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),

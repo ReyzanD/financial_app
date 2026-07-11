@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:financial_app/utils/design_tokens.dart';
 
 enum AppThemeMode { light, dark, system }
 
@@ -74,19 +75,19 @@ class ThemeService extends ChangeNotifier {
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.light,
-      primaryColor: const Color(0xFF8B5FBF),
+      primaryColor: DesignTokens.primaryColor,
       scaffoldBackgroundColor: const Color(0xFFF5F5F5),
       colorScheme: const ColorScheme.light(
-        primary: Color(0xFF8B5FBF),
+        primary: DesignTokens.primaryColor,
         secondary: Color(0xFF6A3093),
         surface: Colors.white,
         onPrimary: Colors.white,
         onSecondary: Colors.white,
-        onSurface: Color(0xFF1A1A1A),
+        onSurface: DesignTokens.surfaceDark,
       ),
       appBarTheme: const AppBarTheme(
         backgroundColor: Colors.white,
-        foregroundColor: Color(0xFF1A1A1A),
+        foregroundColor: DesignTokens.surfaceDark,
         elevation: 0,
         centerTitle: false,
       ),
@@ -108,12 +109,12 @@ class ThemeService extends ChangeNotifier {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: Color(0xFF8B5FBF), width: 2),
+          borderSide: const BorderSide(color: DesignTokens.primaryColor, width: 2),
         ),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xFF8B5FBF),
+          backgroundColor: DesignTokens.primaryColor,
           foregroundColor: Colors.white,
           elevation: 0,
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
@@ -123,20 +124,20 @@ class ThemeService extends ChangeNotifier {
         ),
       ),
       textTheme: const TextTheme(
-        displayLarge: TextStyle(color: Color(0xFF1A1A1A)),
-        displayMedium: TextStyle(color: Color(0xFF1A1A1A)),
-        displaySmall: TextStyle(color: Color(0xFF1A1A1A)),
-        headlineLarge: TextStyle(color: Color(0xFF1A1A1A)),
-        headlineMedium: TextStyle(color: Color(0xFF1A1A1A)),
-        headlineSmall: TextStyle(color: Color(0xFF1A1A1A)),
-        titleLarge: TextStyle(color: Color(0xFF1A1A1A)),
-        titleMedium: TextStyle(color: Color(0xFF1A1A1A)),
-        titleSmall: TextStyle(color: Color(0xFF1A1A1A)),
-        bodyLarge: TextStyle(color: Color(0xFF1A1A1A)),
-        bodyMedium: TextStyle(color: Color(0xFF1A1A1A)),
+        displayLarge: TextStyle(color: DesignTokens.surfaceDark),
+        displayMedium: TextStyle(color: DesignTokens.surfaceDark),
+        displaySmall: TextStyle(color: DesignTokens.surfaceDark),
+        headlineLarge: TextStyle(color: DesignTokens.surfaceDark),
+        headlineMedium: TextStyle(color: DesignTokens.surfaceDark),
+        headlineSmall: TextStyle(color: DesignTokens.surfaceDark),
+        titleLarge: TextStyle(color: DesignTokens.surfaceDark),
+        titleMedium: TextStyle(color: DesignTokens.surfaceDark),
+        titleSmall: TextStyle(color: DesignTokens.surfaceDark),
+        bodyLarge: TextStyle(color: DesignTokens.surfaceDark),
+        bodyMedium: TextStyle(color: DesignTokens.surfaceDark),
         bodySmall: TextStyle(color: Color(0xFF424242)),
-        labelLarge: TextStyle(color: Color(0xFF1A1A1A)),
-        labelMedium: TextStyle(color: Color(0xFF1A1A1A)),
+        labelLarge: TextStyle(color: DesignTokens.surfaceDark),
+        labelMedium: TextStyle(color: DesignTokens.surfaceDark),
         labelSmall: TextStyle(color: Color(0xFF424242)),
       ),
     );
@@ -147,46 +148,46 @@ class ThemeService extends ChangeNotifier {
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.dark,
-      primaryColor: const Color(0xFF8B5FBF),
-      scaffoldBackgroundColor: Colors.black,
+      primaryColor: DesignTokens.primaryColor,
+      scaffoldBackgroundColor: DesignTokens.backgroundDark,
       colorScheme: const ColorScheme.dark(
-        primary: Color(0xFF8B5FBF),
+        primary: DesignTokens.primaryColor,
         secondary: Color(0xFF6A3093),
-        surface: Color(0xFF1A1A1A),
+        surface: DesignTokens.surfaceDark,
         onPrimary: Colors.white,
         onSecondary: Colors.white,
         onSurface: Colors.white,
       ),
       appBarTheme: const AppBarTheme(
-        backgroundColor: Colors.black,
+        backgroundColor: DesignTokens.backgroundDark,
         foregroundColor: Colors.white,
         elevation: 0,
         centerTitle: false,
       ),
       cardTheme: CardThemeData(
-        color: const Color(0xFF1A1A1A),
+        color: DesignTokens.surfaceDark,
         elevation: 0,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: const Color(0xFF1A1A1A),
+        fillColor: DesignTokens.surfaceDark,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.grey[800]!),
+          borderSide: BorderSide(color: DesignTokens.borderDark),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.grey[800]!),
+          borderSide: BorderSide(color: DesignTokens.borderDark),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: Color(0xFF8B5FBF), width: 2),
+          borderSide: const BorderSide(color: DesignTokens.primaryColor, width: 2),
         ),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xFF8B5FBF),
+          backgroundColor: DesignTokens.primaryColor,
           foregroundColor: Colors.white,
           elevation: 0,
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),

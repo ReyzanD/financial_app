@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:financial_app/utils/design_tokens.dart';
 
 class SocialLogin extends StatelessWidget {
   const SocialLogin({super.key});
@@ -32,9 +33,9 @@ class SocialLogin extends StatelessWidget {
       width: 50,
       height: 50,
       decoration: BoxDecoration(
-        color: const Color(0xFF1A1A1A),
+        color: DesignTokens.surfaceDark,
         borderRadius: BorderRadius.circular(25),
-        border: Border.all(color: Colors.grey[800]!, width: 1),
+        border: Border.all(color: DesignTokens.borderDark, width: 1),
       ),
       child: Icon(icon, color: Colors.grey[400], size: 24),
     );

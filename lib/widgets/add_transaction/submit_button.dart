@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:financial_app/utils/design_tokens.dart';
 
 class SubmitButton extends StatelessWidget {
   final VoidCallback onPressed;
@@ -18,7 +19,7 @@ class SubmitButton extends StatelessWidget {
       child: ElevatedButton(
         onPressed: isLoading ? null : onPressed,
         style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xFF8B5FBF),
+          backgroundColor: DesignTokens.primaryColor,
           foregroundColor: Colors.white,
           padding: const EdgeInsets.symmetric(vertical: 16),
           shape: RoundedRectangleBorder(

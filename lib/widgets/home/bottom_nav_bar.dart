@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
+import 'package:financial_app/utils/design_tokens.dart';
 
 class HomeBottomNavBar extends StatelessWidget {
   final int currentIndex;
@@ -19,7 +20,7 @@ class HomeBottomNavBar extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: Colors.black,
-        border: Border(top: BorderSide(color: Colors.grey[800]!)),
+        border: Border(top: BorderSide(color: DesignTokens.borderDark)),
       ),
       child: BottomNavigationBar(
         currentIndex: currentIndex,
@@ -33,7 +34,7 @@ class HomeBottomNavBar extends StatelessWidget {
         },
         backgroundColor: Colors.transparent,
         type: BottomNavigationBarType.fixed,
-        selectedItemColor: const Color(0xFF8B5FBF),
+        selectedItemColor: DesignTokens.primaryColor,
         unselectedItemColor: Colors.grey[500],
         selectedLabelStyle: GoogleFonts.poppins(fontSize: 10),
         unselectedLabelStyle: GoogleFonts.poppins(fontSize: 10),

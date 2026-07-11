@@ -143,8 +143,11 @@ class CacheService {
     try {
       final prefs = await SharedPreferences.getInstance();
       final keys = prefs.getKeys();
-      final cacheKeys =
-          keys.where((key) => key.startsWith(_cachePrefix)).toList();
+      final cacheKeys = keys.where((key) {
+        return key.startsWith(_cachePrefix) &&
+            !key.startsWith(_cacheTimestampPrefix) &&
+            !key.startsWith(_cacheVersionPrefix);
+      }).toList();
 
       for (final key in cacheKeys) {
         final cacheKey = key.substring(_cachePrefix.length);
@@ -185,8 +188,11 @@ class CacheService {
     try {
       final prefs = await SharedPreferences.getInstance();
       final keys = prefs.getKeys();
-      final cacheKeys =
-          keys.where((key) => key.startsWith(_cachePrefix)).toList();
+      final cacheKeys = keys.where((key) {
+        return key.startsWith(_cachePrefix) &&
+            !key.startsWith(_cacheTimestampPrefix) &&
+            !key.startsWith(_cacheVersionPrefix);
+      }).toList();
 
       int totalSize = 0;
       int expiredCount = 0;
@@ -227,12 +233,12 @@ class CacheService {
     try {
       final prefs = await SharedPreferences.getInstance();
       final keys = prefs.getKeys();
-      final cacheKeys =
-          keys
-              .where(
-                (key) => key.startsWith(_cachePrefix) && key.contains(pattern),
-              )
-              .toList();
+      final cacheKeys = keys.where((key) {
+        return key.startsWith(_cachePrefix) &&
+            !key.startsWith(_cacheTimestampPrefix) &&
+            !key.startsWith(_cacheVersionPrefix) &&
+            key.contains(pattern);
+      }).toList();
 
       for (final key in cacheKeys) {
         final cacheKey = key.substring(_cachePrefix.length);

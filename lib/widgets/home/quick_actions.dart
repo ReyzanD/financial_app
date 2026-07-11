@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
-import 'package:financial_app/Screen/financial_obligations_screen.dart';
-import 'package:financial_app/Screen/transaction_history_screen.dart';
-import 'package:financial_app/Screen/recurring_transactions_screen.dart';
-import 'package:financial_app/Screen/backup_screen.dart';
-import 'package:financial_app/Screen/ai_budget_recommendation_screen.dart';
+import 'package:financial_app/features/obligations/presentation/screens/financial_obligations_screen.dart';
+import 'package:financial_app/features/transactions/presentation/screens/transaction_history_screen.dart';
+import 'package:financial_app/features/recurring_transactions/presentation/screens/recurring_transactions_screen.dart';
+import 'package:financial_app/features/backup/presentation/screens/backup_screen.dart';
+import 'package:financial_app/features/ai_budget_recommendation/presentation/screens/ai_budget_recommendation_screen.dart';
 import 'package:financial_app/utils/responsive_helper.dart';
+import 'package:financial_app/utils/design_tokens.dart';
 
 class QuickActions extends StatelessWidget {
   const QuickActions({super.key});
@@ -29,7 +30,7 @@ class QuickActions extends StatelessWidget {
       {
         'icon': Iconsax.note_2,
         'label': 'Riwayat',
-        'color': const Color(0xFF8B5FBF),
+        'color': DesignTokens.primaryColor,
         'onTap':
             () => Navigator.push(
               context,

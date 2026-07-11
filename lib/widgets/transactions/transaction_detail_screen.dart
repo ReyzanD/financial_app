@@ -9,7 +9,8 @@ import 'package:financial_app/widgets/transactions/location_insight_card.dart';
 import 'package:financial_app/models/location_recommendation.dart';
 import 'package:financial_app/services/logger_service.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:financial_app/Screen/add_transaction_screen.dart';
+import 'package:financial_app/features/transactions/presentation/screens/add_transaction_screen.dart';
+import 'package:financial_app/utils/design_tokens.dart';
 
 class TransactionDetailScreen extends StatefulWidget {
   final Map<String, dynamic> transaction;
@@ -60,14 +61,14 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
       final recommendations = await LocationRecommendationService()
           .getCategoryBasedAlternatives(category, _decodedLocationData);
 
-      setState(() => _alternativeRecommendations = recommendations);
+      if (mounted) setState(() => _alternativeRecommendations = recommendations);
     } catch (e) {
       LoggerService.error(
         'Error loading alternative recommendations',
         error: e,
       );
     } finally {
-      setState(() => _isLoadingRecommendations = false);
+      if (mounted) setState(() => _isLoadingRecommendations = false);
     }
   }
 
@@ -172,9 +173,9 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: const Color(0xFF1A1A1A),
+        color: DesignTokens.surfaceDark,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey[800]!),
+        border: Border.all(color: DesignTokens.borderDark),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -342,12 +343,12 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0xFF1A1A1A),
+        color: DesignTokens.surfaceDark,
         borderRadius: BorderRadius.circular(16),
       ),
       child: Row(
         children: [
-          CircularProgressIndicator(color: const Color(0xFF8B5FBF)),
+          CircularProgressIndicator(color: DesignTokens.primaryColor),
           const SizedBox(width: 12),
           Text(
             'Mencari rekomendasi alternatif...',
@@ -362,7 +363,7 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0xFF1A1A1A),
+        color: DesignTokens.surfaceDark,
         borderRadius: BorderRadius.circular(16),
       ),
       child: Row(
@@ -394,7 +395,7 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
         Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: const Color(0xFF1A1A1A),
+            color: DesignTokens.surfaceDark,
             borderRadius: BorderRadius.circular(16),
           ),
           child: Column(

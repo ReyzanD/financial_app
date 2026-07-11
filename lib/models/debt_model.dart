@@ -67,8 +67,10 @@ class DebtModel {
 
   Map<String, dynamic> toMap() {
     return {
+      'debt_id_232143': id,
       'name': name,
       'original_amount': originalAmount,
+      'current_balance': currentBalance,
       'interest_rate': interestRate,
       'type': type,
       'start_date': startDate.toIso8601String().split('T')[0],
@@ -76,6 +78,7 @@ class DebtModel {
       'monthly_payment': monthlyPayment,
       'creditor_name': creditorName,
       'notes': notes,
+      'created_at': createdAt.toIso8601String().split('T')[0],
     };
   }
 

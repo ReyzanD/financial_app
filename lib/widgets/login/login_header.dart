@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:financial_app/utils/design_tokens.dart';
 
 class LoginHeader extends StatelessWidget {
   const LoginHeader({super.key});
@@ -15,7 +16,7 @@ class LoginHeader extends StatelessWidget {
           height: 80,
           decoration: BoxDecoration(
             gradient: const LinearGradient(
-              colors: [Color(0xFF8B5FBF), Color(0xFF6A3093)],
+              colors: [DesignTokens.primaryColor, Color(0xFF6A3093)],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
@@ -24,7 +25,7 @@ class LoginHeader extends StatelessWidget {
               BoxShadow(
                 color: Color.lerp(
                   Colors.transparent,
-                  Color(0xFF8B5FBF),
+                  DesignTokens.primaryColor,
                   0.3,
                 )!.withAlpha(255),
                 blurRadius: 15,
@@ -72,7 +73,7 @@ class RegisterHeader extends StatelessWidget {
           height: 80,
           decoration: BoxDecoration(
             gradient: const LinearGradient(
-              colors: [Color(0xFF6A3093), Color(0xFF8B5FBF)],
+              colors: [Color(0xFF6A3093), DesignTokens.primaryColor],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),

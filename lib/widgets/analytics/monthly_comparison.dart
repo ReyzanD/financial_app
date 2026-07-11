@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
+import 'package:financial_app/utils/design_tokens.dart';
 
 class MonthlyComparison extends StatelessWidget {
   final List<dynamic> transactions;
@@ -51,9 +52,9 @@ class MonthlyComparison extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0xFF1A1A1A),
+        color: DesignTokens.surfaceDark,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey[800]!),
+        border: Border.all(color: DesignTokens.borderDark),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -73,7 +74,7 @@ class MonthlyComparison extends StatelessWidget {
               _buildComparisonItem(
                 'Bulan Ini',
                 'Rp ${(thisMonthSpending / 1000).toStringAsFixed(1)}k',
-                const Color(0xFF8B5FBF),
+                DesignTokens.primaryColor,
                 null,
               ),
               _buildComparisonItem(

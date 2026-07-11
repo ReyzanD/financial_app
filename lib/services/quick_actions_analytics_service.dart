@@ -98,15 +98,21 @@ class QuickActionsAnalyticsService {
             final sanitized = <String, dynamic>{};
 
             // Only include encodable fields
-            if (action.containsKey('id')) sanitized['id'] = action['id'];
-            if (action.containsKey('label'))
+            if (action.containsKey('id')) {
+              sanitized['id'] = action['id'];
+            }
+            if (action.containsKey('label')) {
               sanitized['label'] = action['label'];
-            if (action.containsKey('category'))
+            }
+            if (action.containsKey('category')) {
               sanitized['category'] = action['category'];
-            if (action.containsKey('visible'))
+            }
+            if (action.containsKey('visible')) {
               sanitized['visible'] = action['visible'];
-            if (action.containsKey('order'))
+            }
+            if (action.containsKey('order')) {
               sanitized['order'] = action['order'];
+            }
 
             // Store icon as string identifier if available
             if (action.containsKey('icon')) {

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
+import 'package:financial_app/utils/design_tokens.dart';
 
 class PinPad extends StatelessWidget {
   final String pin;
@@ -65,9 +66,9 @@ class PinPad extends StatelessWidget {
           height: 16,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: isFilled ? const Color(0xFF8B5FBF) : Colors.transparent,
+            color: isFilled ? DesignTokens.primaryColor : Colors.transparent,
             border: Border.all(
-              color: isFilled ? const Color(0xFF8B5FBF) : Colors.grey[600]!,
+              color: isFilled ? DesignTokens.primaryColor : Colors.grey[600]!,
               width: 2,
             ),
           ),
@@ -122,9 +123,9 @@ class PinPad extends StatelessWidget {
         width: 70,
         height: 70,
         decoration: BoxDecoration(
-          color: const Color(0xFF1A1A1A),
+          color: DesignTokens.surfaceDark,
           shape: BoxShape.circle,
-          border: Border.all(color: Colors.grey[800]!, width: 1),
+          border: Border.all(color: DesignTokens.borderDark, width: 1),
         ),
         child: Center(
           child: Text(

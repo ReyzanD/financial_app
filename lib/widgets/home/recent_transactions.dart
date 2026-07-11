@@ -5,8 +5,9 @@ import 'package:financial_app/utils/formatters.dart';
 import 'package:provider/provider.dart';
 import 'package:financial_app/state/app_state.dart';
 import 'package:financial_app/models/transaction_model.dart';
-import 'package:financial_app/Screen/transaction_screen.dart';
+import 'package:financial_app/features/transactions/presentation/screens/transaction_screen.dart';
 import 'package:financial_app/utils/responsive_helper.dart';
+import 'package:financial_app/utils/design_tokens.dart';
 
 class RecentTransactions extends StatelessWidget {
   const RecentTransactions({super.key});
@@ -23,11 +24,11 @@ class RecentTransactions extends StatelessWidget {
       ),
       padding: ResponsiveHelper.padding(context, multiplier: 0.75),
       decoration: BoxDecoration(
-        color: const Color(0xFF1A1A1A),
+        color: DesignTokens.surfaceDark,
         borderRadius: BorderRadius.circular(
           ResponsiveHelper.borderRadius(context, 12),
         ),
-        border: Border.all(color: Colors.grey[800]!),
+        border: Border.all(color: DesignTokens.borderDark),
       ),
       child: Row(
         children: [
@@ -134,7 +135,7 @@ class RecentTransactions extends StatelessWidget {
                     child: Text(
                       'View All',
                       style: GoogleFonts.poppins(
-                        color: Color(0xFF8B5FBF),
+                        color: DesignTokens.primaryColor,
                         fontSize: ResponsiveHelper.fontSize(context, 12),
                       ),
                     ),
@@ -148,7 +149,7 @@ class RecentTransactions extends StatelessWidget {
                 padding: ResponsiveHelper.padding(context, multiplier: 2.0),
                 child: Center(
                   child: CircularProgressIndicator(
-                    color: Color(0xFF8B5FBF),
+                    color: DesignTokens.primaryColor,
                     strokeWidth: 2,
                   ),
                 ),
@@ -159,11 +160,11 @@ class RecentTransactions extends StatelessWidget {
                 child: Container(
                   padding: ResponsiveHelper.padding(context, multiplier: 1.5),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF1A1A1A),
+                    color: DesignTokens.surfaceDark,
                     borderRadius: BorderRadius.circular(
                       ResponsiveHelper.borderRadius(context, 12),
                     ),
-                    border: Border.all(color: Colors.grey[800]!),
+                    border: Border.all(color: DesignTokens.borderDark),
                   ),
                   child: Column(
                     children: [

@@ -220,7 +220,12 @@ class AccessibilityHelper {
     String message, {
     bool polite = true,
   }) {
-    SemanticsService.announce(message, TextDirection.ltr);
+    SemanticsService.sendAnnouncement(
+      View.of(context),
+      message,
+      TextDirection.ltr,
+      assertiveness: polite ? Assertiveness.polite : Assertiveness.assertive,
+    );
   }
 
   // Get text scale factor dari MediaQuery

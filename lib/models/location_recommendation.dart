@@ -1,7 +1,7 @@
 enum RecommendationType {
-  price_alert,
-  alternative_location,
-  spending_pattern,
+  priceAlert,
+  alternativeLocation,
+  spendingPattern,
   general,
 }
 
@@ -107,7 +107,7 @@ class LocationRecommendationService {
         title: 'Restoran Terdekat Lebih Murah',
         description:
             'Warung makan di dekat kantor Anda menawarkan menu serupa dengan harga 20% lebih rendah',
-        type: RecommendationType.price_alert,
+        type: RecommendationType.priceAlert,
         estimatedSavings: 15000,
         createdAt: DateTime.now(),
         metadata: {
@@ -134,7 +134,7 @@ class LocationRecommendationService {
             title: 'Diskon 25% di Toko Sebelah',
             description:
                 'Toko grosir di Jl. Malioboro menawarkan produk serupa dengan diskon hingga 25%',
-            type: RecommendationType.price_alert,
+            type: RecommendationType.priceAlert,
             estimatedSavings: 75000,
             createdAt: DateTime.now(),
             metadata: {
@@ -149,7 +149,7 @@ class LocationRecommendationService {
             title: 'Pasar Tradisional Lebih Murah',
             description:
                 'Pasar tradisional menawarkan harga 30% lebih rendah untuk kebutuhan sehari-hari',
-            type: RecommendationType.alternative_location,
+            type: RecommendationType.alternativeLocation,
             estimatedSavings: 45000,
             createdAt: DateTime.now(),
             metadata: {
@@ -168,7 +168,7 @@ class LocationRecommendationService {
             title: 'Bensin Lebih Murah 3km Jauhnya',
             description:
                 'SPBU di Jl. Sudirman menawarkan harga premium Rp 2.000 lebih murah per liter',
-            type: RecommendationType.price_alert,
+            type: RecommendationType.priceAlert,
             estimatedSavings: 10000,
             createdAt: DateTime.now(),
             metadata: {
@@ -183,7 +183,7 @@ class LocationRecommendationService {
             title: 'Alternatif Transportasi Hemat',
             description:
                 'Gunakan angkutan umum untuk perjalanan ini, bisa hemat hingga Rp 15.000',
-            type: RecommendationType.alternative_location,
+            type: RecommendationType.alternativeLocation,
             estimatedSavings: 15000,
             createdAt: DateTime.now(),
             metadata: {
@@ -202,7 +202,7 @@ class LocationRecommendationService {
             title: 'Warung Makan Diskon Siang',
             description:
                 'Warung makan di dekat sini menawarkan diskon 20% untuk makan siang',
-            type: RecommendationType.price_alert,
+            type: RecommendationType.priceAlert,
             estimatedSavings: 20000,
             createdAt: DateTime.now(),
             metadata: {
@@ -218,7 +218,7 @@ class LocationRecommendationService {
             title: 'Restoran Padang Promo',
             description:
                 'Restoran Padang menawarkan paket makan dengan harga Rp 25.000 (normal Rp 35.000)',
-            type: RecommendationType.alternative_location,
+            type: RecommendationType.alternativeLocation,
             estimatedSavings: 10000,
             createdAt: DateTime.now(),
             metadata: {
@@ -238,7 +238,7 @@ class LocationRecommendationService {
             title: 'Pembayaran Online Lebih Murah',
             description:
                 'Bayar tagihan listrik via aplikasi digital untuk dapat potongan biaya admin Rp 2.500',
-            type: RecommendationType.price_alert,
+            type: RecommendationType.priceAlert,
             estimatedSavings: 2500,
             createdAt: DateTime.now(),
             metadata: {

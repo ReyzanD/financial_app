@@ -6,6 +6,8 @@ import 'package:financial_app/utils/formatters.dart';
 import 'package:financial_app/services/obligation_service.dart';
 import 'package:financial_app/services/payment_history_service.dart';
 import 'package:financial_app/l10n/app_localizations.dart';
+import 'package:financial_app/services/error_handler_service.dart';
+import 'package:financial_app/utils/design_tokens.dart';
 
 class ObligationItem extends StatelessWidget {
   final FinancialObligation obligation;
@@ -122,7 +124,7 @@ class ObligationItem extends StatelessWidget {
                 context: context,
                 builder:
                     (context) => AlertDialog(
-                      backgroundColor: const Color(0xFF1A1A1A),
+                      backgroundColor: DesignTokens.surfaceDark,
                       title: Text(
                         '${AppLocalizations.of(context)!.delete_bill_confirm} "${obligation.name}"?',
                         style: GoogleFonts.poppins(color: Colors.white),
@@ -442,7 +444,7 @@ class ObligationItem extends StatelessWidget {
                       onPressed: onTap,
                       icon: Iconsax.eye,
                       label: AppLocalizations.of(context)!.details,
-                      color: const Color(0xFF8B5FBF),
+                      color: DesignTokens.primaryColor,
                       isPrimary: false,
                     ),
                   ),
@@ -466,8 +468,8 @@ class ObligationItem extends StatelessWidget {
     List<Color> getGradientColors(Color baseColor) {
       if (baseColor == Colors.green) {
         return [Colors.green.shade400, Colors.green.shade600];
-      } else if (baseColor == const Color(0xFF8B5FBF)) {
-        return [const Color(0xFF8B5FBF), const Color(0xFF6B4C93)];
+      } else if (baseColor == DesignTokens.primaryColor) {
+        return [DesignTokens.primaryColor, const Color(0xFF6B4C93)];
       } else {
         // For other colors, create lighter/darker variants
         return [
@@ -598,7 +600,7 @@ class ObligationItem extends StatelessWidget {
       context: context,
       builder:
           (context) => AlertDialog(
-            backgroundColor: const Color(0xFF1A1A1A),
+            backgroundColor: DesignTokens.surfaceDark,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(16),
             ),
@@ -633,7 +635,7 @@ class ObligationItem extends StatelessWidget {
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
-                      borderSide: const BorderSide(color: Color(0xFF8B5FBF)),
+                      borderSide: const BorderSide(color: DesignTokens.primaryColor),
                     ),
                   ),
                 ),
@@ -658,7 +660,7 @@ class ObligationItem extends StatelessWidget {
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
-                      borderSide: const BorderSide(color: Color(0xFF8B5FBF)),
+                      borderSide: const BorderSide(color: DesignTokens.primaryColor),
                     ),
                   ),
                   onTap: () async {
@@ -687,14 +689,9 @@ class ObligationItem extends StatelessWidget {
                 onPressed: () async {
                   final amount = double.tryParse(amountController.text);
                   if (amount == null || amount <= 0) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                          AppLocalizations.of(context)!.invalid_amount,
-                          style: GoogleFonts.poppins(),
-                        ),
-                        backgroundColor: Colors.red,
-                      ),
+                    ErrorHandlerService.showErrorSnackbar(
+                      context,
+                      AppLocalizations.of(context)!.invalid_amount,
                     );
                     return;
                   }
@@ -721,33 +718,23 @@ class ObligationItem extends StatelessWidget {
 
                     if (context.mounted) {
                       Navigator.pop(context);
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                            AppLocalizations.of(context)!.payment_recorded,
-                            style: GoogleFonts.poppins(),
-                          ),
-                          backgroundColor: Colors.green,
-                        ),
+                      ErrorHandlerService.showSuccessSnackbar(
+                        context,
+                        AppLocalizations.of(context)!.payment_recorded,
                       );
                       onPaymentRecorded?.call();
                     }
                   } catch (e) {
                     if (context.mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                            '${AppLocalizations.of(context)!.payment_failed}: $e',
-                            style: GoogleFonts.poppins(),
-                          ),
-                          backgroundColor: Colors.red,
-                        ),
+                      ErrorHandlerService.showErrorSnackbar(
+                        context,
+                        '${AppLocalizations.of(context)!.payment_failed}: ${ErrorHandlerService.getUserFriendlyMessage(e)}',
                       );
                     }
                   }
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF8B5FBF),
+                  backgroundColor: DesignTokens.primaryColor,
                 ),
                 child: Text(
                   AppLocalizations.of(context)!.save,

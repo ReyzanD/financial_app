@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:financial_app/services/error_handler_service.dart';
+import 'package:financial_app/utils/design_tokens.dart';
 
 /// Dialog untuk edit persentase budget category
 class BudgetEditDialog extends StatelessWidget {
@@ -42,7 +44,7 @@ class BudgetEditDialog extends StatelessWidget {
     );
 
     return AlertDialog(
-      backgroundColor: const Color(0xFF1A1A1A),
+      backgroundColor: DesignTokens.surfaceDark,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       title: Text(
         'Edit Persentase',
@@ -73,7 +75,7 @@ class BudgetEditDialog extends StatelessWidget {
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8),
-                borderSide: const BorderSide(color: Color(0xFF8B5FBF)),
+                borderSide: const BorderSide(color: DesignTokens.primaryColor),
               ),
             ),
           ),
@@ -97,19 +99,14 @@ class BudgetEditDialog extends StatelessWidget {
                 newPercentage <= 100) {
               onSave(newPercentage);
             } else {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(
-                    'Masukkan persentase yang valid (1-100)',
-                    style: GoogleFonts.poppins(),
-                  ),
-                  backgroundColor: Colors.red,
-                ),
+              ErrorHandlerService.showWarningSnackbar(
+                context,
+                'Masukkan persentase yang valid (1-100)',
               );
             }
           },
           style: ElevatedButton.styleFrom(
-            backgroundColor: const Color(0xFF8B5FBF),
+            backgroundColor: DesignTokens.primaryColor,
           ),
           child: Text(
             'Simpan',

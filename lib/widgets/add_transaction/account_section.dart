@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
-import 'package:financial_app/services/local_data_service.dart';
+import 'package:financial_app/services/data/account_data_service.dart';
 import 'package:financial_app/utils/design_tokens.dart';
 
 class AccountSection extends StatefulWidget {
@@ -19,7 +19,7 @@ class AccountSection extends StatefulWidget {
 }
 
 class _AccountSectionState extends State<AccountSection> {
-  final LocalDataService _localData = LocalDataService();
+  final AccountDataService _accountData = AccountDataService();
   List<Map<String, dynamic>> _accounts = [];
   bool _isLoading = true;
 
@@ -31,7 +31,7 @@ class _AccountSectionState extends State<AccountSection> {
 
   Future<void> _loadAccounts() async {
     try {
-      final accounts = await _localData.getAccounts();
+      final accounts = await _accountData.getAccounts();
       if (mounted) {
         setState(() {
           _accounts = accounts;
@@ -125,7 +125,7 @@ class _AccountSectionState extends State<AccountSection> {
                   color:
                       widget.selectedAccountId == null
                           ? DesignTokens.primaryColor.withValues(alpha: 0.3)
-                          : const Color(0xFF1A1A1A),
+                          : DesignTokens.surfaceDark,
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
                     color:
@@ -184,7 +184,7 @@ class _AccountSectionState extends State<AccountSection> {
                     color:
                         isSelected
                             ? accountColor.withValues(alpha: 0.3)
-                            : const Color(0xFF1A1A1A),
+                            : DesignTokens.surfaceDark,
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(
                       color: isSelected ? accountColor : Colors.grey[700]!,

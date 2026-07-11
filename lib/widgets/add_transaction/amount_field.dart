@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:financial_app/utils/form_validators.dart';
+import 'package:financial_app/utils/design_tokens.dart';
 
 class AmountField extends StatelessWidget {
   final TextEditingController controller;
@@ -36,10 +37,10 @@ class AmountField extends StatelessWidget {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: Color(0xFF8B5FBF)),
+          borderSide: const BorderSide(color: DesignTokens.primaryColor),
         ),
         filled: true,
-        fillColor: const Color(0xFF1A1A1A),
+        fillColor: DesignTokens.surfaceDark,
       ),
       validator: (value) => FormValidators.validateAmount(value),
     );

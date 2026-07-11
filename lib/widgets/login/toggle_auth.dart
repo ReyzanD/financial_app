@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:financial_app/utils/design_tokens.dart';
 
 class ToggleAuth extends StatelessWidget {
   final bool isLogin;
@@ -22,7 +23,7 @@ class ToggleAuth extends StatelessWidget {
           child: Text(
             isLogin ? 'Register Now >' : 'Log in >',
             style: GoogleFonts.poppins(
-              color: const Color(0xFF8B5FBF),
+              color: DesignTokens.primaryColor,
               fontSize: 12,
               fontWeight: FontWeight.w600,
             ),

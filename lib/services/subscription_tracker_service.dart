@@ -1,24 +1,24 @@
-import 'package:financial_app/services/local_data_service.dart';
 import 'package:financial_app/services/logger_service.dart';
+import 'package:financial_app/services/data/subscription_data_service.dart';
 import 'package:financial_app/models/subscription_model.dart';
 
 class SubscriptionTrackerService {
-  final LocalDataService _localData;
+  final SubscriptionDataService _subscriptionData;
 
-  SubscriptionTrackerService({LocalDataService? localData})
-    : _localData = localData ?? LocalDataService();
+  SubscriptionTrackerService({SubscriptionDataService? subscriptionData})
+    : _subscriptionData = subscriptionData ?? SubscriptionDataService();
 
   Future<List<SubscriptionModel>> getSubscriptions({
     bool activeOnly = true,
   }) async {
     try {
-      final subsData = await _localData.getSubscriptions(
+      final subsData = await _subscriptionData.getSubscriptions(
         activeOnly: activeOnly,
       );
       return subsData.map((s) => SubscriptionModel.fromMap(s)).toList();
     } catch (e) {
       LoggerService.error('Error getting subscriptions', error: e);
-      return [];
+      rethrow;
     }
   }
 
@@ -26,7 +26,7 @@ class SubscriptionTrackerService {
     SubscriptionModel subscription,
   ) async {
     try {
-      final result = await _localData.addSubscription(subscription.toMap());
+      final result = await _subscriptionData.addSubscription(subscription.toMap());
       final created = SubscriptionModel.fromMap(
         result['subscription'] as Map<String, dynamic>,
       );
@@ -47,7 +47,7 @@ class SubscriptionTrackerService {
         updates['next_renewal'] =
             (updates['next_renewal'] as DateTime).toIso8601String();
       }
-      final result = await _localData.updateSubscription(id, updates);
+      final result = await _subscriptionData.updateSubscription(id, updates);
       final updated = SubscriptionModel.fromMap(
         result['subscription'] as Map<String, dynamic>,
       );
@@ -85,10 +85,10 @@ class SubscriptionTrackerService {
 
   Future<Map<String, dynamic>> getSubscriptionSummary() async {
     try {
-      return await _localData.getSubscriptionSummary();
+      return await _subscriptionData.getSubscriptionSummary();
     } catch (e) {
       LoggerService.error('Error getting subscription summary', error: e);
-      return {};
+      rethrow;
     }
   }
 

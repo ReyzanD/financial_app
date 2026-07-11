@@ -1,22 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:get_it/get_it.dart';
 import 'package:financial_app/models/currency_model.dart';
 import 'package:financial_app/services/exchange_rate_service.dart';
-import 'package:financial_app/services/local_data_service.dart';
-import '../helpers/fake_local_data_service.dart';
-
-final getIt = GetIt.instance;
 
 void main() {
-  setUpAll(() {
-    TestWidgetsFlutterBinding.ensureInitialized();
-    getIt.registerLazySingleton<LocalDataService>(() => FakeLocalDataService());
-  });
-
-  tearDownAll(() {
-    getIt.unregister<LocalDataService>();
-  });
-
   group('CurrencyModel', () {
     test('should have correct IDR properties', () {
       expect(CurrencyModel.idr.code, 'IDR');

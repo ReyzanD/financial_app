@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:financial_app/widgets/goals/goal_card.dart';
-import 'package:financial_app/services/api_service.dart';
-import 'package:financial_app/services/error_handler_service.dart';
+import 'package:financial_app/services/data/goal_data_service.dart';
 import 'package:financial_app/services/logger_service.dart';
 import 'package:financial_app/widgets/common/shimmer_loading.dart';
 import 'package:financial_app/widgets/common/empty_state.dart';
@@ -9,30 +8,37 @@ import 'package:financial_app/utils/page_transitions.dart';
 
 class GoalsList extends StatefulWidget {
   final VoidCallback? onGoalsChanged;
+  final List<Map<String, dynamic>>? initialGoals;
 
-  const GoalsList({super.key, this.onGoalsChanged});
+  const GoalsList({super.key, this.onGoalsChanged, this.initialGoals});
 
   @override
   State<GoalsList> createState() => _GoalsListState();
 }
 
 class _GoalsListState extends State<GoalsList> {
-  final ApiService _apiService = ApiService();
+  final GoalDataService _goalService = GoalDataService();
   List<Map<String, dynamic>> goals = [];
   bool _isLoading = true;
+  bool _hasError = false;
 
   @override
   void initState() {
     super.initState();
-    _loadGoals();
+    if (widget.initialGoals != null) {
+      goals = List<Map<String, dynamic>>.from(widget.initialGoals!);
+      _isLoading = false;
+    } else {
+      _loadGoals();
+    }
   }
 
   Future<void> _loadGoals() async {
+    _hasError = false;
     try {
-      final fetchedGoals = await _apiService.getGoals();
+      final fetchedGoals = await _goalService.getGoals();
       if (mounted) {
         setState(() {
-          // Use data directly from database (already has _232143 suffix)
           goals = List<Map<String, dynamic>>.from(fetchedGoals);
           _isLoading = false;
         });
@@ -42,14 +48,8 @@ class _GoalsListState extends State<GoalsList> {
       if (mounted) {
         setState(() {
           _isLoading = false;
+          _hasError = true;
         });
-        if (context.mounted) {
-          ErrorHandlerService.showErrorSnackbar(
-            context,
-            ErrorHandlerService.getUserFriendlyMessage(e),
-            onRetry: _loadGoals,
-          );
-        }
       }
     }
   }
@@ -57,13 +57,12 @@ class _GoalsListState extends State<GoalsList> {
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
-      return const Expanded(
-        child: CardListShimmer(itemCount: 4, cardHeight: 180),
-      );
+      return const CardListShimmer(itemCount: 4, cardHeight: 180);
     }
 
-    if (goals.isEmpty) {
-      return Expanded(
+    if (goals.isEmpty && !_hasError) {
+      return SizedBox(
+        width: double.infinity,
         child: EmptyState(
           icon: Icons.flag_outlined,
           title: 'Belum Ada Target',
@@ -72,18 +71,16 @@ class _GoalsListState extends State<GoalsList> {
       );
     }
 
-    return Expanded(
-      child: ListView.builder(
-        padding: const EdgeInsets.all(16),
-        itemCount: goals.length,
-        itemBuilder: (context, index) {
-          final goal = goals[index];
-          return StaggeredListAnimation(
-            index: index,
-            child: GoalCard(goal: goal, onUpdated: widget.onGoalsChanged),
-          );
-        },
-      ),
+    return ListView.builder(
+      padding: const EdgeInsets.all(16),
+      itemCount: goals.length,
+      itemBuilder: (context, index) {
+        final goal = goals[index];
+        return StaggeredListAnimation(
+          index: index,
+          child: GoalCard(goal: goal, onUpdated: widget.onGoalsChanged),
+        );
+      },
     );
   }
 }

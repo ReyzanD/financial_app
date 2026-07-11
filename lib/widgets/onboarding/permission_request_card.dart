@@ -24,7 +24,7 @@ class PermissionRequestCard extends StatefulWidget {
     required this.description,
     required this.benefit,
     required this.icon,
-    this.iconColor = const Color(0xFF8B5FBF),
+    this.iconColor = DesignTokens.primaryColor,
     this.onPermissionGranted,
     this.onPermissionDenied,
   });

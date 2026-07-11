@@ -2,14 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:financial_app/models/financial_obligation.dart';
 import 'package:financial_app/services/obligation_service.dart';
+import 'package:financial_app/widgets/obligations/obligation_filters.dart';
 import 'package:financial_app/widgets/obligations/obligation_helpers.dart';
 import 'package:financial_app/l10n/app_localizations.dart';
 import 'obligation_item.dart';
+import 'package:financial_app/utils/design_tokens.dart';
 
 class AllObligationsView extends StatefulWidget {
   final String searchQuery;
+  final ObligationFilters filters;
 
-  const AllObligationsView({super.key, this.searchQuery = ''});
+  const AllObligationsView({super.key, this.searchQuery = '', this.filters = const ObligationFilters()});
 
   @override
   State<AllObligationsView> createState() => _AllObligationsViewState();
@@ -89,7 +92,25 @@ class _AllObligationsViewState extends State<AllObligationsView> {
           return const Center(child: CircularProgressIndicator());
         }
 
-        final obligations = snapshot.data!;
+        var obligations = snapshot.data!;
+
+        // Apply filters
+        if (widget.filters.hasFilters) {
+          final f = widget.filters;
+          obligations = obligations.where((o) {
+            if (f.type != null && o.type.name != f.type) return false;
+            if (f.category != null && o.category != f.category) return false;
+            if (f.status != null) {
+              if (f.status == 'active' && o.daysUntilDue <= 0) return false;
+              if (f.status == 'overdue' && o.daysUntilDue >= 0) return false;
+            }
+            if (f.minAmount != null && o.monthlyAmount < f.minAmount!) return false;
+            if (f.maxAmount != null && o.monthlyAmount > f.maxAmount!) return false;
+            if (f.startDate != null && o.dueDate.isBefore(f.startDate!)) return false;
+            if (f.endDate != null && o.dueDate.isAfter(f.endDate!)) return false;
+            return true;
+          }).toList();
+        }
 
         if (obligations.isEmpty) {
           return Center(
@@ -179,13 +200,13 @@ class _AllObligationsViewState extends State<AllObligationsView> {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
           decoration: BoxDecoration(
-            color: const Color(0xFF8B5FBF).withValues(alpha: 0.2),
+            color: DesignTokens.primaryColor.withValues(alpha: 0.2),
             borderRadius: BorderRadius.circular(12),
           ),
           child: Text(
             count.toString(),
             style: GoogleFonts.poppins(
-              color: const Color(0xFF8B5FBF),
+              color: DesignTokens.primaryColor,
               fontSize: 12,
               fontWeight: FontWeight.bold,
             ),

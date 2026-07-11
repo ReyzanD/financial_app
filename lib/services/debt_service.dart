@@ -1,26 +1,26 @@
-import 'package:financial_app/services/local_data_service.dart';
 import 'package:financial_app/services/logger_service.dart';
+import 'package:financial_app/services/data/debt_data_service.dart';
 import 'package:financial_app/models/debt_model.dart';
 
 class DebtService {
-  final LocalDataService _localData;
+  final DebtDataService _debtData;
 
-  DebtService({LocalDataService? localData})
-    : _localData = localData ?? LocalDataService();
+  DebtService({DebtDataService? debtData})
+    : _debtData = debtData ?? DebtDataService();
 
   Future<List<DebtModel>> getDebts({bool activeOnly = true}) async {
     try {
-      final debtsData = await _localData.getDebts(activeOnly: activeOnly);
+      final debtsData = await _debtData.getDebts(activeOnly: activeOnly);
       return debtsData.map((d) => DebtModel.fromMap(d)).toList();
     } catch (e) {
       LoggerService.error('Error getting debts', error: e);
-      return [];
+      rethrow;
     }
   }
 
   Future<DebtModel> addDebt(DebtModel debt) async {
     try {
-      final result = await _localData.addDebt(debt.toMap());
+      final result = await _debtData.addDebt(debt.toMap());
       final created = DebtModel.fromMap(result['debt'] as Map<String, dynamic>);
       LoggerService.success('Debt added: ${created.name}');
       return created;
@@ -36,7 +36,7 @@ class DebtService {
     String? notes,
   }) async {
     try {
-      await _localData.recordDebtPayment(debtId, amount, notes: notes);
+      await _debtData.recordDebtPayment(debtId, amount, notes: notes);
       LoggerService.success('Payment recorded: $amount for debt $debtId');
     } catch (e) {
       LoggerService.error('Error recording payment', error: e);
@@ -46,26 +46,26 @@ class DebtService {
 
   Future<List<Map<String, dynamic>>> getPaymentHistory(String debtId) async {
     try {
-      return await _localData.getDebtPayments(debtId);
+      return await _debtData.getDebtPayments(debtId);
     } catch (e) {
       LoggerService.error('Error getting payment history', error: e);
-      return [];
+      rethrow;
     }
   }
 
   Future<double> getTotalDebt() async {
     try {
-      final summary = await _localData.getDebtSummary();
+      final summary = await _debtData.getDebtSummary();
       return (summary['total_debt'] as num?)?.toDouble() ?? 0.0;
     } catch (e) {
       LoggerService.error('Error getting total debt', error: e);
-      return 0.0;
+      rethrow;
     }
   }
 
   Future<Map<String, dynamic>> getDebtSummary() async {
     try {
-      final summary = await _localData.getDebtSummary();
+      final summary = await _debtData.getDebtSummary();
       final debts = await getDebts();
       final debtsByType = <String, double>{};
 
@@ -84,13 +84,13 @@ class DebtService {
       };
     } catch (e) {
       LoggerService.error('Error getting debt summary', error: e);
-      return {};
+      rethrow;
     }
   }
 
   Future<void> deleteDebt(String debtId) async {
     try {
-      await _localData.deleteDebt(debtId);
+      await _debtData.deleteDebt(debtId);
       LoggerService.success('Debt deleted');
     } catch (e) {
       LoggerService.error('Error deleting debt', error: e);

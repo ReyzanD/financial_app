@@ -12,63 +12,63 @@ class LoggerService {
   static void debug(String message, {Object? error, StackTrace? stackTrace}) {
     if (!_enableLogging) return;
     if (_enableVerboseLogging) {
-      print('🐛 [DEBUG] $message');
-      if (error != null) print('   Error: $error');
-      if (stackTrace != null) print('   Stack: $stackTrace');
+      debugPrint('🐛 [DEBUG] $message');
+      if (error != null) debugPrint('   Error: $error');
+      if (stackTrace != null) debugPrint('   Stack: $stackTrace');
     }
   }
 
   /// Log info messages
   static void info(String message) {
     if (!_enableLogging) return;
-    print('ℹ️ [INFO] $message');
+    debugPrint('ℹ️ [INFO] $message');
   }
 
   /// Log success messages
   static void success(String message) {
     if (!_enableLogging) return;
-    print('✅ [SUCCESS] $message');
+    debugPrint('✅ [SUCCESS] $message');
   }
 
   /// Log warning messages
   static void warning(String message, {Object? error}) {
     if (!_enableLogging) return;
-    print('⚠️ [WARNING] $message');
-    if (error != null) print('   Error: $error');
+    debugPrint('⚠️ [WARNING] $message');
+    if (error != null) debugPrint('   Error: $error');
   }
 
   /// Log error messages
   static void error(String message, {Object? error, StackTrace? stackTrace}) {
     if (!_enableLogging) return;
-    print('❌ [ERROR] $message');
-    if (error != null) print('   Error: $error');
+    debugPrint('❌ [ERROR] $message');
+    if (error != null) debugPrint('   Error: $error');
     if (stackTrace != null && _enableVerboseLogging) {
-      print('   Stack: $stackTrace');
+      debugPrint('   Stack: $stackTrace');
     }
   }
 
   /// Log API requests
   static void apiRequest(String method, String endpoint) {
     if (!_enableLogging) return;
-    print('📡 [API] $method $endpoint');
+    debugPrint('📡 [API] $method $endpoint');
   }
 
   /// Log API responses
   static void apiResponse(int statusCode, String endpoint) {
     if (!_enableLogging) return;
     if (statusCode >= 200 && statusCode < 300) {
-      print('✅ [API] $statusCode $endpoint');
+      debugPrint('✅ [API] $statusCode $endpoint');
     } else if (statusCode == 404) {
       // 404 is logged as debug, not error (endpoint might not exist yet)
       debug('API 404: $endpoint');
     } else {
-      print('❌ [API] $statusCode $endpoint');
+      debugPrint('❌ [API] $statusCode $endpoint');
     }
   }
 
   /// Log cache operations
   static void cache(String operation, String key) {
     if (!_enableLogging) return;
-    print('📦 [CACHE] $operation: $key');
+    debugPrint('📦 [CACHE] $operation: $key');
   }
 }

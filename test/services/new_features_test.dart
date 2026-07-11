@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:get_it/get_it.dart';
+
 import 'package:financial_app/models/account_model.dart';
 import 'package:financial_app/models/debt_model.dart';
 import 'package:financial_app/models/subscription_model.dart';
@@ -13,31 +13,37 @@ import 'package:financial_app/services/challenge_service.dart';
 import 'package:financial_app/services/investment_service.dart';
 import 'package:financial_app/services/transaction_template_service.dart';
 import 'package:financial_app/services/category_customization_service.dart';
-import 'package:financial_app/services/local_data_service.dart';
-import 'package:financial_app/core/di/service_locator.dart';
-import '../helpers/fake_local_data_service.dart';
+import '../helpers/fake_data_services.dart';
 
 void main() {
-  late FakeLocalDataService fakeLocalData;
+  late FakeAccountDataService fakeAccountData;
+  late FakeGoalDataService fakeGoalData;
+  late FakeDebtDataService fakeDebtData;
+  late FakeSubscriptionDataService fakeSubData;
+  late FakeExpenseSplitDataService fakeSplitData;
+  late FakeInvestmentDataService fakeInvData;
+  late FakeCategoryDataService fakeCategoryData;
 
   setUpAll(() {
     TestWidgetsFlutterBinding.ensureInitialized();
     SharedPreferences.setMockInitialValues({});
-    fakeLocalData = FakeLocalDataService();
-    // Register fake LocalDataService in GetIt for CategoryCustomizationService
-    getIt.registerLazySingleton<LocalDataService>(() => fakeLocalData);
-  });
-
-  tearDownAll(() {
-    // Clean up GetIt registration so it doesn't leak between test runs
-    getIt.unregister<LocalDataService>();
+    fakeAccountData = FakeAccountDataService();
+    fakeGoalData = FakeGoalDataService();
+    fakeDebtData = FakeDebtDataService();
+    fakeSubData = FakeSubscriptionDataService();
+    fakeSplitData = FakeExpenseSplitDataService();
+    fakeInvData = FakeInvestmentDataService();
+    fakeCategoryData = FakeCategoryDataService();
   });
 
   group('AccountService', () {
     late AccountService service;
 
     setUp(() {
-      service = AccountService(localData: fakeLocalData);
+      service = AccountService(
+        accountData: fakeAccountData,
+        goalData: fakeGoalData,
+      );
     });
 
     test('should return default accounts when none exist', () async {
@@ -98,7 +104,7 @@ void main() {
     late DebtService service;
 
     setUp(() {
-      service = DebtService(localData: fakeLocalData);
+      service = DebtService(debtData: fakeDebtData);
     });
 
     test('should start with no debts', () async {
@@ -154,7 +160,7 @@ void main() {
     late SubscriptionTrackerService service;
 
     setUp(() {
-      service = SubscriptionTrackerService(localData: fakeLocalData);
+      service = SubscriptionTrackerService(subscriptionData: fakeSubData);
     });
 
     test('should start with no subscriptions', () async {
@@ -215,7 +221,7 @@ void main() {
     late ExpenseSplitService service;
 
     setUp(() {
-      service = ExpenseSplitService(localData: fakeLocalData);
+      service = ExpenseSplitService(splitData: fakeSplitData);
     });
 
     test('should start with no splits', () async {
@@ -369,7 +375,7 @@ void main() {
     late InvestmentService service;
 
     setUp(() {
-      service = InvestmentService(localData: fakeLocalData);
+      service = InvestmentService(investmentData: fakeInvData);
     });
 
     test('should start with no investments', () async {
@@ -504,7 +510,7 @@ void main() {
     late CategoryCustomizationService service;
 
     setUp(() {
-      service = CategoryCustomizationService();
+      service = CategoryCustomizationService(categoryData: fakeCategoryData);
     });
 
     test('should start with no custom categories', () async {

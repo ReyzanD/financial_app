@@ -1,13 +1,15 @@
-import 'package:financial_app/services/local_data_service.dart';
 import 'package:financial_app/services/logger_service.dart';
-import 'package:financial_app/core/di/service_locator.dart';
+import 'package:financial_app/services/data/category_data_service.dart';
 
 class CategoryCustomizationService {
-  final LocalDataService _localData = getIt<LocalDataService>();
+  final CategoryDataService _categoryData;
+
+  CategoryCustomizationService({CategoryDataService? categoryData})
+    : _categoryData = categoryData ?? CategoryDataService();
 
   Future<List<Map<String, dynamic>>> getCustomCategories() async {
     try {
-      final categories = await _localData.getCategories();
+      final categories = await _categoryData.getCategories();
       return categories
           .where(
             (c) =>
@@ -40,7 +42,7 @@ class CategoryCustomizationService {
         'display_order': 0,
       };
 
-      final result = await _localData.addCategory(categoryData);
+      final result = await _categoryData.addCategory(categoryData);
       LoggerService.success('Custom category created: $name');
       return result['category'] as Map<String, dynamic>;
     } catch (e) {
@@ -54,7 +56,7 @@ class CategoryCustomizationService {
     Map<String, dynamic> updates,
   ) async {
     try {
-      final result = await _localData.updateCategory(categoryId, updates);
+      final result = await _categoryData.updateCategory(categoryId, updates);
       return result['category'] as Map<String, dynamic>;
     } catch (e) {
       LoggerService.error('Error updating custom category', error: e);
@@ -64,7 +66,7 @@ class CategoryCustomizationService {
 
   Future<void> deleteCustomCategory(String categoryId) async {
     try {
-      await _localData.deleteCategory(categoryId);
+      await _categoryData.deleteCategory(categoryId);
       LoggerService.success('Custom category deleted');
     } catch (e) {
       LoggerService.error('Error deleting custom category', error: e);
@@ -74,7 +76,7 @@ class CategoryCustomizationService {
 
   Future<String> getCategoryIcon(String categoryId) async {
     try {
-      final categories = await _localData.getCategories();
+      final categories = await _categoryData.getCategories();
       final category = categories.firstWhere(
         (c) => (c['category_id_232143'] ?? c['id']) == categoryId,
         orElse: () => {},
@@ -88,7 +90,7 @@ class CategoryCustomizationService {
 
   Future<void> setCategoryIcon(String categoryId, String icon) async {
     try {
-      await _localData.updateCategory(categoryId, {'icon': icon});
+      await _categoryData.updateCategory(categoryId, {'icon': icon});
     } catch (e) {
       LoggerService.error('Error setting category icon', error: e);
     }
@@ -96,7 +98,7 @@ class CategoryCustomizationService {
 
   Future<String> getCategoryColor(String categoryId) async {
     try {
-      final categories = await _localData.getCategories();
+      final categories = await _categoryData.getCategories();
       final category = categories.firstWhere(
         (c) => (c['category_id_232143'] ?? c['id']) == categoryId,
         orElse: () => {},
@@ -110,7 +112,7 @@ class CategoryCustomizationService {
 
   Future<void> setCategoryColor(String categoryId, String color) async {
     try {
-      await _localData.updateCategory(categoryId, {'color': color});
+      await _categoryData.updateCategory(categoryId, {'color': color});
     } catch (e) {
       LoggerService.error('Error setting category color', error: e);
     }
@@ -118,7 +120,7 @@ class CategoryCustomizationService {
 
   Future<List<Map<String, dynamic>>>
   getAllCategoriesWithCustomizations() async {
-    return await _localData.getCategories();
+    return await _categoryData.getCategories();
   }
 
   static List<Map<String, dynamic>> getDefaultCategories() {

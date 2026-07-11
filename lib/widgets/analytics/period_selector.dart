@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:financial_app/utils/design_tokens.dart';
 
 class PeriodSelector extends StatefulWidget {
   final String selectedPeriod;
@@ -45,12 +46,12 @@ class _PeriodSelectorState extends State<PeriodSelector> {
               decoration: BoxDecoration(
                 color:
                     isSelected
-                        ? const Color(0xFF8B5FBF)
-                        : const Color(0xFF1A1A1A),
+                        ? DesignTokens.primaryColor
+                        : DesignTokens.surfaceDark,
                 borderRadius: BorderRadius.circular(20),
                 border: Border.all(
                   color:
-                      isSelected ? const Color(0xFF8B5FBF) : Colors.grey[800]!,
+                      isSelected ? DesignTokens.primaryColor : DesignTokens.borderDark,
                 ),
               ),
               child: Text(

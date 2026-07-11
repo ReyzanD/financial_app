@@ -6,7 +6,9 @@ import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:financial_app/services/location_service.dart';
 import 'package:financial_app/services/map_provider_service.dart';
 import 'package:financial_app/services/logger_service.dart';
+import 'package:financial_app/services/error_handler_service.dart';
 import 'package:financial_app/models/location_data.dart';
+import 'package:financial_app/utils/design_tokens.dart';
 
 class LocationPickerMap extends StatefulWidget {
   final LocationData? initialLocation;
@@ -42,11 +44,9 @@ class _LocationPickerMapState extends State<LocationPickerMap> {
 
   Future<void> _searchLocation(String query) async {
     if (query.trim().isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Masukkan nama tempat untuk mencari'),
-          backgroundColor: Colors.orange,
-        ),
+      ErrorHandlerService.showWarningSnackbar(
+        context,
+        'Masukkan nama tempat untuk mencari',
       );
       return;
     }
@@ -72,14 +72,9 @@ class _LocationPickerMapState extends State<LocationPickerMap> {
         });
 
         if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              '✓ ${results.length} lokasi ditemukan - pilih dari daftar',
-            ),
-            backgroundColor: Colors.green,
-            duration: const Duration(seconds: 2),
-          ),
+        ErrorHandlerService.showSuccessSnackbar(
+          context,
+          '${results.length} lokasi ditemukan - pilih dari daftar',
         );
       } else {
         LoggerService.warning('❌ No results found for: $query');
@@ -88,12 +83,9 @@ class _LocationPickerMapState extends State<LocationPickerMap> {
           _showResults = false;
         });
         if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Lokasi "$query" tidak ditemukan'),
-            backgroundColor: Colors.orange,
-            duration: const Duration(seconds: 3),
-          ),
+        ErrorHandlerService.showWarningSnackbar(
+          context,
+          'Lokasi "$query" tidak ditemukan',
         );
       }
     } catch (e, stackTrace) {
@@ -103,12 +95,9 @@ class _LocationPickerMapState extends State<LocationPickerMap> {
         stackTrace: stackTrace,
       );
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Gagal mencari: ${e.toString()}'),
-          backgroundColor: Colors.red,
-          duration: const Duration(seconds: 3),
-        ),
+      ErrorHandlerService.showErrorSnackbar(
+        context,
+        'Gagal mencari: ${ErrorHandlerService.getUserFriendlyMessage(e)}',
       );
     } finally {
       setState(() => _isSearching = false);
@@ -147,14 +136,9 @@ class _LocationPickerMapState extends State<LocationPickerMap> {
     });
 
     // Show snackbar with coordinates
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          'Lokasi dipilih: ${position.latitude.toStringAsFixed(6)}, ${position.longitude.toStringAsFixed(6)}',
-        ),
-        duration: const Duration(seconds: 2),
-        backgroundColor: const Color(0xFF8B5FBF),
-      ),
+    ErrorHandlerService.showInfoSnackbar(
+      context,
+      'Lokasi dipilih: ${position.latitude.toStringAsFixed(6)}, ${position.longitude.toStringAsFixed(6)}',
     );
   }
 
@@ -170,22 +154,18 @@ class _LocationPickerMapState extends State<LocationPickerMap> {
       });
     } else {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Tidak dapat mendapatkan lokasi saat ini'),
-          backgroundColor: Colors.red,
-        ),
+      ErrorHandlerService.showErrorSnackbar(
+        context,
+        'Tidak dapat mendapatkan lokasi saat ini',
       );
     }
   }
 
   void _confirmLocation() {
     if (_selectedPosition == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Pilih lokasi di peta terlebih dahulu'),
-          backgroundColor: Colors.red,
-        ),
+      ErrorHandlerService.showWarningSnackbar(
+        context,
+        'Pilih lokasi di peta terlebih dahulu',
       );
       return;
     }
@@ -217,12 +197,9 @@ class _LocationPickerMapState extends State<LocationPickerMap> {
 
     _mapController.move(newPosition, 16.0);
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('✓ Dipilih: ${displayName.split(',').first}'),
-        backgroundColor: Colors.green,
-        duration: const Duration(seconds: 2),
-      ),
+    ErrorHandlerService.showSuccessSnackbar(
+      context,
+      'Dipilih: ${displayName.split(',').first}',
     );
   }
 
@@ -235,17 +212,17 @@ class _LocationPickerMapState extends State<LocationPickerMap> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
         decoration: BoxDecoration(
-          color: const Color(0xFF8B5FBF).withValues(alpha: 0.2),
+          color: DesignTokens.primaryColor.withValues(alpha: 0.2),
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: const Color(0xFF8B5FBF).withValues(alpha: 0.5),
+            color: DesignTokens.primaryColor.withValues(alpha: 0.5),
             width: 1,
           ),
         ),
         child: Text(
           placeName,
           style: GoogleFonts.poppins(
-            color: const Color(0xFF8B5FBF),
+            color: DesignTokens.primaryColor,
             fontSize: 11,
             fontWeight: FontWeight.w500,
           ),
@@ -294,9 +271,9 @@ class _LocationPickerMapState extends State<LocationPickerMap> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: DesignTokens.backgroundDark,
       appBar: AppBar(
-        backgroundColor: Colors.black,
+        backgroundColor: DesignTokens.backgroundDark,
         title: Text(
           'Pilih Lokasi',
           style: GoogleFonts.poppins(
@@ -311,11 +288,11 @@ class _LocationPickerMapState extends State<LocationPickerMap> {
         actions: [
           TextButton.icon(
             onPressed: _confirmLocation,
-            icon: const Icon(Iconsax.tick_circle, color: Color(0xFF8B5FBF)),
+            icon: const Icon(Iconsax.tick_circle, color: DesignTokens.primaryColor),
             label: Text(
               'Pilih',
               style: GoogleFonts.poppins(
-                color: const Color(0xFF8B5FBF),
+                color: DesignTokens.primaryColor,
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -360,7 +337,7 @@ class _LocationPickerMapState extends State<LocationPickerMap> {
                         vertical: 8,
                       ),
                       decoration: BoxDecoration(
-                        color: const Color(0xFF1A1A1A),
+                        color: DesignTokens.surfaceDark,
                         borderRadius: BorderRadius.circular(12),
                         boxShadow: [
                           BoxShadow(
@@ -374,7 +351,7 @@ class _LocationPickerMapState extends State<LocationPickerMap> {
                         children: [
                           const Icon(
                             Iconsax.search_normal,
-                            color: Color(0xFF8B5FBF),
+                            color: DesignTokens.primaryColor,
                             size: 20,
                           ),
                           const SizedBox(width: 12),
@@ -403,7 +380,7 @@ class _LocationPickerMapState extends State<LocationPickerMap> {
                               height: 16,
                               child: CircularProgressIndicator(
                                 strokeWidth: 2,
-                                color: Color(0xFF8B5FBF),
+                                color: DesignTokens.primaryColor,
                               ),
                             )
                           else
@@ -473,7 +450,7 @@ class _LocationPickerMapState extends State<LocationPickerMap> {
                       child: Container(
                         constraints: const BoxConstraints(maxHeight: 300),
                         decoration: BoxDecoration(
-                          color: const Color(0xFF1A1A1A),
+                          color: DesignTokens.surfaceDark,
                           borderRadius: BorderRadius.circular(12),
                           boxShadow: [
                             BoxShadow(
@@ -501,7 +478,7 @@ class _LocationPickerMapState extends State<LocationPickerMap> {
                                 children: [
                                   const Icon(
                                     Iconsax.location,
-                                    color: Color(0xFF8B5FBF),
+                                    color: DesignTokens.primaryColor,
                                     size: 18,
                                   ),
                                   const SizedBox(width: 8),
@@ -587,7 +564,7 @@ class _LocationPickerMapState extends State<LocationPickerMap> {
                                             child: const Icon(
                                               Iconsax.location,
                                               size: 16,
-                                              color: Color(0xFF8B5FBF),
+                                              color: DesignTokens.primaryColor,
                                             ),
                                           ),
                                           const SizedBox(width: 12),
@@ -649,7 +626,7 @@ class _LocationPickerMapState extends State<LocationPickerMap> {
                       child: Container(
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
-                          color: const Color(0xFF1A1A1A),
+                          color: DesignTokens.surfaceDark,
                           borderRadius: BorderRadius.circular(12),
                           boxShadow: [
                             BoxShadow(
@@ -716,7 +693,7 @@ class _LocationPickerMapState extends State<LocationPickerMap> {
                   const LatLng(-5.1477, 119.4327);
               _mapController.move(center, 16.0);
             },
-            backgroundColor: const Color(0xFF8B5FBF),
+            backgroundColor: DesignTokens.primaryColor,
             child: const Icon(Iconsax.add, color: Colors.white),
           ),
           const SizedBox(height: 8),
@@ -730,7 +707,7 @@ class _LocationPickerMapState extends State<LocationPickerMap> {
                   const LatLng(-5.1477, 119.4327);
               _mapController.move(center, 14.0);
             },
-            backgroundColor: const Color(0xFF8B5FBF),
+            backgroundColor: DesignTokens.primaryColor,
             child: const Icon(Iconsax.minus, color: Colors.white),
           ),
           const SizedBox(height: 8),
@@ -738,7 +715,7 @@ class _LocationPickerMapState extends State<LocationPickerMap> {
           FloatingActionButton(
             heroTag: 'location_picker_current_location',
             onPressed: _moveToCurrentLocation,
-            backgroundColor: const Color(0xFF8B5FBF),
+            backgroundColor: DesignTokens.primaryColor,
             child: const Icon(Iconsax.gps, color: Colors.white),
           ),
         ],

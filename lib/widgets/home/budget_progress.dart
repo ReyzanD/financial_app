@@ -4,8 +4,9 @@ import 'package:financial_app/utils/formatters.dart';
 import 'package:financial_app/services/api_service.dart';
 import 'package:financial_app/services/budget_recommendation_service.dart';
 import 'package:financial_app/services/logger_service.dart';
-import 'package:financial_app/Screen/budgets_screen.dart';
+import 'package:financial_app/features/budgets/presentation/screens/budgets_screen.dart';
 import 'package:financial_app/utils/responsive_helper.dart';
+import 'package:financial_app/utils/design_tokens.dart';
 
 class BudgetProgress extends StatefulWidget {
   const BudgetProgress({super.key});
@@ -209,7 +210,7 @@ class _BudgetProgressState extends State<BudgetProgress>
               child: Text(
                 'Lihat Semua',
                 style: GoogleFonts.poppins(
-                  color: Color(0xFF8B5FBF),
+                  color: DesignTokens.primaryColor,
                   fontSize: ResponsiveHelper.fontSize(context, 12),
                 ),
               ),
@@ -221,7 +222,7 @@ class _BudgetProgressState extends State<BudgetProgress>
           Center(
             child: Padding(
               padding: ResponsiveHelper.padding(context, multiplier: 1.25),
-              child: const CircularProgressIndicator(color: Color(0xFF8B5FBF)),
+              child: const CircularProgressIndicator(color: DesignTokens.primaryColor),
             ),
           )
         else if (_errorMessage != null)
@@ -237,7 +238,7 @@ class _BudgetProgressState extends State<BudgetProgress>
             child: Container(
               padding: ResponsiveHelper.padding(context, multiplier: 2.0),
               decoration: BoxDecoration(
-                color: const Color(0xFF1A1A1A),
+                color: DesignTokens.surfaceDark,
                 borderRadius: BorderRadius.circular(
                   ResponsiveHelper.borderRadius(context, 16),
                 ),
@@ -282,16 +283,16 @@ class _BudgetProgressState extends State<BudgetProgress>
                       vertical: 8,
                     ),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF8B5FBF).withValues(alpha: 0.2),
+                      color: DesignTokens.primaryColor.withValues(alpha: 0.2),
                       borderRadius: BorderRadius.circular(
                         ResponsiveHelper.borderRadius(context, 20),
                       ),
-                      border: Border.all(color: const Color(0xFF8B5FBF)),
+                      border: Border.all(color: DesignTokens.primaryColor),
                     ),
                     child: Text(
                       'Tap untuk mencoba lagi',
                       style: GoogleFonts.poppins(
-                        color: const Color(0xFF8B5FBF),
+                        color: DesignTokens.primaryColor,
                         fontSize: ResponsiveHelper.fontSize(context, 12),
                         fontWeight: FontWeight.w500,
                       ),
@@ -305,11 +306,11 @@ class _BudgetProgressState extends State<BudgetProgress>
           Container(
             padding: ResponsiveHelper.padding(context, multiplier: 2.0),
             decoration: BoxDecoration(
-              color: const Color(0xFF1A1A1A),
+              color: DesignTokens.surfaceDark,
               borderRadius: BorderRadius.circular(
                 ResponsiveHelper.borderRadius(context, 16),
               ),
-              border: Border.all(color: Colors.grey[800]!),
+              border: Border.all(color: DesignTokens.borderDark),
             ),
             child: Column(
               children: [
@@ -382,15 +383,15 @@ class _BudgetProgressState extends State<BudgetProgress>
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: [
-              const Color(0xFF8B5FBF).withValues(alpha: 0.2),
-              const Color(0xFF8B5FBF).withValues(alpha: 0.05),
+              DesignTokens.primaryColor.withValues(alpha: 0.2),
+              DesignTokens.primaryColor.withValues(alpha: 0.05),
             ],
           ),
           borderRadius: BorderRadius.circular(
             ResponsiveHelper.borderRadius(context, 16),
           ),
           border: Border.all(
-            color: const Color(0xFF8B5FBF).withValues(alpha: 0.3),
+            color: DesignTokens.primaryColor.withValues(alpha: 0.3),
           ),
         ),
         child: Column(
@@ -400,14 +401,14 @@ class _BudgetProgressState extends State<BudgetProgress>
               children: [
                 Icon(
                   Icons.lightbulb_outline,
-                  color: const Color(0xFF8B5FBF),
+                  color: DesignTokens.primaryColor,
                   size: ResponsiveHelper.iconSize(context, 18),
                 ),
                 SizedBox(width: ResponsiveHelper.horizontalSpacing(context, 8)),
                 Text(
                   'Saran Budget AI',
                   style: GoogleFonts.poppins(
-                    color: const Color(0xFF8B5FBF),
+                    color: DesignTokens.primaryColor,
                     fontSize: ResponsiveHelper.fontSize(context, 13),
                     fontWeight: FontWeight.w600,
                   ),
@@ -415,7 +416,7 @@ class _BudgetProgressState extends State<BudgetProgress>
                 const Spacer(),
                 Icon(
                   Icons.arrow_forward_ios,
-                  color: const Color(0xFF8B5FBF),
+                  color: DesignTokens.primaryColor,
                   size: ResponsiveHelper.iconSize(context, 12),
                 ),
               ],
@@ -486,7 +487,7 @@ class _BudgetProgressState extends State<BudgetProgress>
       ),
       padding: ResponsiveHelper.padding(context),
       decoration: BoxDecoration(
-        color: const Color(0xFF1A1A1A),
+        color: DesignTokens.surfaceDark,
         borderRadius: BorderRadius.circular(
           ResponsiveHelper.borderRadius(context, 16),
         ),
@@ -494,7 +495,7 @@ class _BudgetProgressState extends State<BudgetProgress>
           color:
               isOverBudget
                   ? Colors.red.withValues(alpha: 0.3)
-                  : Colors.grey[800]!,
+                  : DesignTokens.borderDark,
           width: isOverBudget ? 1.5 : 1,
         ),
         boxShadow:
@@ -679,7 +680,7 @@ class _BudgetProgressState extends State<BudgetProgress>
       case 'hiburan':
         return const Color(0xFF9B59B6);
       default:
-        return const Color(0xFF8B5FBF);
+        return DesignTokens.primaryColor;
     }
   }
 }

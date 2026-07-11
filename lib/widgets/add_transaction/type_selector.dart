@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
+import 'package:financial_app/utils/design_tokens.dart';
 
 class TypeSelector extends StatelessWidget {
   final String selectedType;
@@ -17,7 +18,7 @@ class TypeSelector extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
-        color: const Color(0xFF1A1A1A),
+        color: DesignTokens.surfaceDark,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: Colors.grey[700]!),
       ),

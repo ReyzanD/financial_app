@@ -7,11 +7,15 @@ import 'package:financial_app/utils/formatters.dart';
 import 'package:financial_app/utils/form_validators.dart';
 import 'package:financial_app/utils/app_refresh.dart';
 import 'package:financial_app/l10n/app_localizations.dart';
+import 'package:financial_app/services/error_handler_service.dart';
+import 'package:financial_app/services/data/budget_data_service.dart';
+import 'package:financial_app/utils/design_tokens.dart';
 
 /// Modal untuk quick add transaction dengan form lengkap
 class QuickAddModal extends StatefulWidget {
   final String type;
   final double? presetAmount;
+  final String? presetDescription;
   final String? presetCategoryId;
   final VoidCallback? onTransactionAdded;
 
@@ -19,6 +23,7 @@ class QuickAddModal extends StatefulWidget {
     super.key,
     required this.type,
     this.presetAmount,
+    this.presetDescription,
     this.presetCategoryId,
     this.onTransactionAdded,
   });
@@ -42,6 +47,9 @@ class _QuickAddModalState extends State<QuickAddModal> {
     super.initState();
     if (widget.presetAmount != null) {
       _amountController.text = widget.presetAmount!.toInt().toString();
+    }
+    if (widget.presetDescription != null) {
+      _descriptionController.text = widget.presetDescription!;
     }
     _selectedCategoryId = widget.presetCategoryId;
     _loadCategories();
@@ -76,13 +84,9 @@ class _QuickAddModalState extends State<QuickAddModal> {
       }
       // Show error to user
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              '${AppLocalizations.of(context)!.failed_to_load_categories}: ${e.toString()}',
-            ),
-            backgroundColor: Colors.red,
-          ),
+        ErrorHandlerService.showErrorSnackbar(
+          context,
+          '${AppLocalizations.of(context)!.failed_to_load_categories}: ${ErrorHandlerService.getUserFriendlyMessage(e)}',
         );
       }
     }
@@ -116,7 +120,7 @@ class _QuickAddModalState extends State<QuickAddModal> {
           context: ctx,
           builder:
               (context) => AlertDialog(
-                backgroundColor: const Color(0xFF1A1A1A),
+                backgroundColor: DesignTokens.surfaceDark,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16),
                 ),
@@ -225,7 +229,7 @@ class _QuickAddModalState extends State<QuickAddModal> {
                   ElevatedButton(
                     onPressed: () => Navigator.pop(context),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF8B5FBF),
+                      backgroundColor: DesignTokens.primaryColor,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),
@@ -285,9 +289,7 @@ class _QuickAddModalState extends State<QuickAddModal> {
     // Validate amount
     final amountError = FormValidators.validateAmount(_amountController.text);
     if (amountError != null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(amountError), backgroundColor: Colors.red),
-      );
+      ErrorHandlerService.showWarningSnackbar(context, amountError);
       return;
     }
 
@@ -295,18 +297,14 @@ class _QuickAddModalState extends State<QuickAddModal> {
     final description = _descriptionController.text.trim();
     final descriptionError = FormValidators.validateDescription(description);
     if (descriptionError != null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(descriptionError), backgroundColor: Colors.red),
-      );
+      ErrorHandlerService.showWarningSnackbar(context, descriptionError);
       return;
     }
 
     if (_selectedCategoryId == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(AppLocalizations.of(context)!.select_category),
-          backgroundColor: Colors.red,
-        ),
+      ErrorHandlerService.showWarningSnackbar(
+        context,
+        AppLocalizations.of(context)!.select_category,
       );
       return;
     }
@@ -342,6 +340,19 @@ class _QuickAddModalState extends State<QuickAddModal> {
         'date': DateTime.now().toIso8601String(),
       });
 
+      // Update budget spending for expense transactions
+      if (widget.type == 'expense' && _selectedCategoryId != null) {
+        try {
+          await BudgetDataService().updateBudgetForExpense(
+            categoryId: _selectedCategoryId!,
+            amount: amount,
+            transactionDate: DateTime.now(),
+          );
+        } catch (e) {
+          LoggerService.warning('Budget update not critical', error: e);
+        }
+      }
+
       if (!ctx.mounted) return;
       // Trigger immediate refresh
       await AppRefresh.refreshAll(ctx);
@@ -349,24 +360,17 @@ class _QuickAddModalState extends State<QuickAddModal> {
       if (!ctx.mounted) return;
       Navigator.pop(ctx);
       if (!ctx.mounted) return;
-      ScaffoldMessenger.of(ctx).showSnackBar(
-        SnackBar(
-          content: Text(
-            '✅ Transaksi berhasil ditambahkan!',
-            style: GoogleFonts.poppins(),
-          ),
-          backgroundColor: Colors.green,
-        ),
+      ErrorHandlerService.showSuccessSnackbar(
+        ctx,
+        'Transaksi berhasil ditambahkan!',
       );
       widget.onTransactionAdded?.call();
     } catch (e) {
       setState(() => _isLoading = false);
       if (!ctx.mounted) return;
-      ScaffoldMessenger.of(ctx).showSnackBar(
-        SnackBar(
-          content: Text('${AppLocalizations.of(ctx)!.failed}: ${e.toString()}'),
-          backgroundColor: Colors.red,
-        ),
+      ErrorHandlerService.showErrorSnackbar(
+        ctx,
+        '${AppLocalizations.of(ctx)!.failed}: ${ErrorHandlerService.getUserFriendlyMessage(e)}',
       );
     }
   }
@@ -439,19 +443,19 @@ class _QuickAddModalState extends State<QuickAddModal> {
                 hintText: 'Rp 0',
                 hintStyle: GoogleFonts.poppins(color: Colors.grey[600]),
                 filled: true,
-                fillColor: const Color(0xFF1A1A1A),
+                fillColor: DesignTokens.surfaceDark,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: Colors.grey[800]!),
+                  borderSide: BorderSide(color: DesignTokens.borderDark),
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: Colors.grey[800]!),
+                  borderSide: BorderSide(color: DesignTokens.borderDark),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                   borderSide: const BorderSide(
-                    color: Color(0xFF8B5FBF),
+                    color: DesignTokens.primaryColor,
                     width: 2,
                   ),
                 ),
@@ -472,7 +476,7 @@ class _QuickAddModalState extends State<QuickAddModal> {
             const SizedBox(height: 8),
             _isLoadingCategories
                 ? const Center(
-                  child: CircularProgressIndicator(color: Color(0xFF8B5FBF)),
+                  child: CircularProgressIndicator(color: DesignTokens.primaryColor),
                 )
                 : _categories.isEmpty
                 ? Container(
@@ -508,7 +512,7 @@ class _QuickAddModalState extends State<QuickAddModal> {
                 )
                 : DropdownButtonFormField<String>(
                   initialValue: _selectedCategoryId,
-                  dropdownColor: const Color(0xFF1A1A1A),
+                  dropdownColor: DesignTokens.surfaceDark,
                   style: GoogleFonts.poppins(color: Colors.white),
                   hint: Text(
                     AppLocalizations.of(context)!.select_category,
@@ -516,19 +520,19 @@ class _QuickAddModalState extends State<QuickAddModal> {
                   ),
                   decoration: InputDecoration(
                     filled: true,
-                    fillColor: const Color(0xFF1A1A1A),
+                    fillColor: DesignTokens.surfaceDark,
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(color: Colors.grey[800]!),
+                      borderSide: BorderSide(color: DesignTokens.borderDark),
                     ),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(color: Colors.grey[800]!),
+                      borderSide: BorderSide(color: DesignTokens.borderDark),
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                       borderSide: const BorderSide(
-                        color: Color(0xFF8B5FBF),
+                        color: DesignTokens.primaryColor,
                         width: 2,
                       ),
                     ),
@@ -564,19 +568,19 @@ class _QuickAddModalState extends State<QuickAddModal> {
                 hintText: AppLocalizations.of(context)!.add_description,
                 hintStyle: GoogleFonts.poppins(color: Colors.grey[600]),
                 filled: true,
-                fillColor: const Color(0xFF1A1A1A),
+                fillColor: DesignTokens.surfaceDark,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: Colors.grey[800]!),
+                  borderSide: BorderSide(color: DesignTokens.borderDark),
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: Colors.grey[800]!),
+                  borderSide: BorderSide(color: DesignTokens.borderDark),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                   borderSide: const BorderSide(
-                    color: Color(0xFF8B5FBF),
+                    color: DesignTokens.primaryColor,
                     width: 2,
                   ),
                 ),

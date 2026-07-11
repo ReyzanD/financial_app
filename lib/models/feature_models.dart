@@ -1,7 +1,5 @@
-/// Barrel file — re-exports all feature models for backward compatibility.
-/// New code should import individual model files directly.
-library feature_models;
-
+// Barrel file — re-exports all feature models for backward compatibility.
+// New code should import individual model files directly.
 export 'transaction_tag_model.dart';
 export 'split_model.dart';
 export 'challenge_model.dart';

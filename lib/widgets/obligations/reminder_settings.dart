@@ -5,6 +5,8 @@ import 'package:financial_app/models/financial_obligation.dart';
 import 'package:financial_app/services/obligation_reminder_service.dart';
 import 'package:financial_app/services/logger_service.dart';
 import 'package:financial_app/l10n/app_localizations.dart';
+import 'package:financial_app/services/error_handler_service.dart';
+import 'package:financial_app/utils/design_tokens.dart';
 
 /// Widget untuk mengatur reminder settings untuk obligation
 class ReminderSettings extends StatefulWidget {
@@ -53,17 +55,11 @@ class _ReminderSettingsState extends State<ReminderSettings> {
     await _reminderService.setReminderEnabled(widget.obligation.id, value);
 
     if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            value
-                ? AppLocalizations.of(context)!.reminder_enabled
-                : AppLocalizations.of(context)!.reminder_disabled,
-            style: GoogleFonts.poppins(),
-          ),
-          backgroundColor: const Color(0xFF8B5FBF),
-          duration: const Duration(seconds: 2),
-        ),
+      ErrorHandlerService.showInfoSnackbar(
+        context,
+        value
+            ? AppLocalizations.of(context)!.reminder_enabled
+            : AppLocalizations.of(context)!.reminder_disabled,
       );
     }
   }
@@ -73,15 +69,9 @@ class _ReminderSettingsState extends State<ReminderSettings> {
     await _reminderService.setReminderDays(widget.obligation.id, days);
 
     if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            '${AppLocalizations.of(context)!.reminder_set} $days hari',
-            style: GoogleFonts.poppins(),
-          ),
-          backgroundColor: const Color(0xFF8B5FBF),
-          duration: const Duration(seconds: 2),
-        ),
+      ErrorHandlerService.showInfoSnackbar(
+        context,
+        '${AppLocalizations.of(context)!.reminder_set} $days hari',
       );
     }
   }
@@ -90,15 +80,9 @@ class _ReminderSettingsState extends State<ReminderSettings> {
     await _reminderService.snoozeReminder(widget.obligation.id, hours: 24);
 
     if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            AppLocalizations.of(context)!.reminder_snoozed,
-            style: GoogleFonts.poppins(),
-          ),
-          backgroundColor: Colors.orange,
-          duration: const Duration(seconds: 2),
-        ),
+      ErrorHandlerService.showWarningSnackbar(
+        context,
+        AppLocalizations.of(context)!.reminder_snoozed,
       );
     }
   }
@@ -107,16 +91,16 @@ class _ReminderSettingsState extends State<ReminderSettings> {
   Widget build(BuildContext context) {
     if (_isLoading) {
       return const Center(
-        child: CircularProgressIndicator(color: Color(0xFF8B5FBF)),
+        child: CircularProgressIndicator(color: DesignTokens.primaryColor),
       );
     }
 
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0xFF1A1A1A),
+        color: DesignTokens.surfaceDark,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey[800]!),
+        border: Border.all(color: DesignTokens.borderDark),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -126,7 +110,7 @@ class _ReminderSettingsState extends State<ReminderSettings> {
             children: [
               Icon(
                 Iconsax.notification,
-                color: const Color(0xFF8B5FBF),
+                color: DesignTokens.primaryColor,
                 size: 20,
               ),
               const SizedBox(width: 8),
@@ -154,7 +138,7 @@ class _ReminderSettingsState extends State<ReminderSettings> {
             ),
             value: _remindersEnabled,
             onChanged: _toggleReminders,
-            activeThumbColor: const Color(0xFF8B5FBF),
+            activeThumbColor: DesignTokens.primaryColor,
           ),
 
           if (_remindersEnabled) ...[
@@ -227,18 +211,18 @@ class _ReminderSettingsState extends State<ReminderSettings> {
           decoration: BoxDecoration(
             color:
                 isSelected
-                    ? const Color(0xFF8B5FBF).withValues(alpha: 0.2)
+                    ? DesignTokens.primaryColor.withValues(alpha: 0.2)
                     : Colors.grey[900],
             borderRadius: BorderRadius.circular(8),
             border: Border.all(
-              color: isSelected ? const Color(0xFF8B5FBF) : Colors.grey[800]!,
+              color: isSelected ? DesignTokens.primaryColor : DesignTokens.borderDark,
             ),
           ),
           child: Text(
             label,
             textAlign: TextAlign.center,
             style: GoogleFonts.poppins(
-              color: isSelected ? const Color(0xFF8B5FBF) : Colors.white70,
+              color: isSelected ? DesignTokens.primaryColor : Colors.white70,
               fontSize: 12,
               fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
             ),

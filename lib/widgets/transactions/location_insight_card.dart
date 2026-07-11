@@ -6,6 +6,7 @@ import 'package:financial_app/services/map_provider_service.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:financial_app/utils/design_tokens.dart';
 
 class LocationInsightCard extends StatefulWidget {
   final String transactionId;
@@ -58,7 +59,7 @@ class _LocationInsightCardState extends State<LocationInsightCard> {
       _locationString = 'Location not available';
     }
 
-    setState(() {});
+    if (mounted) setState(() {});
   }
 
   @override
@@ -66,7 +67,7 @@ class _LocationInsightCardState extends State<LocationInsightCard> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0xFF1A1A1A),
+        color: DesignTokens.surfaceDark,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: Colors.white10),
       ),
@@ -75,7 +76,7 @@ class _LocationInsightCardState extends State<LocationInsightCard> {
         children: [
           Row(
             children: [
-              const Icon(Iconsax.location, color: Color(0xFF8B5FBF), size: 20),
+              const Icon(Iconsax.location, color: DesignTokens.primaryColor, size: 20),
               const SizedBox(width: 8),
               Text(
                 'Location Insight',

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:financial_app/utils/design_tokens.dart';
 
 class PayoffStrategyCard extends StatelessWidget {
   const PayoffStrategyCard({super.key});
@@ -6,7 +7,7 @@ class PayoffStrategyCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      color: const Color(0xFF1A1A1A),
+      color: DesignTokens.surfaceDark,
       margin: const EdgeInsets.all(16),
       child: Padding(
         padding: const EdgeInsets.all(16),

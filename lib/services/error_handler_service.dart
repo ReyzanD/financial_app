@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:financial_app/utils/design_tokens.dart';
 
 /// Service untuk handle errors dengan user-friendly messages
 class ErrorHandlerService {
@@ -243,7 +244,7 @@ class ErrorHandlerService {
       context: context,
       builder:
           (context) => AlertDialog(
-            backgroundColor: const Color(0xFF1A1A1A),
+            backgroundColor: DesignTokens.surfaceDark,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(16),
             ),
@@ -286,7 +287,7 @@ class ErrorHandlerService {
                     onRetry();
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF8B5FBF),
+                    backgroundColor: DesignTokens.primaryColor,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
                     ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
+import 'package:financial_app/utils/design_tokens.dart';
 
 class SpendingInsights extends StatelessWidget {
   final List<dynamic> transactions;
@@ -17,10 +18,10 @@ class SpendingInsights extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0xFF1A1A1A),
+        color: DesignTokens.surfaceDark,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: const Color(0xFF8B5FBF).withValues(alpha: 0.3),
+          color: DesignTokens.primaryColor.withValues(alpha: 0.3),
         ),
       ),
       child: Column(
@@ -30,7 +31,7 @@ class SpendingInsights extends StatelessWidget {
             children: [
               Icon(
                 Iconsax.lamp_charge,
-                color: const Color(0xFF8B5FBF),
+                color: DesignTokens.primaryColor,
                 size: 20,
               ),
               const SizedBox(width: 8),
@@ -101,7 +102,7 @@ class SpendingInsights extends StatelessWidget {
       Text(
         '📈 Rata-rata pengeluaran harian: Rp ${avgDailyExpense.toStringAsFixed(0)}',
         style: GoogleFonts.poppins(
-          color: const Color(0xFF8B5FBF),
+          color: DesignTokens.primaryColor,
           fontSize: 12,
           fontWeight: FontWeight.w600,
         ),

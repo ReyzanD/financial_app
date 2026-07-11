@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:financial_app/utils/design_tokens.dart';
 
 class SpendingChart extends StatelessWidget {
   final List<dynamic> transactions;
@@ -10,13 +11,13 @@ class SpendingChart extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Calculate daily spending for last 7 days
-    final Map<int, double> dailySpending = {};
+    final Map<String, double> dailySpending = {};
     final now = DateTime.now();
 
     // Initialize last 7 days
     for (int i = 6; i >= 0; i--) {
       final date = now.subtract(Duration(days: i));
-      final dayKey = date.day;
+      final dayKey = date.toIso8601String().substring(0, 10);
       dailySpending[dayKey] = 0;
     }
 
@@ -32,8 +33,9 @@ class SpendingChart extends StatelessWidget {
             final amount =
                 double.tryParse(transaction['amount']?.toString() ?? '0') ??
                 0.0;
-            dailySpending[transDate.day] =
-                (dailySpending[transDate.day] ?? 0) + amount;
+            final dayKey = transDate.toIso8601String().substring(0, 10);
+            dailySpending[dayKey] =
+                (dailySpending[dayKey] ?? 0) + amount;
           }
         } catch (e) {
           // Skip invalid dates
@@ -49,9 +51,9 @@ class SpendingChart extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0xFF1A1A1A),
+        color: DesignTokens.surfaceDark,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey[800]!),
+        border: Border.all(color: DesignTokens.borderDark),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -78,9 +80,22 @@ class SpendingChart extends StatelessWidget {
                     sideTitles: SideTitles(
                       showTitles: true,
                       getTitlesWidget: (value, meta) {
-                        final dayKey = value.toInt();
+                        final entries = dailySpending.entries.toList();
+                        final idx = value.toInt();
+                        if (idx < 0 || idx >= entries.length) {
+                          return const SizedBox();
+                        }
+                        // Display short day label (e.g., "Jul 28")
+                        final dateStr = entries[idx].key;
+                        final parts = dateStr.split('-');
+                        final month = parts[1];
+                        final day = parts[2];
+                        final months = ['', 'Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+                        final monthLabel = int.tryParse(month) != null && int.parse(month) >= 1 && int.parse(month) <= 12
+                            ? months[int.parse(month)]
+                            : month;
                         return Text(
-                          dayKey.toString(),
+                          '$monthLabel $day',
                           style: GoogleFonts.poppins(
                             color: Colors.grey[500],
                             fontSize: 10,
@@ -116,18 +131,19 @@ class SpendingChart extends StatelessWidget {
                   show: true,
                   drawVerticalLine: false,
                   getDrawingHorizontalLine: (value) {
-                    return FlLine(color: Colors.grey[800]!, strokeWidth: 1);
+                    return FlLine(color: DesignTokens.borderDark, strokeWidth: 1);
                   },
                 ),
                 borderData: FlBorderData(show: false),
                 barGroups:
-                    dailySpending.entries.map((entry) {
+                    dailySpending.entries.toList().asMap().entries.map((idxEntry) {
+                      final spending = idxEntry.value.value;
                       return BarChartGroupData(
-                        x: entry.key,
+                        x: idxEntry.key,
                         barRods: [
                           BarChartRodData(
-                            toY: entry.value,
-                            color: const Color(0xFF8B5FBF),
+                            toY: spending,
+                            color: DesignTokens.primaryColor,
                             width: 16,
                             borderRadius: const BorderRadius.vertical(
                               top: Radius.circular(4),

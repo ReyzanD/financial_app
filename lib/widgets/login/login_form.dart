@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'text_field.dart';
 import 'auth_button.dart';
+import 'package:financial_app/utils/design_tokens.dart';
 
 class LoginForm extends StatefulWidget {
   final TextEditingController emailController;
@@ -61,7 +62,7 @@ class _LoginFormState extends State<LoginForm> {
             child: Text(
               'Forgot Password ?',
               style: GoogleFonts.poppins(
-                color: const Color(0xFF8B5FBF),
+                color: DesignTokens.primaryColor,
                 fontWeight: FontWeight.w500,
               ),
             ),

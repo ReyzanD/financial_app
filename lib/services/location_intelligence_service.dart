@@ -162,7 +162,7 @@ class LocationIntelligenceService {
           title: '💰 Pengeluaran Tinggi di $locationName',
           description:
               'Anda telah menghabiskan Rp ${_formatCurrency(totalSpent)} di lokasi ini ($count transaksi). Coba cari alternatif lebih hemat di sekitar area.',
-          type: RecommendationType.price_alert,
+          type: RecommendationType.priceAlert,
           estimatedSavings:
               (totalSpent * 0.15).toInt(), // Potential 15% savings
           createdAt: DateTime.now(),
@@ -191,7 +191,7 @@ class LocationIntelligenceService {
             title: '📍 Lokasi Favorit: $locationName',
             description:
                 'Anda sering belanja di sini ($visitCount kali) dengan rata-rata Rp ${_formatCurrency(avgSpent)}/transaksi. Pertimbangkan membership atau kartu loyalitas untuk diskon.',
-            type: RecommendationType.spending_pattern,
+            type: RecommendationType.spendingPattern,
             estimatedSavings:
                 (avgSpent * visitCount * 0.10)
                     .toInt(), // 10% potential with loyalty
@@ -222,7 +222,7 @@ class LocationIntelligenceService {
             title: '⚠️ Lokasi Mahal: $locationName',
             description:
                 'Rata-rata pengeluaran Anda di lokasi ini Rp ${_formatCurrency(avgSpending)}/kunjungan. Coba bandingkan harga dengan lokasi lain di sekitar.',
-            type: RecommendationType.alternative_location,
+            type: RecommendationType.alternativeLocation,
             estimatedSavings:
                 (avgSpending * visitCount * 0.20).toInt(), // 20% potential
             createdAt: DateTime.now(),
@@ -258,7 +258,7 @@ class LocationIntelligenceService {
           title: '🎯 Konsolidasikan Belanja Anda',
           description:
               'Anda berbelanja di $totalLocations lokasi berbeda. Fokus pada 3-5 tempat terbaik untuk menghemat waktu dan dapat loyalty rewards.',
-          type: RecommendationType.spending_pattern,
+          type: RecommendationType.spendingPattern,
           estimatedSavings: 50000, // Time & potential loyalty savings
           createdAt: DateTime.now(),
           metadata: {'currentLocationCount': totalLocations},
@@ -284,7 +284,7 @@ class LocationIntelligenceService {
             title: '🏪 Alternatif untuk $category',
             description:
                 'Semua pengeluaran $category Anda di $location (Rp ${_formatCurrency(spent)}). Coba bandingkan dengan tempat lain untuk potensi hemat 15-25%.',
-            type: RecommendationType.alternative_location,
+            type: RecommendationType.alternativeLocation,
             estimatedSavings: (spent * 0.20).toInt(),
             createdAt: DateTime.now(),
             metadata: {

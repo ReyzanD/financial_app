@@ -1,16 +1,16 @@
-import 'package:financial_app/services/local_data_service.dart';
 import 'package:financial_app/services/logger_service.dart';
+import 'package:financial_app/services/data/investment_data_service.dart';
 import 'package:financial_app/models/feature_models.dart';
 
 class InvestmentService {
-  final LocalDataService _localData;
+  final InvestmentDataService _investmentData;
 
-  InvestmentService({LocalDataService? localData})
-    : _localData = localData ?? LocalDataService();
+  InvestmentService({InvestmentDataService? investmentData})
+    : _investmentData = investmentData ?? InvestmentDataService();
 
   Future<List<InvestmentModel>> getInvestments({String? type}) async {
     try {
-      final investmentsData = await _localData.getInvestments(type: type);
+      final investmentsData = await _investmentData.getInvestments(type: type);
       return investmentsData.map((i) => InvestmentModel.fromMap(i)).toList();
     } catch (e) {
       LoggerService.error('Error getting investments', error: e);
@@ -20,7 +20,7 @@ class InvestmentService {
 
   Future<InvestmentModel> addInvestment(InvestmentModel investment) async {
     try {
-      final result = await _localData.addInvestment(investment.toMap());
+      final result = await _investmentData.addInvestment(investment.toMap());
       final created = InvestmentModel.fromMap(
         result['investment'] as Map<String, dynamic>,
       );
@@ -37,7 +37,7 @@ class InvestmentService {
     double newPrice,
   ) async {
     try {
-      await _localData.updateInvestmentPrice(investmentId, newPrice);
+      await _investmentData.updateInvestmentPrice(investmentId, newPrice);
       final investments = await getInvestments();
       return investments.firstWhere((i) => i.id == investmentId);
     } catch (e) {
@@ -48,7 +48,7 @@ class InvestmentService {
 
   Future<void> deleteInvestment(String investmentId) async {
     try {
-      await _localData.deleteInvestment(investmentId);
+      await _investmentData.deleteInvestment(investmentId);
       LoggerService.success('Investment deleted');
     } catch (e) {
       LoggerService.error('Error deleting investment', error: e);
@@ -58,7 +58,7 @@ class InvestmentService {
 
   Future<Map<String, dynamic>> getPortfolioSummary() async {
     try {
-      return await _localData.getPortfolioSummary();
+      return await _investmentData.getPortfolioSummary();
     } catch (e) {
       LoggerService.error('Error getting portfolio summary', error: e);
       return {};

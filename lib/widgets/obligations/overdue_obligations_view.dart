@@ -3,12 +3,14 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:financial_app/models/financial_obligation.dart';
 import 'package:financial_app/services/obligation_service.dart';
+import 'package:financial_app/widgets/obligations/obligation_filters.dart';
 import 'package:financial_app/widgets/obligations/obligation_item.dart';
 
 class OverdueObligationsView extends StatefulWidget {
   final String searchQuery;
+  final ObligationFilters filters;
 
-  const OverdueObligationsView({super.key, this.searchQuery = ''});
+  const OverdueObligationsView({super.key, this.searchQuery = '', this.filters = const ObligationFilters()});
 
   @override
   State<OverdueObligationsView> createState() => _OverdueObligationsViewState();
@@ -34,7 +36,25 @@ class _OverdueObligationsViewState extends State<OverdueObligationsView> {
         }
 
         final obligations = snapshot.data!;
-        final overdue = obligations.where((o) => o.daysUntilDue < 0).toList();
+        var overdue = obligations.where((o) => o.daysUntilDue < 0).toList();
+
+        // Apply filters
+        if (widget.filters.hasFilters) {
+          final f = widget.filters;
+          overdue = overdue.where((o) {
+            if (f.type != null && o.type.name != f.type) return false;
+            if (f.category != null && o.category != f.category) return false;
+            if (f.status != null) {
+              if (f.status == 'active' && o.daysUntilDue <= 0) return false;
+              if (f.status == 'overdue' && o.daysUntilDue >= 0) return false;
+            }
+            if (f.minAmount != null && o.monthlyAmount < f.minAmount!) return false;
+            if (f.maxAmount != null && o.monthlyAmount > f.maxAmount!) return false;
+            if (f.startDate != null && o.dueDate.isBefore(f.startDate!)) return false;
+            if (f.endDate != null && o.dueDate.isAfter(f.endDate!)) return false;
+            return true;
+          }).toList();
+        }
 
         if (overdue.isEmpty) {
           return Center(

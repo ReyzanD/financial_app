@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:financial_app/services/api_service.dart';
+import 'package:financial_app/utils/design_tokens.dart';
 
 class HomeHeader extends StatefulWidget {
   const HomeHeader({super.key});
@@ -111,9 +112,9 @@ class _HomeHeaderState extends State<HomeHeader> {
           width: 40,
           height: 40,
           decoration: BoxDecoration(
-            color: const Color(0xFF1A1A1A),
+            color: DesignTokens.surfaceDark,
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.grey[800]!),
+            border: Border.all(color: DesignTokens.borderDark),
           ),
           child: IconButton(
             icon: Icon(icon, size: 20, color: Colors.white),
@@ -128,7 +129,7 @@ class _HomeHeaderState extends State<HomeHeader> {
               width: 8,
               height: 8,
               decoration: const BoxDecoration(
-                color: Color(0xFF8B5FBF),
+                color: DesignTokens.primaryColor,
                 shape: BoxShape.circle,
               ),
             ),

@@ -1,42 +1,73 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:provider/provider.dart';
-import 'package:financial_app/Screen/onboarding_screen.dart';
-import 'package:financial_app/Screen/login_screen.dart';
-import 'package:financial_app/Screen/home_screen.dart';
-import 'package:financial_app/Screen/map_screen.dart';
-import 'package:financial_app/Screen/settings_screen.dart';
-import 'package:financial_app/Screen/pin_setup_screen.dart';
-import 'package:financial_app/Screen/pin_unlock_screen.dart';
-import 'package:financial_app/Screen/pin_change_screen.dart';
-import 'package:financial_app/Screen/auth_gate.dart';
-import 'package:financial_app/Screen/notification_center_screen.dart';
-import 'package:financial_app/Screen/budgets_screen.dart';
-import 'package:financial_app/Screen/analytics_screen.dart';
-import 'package:financial_app/Screen/goals_screen.dart';
-import 'package:financial_app/Screen/add_transaction_screen.dart';
-import 'package:financial_app/Screen/ai_budget_recommendation_screen.dart';
-import 'package:financial_app/Screen/report_screen.dart';
-import 'package:financial_app/Screen/backup_screen.dart';
-import 'package:financial_app/Screen/financial_obligations_screen.dart';
-import 'package:financial_app/Screen/forecast_screen.dart';
-import 'package:financial_app/Screen/recurring_transactions_screen.dart';
-import 'package:financial_app/Screen/profile_screen.dart';
-import 'package:financial_app/Screen/transaction_history_screen.dart';
-import 'package:financial_app/Screen/receipt_history_screen.dart';
-import 'package:financial_app/Screen/financial_insights_screen.dart';
-import 'package:financial_app/Screen/accounts_screen.dart';
-import 'package:financial_app/Screen/debts_screen.dart';
-import 'package:financial_app/Screen/subscriptions_screen.dart';
-import 'package:financial_app/Screen/investments_screen.dart';
-import 'package:financial_app/Screen/tags_screen.dart';
-import 'package:financial_app/Screen/splits_screen.dart';
-import 'package:financial_app/Screen/challenges_screen.dart';
-import 'package:financial_app/Screen/financial_calendar_screen.dart';
-import 'package:financial_app/Screen/net_worth_screen.dart';
-import 'package:financial_app/Screen/cash_flow_screen.dart';
-import 'package:financial_app/Screen/category_customization_screen.dart';
-import 'package:financial_app/Screen/templates_screen.dart';
+import 'package:financial_app/features/onboarding/presentation/screens/onboarding_screen.dart';
+import 'package:financial_app/features/auth/presentation/screens/login_screen.dart';
+
+import 'package:financial_app/features/home/presentation/screens/home_screen.dart';
+import 'package:financial_app/features/map/presentation/screens/map_screen.dart';
+import 'package:financial_app/features/settings/presentation/screens/settings_screen.dart';
+import 'package:financial_app/features/auth/presentation/screens/pin_setup_screen.dart';
+import 'package:financial_app/features/auth/presentation/screens/pin_unlock_screen.dart';
+import 'package:financial_app/features/auth/presentation/screens/pin_change_screen.dart';
+import 'package:financial_app/features/auth/presentation/screens/auth_gate_screen.dart';
+import 'package:financial_app/features/auth/presentation/controllers/auth_controller.dart';
+import 'package:financial_app/features/backup/presentation/screens/backup_screen.dart';
+import 'package:financial_app/features/backup/presentation/controllers/backup_controller.dart';
+import 'package:financial_app/features/tags/presentation/screens/tags_screen.dart';
+import 'package:financial_app/features/tags/presentation/controllers/tag_controller.dart';
+import 'package:financial_app/features/profile/presentation/screens/profile_screen.dart';
+import 'package:financial_app/features/profile/presentation/controllers/profile_controller.dart';
+import 'package:financial_app/features/budgets/presentation/screens/budgets_screen.dart';
+import 'package:financial_app/features/goals/presentation/screens/goals_screen.dart';
+import 'package:financial_app/features/goals/presentation/controllers/goal_controller.dart';
+import 'package:financial_app/features/analytics/presentation/screens/analytics_screen.dart';
+import 'package:financial_app/features/analytics/presentation/controllers/analytics_controller.dart';
+
+import 'package:financial_app/features/transactions/presentation/screens/add_transaction_screen.dart';
+import 'package:financial_app/features/ai_budget_recommendation/presentation/screens/ai_budget_recommendation_screen.dart';
+import 'package:financial_app/features/obligations/presentation/screens/financial_obligations_screen.dart';
+import 'package:financial_app/features/obligations/presentation/controllers/obligation_controller.dart';
+import 'package:financial_app/features/forecast/presentation/screens/forecast_screen.dart';
+import 'package:financial_app/features/forecast/presentation/controllers/forecast_controller.dart';
+import 'package:financial_app/features/recurring_transactions/presentation/screens/recurring_transactions_screen.dart';
+import 'package:financial_app/features/recurring_transactions/presentation/controllers/recurring_transaction_controller.dart';
+import 'package:financial_app/features/transactions/presentation/screens/transaction_history_screen.dart';
+import 'package:financial_app/features/transactions/presentation/controllers/transaction_controller.dart';
+import 'package:financial_app/features/budgets/presentation/controllers/budget_controller.dart';
+import 'package:financial_app/features/insights/presentation/screens/financial_insights_screen.dart';
+import 'package:financial_app/features/insights/presentation/controllers/insights_controller.dart';
+import 'package:financial_app/features/accounts/presentation/screens/accounts_screen.dart';
+import 'package:financial_app/features/accounts/presentation/controllers/account_controller.dart';
+import 'package:financial_app/features/debts/presentation/screens/debts_screen.dart';
+import 'package:financial_app/features/debts/presentation/controllers/debt_controller.dart';
+import 'package:financial_app/features/subscriptions/presentation/screens/subscriptions_screen.dart';
+import 'package:financial_app/features/subscriptions/presentation/controllers/subscription_controller.dart';
+import 'package:financial_app/features/investments/presentation/screens/investments_screen.dart';
+import 'package:financial_app/features/investments/presentation/controllers/investment_controller.dart';
+import 'package:financial_app/features/splits/presentation/screens/splits_screen.dart';
+import 'package:financial_app/features/splits/presentation/controllers/split_controller.dart';
+import 'package:financial_app/features/challenges/presentation/screens/challenges_screen.dart';
+import 'package:financial_app/features/challenges/presentation/controllers/challenge_controller.dart';
+import 'package:financial_app/features/net_worth/presentation/screens/net_worth_screen.dart';
+import 'package:financial_app/features/net_worth/presentation/controllers/net_worth_controller.dart';
+import 'package:financial_app/features/cash_flow/presentation/screens/cash_flow_screen.dart';
+import 'package:financial_app/features/cash_flow/presentation/controllers/cash_flow_controller.dart';
+import 'package:financial_app/features/templates/presentation/screens/templates_screen.dart';
+import 'package:financial_app/features/templates/presentation/controllers/template_controller.dart';
+import 'package:financial_app/features/notification_center/presentation/screens/notification_center_screen.dart';
+import 'package:financial_app/features/notification_center/presentation/controllers/notification_center_controller.dart';
+import 'package:financial_app/features/category_customization/presentation/screens/category_customization_screen.dart';
+import 'package:financial_app/features/category_customization/presentation/controllers/category_controller.dart';
+import 'package:financial_app/features/financial_calendar/presentation/screens/financial_calendar_screen.dart';
+import 'package:financial_app/features/financial_calendar/presentation/controllers/calendar_controller.dart';
+import 'package:financial_app/features/onboarding/presentation/controllers/onboarding_controller.dart';
+import 'package:financial_app/features/ai_budget_recommendation/presentation/controllers/ai_budget_controller.dart';
+import 'package:financial_app/features/settings/presentation/controllers/settings_controller.dart';
+import 'package:financial_app/features/receipt_history/presentation/screens/receipt_history_screen.dart';
+import 'package:financial_app/features/receipt_history/presentation/controllers/receipt_controller.dart';
+import 'package:financial_app/features/report/presentation/screens/report_screen.dart';
+import 'package:financial_app/features/report/presentation/controllers/report_controller.dart';
 import 'package:financial_app/services/data_service.dart';
 import 'package:financial_app/services/notification_service.dart';
 import 'package:financial_app/services/logger_service.dart';
@@ -50,6 +81,7 @@ import 'package:financial_app/state/app_state.dart';
 import 'package:financial_app/core/di/service_locator.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:financial_app/utils/design_tokens.dart';
 
 void main() async {
   // Initialize Flutter bindings before making platform channel calls
@@ -98,6 +130,93 @@ void main() async {
         ),
         ChangeNotifierProvider(create: (context) => ThemeService()),
         ChangeNotifierProvider(create: (context) => LocalizationService()),
+        ChangeNotifierProvider(
+          create: (context) => getIt<TransactionController>(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => getIt<BudgetController>(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => getIt<GoalController>(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => getIt<AccountController>(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => getIt<ChallengeController>(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => getIt<DebtController>(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => getIt<InvestmentController>(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => getIt<SubscriptionController>(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => getIt<SplitController>(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => getIt<NetWorthController>(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => getIt<AnalyticsController>(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => getIt<CashFlowController>(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => getIt<RecurringTransactionController>(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => getIt<ObligationController>(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => getIt<InsightsController>(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => getIt<ForecastController>(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => getIt<AuthController>(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => getIt<BackupController>(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => getIt<TagController>(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => getIt<ProfileController>(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => getIt<ReceiptController>(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => getIt<ReportController>(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => getIt<TemplateController>(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => getIt<NotificationCenterController>(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => getIt<CategoryController>(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => getIt<CalendarController>(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => getIt<OnboardingController>(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => getIt<AIBudgetController>(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => getIt<SettingsController>(),
+        ),
       ],
       child: const MyApp(),
     ),
@@ -213,7 +332,7 @@ class MyApp extends StatelessWidget {
     FlutterErrorDetails errorDetails,
   ) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: DesignTokens.backgroundDark,
       body: SafeArea(
         child: Center(
           child: Padding(
@@ -279,7 +398,7 @@ class MyApp extends StatelessWidget {
                     Navigator.of(context).popUntil((route) => route.isFirst);
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF8B5FBF),
+                    backgroundColor: DesignTokens.primaryColor,
                     padding: const EdgeInsets.symmetric(
                       horizontal: 32,
                       vertical: 16,

@@ -1,7 +1,12 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:financial_app/services/logger_service.dart';
-import 'package:financial_app/services/local_data_service.dart';
+import 'package:financial_app/services/local_auth_service.dart';
 import 'package:financial_app/services/budget_recommendation_service.dart';
+import 'package:financial_app/services/data/transaction_data_service.dart';
+import 'package:financial_app/services/data/budget_data_service.dart';
+import 'package:financial_app/services/data/category_data_service.dart';
+import 'package:financial_app/services/data/goal_data_service.dart';
+import 'package:financial_app/services/data/obligation_data_service.dart';
 
 /// API Service - Main facade for all API operations
 ///
@@ -24,8 +29,27 @@ import 'package:financial_app/services/budget_recommendation_service.dart';
 /// Author: Financial App Team
 /// Last Updated: 2024
 class ApiService {
-  final LocalDataService _localData = LocalDataService();
+  final LocalAuthService _authService;
+  final TransactionDataService _transactionData;
+  final BudgetDataService _budgetData;
+  final CategoryDataService _categoryData;
+  final GoalDataService _goalData;
+  final ObligationDataService _obligationData;
   final FlutterSecureStorage _storage = const FlutterSecureStorage();
+
+  ApiService({
+    LocalAuthService? authService,
+    TransactionDataService? transactionData,
+    BudgetDataService? budgetData,
+    CategoryDataService? categoryData,
+    GoalDataService? goalData,
+    ObligationDataService? obligationData,
+  }) : _authService = authService ?? LocalAuthService(),
+       _transactionData = transactionData ?? TransactionDataService(),
+       _budgetData = budgetData ?? BudgetDataService(),
+       _categoryData = categoryData ?? CategoryDataService(),
+       _goalData = goalData ?? GoalDataService(),
+       _obligationData = obligationData ?? ObligationDataService();
 
   // Cache layer for frequently accessed data
   static final Map<String, dynamic> _cache = {};
@@ -69,7 +93,7 @@ class ApiService {
 
   // User Profile - Using local database
   Future<Map<String, dynamic>> getUserProfile() async {
-    final user = await _localData.authService.getCurrentUser();
+    final user = await _authService.getCurrentUser();
     if (user == null) throw Exception('Not authenticated');
     return {'user': user};
   }
@@ -78,7 +102,7 @@ class ApiService {
   Future<Map<String, dynamic>> updateProfile(
     Map<String, dynamic> profileData,
   ) async {
-    return await _localData.authService.updateProfile(profileData);
+    return await _authService.updateProfile(profileData);
   }
 
   // Transactions - Using local database
@@ -95,7 +119,7 @@ class ApiService {
     double? maxAmount,
     String? search,
   }) async {
-    return await _localData.getTransactions(
+    return await _transactionData.getTransactions(
       limit: limit,
       offset: offset,
       type: type,
@@ -133,7 +157,7 @@ class ApiService {
     }
 
     try {
-      final result = await _localData.getFinancialSummary(
+      final result = await _transactionData.getFinancialSummary(
         year: targetYear,
         month: targetMonth,
       );
@@ -154,11 +178,11 @@ class ApiService {
 
   // Budgets - Using local database
   Future<List<dynamic>> getBudgets({bool activeOnly = true}) async {
-    return await _localData.getBudgets(activeOnly: activeOnly);
+    return await _budgetData.getBudgets(activeOnly: activeOnly);
   }
 
   Future<Map<String, dynamic>> getBudget(String budgetId) async {
-    final budgets = await _localData.getBudgets(activeOnly: false);
+    final budgets = await _budgetData.getBudgets(activeOnly: false);
     final budget = budgets.firstWhere(
       (b) => b['budget_id_232143'] == budgetId,
       orElse: () => {},
@@ -169,18 +193,18 @@ class ApiService {
   Future<Map<String, dynamic>> createBudget(
     Map<String, dynamic> budgetData,
   ) async {
-    return await _localData.addBudget(budgetData);
+    return await _budgetData.addBudget(budgetData);
   }
 
   Future<Map<String, dynamic>> updateBudget(
     String budgetId,
     Map<String, dynamic> budgetData,
   ) async {
-    return await _localData.updateBudget(budgetId, budgetData);
+    return await _budgetData.updateBudget(budgetId, budgetData);
   }
 
   Future<Map<String, dynamic>> deleteBudget(String budgetId) async {
-    return await _localData.deleteBudget(budgetId);
+    return await _budgetData.deleteBudget(budgetId);
   }
 
   Future<Map<String, dynamic>> getBudgetsSummary() async {
@@ -291,7 +315,7 @@ class ApiService {
 
     try {
       LoggerService.debug('Fetching categories from local database...');
-      final categories = await _localData.getCategories();
+      final categories = await _categoryData.getCategories();
 
       // Update cache
       _cachedCategories = categories;
@@ -314,7 +338,7 @@ class ApiService {
   Future<Map<String, dynamic>> addTransaction(
     Map<String, dynamic> transactionData,
   ) async {
-    final result = await _localData.addTransaction(transactionData);
+    final result = await _transactionData.addTransaction(transactionData);
     // Clear caches after adding transaction
     LoggerService.debug('Clearing transaction caches after add...');
     _clearTransactionCaches();
@@ -329,7 +353,7 @@ class ApiService {
   ) async {
     try {
       LoggerService.debug('Updating transaction: $transactionId');
-      final result = await _localData.updateTransaction(
+      final result = await _transactionData.updateTransaction(
         transactionId,
         transactionData,
       );
@@ -348,7 +372,7 @@ class ApiService {
   Future<Map<String, dynamic>> deleteTransaction(String transactionId) async {
     try {
       LoggerService.debug('Deleting transaction: $transactionId');
-      await _localData.deleteTransaction(transactionId);
+      await _transactionData.deleteTransaction(transactionId);
       // Clear all transaction-related caches after deletion
       LoggerService.debug('Clearing transaction caches...');
       _clearTransactionCaches();
@@ -386,11 +410,11 @@ class ApiService {
 
   // Goals - Using local database
   Future<List<dynamic>> getGoals({bool includeCompleted = false}) async {
-    return await _localData.getGoals();
+    return await _goalData.getGoals();
   }
 
   Future<Map<String, dynamic>> getGoal(String goalId) async {
-    final goals = await _localData.getGoals();
+    final goals = await _goalData.getGoals();
     final goal = goals.firstWhere(
       (g) => g['goal_id_232143'] == goalId,
       orElse: () => {},
@@ -399,18 +423,18 @@ class ApiService {
   }
 
   Future<Map<String, dynamic>> createGoal(Map<String, dynamic> goalData) async {
-    return await _localData.addGoal(goalData);
+    return await _goalData.addGoal(goalData);
   }
 
   Future<Map<String, dynamic>> updateGoal(
     String goalId,
     Map<String, dynamic> goalData,
   ) async {
-    return await _localData.updateGoal(goalId, goalData);
+    return await _goalData.updateGoal(goalId, goalData);
   }
 
   Future<Map<String, dynamic>> deleteGoal(String goalId) async {
-    return await _localData.deleteGoal(goalId);
+    return await _goalData.deleteGoal(goalId);
   }
 
   /// Add money to a goal (contribution)
@@ -421,7 +445,7 @@ class ApiService {
     String? accountId,
     String? note,
   }) async {
-    return await _localData.addGoalContribution(
+    return await _goalData.addGoalContribution(
       goalId,
       amount,
       accountId: accountId,
@@ -471,13 +495,13 @@ class ApiService {
   Future<List<dynamic>> getObligations({String? type}) async {
     final userId = await _storage.read(key: 'auth_token');
     if (userId == null) throw Exception('User not authenticated');
-    return await _localData.getObligations(type: type);
+    return await _obligationData.getObligations(type: type);
   }
 
   Future<List<dynamic>> getUpcomingObligations({int days = 7}) async {
     final userId = await _storage.read(key: 'auth_token');
     if (userId == null) throw Exception('User not authenticated');
-    return await _localData.getUpcomingObligations(days: days);
+    return await _obligationData.getUpcomingObligations(days: days);
   }
 
   Future<Map<String, dynamic>> createObligation(
@@ -485,7 +509,7 @@ class ApiService {
   ) async {
     final userId = await _storage.read(key: 'auth_token');
     if (userId == null) throw Exception('User not authenticated');
-    final result = await _localData.addObligation(obligationData);
+    final result = await _obligationData.addObligation(obligationData);
     clearCache(); // Clear cache on mutations
     return result;
   }
@@ -496,7 +520,7 @@ class ApiService {
   ) async {
     final userId = await _storage.read(key: 'auth_token');
     if (userId == null) throw Exception('User not authenticated');
-    final result = await _localData.updateObligation(
+    final result = await _obligationData.updateObligation(
       obligationId,
       obligationData,
     );
@@ -507,7 +531,7 @@ class ApiService {
   Future<Map<String, dynamic>> deleteObligation(String obligationId) async {
     final userId = await _storage.read(key: 'auth_token');
     if (userId == null) throw Exception('User not authenticated');
-    final result = await _localData.deleteObligation(obligationId);
+    final result = await _obligationData.deleteObligation(obligationId);
     clearCache(); // Clear cache on mutations
     return result;
   }
@@ -518,7 +542,7 @@ class ApiService {
   ) async {
     final userId = await _storage.read(key: 'auth_token');
     if (userId == null) throw Exception('User not authenticated');
-    final result = await _localData.recordObligationPayment(
+    final result = await _obligationData.recordObligationPayment(
       obligationId,
       paymentData,
     );
@@ -530,8 +554,8 @@ class ApiService {
   Future<Map<String, dynamic>> getObligationsSummary() async {
     final userId = await _storage.read(key: 'auth_token');
     if (userId == null) throw Exception('User not authenticated');
-    final obligations = await _localData.getObligations();
-    return _localData.calculateObligationsSummary(obligations);
+    final obligations = await _obligationData.getObligations();
+    return _obligationData.calculateObligationsSummary(obligations);
   }
 
   // Recurring Transactions - Using local database
@@ -539,7 +563,7 @@ class ApiService {
     bool activeOnly = true,
   }) async {
     // Get recurring transactions from local database
-    final transactions = await _localData.getTransactions(limit: 1000);
+    final transactions = await _transactionData.getTransactions(limit: 1000);
     var recurring =
         (transactions['transactions'] as List)
             .where((t) => (t['is_recurring_232143'] as int? ?? 0) == 1)
@@ -548,7 +572,7 @@ class ApiService {
   }
 
   Future<Map<String, dynamic>> getRecurringTransaction(String id) async {
-    final transaction = await _localData.getTransaction(id);
+    final transaction = await _transactionData.getTransaction(id);
     return {'recurring_transaction': transaction ?? {}};
   }
 
@@ -582,7 +606,7 @@ class ApiService {
     // Get upcoming recurring transactions from local database
     final now = DateTime.now();
     final endDate = now.add(Duration(days: days));
-    final transactions = await _localData.getTransactions(
+    final transactions = await _transactionData.getTransactions(
       limit: 1000,
       startDate: now.toIso8601String().split('T')[0],
       endDate: endDate.toIso8601String().split('T')[0],

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:financial_app/utils/formatters.dart';
+import 'package:financial_app/utils/design_tokens.dart';
 
 class QuickAmountSelector extends StatelessWidget {
   final List<double> amounts;
@@ -28,16 +29,16 @@ class QuickAmountSelector extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
-          color: const Color(0xFF8B5FBF).withValues(alpha: 0.2),
+          color: DesignTokens.primaryColor.withValues(alpha: 0.2),
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
-            color: const Color(0xFF8B5FBF).withValues(alpha: 0.5),
+            color: DesignTokens.primaryColor.withValues(alpha: 0.5),
           ),
         ),
         child: Text(
           CurrencyFormatter.formatRupiah(amount.toInt()),
           style: GoogleFonts.poppins(
-            color: const Color(0xFF8B5FBF),
+            color: DesignTokens.primaryColor,
             fontSize: 12,
             fontWeight: FontWeight.w600,
           ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:financial_app/l10n/app_localizations.dart';
+import 'package:financial_app/utils/design_tokens.dart';
 
 /// Filter options untuk obligations
 class ObligationFilters {
@@ -12,7 +13,7 @@ class ObligationFilters {
   final DateTime? startDate;
   final DateTime? endDate;
 
-  ObligationFilters({
+  const ObligationFilters({
     this.type,
     this.category,
     this.status,
@@ -83,9 +84,9 @@ class _ObligationFiltersWidgetState extends State<ObligationFiltersWidget> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0xFF1A1A1A),
+        color: DesignTokens.surfaceDark,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey[800]!),
+        border: Border.all(color: DesignTokens.borderDark),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -236,7 +237,7 @@ class _ObligationFiltersWidgetState extends State<ObligationFiltersWidget> {
                 Navigator.pop(context);
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF8B5FBF),
+                backgroundColor: DesignTokens.primaryColor,
                 foregroundColor: Colors.white,
                 padding: const EdgeInsets.symmetric(vertical: 14),
                 shape: RoundedRectangleBorder(
@@ -262,17 +263,17 @@ class _ObligationFiltersWidgetState extends State<ObligationFiltersWidget> {
         decoration: BoxDecoration(
           color:
               isSelected
-                  ? const Color(0xFF8B5FBF).withValues(alpha: 0.2)
+                  ? DesignTokens.primaryColor.withValues(alpha: 0.2)
                   : Colors.grey[900],
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
-            color: isSelected ? const Color(0xFF8B5FBF) : Colors.grey[800]!,
+            color: isSelected ? DesignTokens.primaryColor : DesignTokens.borderDark,
           ),
         ),
         child: Text(
           label,
           style: GoogleFonts.poppins(
-            color: isSelected ? const Color(0xFF8B5FBF) : Colors.white70,
+            color: isSelected ? DesignTokens.primaryColor : Colors.white70,
             fontSize: 12,
             fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
           ),

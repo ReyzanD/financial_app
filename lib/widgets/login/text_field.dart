@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:financial_app/utils/design_tokens.dart';
 
 class CustomTextField extends StatelessWidget {
   final TextEditingController controller;
@@ -57,7 +58,7 @@ class CustomTextField extends StatelessWidget {
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: const BorderSide(
-            color: Color(0xFF8B5FBF), // Purple accent when focused
+            color: DesignTokens.primaryColor, // Purple accent when focused
             width: 2,
           ),
         ),

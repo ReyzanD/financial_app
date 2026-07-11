@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
-import 'package:financial_app/Screen/add_transaction_screen.dart';
+import 'package:financial_app/features/transactions/presentation/screens/add_transaction_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:financial_app/state/app_state.dart';
+import 'package:financial_app/services/error_handler_service.dart';
+import 'package:financial_app/utils/design_tokens.dart';
 
 class HomeFloatingActionButton extends StatelessWidget {
   const HomeFloatingActionButton({super.key});
@@ -26,16 +28,13 @@ class HomeFloatingActionButton extends StatelessWidget {
 
           if (!context.mounted) return;
           // Show success feedback
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Dashboard diperbarui'),
-              duration: Duration(seconds: 1),
-              backgroundColor: Colors.green,
-            ),
+          ErrorHandlerService.showSuccessSnackbar(
+            context,
+            'Dashboard diperbarui',
           );
         }
       },
-      backgroundColor: const Color(0xFF8B5FBF),
+      backgroundColor: DesignTokens.primaryColor,
       child: const Icon(Iconsax.add, color: Colors.white),
     );
   }

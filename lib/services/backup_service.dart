@@ -22,6 +22,12 @@ class BackupService {
       final obligations = await db.query('financial_obligations_232143');
       final receiptScans = await db.query('receipt_scans_232143');
 
+      // User and profile data
+      final users = await db.query('users_232143');
+
+      // Goal contributions (for goal tracking)
+      final goalContributions = await db.query('goal_contributions_232143');
+
       // New feature data
       final accounts = await db.query('accounts_232143');
       final debts = await db.query('debts_232143');
@@ -41,10 +47,12 @@ class BackupService {
         'version': '2.0',
         'timestamp': DateTime.now().toIso8601String(),
         'data': {
+          'users': users,
           'transactions': transactions,
           'categories': categories,
           'budgets': budgets,
           'goals': goals,
+          'goal_contributions': goalContributions,
           'obligations': obligations,
           'receipt_scans': receiptScans,
           'accounts': accounts,
@@ -161,6 +169,7 @@ class BackupService {
       return {
         'version': backup['version'],
         'timestamp': backup['timestamp'],
+        'userCount': (data['users'] as List?)?.length ?? 0,
         'transactionCount': (data['transactions'] as List?)?.length ?? 0,
         'categoryCount': (data['categories'] as List?)?.length ?? 0,
         'budgetCount': (data['budgets'] as List?)?.length ?? 0,
@@ -257,6 +266,29 @@ class BackupService {
           await txn.insert(
             'receipt_scans_232143',
             scanMap,
+            conflictAlgorithm: ConflictAlgorithm.replace,
+          );
+        }
+
+        // Restore users
+        final users = (data['users'] as List<dynamic>?) ?? [];
+        for (var user in users) {
+          final userMap = user as Map<String, dynamic>;
+          await txn.insert(
+            'users_232143',
+            userMap,
+            conflictAlgorithm: ConflictAlgorithm.replace,
+          );
+        }
+
+        // Restore goal contributions
+        final goalContributions =
+            (data['goal_contributions'] as List<dynamic>?) ?? [];
+        for (var contribution in goalContributions) {
+          final contributionMap = contribution as Map<String, dynamic>;
+          await txn.insert(
+            'goal_contributions_232143',
+            contributionMap,
             conflictAlgorithm: ConflictAlgorithm.replace,
           );
         }

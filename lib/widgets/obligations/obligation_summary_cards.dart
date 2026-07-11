@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:financial_app/services/obligation_service.dart';
 import 'package:financial_app/utils/formatters.dart';
+import 'package:financial_app/utils/design_tokens.dart';
 
 class ObligationSummaryCards extends StatelessWidget {
   const ObligationSummaryCards({super.key});
@@ -57,7 +58,7 @@ class ObligationSummaryCards extends StatelessWidget {
     IconData icon,
   ) {
     return Card(
-      color: const Color(0xFF1A1A1A),
+      color: DesignTokens.surfaceDark,
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(

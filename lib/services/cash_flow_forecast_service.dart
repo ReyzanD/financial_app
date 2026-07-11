@@ -137,9 +137,9 @@ class CashFlowForecastService {
         final amount = (transaction['amount'] as num?)?.toDouble() ?? 0.0;
 
         final isCurrentMonth = date.year == now.year && date.month == now.month;
+        final prevMonth = DateTime(now.year, now.month - 1, 1);
         final isPreviousMonth =
-            date.year == now.add(const Duration(days: -30)).year &&
-            date.month == now.add(const Duration(days: -30)).month;
+            date.year == prevMonth.year && date.month == prevMonth.month;
 
         if (isCurrentMonth) {
           if (type == 'income') currentIncome += amount;

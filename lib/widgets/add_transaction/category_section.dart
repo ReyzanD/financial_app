@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
+import 'package:financial_app/utils/design_tokens.dart';
 
 class CategorySection extends StatelessWidget {
   final String selectedType;
@@ -89,7 +90,7 @@ class CategorySection extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.all(20),
               child: CircularProgressIndicator(
-                color: Color(0xFF8B5FBF),
+                color: DesignTokens.primaryColor,
                 strokeWidth: 2,
               ),
             ),
@@ -98,9 +99,9 @@ class CategorySection extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: const Color(0xFF1A1A1A),
+              color: DesignTokens.surfaceDark,
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: Colors.grey[800]!),
+              border: Border.all(color: DesignTokens.borderDark),
             ),
             child: Text(
               'Tidak ada kategori tersedia untuk ${selectedType == "income" ? "pemasukan" : "pengeluaran"}',
@@ -139,7 +140,7 @@ class CategorySection extends StatelessWidget {
                         color:
                             isSelected
                                 ? categoryColor.withValues(alpha: 0.2)
-                                : const Color(0xFF1A1A1A),
+                                : DesignTokens.surfaceDark,
                         borderRadius: BorderRadius.circular(20),
                         border: Border.all(
                           color: isSelected ? categoryColor : Colors.grey[700]!,

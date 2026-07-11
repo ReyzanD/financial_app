@@ -6,6 +6,7 @@ import 'package:financial_app/utils/formatters.dart';
 import 'package:financial_app/services/logger_service.dart';
 import 'package:financial_app/l10n/app_localizations.dart';
 import 'package:intl/intl.dart';
+import 'package:financial_app/utils/design_tokens.dart';
 
 /// Widget untuk menampilkan analytics dan trends untuk obligations
 class BillAnalyticsView extends StatefulWidget {
@@ -80,7 +81,7 @@ class _BillAnalyticsViewState extends State<BillAnalyticsView> {
   Widget build(BuildContext context) {
     if (_isLoading) {
       return const Center(
-        child: CircularProgressIndicator(color: Color(0xFF8B5FBF)),
+        child: CircularProgressIndicator(color: DesignTokens.primaryColor),
       );
     }
 
@@ -145,7 +146,7 @@ class _BillAnalyticsViewState extends State<BillAnalyticsView> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0xFF1A1A1A),
+        color: DesignTokens.surfaceDark,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: color.withValues(alpha: 0.3)),
       ),
@@ -187,9 +188,9 @@ class _BillAnalyticsViewState extends State<BillAnalyticsView> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0xFF1A1A1A),
+        color: DesignTokens.surfaceDark,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey[800]!),
+        border: Border.all(color: DesignTokens.borderDark),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -274,9 +275,9 @@ class _BillAnalyticsViewState extends State<BillAnalyticsView> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0xFF1A1A1A),
+        color: DesignTokens.surfaceDark,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey[800]!),
+        border: Border.all(color: DesignTokens.borderDark),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -361,16 +362,16 @@ class _BillAnalyticsViewState extends State<BillAnalyticsView> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0xFF1A1A1A),
+        color: DesignTokens.surfaceDark,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey[800]!),
+        border: Border.all(color: DesignTokens.borderDark),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Icon(Iconsax.chart_2, color: const Color(0xFF8B5FBF), size: 20),
+              Icon(Iconsax.chart_2, color: DesignTokens.primaryColor, size: 20),
               const SizedBox(width: 8),
               Text(
                 AppLocalizations.of(context)!.spending_forecast,

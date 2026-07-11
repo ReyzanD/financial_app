@@ -778,9 +778,8 @@ class SpendingPatternAnalyzer {
           );
       insights['action_items'] = <Map<String, dynamic>>[
         if ((healthScore['recommendations'] as List<String>).isNotEmpty)
-          ...(healthScore['recommendations'] as List<String>).map((r) {
-            return {'text': r, 'type': 'recommendation'};
-          }).toList(),
+          for (final r in healthScore['recommendations'] as List<String>)
+            {'text': r, 'type': 'recommendation'},
         if (anomalies.isNotEmpty)
           {
             'text': 'Review ${anomalies.length} unusual spending transactions',

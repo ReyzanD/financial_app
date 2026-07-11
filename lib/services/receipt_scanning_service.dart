@@ -2,14 +2,14 @@ import 'dart:io';
 import 'package:image_picker/image_picker.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'package:financial_app/services/logger_service.dart';
-import 'package:financial_app/services/local_data_service.dart';
+import 'package:financial_app/services/data/receipt_scan_data_service.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:uuid/uuid.dart';
 
 class ReceiptScanningService {
   final ImagePicker _imagePicker = ImagePicker();
   final TextRecognizer _textRecognizer = TextRecognizer();
-  final LocalDataService _localData = LocalDataService();
+  final ReceiptScanDataService _receiptScanData = ReceiptScanDataService();
   final _uuid = const Uuid();
 
   Future<File?> pickImage({bool fromCamera = false}) async {
@@ -53,7 +53,7 @@ class ReceiptScanningService {
       final parsedData = _parseReceiptText(recognizedText.text);
       parsedData['image_path'] = savedImagePath;
 
-      await _localData.saveReceiptScan({
+      await _receiptScanData.saveReceiptScan({
         'merchant': parsedData['merchant'],
         'total_amount': parsedData['total'],
         'receipt_date': parsedData['date'],

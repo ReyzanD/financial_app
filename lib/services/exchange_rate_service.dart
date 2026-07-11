@@ -1,10 +1,9 @@
-import 'package:financial_app/services/local_data_service.dart';
 import 'package:financial_app/services/logger_service.dart';
+import 'package:financial_app/services/data/exchange_rate_data_service.dart';
 import 'package:financial_app/models/currency_model.dart';
-import 'package:financial_app/core/di/service_locator.dart';
 
 class ExchangeRateService {
-  final LocalDataService _localData = getIt<LocalDataService>();
+  final ExchangeRateDataService _exchangeRateData = ExchangeRateDataService();
 
   static const Map<String, double> _defaultRates = {
     'IDR': 1.0,
@@ -29,7 +28,7 @@ class ExchangeRateService {
     try {
       if (fromCode == toCode) return 1.0;
 
-      final rates = await _localData.getExchangeRates();
+      final rates = await _exchangeRateData.getExchangeRates();
 
       final fromRateInIDR =
           rates[fromCode.toUpperCase()] ??
@@ -72,12 +71,12 @@ class ExchangeRateService {
   }
 
   Future<Map<String, double>> getRates() async {
-    return await _localData.getExchangeRates();
+    return await _exchangeRateData.getExchangeRates();
   }
 
   Future<void> updateRates(Map<String, double> rates) async {
     try {
-      await _localData.updateExchangeRates(rates);
+      await _exchangeRateData.updateExchangeRates(rates);
       LoggerService.info('Exchange rates updated');
     } catch (e) {
       LoggerService.error('Error updating rates', error: e);

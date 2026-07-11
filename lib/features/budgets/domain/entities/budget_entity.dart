@@ -20,19 +20,32 @@ class BudgetEntity {
 
   factory BudgetEntity.fromJson(Map<String, dynamic> json) {
     return BudgetEntity(
-      id: json['id']?.toString() ?? '',
-      categoryId: json['category_id']?.toString() ?? '',
-      amount: (json['amount'] as num?)?.toDouble() ?? 0.0,
-      spent: (json['spent'] as num?)?.toDouble() ?? 0.0,
-      startDate:
-          json['start_date'] != null
+      id: json['budget_id_232143']?.toString() ??
+          json['budget_id']?.toString() ??
+          json['id']?.toString() ??
+          '',
+      categoryId: json['category_id_232143']?.toString() ??
+          json['category_id']?.toString() ??
+          '',
+      amount: (json['amount_232143'] as num?)?.toDouble() ??
+          (json['amount'] as num?)?.toDouble() ??
+          0.0,
+      spent: (json['spent_amount_232143'] as num?)?.toDouble() ??
+          (json['spent'] as num?)?.toDouble() ??
+          0.0,
+      startDate: json['period_start_232143'] != null
+          ? DateTime.parse(json['period_start_232143'].toString())
+          : json['start_date'] != null
               ? DateTime.parse(json['start_date'].toString())
               : DateTime.now(),
-      endDate:
-          json['end_date'] != null
+      endDate: json['period_end_232143'] != null
+          ? DateTime.parse(json['period_end_232143'].toString())
+          : json['end_date'] != null
               ? DateTime.parse(json['end_date'].toString())
               : DateTime.now(),
-      isActive: json['is_active'] as bool? ?? true,
+      isActive: json['is_active_232143'] != null
+          ? json['is_active_232143'] == 1
+          : json['is_active'] as bool? ?? true,
     );
   }
 

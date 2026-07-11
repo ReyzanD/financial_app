@@ -1,8 +1,11 @@
+import 'package:financial_app/core/di/service_locator.dart';
 import 'package:financial_app/services/api_service.dart';
 
 /// Transaction Remote Data Source (Data Layer) - Now uses local database
 class TransactionRemoteDataSource {
-  final ApiService _apiService = ApiService();
+  final ApiService _apiService;
+  TransactionRemoteDataSource({ApiService? apiService})
+      : _apiService = apiService ?? getIt<ApiService>();
 
   Future<List<Map<String, dynamic>>> getTransactions({
     String? type,

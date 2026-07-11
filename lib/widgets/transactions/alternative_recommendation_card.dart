@@ -4,6 +4,8 @@ import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:financial_app/utils/formatters.dart';
 import 'package:financial_app/models/location_recommendation.dart';
 import 'package:financial_app/l10n/app_localizations.dart';
+import 'package:financial_app/services/error_handler_service.dart';
+import 'package:financial_app/utils/design_tokens.dart';
 
 class AlternativeRecommendationCard extends StatelessWidget {
   final LocationRecommendation recommendation;
@@ -19,9 +21,9 @@ class AlternativeRecommendationCard extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0xFF1A1A1A),
+        color: DesignTokens.surfaceDark,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey[800]!),
+        border: Border.all(color: DesignTokens.borderDark),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -29,10 +31,10 @@ class AlternativeRecommendationCard extends StatelessWidget {
           Row(
             children: [
               Icon(
-                recommendation.type == RecommendationType.price_alert
+                recommendation.type == RecommendationType.priceAlert
                     ? Iconsax.discount_shape
                     : Iconsax.location,
-                color: const Color(0xFF8B5FBF),
+                color: DesignTokens.primaryColor,
                 size: 20,
               ),
               const SizedBox(width: 8),
@@ -93,7 +95,7 @@ class AlternativeRecommendationCard extends StatelessWidget {
                     Text(
                       'Hemat ${CurrencyFormatter.formatRupiah(recommendation.estimatedSavings)}',
                       style: GoogleFonts.poppins(
-                        color: const Color(0xFF8B5FBF),
+                        color: DesignTokens.primaryColor,
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
                       ),
@@ -118,45 +120,26 @@ class AlternativeRecommendationCard extends StatelessWidget {
                           try {
                             // You can use url_launcher package here
                             // For now, show a message
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(
-                                  'Membuka navigasi ke $location',
-                                  style: GoogleFonts.poppins(
-                                    color: Colors.white,
-                                  ),
-                                ),
-                                backgroundColor: const Color(0xFF8B5FBF),
-                              ),
+                            ErrorHandlerService.showInfoSnackbar(
+                              context,
+                              'Membuka navigasi ke $location',
                             );
                           } catch (e) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(
-                                  'Tidak dapat membuka navigasi',
-                                  style: GoogleFonts.poppins(
-                                    color: Colors.white,
-                                  ),
-                                ),
-                                backgroundColor: Colors.red,
-                              ),
+                            ErrorHandlerService.showErrorSnackbar(
+                              context,
+                              'Tidak dapat membuka navigasi',
                             );
                           }
                         } else {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(
-                                'Lokasi tidak tersedia',
-                                style: GoogleFonts.poppins(color: Colors.white),
-                              ),
-                              backgroundColor: Colors.orange,
-                            ),
+                          ErrorHandlerService.showWarningSnackbar(
+                            context,
+                            'Lokasi tidak tersedia',
                           );
                         }
                       }
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF8B5FBF),
+                      backgroundColor: DesignTokens.primaryColor,
                       foregroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(
                         horizontal: 8,

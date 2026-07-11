@@ -7,7 +7,10 @@ import 'package:financial_app/services/receipt_scanning_service.dart';
 import 'package:financial_app/services/transaction_templates_service.dart';
 import 'package:financial_app/utils/formatters.dart';
 import 'package:financial_app/utils/responsive_helper.dart';
+import 'package:financial_app/widgets/home/quick_add/quick_add_modal.dart';
 import 'package:financial_app/l10n/app_localizations.dart';
+import 'package:financial_app/services/error_handler_service.dart';
+import 'package:financial_app/utils/design_tokens.dart';
 
 /// Enhanced Quick Add Widget dengan voice input, receipt scanning, smart suggestions, dan templates
 class QuickAddWidgetEnhanced extends StatefulWidget {
@@ -109,20 +112,18 @@ class _QuickAddWidgetEnhancedState extends State<QuickAddWidgetEnhanced> {
 
   Future<void> _loadTemplates() async {
     final templates = await _templatesService.getMostUsedTemplates(limit: 3);
-    setState(() {
-      _templates = templates;
-    });
+    if (mounted) {
+      setState(() {
+        _templates = templates;
+      });
+    }
   }
 
   Future<void> _startVoiceInput() async {
     if (!_voiceService.isAvailable) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            AppLocalizations.of(context)!.voice_input_not_available,
-          ),
-          backgroundColor: Colors.orange,
-        ),
+      ErrorHandlerService.showWarningSnackbar(
+        context,
+        AppLocalizations.of(context)!.voice_input_not_available,
       );
       return;
     }
@@ -139,9 +140,11 @@ class _QuickAddWidgetEnhancedState extends State<QuickAddWidgetEnhanced> {
         listenDuration: const Duration(seconds: 5),
       );
 
-      setState(() {
-        _isListening = false;
-      });
+      if (mounted) {
+        setState(() {
+          _isListening = false;
+        });
+      }
 
       if (result != null && result.isNotEmpty) {
         // Extract amount from voice input
@@ -150,27 +153,23 @@ class _QuickAddWidgetEnhancedState extends State<QuickAddWidgetEnhanced> {
           _showQuickAddModal(type: 'expense', presetAmount: amount);
         } else {
           if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(
-                  '${AppLocalizations.of(context)!.cannot_recognize_amount}: $result',
-                ),
-                backgroundColor: Colors.orange,
-              ),
+            ErrorHandlerService.showWarningSnackbar(
+              context,
+              '${AppLocalizations.of(context)!.cannot_recognize_amount}: $result',
             );
           }
         }
       }
     } catch (e) {
-      setState(() {
-        _isListening = false;
-      });
+      if (mounted) {
+        setState(() {
+          _isListening = false;
+        });
+      }
       if (!ctx.mounted) return;
-      ScaffoldMessenger.of(ctx).showSnackBar(
-        SnackBar(
-          content: Text('${AppLocalizations.of(ctx)!.error}: ${e.toString()}'),
-          backgroundColor: Colors.red,
-        ),
+      ErrorHandlerService.showErrorSnackbar(
+        ctx,
+        '${AppLocalizations.of(ctx)!.error}: ${ErrorHandlerService.getUserFriendlyMessage(e)}',
       );
     }
   }
@@ -197,7 +196,7 @@ class _QuickAddWidgetEnhancedState extends State<QuickAddWidgetEnhanced> {
       // Pick image
       final imageFile = await _receiptService.pickImage(fromCamera: true);
       if (imageFile == null) {
-        setState(() => _isScanning = false);
+        if (mounted) setState(() => _isScanning = false);
         return;
       }
 
@@ -216,27 +215,19 @@ class _QuickAddWidgetEnhancedState extends State<QuickAddWidgetEnhanced> {
         );
       } else {
         if (!ctx.mounted) return;
-        ScaffoldMessenger.of(ctx).showSnackBar(
-          SnackBar(
-            content: Text(
-              AppLocalizations.of(ctx)!.cannot_scan_receipt_try_again,
-            ),
-            backgroundColor: Colors.orange,
-          ),
+        ErrorHandlerService.showWarningSnackbar(
+          ctx,
+          AppLocalizations.of(ctx)!.cannot_scan_receipt_try_again,
         );
       }
     } catch (e) {
       if (!ctx.mounted) return;
-      ScaffoldMessenger.of(ctx).showSnackBar(
-        SnackBar(
-          content: Text(
-            '${AppLocalizations.of(ctx)!.error_scanning}: ${e.toString()}',
-          ),
-          backgroundColor: Colors.red,
-        ),
+      ErrorHandlerService.showErrorSnackbar(
+        ctx,
+        '${AppLocalizations.of(ctx)!.error_scanning}: ${ErrorHandlerService.getUserFriendlyMessage(e)}',
       );
     } finally {
-      setState(() => _isScanning = false);
+      if (mounted) setState(() => _isScanning = false);
     }
   }
 
@@ -246,53 +237,22 @@ class _QuickAddWidgetEnhancedState extends State<QuickAddWidgetEnhanced> {
     String? presetDescription,
     String? presetCategoryId,
   }) {
-    // Use existing QuickAddModal from quick_add_widget.dart
-    // This is a placeholder - should integrate with existing modal
     showModalBottomSheet(
       context: context,
-      backgroundColor: Colors.black,
       isScrollControlled: true,
+      backgroundColor: DesignTokens.backgroundDark,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      builder:
-          (context) => Container(
-            padding: EdgeInsets.only(
-              bottom: MediaQuery.of(context).viewInsets.bottom,
-              left: 16,
-              right: 16,
-              top: 16,
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  'Quick Add (Enhanced)',
-                  style: GoogleFonts.poppins(
-                    color: Colors.white,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 20),
-                if (presetAmount != null)
-                  Text(
-                    'Amount: ${CurrencyFormatter.formatRupiah(presetAmount.toInt())}',
-                    style: GoogleFonts.poppins(color: Colors.white),
-                  ),
-                if (presetDescription != null)
-                  Text(
-                    'Merchant: $presetDescription',
-                    style: GoogleFonts.poppins(color: Colors.white70),
-                  ),
-                const SizedBox(height: 20),
-                ElevatedButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: Text(AppLocalizations.of(context)!.close),
-                ),
-              ],
-            ),
-          ),
+      builder: (context) => QuickAddModal(
+        type: type,
+        presetAmount: presetAmount,
+        presetDescription: presetDescription,
+        presetCategoryId: presetCategoryId,
+        onTransactionAdded: () {
+          widget.onTransactionAdded?.call();
+        },
+      ),
     );
   }
 
@@ -302,12 +262,12 @@ class _QuickAddWidgetEnhancedState extends State<QuickAddWidgetEnhanced> {
       margin: ResponsiveHelper.horizontalPadding(context),
       padding: ResponsiveHelper.padding(context),
       decoration: BoxDecoration(
-        color: const Color(0xFF1A1A1A),
+        color: DesignTokens.surfaceDark,
         borderRadius: BorderRadius.circular(
           ResponsiveHelper.borderRadius(context, 16),
         ),
         border: Border.all(
-          color: const Color(0xFF8B5FBF).withValues(alpha: 0.3),
+          color: DesignTokens.primaryColor.withValues(alpha: 0.3),
         ),
       ),
       child: Column(
@@ -317,7 +277,7 @@ class _QuickAddWidgetEnhancedState extends State<QuickAddWidgetEnhanced> {
             children: [
               Icon(
                 Iconsax.flash_1,
-                color: const Color(0xFF8B5FBF),
+                color: DesignTokens.primaryColor,
                 size: ResponsiveHelper.iconSize(context, 20),
               ),
               SizedBox(width: ResponsiveHelper.horizontalSpacing(context, 8)),
@@ -445,7 +405,7 @@ class _QuickAddWidgetEnhancedState extends State<QuickAddWidgetEnhanced> {
               child: Padding(
                 padding: ResponsiveHelper.padding(context, multiplier: 0.5),
                 child: const CircularProgressIndicator(
-                  color: Color(0xFF8B5FBF),
+                  color: DesignTokens.primaryColor,
                   strokeWidth: 2,
                 ),
               ),
@@ -627,18 +587,18 @@ class _QuickAddWidgetEnhancedState extends State<QuickAddWidgetEnhanced> {
           vertical: 8,
         ),
         decoration: BoxDecoration(
-          color: const Color(0xFF8B5FBF).withValues(alpha: 0.2),
+          color: DesignTokens.primaryColor.withValues(alpha: 0.2),
           borderRadius: BorderRadius.circular(
             ResponsiveHelper.borderRadius(context, 20),
           ),
           border: Border.all(
-            color: const Color(0xFF8B5FBF).withValues(alpha: 0.5),
+            color: DesignTokens.primaryColor.withValues(alpha: 0.5),
           ),
         ),
         child: Text(
           CurrencyFormatter.formatRupiah(amount),
           style: GoogleFonts.poppins(
-            color: const Color(0xFF8B5FBF),
+            color: DesignTokens.primaryColor,
             fontSize: ResponsiveHelper.fontSize(context, 12),
             fontWeight: FontWeight.w600,
           ),
