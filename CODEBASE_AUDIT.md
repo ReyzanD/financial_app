@@ -1,6 +1,6 @@
 # Codebase Audit Report
 
-**Generated**: July 2026 | **Branch**: `sqlite` | **Features Scanned**: 32 of 32
+**Generated**: July 2026 | **Branch**: `sqlite` | **Last Updated**: July 2026 | **Features Scanned**: 32 of 32
 
 ---
 
@@ -9,15 +9,19 @@
 | Metric | Result |
 |--------|--------|
 | `flutter analyze` errors | **0** ✅ |
+| `flutter analyze` warnings | **0** ✅ |
 | `flutter test` passing | **253/253** ✅ |
 | Stray `print()` calls | **0** (all via LoggerService) ✅ |
 | Screens with OfflineIndicator | **38/38 (100%)** ✅ |
-| **CRITICAL bugs** (runtime crash / wrong data) | **22** 🚨 |
-| **HIGH bugs** (broken logic / wrong results) | **25** 🟡 |
-| **MEDIUM issues** (missing error handling, design gaps) | **19** |
-| **LOW issues** (code quality, cleanup) | **22** |
-| **UI/Theming issues** (hardcoded colors/text) | **108** |
-| **UX/Design issues** (layout, navigation, forms) | **23** |
+| Hardcoded colors | **0** (all via DesignTokens) ✅ |
+| **CRITICAL bugs** (runtime crash / wrong data) | **~0 remaining** 🎉 (22 eliminated in July 2026 pass) |
+| **HIGH bugs** (broken logic / wrong results) | **~2 remaining** (mostly architecture/design) |
+| **MEDIUM issues** (missing error handling, design gaps) | **~5 remaining** |
+| **LOW issues** (code quality, cleanup) | **~15 remaining** |
+| **UI/Theming issues** (hardcoded colors/text) | **0** ✅ (all 108 resolved) |
+| **UX/Design issues** (layout, navigation, forms) | **~20 remaining** |
+
+> **Note**: The issues listed below are the ORIGINAL audit findings. Most have been fixed in the July 2026 bugfix pass. See `TODO.md` for the current remaining items.
 
 ---
 

@@ -131,7 +131,7 @@ lib/
 ├── utils/           # Helper utilities
 ├── state/           # Global state management
 ├── l10n/            # Localization files
-└── Screen/          # Screen files (legacy naming, being migrated to features/)
+# (legacy Screen/ directory fully migrated to features/ — removed)
 ```
 
 ### File Naming Conventions
@@ -596,18 +596,32 @@ localizationService.setLocale(Locale('id', ''));
 
 ## Current Status & Known Issues
 
-### Completed Features (from FULL_IMPLEMENTATION_SUMMARY.md)
-- ✅ Logger Service (100%)
-- ✅ Error Handler Service (100%)
-- ✅ Network Service (100%)
-- ✅ Offline Indicator (100%)
-- ✅ API Service updates (100%)
-- ✅ 4 screens updated with new error handling (100%)
+### Build Health
+| Metric | Status |
+|--------|--------|
+| `dart analyze` errors | **0** ✅ |
+| `dart analyze` warnings | **0** ✅ |
+| `dart analyze` info | **75** (info-level only) |
+| `flutter test` | **253/253** ✅ |
+| OfflineIndicator on screens | **38/38 (100%)** ✅ |
+| Stray `print()` calls | **0** (all via LoggerService) ✅ |
+| Hardcoded Colors | **0** (all via DesignTokens) ✅ |
 
-### Pending Work
-- ⏳ Update remaining 19 screens with error handling (0%)
-- ⏳ Replace ~184 print statements with LoggerService (0%)
-- ⏳ Add offline indicators to all screens (0%)
+### Critical Bugs Tracked via CODEBASE_AUDIT.md
+- **22 CRITICAL** → **0 remaining** (all eliminated)
+- **25 HIGH** → **~2 design-level items remaining**
+- **19 MEDIUM** → **~5 minor items remaining**
+
+### Remaining Items (minor, non-blocking)
+- UX/Design polish: dashboard overload, More tab grouping, net worth chart
+- Localization pass: some hardcoded Indonesian strings not in ARB files
+- `api_security_service.dart:147` TODO placeholder
+- QuickAddWidgetEnhanced voice/scan feature improvements (basic wire-up done)
+
+### Key Technical Details
+- **DB Keys**: All tables use `_232143` suffixed column names. Normalization helpers (`_normalizeTransactions`, `_normalize`) in controllers handle the suffix→clean key mapping.
+- **Dependency Injection**: All services accessed via `getIt<ServiceType>()` — `ApiService()` constructor banned.
+- **Styling**: All colors via `DesignTokens.*` constants in `lib/utils/design_tokens.dart`. No hardcoded `Color(0xFF...)`.
 
 ### Branch Info
 - Current branch: `sqlite`
@@ -619,7 +633,7 @@ localizationService.setLocale(Locale('id', ''));
 ## Common Tasks
 
 ### Adding a New Screen
-1. Create screen file: `lib/Screen/new_screen.dart`
+1. Create screen in `lib/features/<feature>/presentation/screens/`
 2. Add route in `main.dart`:
 ```dart
 '/new-screen': (context) => const NewScreen(),
