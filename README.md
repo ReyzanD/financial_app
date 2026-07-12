@@ -1,5 +1,7 @@
 # Financial App
 
+[![Flutter CI](https://github.com/ReyzanD/financial_app/workflows/Flutter%20CI/badge.svg)](https://github.com/ReyzanD/financial_app/actions)
+
 Aplikasi keuangan lengkap yang dibangun dengan Flutter. Aplikasi ini menyediakan fitur manajemen keuangan pribadi termasuk tracking transaksi, budgeting, goals, dan analisis keuangan. **Aplikasi ini berjalan fully standalone tanpa perlu backend server - semua data tersimpan lokal di device.**
 
 ## ⚠️ Copyright & License

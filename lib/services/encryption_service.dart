@@ -8,13 +8,19 @@ import 'package:financial_app/services/logger_service.dart';
 
 /// Service untuk encrypt/decrypt sensitive data
 /// Menggunakan AES-256 encryption dengan secure key storage
+///
+/// Security notes:
+/// - A fresh random IV is generated per encrypt() call and prepended to the
+///   ciphertext, so each encryption of the same plaintext produces different
+///   output. The stored format is: base64(16-byte-IV || ciphertext)
+/// - The AES key itself is stored in FlutterSecureStorage (platform keychain).
+/// - The per-record IV is embedded in the ciphertext, not stored separately.
 class EncryptionService {
   static const String _keyStorageKey = 'encryption_key';
-  static const String _ivStorageKey = 'encryption_iv';
+  static const int _ivLengthBytes = 16; // AES-CBC block size
   final FlutterSecureStorage _secureStorage = const FlutterSecureStorage();
 
   Key? _encryptionKey;
-  IV? _encryptionIV;
   Encrypter? _encrypter;
 
   // Singleton pattern
@@ -23,31 +29,26 @@ class EncryptionService {
   EncryptionService._internal();
 
   /// Initialize encryption service
-  /// Generate atau load encryption key dan IV
+  /// Generate atau load encryption key
   Future<void> initialize() async {
     try {
       final existingKey = await _secureStorage.read(key: _keyStorageKey);
-      final existingIV = await _secureStorage.read(key: _ivStorageKey);
 
-      if (existingKey == null || existingIV == null) {
-        // Generate new key and IV
+      if (existingKey == null) {
+        // Generate new key
         final key = _generateAESKey();
-        final iv = _generateIV();
 
         await _secureStorage.write(key: _keyStorageKey, value: key.base64);
-        await _secureStorage.write(key: _ivStorageKey, value: iv.base64);
 
         _encryptionKey = key;
-        _encryptionIV = iv;
         _encrypter = Encrypter(AES(key));
 
         LoggerService.success(
           '[EncryptionService] New AES-256 encryption key generated',
         );
       } else {
-        // Load existing key and IV
+        // Load existing key
         _encryptionKey = Key.fromBase64(existingKey);
-        _encryptionIV = IV.fromBase64(existingIV);
         _encrypter = Encrypter(AES(_encryptionKey!));
 
         LoggerService.debug(
@@ -72,55 +73,77 @@ class EncryptionService {
     return Key(keyBytes);
   }
 
-  /// Generate IV (Initialization Vector) - 16 bytes for AES
-  IV _generateIV() {
+  /// Generate a fresh random IV (Initialization Vector) — 16 bytes for AES-CBC
+  Uint8List _generateIV() {
     final random = Random.secure();
-    final ivBytes = Uint8List.fromList(
-      List<int>.generate(16, (_) => random.nextInt(256)),
+    return Uint8List.fromList(
+      List<int>.generate(_ivLengthBytes, (_) => random.nextInt(256)),
     );
-    return IV(ivBytes);
   }
 
   /// Get encryption key (ensure initialized)
   Future<void> _ensureInitialized() async {
-    if (_encrypter == null || _encryptionKey == null || _encryptionIV == null) {
+    if (_encrypter == null || _encryptionKey == null) {
       await initialize();
     }
   }
 
-  /// Encrypt string data menggunakan AES-256
+  /// Encrypt string data using AES-256 with a fresh random IV per call.
+  ///
+  /// The returned string is base64(16-byte-IV || ciphertext). Each call
+  /// produces different output even for the same plaintext.
   Future<String> encrypt(String data) async {
     try {
       await _ensureInitialized();
 
-      if (_encrypter == null || _encryptionIV == null) {
+      if (_encrypter == null) {
         throw Exception('Encryption not initialized');
       }
 
-      final encrypted = _encrypter!.encrypt(data, iv: _encryptionIV!);
-      final encryptedBase64 = encrypted.base64;
+      // Generate a fresh IV for this encryption
+      final ivBytes = _generateIV();
+      final iv = IV(ivBytes);
+
+      final encrypted = _encrypter!.encrypt(data, iv: iv);
+
+      // Prepend IV bytes to ciphertext bytes, then base64-encode the result
+      final combined = Uint8List.fromList([...ivBytes, ...encrypted.bytes]);
+      final combinedBase64 = base64Encode(combined);
 
       LoggerService.debug(
-        '[EncryptionService] Data encrypted using AES-256 (length: ${encryptedBase64.length})',
+        '[EncryptionService] Data encrypted using AES-256 (length: ${combinedBase64.length})',
       );
-      return encryptedBase64;
+      return combinedBase64;
     } catch (e) {
       LoggerService.error('[EncryptionService] Encryption failed', error: e);
       rethrow;
     }
   }
 
-  /// Decrypt string data menggunakan AES-256
+  /// Decrypt string data that was encrypted by [encrypt].
+  ///
+  /// Expects input format: base64(16-byte-IV || ciphertext).
   Future<String> decrypt(String encryptedData) async {
     try {
       await _ensureInitialized();
 
-      if (_encrypter == null || _encryptionIV == null) {
+      if (_encrypter == null) {
         throw Exception('Encryption not initialized');
       }
 
-      final encrypted = Encrypted.fromBase64(encryptedData);
-      final decrypted = _encrypter!.decrypt(encrypted, iv: _encryptionIV!);
+      final combined = base64Decode(encryptedData);
+
+      if (combined.length < _ivLengthBytes) {
+        throw FormatException('Encrypted data too short (missing IV)');
+      }
+
+      // First 16 bytes are the IV, the rest is the ciphertext
+      final ivBytes = combined.sublist(0, _ivLengthBytes);
+      final cipherBytes = combined.sublist(_ivLengthBytes);
+
+      final iv = IV(ivBytes);
+      final encrypted = Encrypted(cipherBytes);
+      final decrypted = _encrypter!.decrypt(encrypted, iv: iv);
 
       LoggerService.debug('[EncryptionService] Data decrypted using AES-256');
       return decrypted;
@@ -159,13 +182,11 @@ class EncryptionService {
   Future<void> clearKey() async {
     try {
       await _secureStorage.delete(key: _keyStorageKey);
-      await _secureStorage.delete(key: _ivStorageKey);
 
       _encryptionKey = null;
-      _encryptionIV = null;
       _encrypter = null;
 
-      LoggerService.info('[EncryptionService] AES-256 encryption keys cleared');
+      LoggerService.info('[EncryptionService] AES-256 encryption key cleared');
     } catch (e) {
       LoggerService.error('[EncryptionService] Error clearing keys', error: e);
     }
@@ -175,9 +196,7 @@ class EncryptionService {
   Future<bool> isEncryptionAvailable() async {
     try {
       await _ensureInitialized();
-      return _encrypter != null &&
-          _encryptionKey != null &&
-          _encryptionIV != null;
+      return _encrypter != null && _encryptionKey != null;
     } catch (e) {
       LoggerService.error(
         '[EncryptionService] Error checking availability',
