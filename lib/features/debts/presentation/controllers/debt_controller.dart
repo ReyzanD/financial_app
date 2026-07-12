@@ -7,7 +7,7 @@ class DebtController extends ChangeNotifier {
   final DebtRepositoryInterface _repository;
 
   DebtController({required DebtRepositoryInterface repository})
-      : _repository = repository;
+    : _repository = repository;
 
   List<DebtModel> _debts = [];
   Map<String, dynamic> _summary = {};

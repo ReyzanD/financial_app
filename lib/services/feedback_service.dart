@@ -46,13 +46,14 @@ class FeedbackService {
         backgroundColor: const Color(0xFF1E1E1E),
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
           side: const BorderSide(color: Colors.green, width: 1),
         ),
         duration: const Duration(seconds: 3),
         action:
             onUndo != null
                 ? SnackBarAction(
+                  // TODO: Localize — no BuildContext available in service
                   label: 'UNDO',
                   textColor: Colors.green,
                   onPressed: onUndo,
@@ -102,13 +103,14 @@ class FeedbackService {
         backgroundColor: const Color(0xFF1E1E1E),
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
           side: const BorderSide(color: Colors.red, width: 1),
         ),
         duration: const Duration(seconds: 4),
         action:
             onRetry != null
                 ? SnackBarAction(
+                  // TODO: Localize — no BuildContext available in service
                   label: 'COBA LAGI',
                   textColor: Colors.red,
                   onPressed: onRetry,
@@ -154,7 +156,7 @@ class FeedbackService {
         backgroundColor: const Color(0xFF1E1E1E),
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
           side: const BorderSide(color: Colors.orange, width: 1),
         ),
         duration: const Duration(seconds: 3),
@@ -198,7 +200,7 @@ class FeedbackService {
         backgroundColor: const Color(0xFF1E1E1E),
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
           side: const BorderSide(color: DesignTokens.primaryColor, width: 1),
         ),
         duration: const Duration(seconds: 2),
@@ -217,7 +219,9 @@ class FeedbackService {
               height: 20,
               child: CircularProgressIndicator(
                 strokeWidth: 2,
-                valueColor: AlwaysStoppedAnimation<Color>(DesignTokens.primaryColor),
+                valueColor: AlwaysStoppedAnimation<Color>(
+                  DesignTokens.primaryColor,
+                ),
               ),
             ),
             const SizedBox(width: 16),
@@ -235,7 +239,7 @@ class FeedbackService {
         ),
         backgroundColor: const Color(0xFF1E1E1E),
         behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(DesignTokens.radiusMedium)),
         duration: const Duration(days: 365), // Long duration for loading
       ),
     );

@@ -18,8 +18,10 @@ class FinancialCalendarService {
     final events = <Map<String, dynamic>>[];
 
     try {
-      final startDate = DateTime(year, month, 1);
-      final endDate = DateTime(year, month + 1, 0);
+      // UTC-safe for offline use — the app stores dates without timezone info,
+      // so using UTC avoids DST boundary inconsistencies
+      final startDate = DateTime.utc(year, month, 1);
+      final endDate = DateTime.utc(year, month + 1, 0);
 
       final transactionsData = await _apiService.getTransactions(
         startDate: startDate,

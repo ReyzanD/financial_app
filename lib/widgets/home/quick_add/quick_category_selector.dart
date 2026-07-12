@@ -19,19 +19,25 @@ class QuickCategorySelector extends StatelessWidget {
   /// of whether the source map uses suffixed DB keys (e.g. 'category_id_232143').
   static Map<String, dynamic> _normalize(Map<String, dynamic> src) {
     return {
-      'id': src['id']?.toString() ??
+      'id':
+          src['id']?.toString() ??
           src['category_id']?.toString() ??
-          src.values.firstWhere(
-            (v) => v.toString().startsWith('cat_'),
-            orElse: () => '',
-          ).toString(),
-      'name': (src['name'] ??
-              src['category_name'] ??
-              src.values.firstWhere(
-                (v) => v is String && !v.toString().startsWith('cat_'),
+          src['category_id_232143']?.toString() ??
+          src.values
+              .firstWhere(
+                (v) => v.toString().startsWith('cat_'),
                 orElse: () => '',
-              ))
-          .toString(),
+              )
+              .toString(),
+      'name':
+          (src['name'] ??
+                  src['category_name'] ??
+                  src['name_232143']?.toString() ??
+                  src.values.firstWhere(
+                    (v) => v is String && !v.toString().startsWith('cat_'),
+                    orElse: () => '',
+                  ))
+              .toString(),
     };
   }
 
@@ -58,20 +64,26 @@ class QuickCategorySelector extends StatelessWidget {
     return Wrap(
       spacing: 8,
       runSpacing: 8,
-      children: categories
-          .map((c) => _buildCategoryChip(
-              c is Map<String, dynamic> ? _normalize(c) : c))
-          .toList(),
+      children:
+          categories
+              .map(
+                (c) => _buildCategoryChip(
+                  c is Map<String, dynamic> ? _normalize(c) : c,
+                ),
+              )
+              .toList(),
     );
   }
 
   Widget _buildCategoryChip(dynamic category) {
-    final id = category is Map<String, dynamic>
-        ? (category['id']?.toString() ?? '')
-        : category.toString();
-    final name = category is Map<String, dynamic>
-        ? (category['name']?.toString() ?? 'Unknown')
-        : category.toString();
+    final id =
+        category is Map<String, dynamic>
+            ? (category['id']?.toString() ?? '')
+            : category.toString();
+    final name =
+        category is Map<String, dynamic>
+            ? (category['name']?.toString() ?? 'Unknown')
+            : category.toString();
 
     return InkWell(
       onTap: () => onCategorySelected(id),

@@ -7,6 +7,8 @@ abstract class TransactionRepositoryInterface {
     DateTime? startDate,
     DateTime? endDate,
     String? categoryId,
+    int? limit,
+    int? offset,
   });
 
   Future<TransactionEntity> createTransaction(TransactionEntity transaction);

@@ -4,10 +4,7 @@ import 'package:financial_app/services/logger_service.dart';
 void main() {
   group('LoggerService', () {
     test('debug should not throw', () {
-      expect(
-        () => LoggerService.debug('Test debug message'),
-        returnsNormally,
-      );
+      expect(() => LoggerService.debug('Test debug message'), returnsNormally);
     });
 
     test('debug should not throw with error and stackTrace', () {
@@ -22,10 +19,7 @@ void main() {
     });
 
     test('info should not throw', () {
-      expect(
-        () => LoggerService.info('Test info message'),
-        returnsNormally,
-      );
+      expect(() => LoggerService.info('Test info message'), returnsNormally);
     });
 
     test('success should not throw', () {
@@ -53,10 +47,7 @@ void main() {
     });
 
     test('error should not throw', () {
-      expect(
-        () => LoggerService.error('Test error message'),
-        returnsNormally,
-      );
+      expect(() => LoggerService.error('Test error message'), returnsNormally);
     });
 
     test('error should not throw with error and stackTrace', () {
@@ -99,10 +90,7 @@ void main() {
     });
 
     test('cache should not throw', () {
-      expect(
-        () => LoggerService.cache('HIT', 'test_key'),
-        returnsNormally,
-      );
+      expect(() => LoggerService.cache('HIT', 'test_key'), returnsNormally);
     });
   });
 }

@@ -9,6 +9,7 @@ import 'package:financial_app/models/financial_overview.dart';
 import 'package:financial_app/services/logger_service.dart';
 import 'package:financial_app/models/transaction_model.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:financial_app/core/di/service_locator.dart';
 
 /// Unified facade for all financial operations
 /// Provides a single entry point for financial calculations, AI recommendations, and forecasts
@@ -16,7 +17,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 class FinancialFacade {
   final FinancialCalculator _calculator = FinancialCalculator();
   final AIService _aiService = AIService();
-  final ApiService _apiService = ApiService();
+  final ApiService _apiService = getIt<ApiService>();
   final EncryptionService _encryptionService = EncryptionService();
   final FlutterSecureStorage _secureStorage = const FlutterSecureStorage();
 

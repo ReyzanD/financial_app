@@ -10,10 +10,11 @@ import 'package:financial_app/services/api_service.dart';
 import 'package:financial_app/services/logger_service.dart';
 import 'package:financial_app/services/data/transaction_data_service.dart';
 import 'package:financial_app/utils/formatters.dart';
+import 'package:financial_app/core/di/service_locator.dart';
 
 /// Service untuk export/import data dengan multiple formats
 class ExportService {
-  final ApiService _apiService = ApiService();
+  final ApiService _apiService = getIt<ApiService>();
   final TransactionDataService _transactionData = TransactionDataService();
   final DateFormat _dateTimeFormat = DateFormat('yyyy-MM-dd HH:mm:ss');
 

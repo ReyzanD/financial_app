@@ -25,7 +25,9 @@ class NotificationScheduler {
 
   Future<void> scheduleSubscriptionNotifications() async {
     try {
-      final subscriptions = await _subscriptionData.getSubscriptions(activeOnly: true);
+      final subscriptions = await _subscriptionData.getSubscriptions(
+        activeOnly: true,
+      );
 
       for (final sub in subscriptions) {
         final name = sub['name_232143']?.toString() ?? '';

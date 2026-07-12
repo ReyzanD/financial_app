@@ -28,15 +28,15 @@ class FakeAccountDataService extends AccountDataService {
   @override
   Future<List<Map<String, dynamic>>> getAccounts({
     bool activeOnly = true,
-  }) async =>
-      _accounts.values.toList();
+  }) async => _accounts.values.toList();
 
   @override
   Future<Map<String, dynamic>> addAccount(Map<String, dynamic> data) async {
     final id = _nextId();
-    final record = _toDbFormat(data)
-      ..['account_id_232143'] = id
-      ..['user_id_232143'] = 'test_user_1';
+    final record =
+        _toDbFormat(data)
+          ..['account_id_232143'] = id
+          ..['user_id_232143'] = 'test_user_1';
     _accounts[id] = record;
     return {'account': Map<String, dynamic>.from(record)};
   }
@@ -60,10 +60,13 @@ class FakeAccountDataService extends AccountDataService {
 
   @override
   Future<Map<String, dynamic>> getAccount(String accountId) async {
-    final record = _accounts.values.where(
-      (a) => a['account_id_232143'] == accountId,
-    ).firstOrNull;
-    return {'account': record != null ? Map<String, dynamic>.from(record) : null};
+    final record =
+        _accounts.values
+            .where((a) => a['account_id_232143'] == accountId)
+            .firstOrNull;
+    return {
+      'account': record != null ? Map<String, dynamic>.from(record) : null,
+    };
   }
 
   @override
@@ -72,10 +75,7 @@ class FakeAccountDataService extends AccountDataService {
     for (var a in _accounts.values) {
       totalBalance += (a['balance_232143'] as num?)?.toDouble() ?? 0;
     }
-    return {
-      'total_accounts': _accounts.length,
-      'total_balance': totalBalance,
-    };
+    return {'total_accounts': _accounts.length, 'total_balance': totalBalance};
   }
 }
 
@@ -86,15 +86,15 @@ class FakeGoalDataService extends GoalDataService {
   String _nextId() => 'goal_${++_counter}';
 
   @override
-  Future<List<Map<String, dynamic>>> getGoals() async =>
-      _goals.values.toList();
+  Future<List<Map<String, dynamic>>> getGoals() async => _goals.values.toList();
 
   @override
   Future<Map<String, dynamic>> addGoal(Map<String, dynamic> data) async {
     final id = _nextId();
-    final record = Map<String, dynamic>.from(data)
-      ..['goal_id_232143'] = id
-      ..['user_id_232143'] = 'test_user_1';
+    final record =
+        Map<String, dynamic>.from(data)
+          ..['goal_id_232143'] = id
+          ..['user_id_232143'] = 'test_user_1';
     _goals[id] = record;
     return {'goal': record};
   }
@@ -126,9 +126,7 @@ class FakeGoalDataService extends GoalDataService {
   }
 
   @override
-  Future<List<Map<String, dynamic>>> getGoalContributions(
-    String goalId,
-  ) async {
+  Future<List<Map<String, dynamic>>> getGoalContributions(String goalId) async {
     return [];
   }
 }
@@ -140,21 +138,21 @@ class FakeDebtDataService extends DebtDataService {
   String _nextId() => 'debt_${++_counter}';
 
   @override
-  Future<List<Map<String, dynamic>>> getDebts({
-    bool activeOnly = true,
-  }) async =>
+  Future<List<Map<String, dynamic>>> getDebts({bool activeOnly = true}) async =>
       _debts.values.toList();
 
   @override
   Future<Map<String, dynamic>> addDebt(Map<String, dynamic> data) async {
     final id = _nextId();
-    final record = _toDbFormat(data)
-      ..['debt_id_232143'] = id
-      ..['user_id_232143'] = 'test_user_1'
-      ..['current_balance_232143'] = (data['original_amount'] as num?)?.toDouble() ?? 0.0
-      ..['paid_amount_232143'] = 0.0
-      ..['created_at_232143'] = DateTime.now().toIso8601String()
-      ..['updated_at_232143'] = DateTime.now().toIso8601String();
+    final record =
+        _toDbFormat(data)
+          ..['debt_id_232143'] = id
+          ..['user_id_232143'] = 'test_user_1'
+          ..['current_balance_232143'] =
+              (data['original_amount'] as num?)?.toDouble() ?? 0.0
+          ..['paid_amount_232143'] = 0.0
+          ..['created_at_232143'] = DateTime.now().toIso8601String()
+          ..['updated_at_232143'] = DateTime.now().toIso8601String();
     _debts[id] = record;
     return {'debt': Map<String, dynamic>.from(record)};
   }
@@ -174,8 +172,7 @@ class FakeDebtDataService extends DebtDataService {
   }
 
   @override
-  Future<List<Map<String, dynamic>>> getDebtPayments(String debtId) async =>
-      [];
+  Future<List<Map<String, dynamic>>> getDebtPayments(String debtId) async => [];
 
   @override
   Future<Map<String, dynamic>> getDebtSummary() async {
@@ -206,17 +203,17 @@ class FakeSubscriptionDataService extends SubscriptionDataService {
   @override
   Future<List<Map<String, dynamic>>> getSubscriptions({
     bool activeOnly = true,
-  }) async =>
-      _subscriptions.values.toList();
+  }) async => _subscriptions.values.toList();
 
   @override
   Future<Map<String, dynamic>> addSubscription(
     Map<String, dynamic> data,
   ) async {
     final id = _nextId();
-    final record = _toDbFormat(data)
-      ..['subscription_id_232143'] = id
-      ..['user_id_232143'] = 'test_user_1';
+    final record =
+        _toDbFormat(data)
+          ..['subscription_id_232143'] = id
+          ..['user_id_232143'] = 'test_user_1';
     _subscriptions[id] = record;
     return {'subscription': Map<String, dynamic>.from(record)};
   }
@@ -229,7 +226,9 @@ class FakeSubscriptionDataService extends SubscriptionDataService {
     if (_subscriptions.containsKey(id)) {
       _subscriptions[id]!.addAll(_toDbFormat(data));
     }
-    return {'subscription': Map<String, dynamic>.from(_subscriptions[id] ?? {})};
+    return {
+      'subscription': Map<String, dynamic>.from(_subscriptions[id] ?? {}),
+    };
   }
 
   @override
@@ -278,9 +277,10 @@ class FakeExpenseSplitDataService extends ExpenseSplitDataService {
   @override
   Future<Map<String, dynamic>> addSplit(Map<String, dynamic> data) async {
     final id = _nextId();
-    final record = _toDbFormat(data)
-      ..['split_id_232143'] = id
-      ..['user_id_232143'] = 'test_user_1';
+    final record =
+        _toDbFormat(data)
+          ..['split_id_232143'] = id
+          ..['user_id_232143'] = 'test_user_1';
     _splits[id] = record;
     return {'split': Map<String, dynamic>.from(record)};
   }
@@ -302,10 +302,7 @@ class FakeExpenseSplitDataService extends ExpenseSplitDataService {
       final paid = (s['paid_amount_232143'] as num?)?.toDouble() ?? 0;
       totalOwed += amount - paid;
     }
-    return {
-      'total_owed': totalOwed,
-      'unsettled_count': _splits.length,
-    };
+    return {'total_owed': totalOwed, 'unsettled_count': _splits.length};
   }
 
   @override
@@ -325,20 +322,18 @@ class FakeInvestmentDataService extends InvestmentDataService {
   Future<List<Map<String, dynamic>>> getInvestments({String? type}) async {
     var result = _investments.values.toList();
     if (type != null) {
-      result =
-          result.where((i) => i['type_232143'] == type).toList();
+      result = result.where((i) => i['type_232143'] == type).toList();
     }
     return result;
   }
 
   @override
-  Future<Map<String, dynamic>> addInvestment(
-    Map<String, dynamic> data,
-  ) async {
+  Future<Map<String, dynamic>> addInvestment(Map<String, dynamic> data) async {
     final id = _nextId();
-    final record = _toDbFormat(data)
-      ..['investment_id_232143'] = id
-      ..['user_id_232143'] = 'test_user_1';
+    final record =
+        _toDbFormat(data)
+          ..['investment_id_232143'] = id
+          ..['user_id_232143'] = 'test_user_1';
     _investments[id] = record;
     return {'investment': Map<String, dynamic>.from(record)};
   }
@@ -350,7 +345,8 @@ class FakeInvestmentDataService extends InvestmentDataService {
   ) async {
     if (_investments.containsKey(invId)) {
       _investments[invId]!['current_price_232143'] = newPrice;
-      _investments[invId]!['updated_at_232143'] = DateTime.now().toIso8601String();
+      _investments[invId]!['updated_at_232143'] =
+          DateTime.now().toIso8601String();
     }
     return {'success': true};
   }
@@ -391,10 +387,11 @@ class FakeCategoryDataService extends CategoryDataService {
   @override
   Future<Map<String, dynamic>> addCategory(Map<String, dynamic> data) async {
     final id = _nextId();
-    final record = _toDbFormat(data)
-      ..['category_id_232143'] = id
-      ..['user_id_232143'] = 'test_user_1'
-      ..['is_system_default_232143'] = 0;
+    final record =
+        _toDbFormat(data)
+          ..['category_id_232143'] = id
+          ..['user_id_232143'] = 'test_user_1'
+          ..['is_system_default_232143'] = 0;
     _categories[id] = record;
     return {'category': Map<String, dynamic>.from(record)};
   }

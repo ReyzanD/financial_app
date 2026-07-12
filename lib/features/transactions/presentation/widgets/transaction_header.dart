@@ -3,6 +3,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import 'package:financial_app/features/transactions/presentation/controllers/transaction_controller.dart';
+import 'package:financial_app/l10n/app_localizations.dart';
+import 'package:financial_app/utils/design_tokens.dart';
 
 class TransactionHeader extends StatelessWidget {
   const TransactionHeader({super.key});
@@ -10,7 +12,7 @@ class TransactionHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(DesignTokens.spacing4),
       child: Consumer<TransactionController>(
         builder: (context, controller, child) {
           double totalBalance = 0;
@@ -37,7 +39,7 @@ class TransactionHeader extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'Transaksi',
+                    AppLocalizations.of(context)?.transactions ?? 'Transaksi',
                     style: GoogleFonts.poppins(
                       color: Colors.white,
                       fontSize: 24,
@@ -57,7 +59,8 @@ class TransactionHeader extends StatelessWidget {
               ),
               const SizedBox(height: 8),
               Text(
-                'Kelola semua transaksi keuangan Anda',
+                AppLocalizations.of(context)?.manage_all_transactions ??
+                    'Kelola semua transaksi keuangan Anda',
                 style: GoogleFonts.poppins(
                   color: Colors.grey[400],
                   fontSize: 14,

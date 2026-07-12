@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:financial_app/l10n/app_localizations.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:financial_app/services/logger_service.dart';
@@ -72,12 +73,13 @@ class CategoryBreakdown extends StatelessWidget {
         padding: const EdgeInsets.all(32),
         decoration: BoxDecoration(
           color: DesignTokens.surfaceDark,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(DesignTokens.radiusLarge),
           border: Border.all(color: DesignTokens.borderDark),
         ),
         child: Center(
           child: Text(
-            'Belum ada transaksi',
+            AppLocalizations.of(context)?.no_transactions_title ??
+                'Belum ada transaksi',
             style: GoogleFonts.poppins(color: Colors.grey[500]),
           ),
         ),
@@ -85,10 +87,10 @@ class CategoryBreakdown extends StatelessWidget {
     }
 
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(DesignTokens.spacing4),
       decoration: BoxDecoration(
         color: DesignTokens.surfaceDark,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(DesignTokens.radiusLarge),
         border: Border.all(color: DesignTokens.borderDark),
       ),
       child: Column(

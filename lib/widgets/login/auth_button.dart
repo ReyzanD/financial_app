@@ -25,7 +25,7 @@ class AuthButton extends StatelessWidget {
           begin: Alignment.centerLeft,
           end: Alignment.centerRight,
         ),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
         boxShadow: [
           BoxShadow(
             color: Color.lerp(
@@ -44,7 +44,7 @@ class AuthButton extends StatelessWidget {
           backgroundColor: Colors.transparent,
           shadowColor: Colors.transparent,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
           ),
         ),
         child:

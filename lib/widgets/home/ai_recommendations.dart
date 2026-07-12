@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:financial_app/l10n/app_localizations.dart';
 import 'package:financial_app/utils/formatters.dart';
 import 'package:financial_app/services/ai_service.dart';
 import 'package:financial_app/services/error_handler_service.dart';
@@ -18,6 +19,7 @@ class _AIRecommendationsState extends State<AIRecommendations> {
   List<Map<String, dynamic>> _recommendations = [];
   bool _isLoading = true;
   int _currentIndex = 0;
+  AppLocalizations? _l10n;
 
   @override
   void initState() {
@@ -88,12 +90,13 @@ class _AIRecommendationsState extends State<AIRecommendations> {
 
   @override
   Widget build(BuildContext context) {
+    _l10n = AppLocalizations.of(context);
     if (_isLoading) {
       return Container(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(DesignTokens.spacing4),
         decoration: BoxDecoration(
           color: DesignTokens.surfaceDark,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(DesignTokens.radiusLarge),
           border: Border.all(
             color: DesignTokens.primaryColor.withValues(alpha: 0.3),
           ),
@@ -106,17 +109,18 @@ class _AIRecommendationsState extends State<AIRecommendations> {
 
     if (_recommendations.isEmpty) {
       return Container(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(DesignTokens.spacing4),
         decoration: BoxDecoration(
           color: DesignTokens.surfaceDark,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(DesignTokens.radiusLarge),
           border: Border.all(
             color: DesignTokens.primaryColor.withValues(alpha: 0.3),
           ),
         ),
         child: Center(
           child: Text(
-            'Belum ada rekomendasi AI tersedia',
+            _l10n?.no_recommendations_available ??
+                'Belum ada rekomendasi AI tersedia',
             style: GoogleFonts.poppins(color: Colors.grey[500], fontSize: 13),
           ),
         ),
@@ -125,7 +129,9 @@ class _AIRecommendationsState extends State<AIRecommendations> {
 
     final currentRec = _recommendations[_currentIndex];
     final recommendation =
-        currentRec['recommendation'] ?? 'Belum ada rekomendasi AI tersedia';
+        currentRec['recommendation'] ??
+        (_l10n?.no_recommendations_available ??
+            'Belum ada rekomendasi AI tersedia');
     final savings = (currentRec['potential_savings'] ?? 0).toDouble();
     final priority = currentRec['priority'];
     final category = currentRec['category'];
@@ -135,10 +141,10 @@ class _AIRecommendationsState extends State<AIRecommendations> {
     final priorityIcon = _getPriorityIcon(priority);
 
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(DesignTokens.spacing4),
       decoration: BoxDecoration(
         color: DesignTokens.surfaceDark,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(DesignTokens.radiusLarge),
         border: Border.all(color: priorityColor.withValues(alpha: 0.3)),
         gradient: LinearGradient(
           begin: Alignment.topLeft,
@@ -155,7 +161,7 @@ class _AIRecommendationsState extends State<AIRecommendations> {
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
                   color: priorityColor.withValues(alpha: 0.15),
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
                   border: Border.all(
                     color: priorityColor.withValues(alpha: 0.3),
                     width: 1,
@@ -195,7 +201,7 @@ class _AIRecommendationsState extends State<AIRecommendations> {
                   ),
                   decoration: BoxDecoration(
                     color: priorityColor.withValues(alpha: 0.2),
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
                   ),
                   child: Text(
                     priority == 'high'
@@ -227,7 +233,7 @@ class _AIRecommendationsState extends State<AIRecommendations> {
               padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(
                 color: Colors.green.withValues(alpha: 0.12),
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
                 border: Border.all(
                   color: Colors.green.withValues(alpha: 0.4),
                   width: 1.5,
@@ -279,7 +285,7 @@ class _AIRecommendationsState extends State<AIRecommendations> {
                       setState(() {
                         _currentIndex =
                             (_currentIndex - 1 + _recommendations.length) %
-                                _recommendations.length;
+                            _recommendations.length;
                       });
                     },
                     iconSize: 20,
@@ -318,7 +324,7 @@ class _AIRecommendationsState extends State<AIRecommendations> {
                   backgroundColor: priorityColor,
                   padding: const EdgeInsets.symmetric(vertical: 12),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
                   ),
                 ),
                 child: Text(
@@ -360,9 +366,9 @@ class _AIRecommendationsState extends State<AIRecommendations> {
       case 'review_budget':
         return 'Tinjau Budget';
       case 'create_budget':
-        return 'Buat Budget';
+        return _l10n?.create_budget ?? 'Buat Budget';
       case 'set_goal':
-        return 'Buat Goal';
+        return _l10n?.add_target ?? 'Buat Goal';
       case 'review_spending':
         return 'Tinjau Pengeluaran';
       case 'plan_spending':

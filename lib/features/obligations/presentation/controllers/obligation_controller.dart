@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:financial_app/features/obligations/domain/repositories/obligation_repository_interface.dart';
 import 'package:financial_app/services/logger_service.dart';
@@ -5,8 +6,16 @@ import 'package:financial_app/widgets/obligations/obligation_filters.dart';
 
 class ObligationController extends ChangeNotifier {
   final ObligationRepositoryInterface _r;
-  ObligationController({required ObligationRepositoryInterface repository}) : _r = repository {
-    _searchController.addListener(() {
+  Timer? _debounceTimer;
+
+  ObligationController({required ObligationRepositoryInterface repository})
+    : _r = repository {
+    _searchController.addListener(_onSearchChanged);
+  }
+
+  void _onSearchChanged() {
+    _debounceTimer?.cancel();
+    _debounceTimer = Timer(const Duration(milliseconds: 300), () {
       _searchQuery = _searchController.text;
       notifyListeners();
     });
@@ -37,6 +46,8 @@ class ObligationController extends ChangeNotifier {
 
   @override
   void dispose() {
+    _debounceTimer?.cancel();
+    _searchController.removeListener(_onSearchChanged);
     _searchController.dispose();
     super.dispose();
   }
@@ -67,11 +78,12 @@ class ObligationController extends ChangeNotifier {
       int overdue = 0;
 
       for (var obligation in obligations) {
-        final daysUntilDue = (obligation.daysUntilDue is num ? (obligation.daysUntilDue as num).toInt() : null) ?? 0;
-        final dueDate = obligation.dueDate is DateTime ? obligation.dueDate as DateTime : (obligation.dueDate is String ? DateTime.tryParse(obligation.dueDate as String) : null) ?? now;
+        final daysUntilDue = obligation.daysUntilDue;
+        final dueDate = obligation.dueDate;
         if (daysUntilDue < 0) {
           overdue++;
-        } else if (dueDate.isBefore(endOfWeek) || dueDate.isAtSameMomentAs(endOfWeek)) {
+        } else if (dueDate.isBefore(endOfWeek) ||
+            dueDate.isAtSameMomentAs(endOfWeek)) {
           dueThisWeek++;
         }
       }
@@ -80,7 +92,12 @@ class ObligationController extends ChangeNotifier {
     } catch (e) {
       LoggerService.error('Error loading obligations summary', error: e);
       _summaryError = e.toString();
-      _summary = {'monthlyTotal': 0.0, 'totalDebt': 0.0, 'dueThisWeek': 0, 'overdue': 0};
+      _summary = {
+        'monthlyTotal': 0.0,
+        'totalDebt': 0.0,
+        'dueThisWeek': 0,
+        'overdue': 0,
+      };
     } finally {
       _summaryLoading = false;
       notifyListeners();

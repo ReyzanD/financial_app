@@ -1,9 +1,10 @@
 import 'package:financial_app/services/api_service.dart';
 import 'package:financial_app/services/logger_service.dart';
 import 'package:financial_app/models/location_recommendation.dart';
+import 'package:financial_app/core/di/service_locator.dart';
 
 class LocationIntelligenceService {
-  final ApiService _apiService = ApiService();
+  final ApiService _apiService = getIt<ApiService>();
 
   /// Generate intelligent location-based recommendations
   Future<List<LocationRecommendation>> generateLocationInsights() async {

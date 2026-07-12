@@ -27,7 +27,7 @@ class NetWorthService {
       };
     } catch (e) {
       LoggerService.error('Error calculating net worth', error: e);
-      return {'net_worth': 0, 'total_assets': 0, 'total_liabilities': 0};
+      rethrow;
     }
   }
 
@@ -88,7 +88,7 @@ class NetWorthService {
       return true;
     } catch (e) {
       LoggerService.error('Error recording net worth snapshot', error: e);
-      return false;
+      rethrow;
     }
   }
 
@@ -97,7 +97,7 @@ class NetWorthService {
       return await _netWorthData.getNetWorthHistory(limit: limit);
     } catch (e) {
       LoggerService.error('Error getting net worth history', error: e);
-      return [];
+      rethrow;
     }
   }
 
@@ -106,7 +106,7 @@ class NetWorthService {
       return await _netWorthData.getNetWorthTrend();
     } catch (e) {
       LoggerService.error('Error getting net worth trend', error: e);
-      return {'trend': 'no_data', 'change': 0.0};
+      rethrow;
     }
   }
 }

@@ -11,6 +11,7 @@ import 'package:financial_app/widgets/goals/contribute_modal.dart';
 import 'package:financial_app/utils/responsive_helper.dart';
 import 'package:financial_app/utils/formatters.dart';
 import 'package:financial_app/utils/design_tokens.dart';
+import 'package:financial_app/l10n/app_localizations.dart';
 
 class GoalCard extends StatefulWidget {
   final Map<String, dynamic> goal;
@@ -46,6 +47,7 @@ class _GoalCardState extends State<GoalCard> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final goal = widget.goal;
     final targetAmount = goal['target_amount_232143'] ?? goal['target'];
     final currentAmount = goal['current_amount_232143'] ?? goal['saved'];
@@ -176,7 +178,7 @@ class _GoalCardState extends State<GoalCard> {
                 child: _buildActionButton(
                   context,
                   icon: Iconsax.wallet_add,
-                  label: 'Tambah Dana',
+                  label: l10n?.add_fund ?? 'Tambah Dana',
                   color: DesignTokens.primaryColor,
                   onTap: () => _showContributeDialog(context),
                 ),
@@ -212,6 +214,7 @@ class _GoalCardState extends State<GoalCard> {
   }
 
   void _showContributionsDialog(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final goal = widget.goal;
     final goalName = goal['name_232143'] ?? goal['name'] ?? 'Goal';
 
@@ -241,7 +244,7 @@ class _GoalCardState extends State<GoalCard> {
               ),
               const SizedBox(height: 16),
               Text(
-                'Riwayat Kontribusi',
+                l10n?.contribution_history ?? 'Riwayat Kontribusi',
                 style: GoogleFonts.poppins(
                   color: Colors.white,
                   fontSize: 18,
@@ -262,7 +265,7 @@ class _GoalCardState extends State<GoalCard> {
                   padding: const EdgeInsets.all(20),
                   child: Center(
                     child: Text(
-                      'Belum ada kontribusi',
+                      l10n?.no_contributions_yet ?? 'Belum ada kontribusi',
                       style: GoogleFonts.poppins(color: Colors.grey[500]),
                     ),
                   ),
@@ -287,9 +290,7 @@ class _GoalCardState extends State<GoalCard> {
                         leading: Container(
                           padding: const EdgeInsets.all(8),
                           decoration: BoxDecoration(
-                            color: const Color(
-                              0xFF8B5FBF,
-                            ).withValues(alpha: 0.2),
+                            color: DesignTokens.primaryColor.withValues(alpha: 0.2),
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: const Icon(
@@ -451,24 +452,25 @@ class _GoalCardState extends State<GoalCard> {
   void _showDeleteDialog(BuildContext context) {
     final goalName =
         widget.goal['name_232143'] ?? widget.goal['name'] ?? 'Goal';
+    final l10n = AppLocalizations.of(context);
     showDialog(
       context: context,
       builder: (BuildContext dialogContext) {
         return AlertDialog(
           backgroundColor: DesignTokens.surfaceDark,
           title: Text(
-            'Hapus Goal?',
+            l10n?.delete_goal_confirm ?? 'Hapus Goal?',
             style: GoogleFonts.poppins(color: Colors.white),
           ),
           content: Text(
-            'Apakah Anda yakin ingin menghapus "$goalName"?',
+            '${l10n?.delete_goal_message ?? 'Apakah Anda yakin ingin menghapus'} "$goalName"?',
             style: GoogleFonts.poppins(color: Colors.grey[400]),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(dialogContext).pop(),
               child: Text(
-                'Batal',
+                l10n?.cancel ?? 'Batal',
                 style: GoogleFonts.poppins(color: Colors.grey),
               ),
             ),
@@ -484,7 +486,8 @@ class _GoalCardState extends State<GoalCard> {
                     if (context.mounted) {
                       ErrorHandlerService.showSuccessSnackbar(
                         context,
-                        'Goal berhasil dihapus',
+                        l10n?.goal_deleted_successfully ??
+                            'Goal berhasil dihapus',
                       );
                     }
                     widget.onUpdated?.call();
@@ -500,7 +503,7 @@ class _GoalCardState extends State<GoalCard> {
                 }
               },
               child: Text(
-                'Hapus',
+                l10n?.delete ?? 'Hapus',
                 style: GoogleFonts.poppins(color: Colors.red),
               ),
             ),

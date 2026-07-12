@@ -64,6 +64,7 @@ import 'package:financial_app/features/financial_calendar/presentation/controlle
 import 'package:financial_app/features/onboarding/presentation/controllers/onboarding_controller.dart';
 import 'package:financial_app/features/ai_budget_recommendation/presentation/controllers/ai_budget_controller.dart';
 import 'package:financial_app/features/settings/presentation/controllers/settings_controller.dart';
+import 'package:financial_app/features/home/presentation/controllers/dashboard_controller.dart';
 import 'package:financial_app/features/receipt_history/presentation/screens/receipt_history_screen.dart';
 import 'package:financial_app/features/receipt_history/presentation/controllers/receipt_controller.dart';
 import 'package:financial_app/features/report/presentation/screens/report_screen.dart';
@@ -133,30 +134,20 @@ void main() async {
         ChangeNotifierProvider(
           create: (context) => getIt<TransactionController>(),
         ),
-        ChangeNotifierProvider(
-          create: (context) => getIt<BudgetController>(),
-        ),
-        ChangeNotifierProvider(
-          create: (context) => getIt<GoalController>(),
-        ),
-        ChangeNotifierProvider(
-          create: (context) => getIt<AccountController>(),
-        ),
+        ChangeNotifierProvider(create: (context) => getIt<BudgetController>()),
+        ChangeNotifierProvider(create: (context) => getIt<GoalController>()),
+        ChangeNotifierProvider(create: (context) => getIt<AccountController>()),
         ChangeNotifierProvider(
           create: (context) => getIt<ChallengeController>(),
         ),
-        ChangeNotifierProvider(
-          create: (context) => getIt<DebtController>(),
-        ),
+        ChangeNotifierProvider(create: (context) => getIt<DebtController>()),
         ChangeNotifierProvider(
           create: (context) => getIt<InvestmentController>(),
         ),
         ChangeNotifierProvider(
           create: (context) => getIt<SubscriptionController>(),
         ),
-        ChangeNotifierProvider(
-          create: (context) => getIt<SplitController>(),
-        ),
+        ChangeNotifierProvider(create: (context) => getIt<SplitController>()),
         ChangeNotifierProvider(
           create: (context) => getIt<NetWorthController>(),
         ),
@@ -178,24 +169,12 @@ void main() async {
         ChangeNotifierProvider(
           create: (context) => getIt<ForecastController>(),
         ),
-        ChangeNotifierProvider(
-          create: (context) => getIt<AuthController>(),
-        ),
-        ChangeNotifierProvider(
-          create: (context) => getIt<BackupController>(),
-        ),
-        ChangeNotifierProvider(
-          create: (context) => getIt<TagController>(),
-        ),
-        ChangeNotifierProvider(
-          create: (context) => getIt<ProfileController>(),
-        ),
-        ChangeNotifierProvider(
-          create: (context) => getIt<ReceiptController>(),
-        ),
-        ChangeNotifierProvider(
-          create: (context) => getIt<ReportController>(),
-        ),
+        ChangeNotifierProvider(create: (context) => getIt<AuthController>()),
+        ChangeNotifierProvider(create: (context) => getIt<BackupController>()),
+        ChangeNotifierProvider(create: (context) => getIt<TagController>()),
+        ChangeNotifierProvider(create: (context) => getIt<ProfileController>()),
+        ChangeNotifierProvider(create: (context) => getIt<ReceiptController>()),
+        ChangeNotifierProvider(create: (context) => getIt<ReportController>()),
         ChangeNotifierProvider(
           create: (context) => getIt<TemplateController>(),
         ),
@@ -216,6 +195,9 @@ void main() async {
         ),
         ChangeNotifierProvider(
           create: (context) => getIt<SettingsController>(),
+        ),
+        ChangeNotifierProvider<DashboardController>(
+          create: (context) => getIt<DashboardController>(),
         ),
       ],
       child: const MyApp(),
@@ -364,10 +346,10 @@ class MyApp extends StatelessWidget {
                 if (kDebugMode) ...[
                   const SizedBox(height: 24),
                   Container(
-                    padding: const EdgeInsets.all(16),
+                    padding: const EdgeInsets.all(DesignTokens.spacing4),
                     decoration: BoxDecoration(
                       color: Colors.grey[900],
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,

@@ -9,6 +9,7 @@ class CustomTextField extends StatelessWidget {
   final bool isPassword;
   final bool obscureText;
   final VoidCallback? onToggleObscure;
+  final List<String>? autofillHints;
 
   const CustomTextField({
     super.key,
@@ -18,6 +19,7 @@ class CustomTextField extends StatelessWidget {
     required this.isPassword,
     this.obscureText = false,
     this.onToggleObscure,
+    this.autofillHints,
   });
 
   @override
@@ -25,6 +27,7 @@ class CustomTextField extends StatelessWidget {
     return TextField(
       controller: controller,
       obscureText: obscureText,
+      autofillHints: autofillHints,
       style: GoogleFonts.poppins(
         color: Colors.white,
         fontSize: 16,
@@ -48,15 +51,15 @@ class CustomTextField extends StatelessWidget {
         filled: true,
         fillColor: const Color(0xFF2A2A2A), // Dark gray background
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
           borderSide: BorderSide(color: Colors.grey[700]!, width: 1),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
           borderSide: BorderSide(color: Colors.grey[700]!, width: 1),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
           borderSide: const BorderSide(
             color: DesignTokens.primaryColor, // Purple accent when focused
             width: 2,

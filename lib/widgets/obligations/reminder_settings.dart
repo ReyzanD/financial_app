@@ -96,10 +96,10 @@ class _ReminderSettingsState extends State<ReminderSettings> {
     }
 
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(DesignTokens.spacing4),
       decoration: BoxDecoration(
         color: DesignTokens.surfaceDark,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
         border: Border.all(color: DesignTokens.borderDark),
       ),
       child: Column(
@@ -215,7 +215,10 @@ class _ReminderSettingsState extends State<ReminderSettings> {
                     : Colors.grey[900],
             borderRadius: BorderRadius.circular(8),
             border: Border.all(
-              color: isSelected ? DesignTokens.primaryColor : DesignTokens.borderDark,
+              color:
+                  isSelected
+                      ? DesignTokens.primaryColor
+                      : DesignTokens.borderDark,
             ),
           ),
           child: Text(

@@ -4,13 +4,18 @@ import 'package:financial_app/services/obligation_service.dart';
 import 'package:financial_app/widgets/obligations/obligation_filters.dart';
 import 'package:financial_app/widgets/obligations/obligation_helpers.dart';
 import 'package:financial_app/l10n/app_localizations.dart';
+import 'package:financial_app/utils/design_tokens.dart';
 import 'obligation_item.dart';
 
 class UpcomingObligationsView extends StatelessWidget {
   final String searchQuery;
   final ObligationFilters filters;
 
-  const UpcomingObligationsView({super.key, this.searchQuery = '', this.filters = const ObligationFilters()});
+  const UpcomingObligationsView({
+    super.key,
+    this.searchQuery = '',
+    this.filters = const ObligationFilters(),
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -37,19 +42,26 @@ class UpcomingObligationsView extends StatelessWidget {
         // Apply obligation filters
         if (filters.hasFilters) {
           final f = filters;
-          obligations = obligations.where((o) {
-            if (f.type != null && o.type.name != f.type) return false;
-            if (f.category != null && o.category != f.category) return false;
-            if (f.status != null) {
-              if (f.status == 'active' && o.daysUntilDue <= 0) return false;
-              if (f.status == 'overdue' && o.daysUntilDue >= 0) return false;
-            }
-            if (f.minAmount != null && o.monthlyAmount < f.minAmount!) return false;
-            if (f.maxAmount != null && o.monthlyAmount > f.maxAmount!) return false;
-            if (f.startDate != null && o.dueDate.isBefore(f.startDate!)) return false;
-            if (f.endDate != null && o.dueDate.isAfter(f.endDate!)) return false;
-            return true;
-          }).toList();
+          obligations =
+              obligations.where((o) {
+                if (f.type != null && o.type.name != f.type) return false;
+                if (f.category != null && o.category != f.category)
+                  return false;
+                if (f.status != null) {
+                  if (f.status == 'active' && o.daysUntilDue <= 0) return false;
+                  if (f.status == 'overdue' && o.daysUntilDue >= 0)
+                    return false;
+                }
+                if (f.minAmount != null && o.monthlyAmount < f.minAmount!)
+                  return false;
+                if (f.maxAmount != null && o.monthlyAmount > f.maxAmount!)
+                  return false;
+                if (f.startDate != null && o.dueDate.isBefore(f.startDate!))
+                  return false;
+                if (f.endDate != null && o.dueDate.isAfter(f.endDate!))
+                  return false;
+                return true;
+              }).toList();
         }
 
         if (obligations.isEmpty) {
@@ -64,7 +76,7 @@ class UpcomingObligationsView extends StatelessWidget {
         }
 
         return ListView.builder(
-          padding: EdgeInsets.all(16),
+          padding: EdgeInsets.all(DesignTokens.spacing4),
           itemCount: obligations.length,
           itemBuilder: (context, index) {
             return ObligationItem(

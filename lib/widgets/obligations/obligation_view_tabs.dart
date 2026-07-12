@@ -51,7 +51,8 @@ class ObligationViewTabs extends StatelessWidget {
           decoration: BoxDecoration(
             border: Border(
               bottom: BorderSide(
-                color: isSelected ? DesignTokens.primaryColor : Colors.transparent,
+                color:
+                    isSelected ? DesignTokens.primaryColor : Colors.transparent,
                 width: 2,
               ),
             ),

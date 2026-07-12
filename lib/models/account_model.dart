@@ -189,7 +189,14 @@ class AccountModel {
     );
   }
 
-  static List<String> get types => ['cash', 'bank', 'e_wallet', 'credit_card', 'investment', 'other'];
+  static List<String> get types => [
+    'cash',
+    'bank',
+    'e_wallet',
+    'credit_card',
+    'investment',
+    'other',
+  ];
 
   static List<Map<String, dynamic>> get defaultAccounts => [
     {'name': 'Cash', 'type': 'cash', 'icon': 'wallet', 'color': '#4CAF50'},

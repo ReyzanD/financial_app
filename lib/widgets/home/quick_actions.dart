@@ -8,17 +8,19 @@ import 'package:financial_app/features/backup/presentation/screens/backup_screen
 import 'package:financial_app/features/ai_budget_recommendation/presentation/screens/ai_budget_recommendation_screen.dart';
 import 'package:financial_app/utils/responsive_helper.dart';
 import 'package:financial_app/utils/design_tokens.dart';
+import 'package:financial_app/l10n/app_localizations.dart';
 
 class QuickActions extends StatelessWidget {
   const QuickActions({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final actions = [
       {
         'icon': Iconsax.flash,
         'label': 'AI Budget',
-        'color': const Color(0xFFFFB74D),
+        'color': DesignTokens.warningColor,
         'onTap':
             () => Navigator.push(
               context,
@@ -29,7 +31,7 @@ class QuickActions extends StatelessWidget {
       },
       {
         'icon': Iconsax.note_2,
-        'label': 'Riwayat',
+        'label': l10n?.history ?? 'Riwayat',
         'color': DesignTokens.primaryColor,
         'onTap':
             () => Navigator.push(
@@ -42,7 +44,7 @@ class QuickActions extends StatelessWidget {
       {
         'icon': Iconsax.receipt_2,
         'label': 'Tagihan',
-        'color': const Color(0xFFE91E63),
+        'color': DesignTokens.errorColor,
         'onTap':
             () => Navigator.push(
               context,
@@ -54,7 +56,7 @@ class QuickActions extends StatelessWidget {
       {
         'icon': Iconsax.shield_tick,
         'label': 'Backup',
-        'color': const Color(0xFF4CAF50),
+        'color': DesignTokens.successColor,
         'onTap':
             () => Navigator.push(
               context,
@@ -64,7 +66,7 @@ class QuickActions extends StatelessWidget {
       {
         'icon': Iconsax.repeat,
         'label': 'Berulang',
-        'color': const Color(0xFF2196F3),
+        'color': DesignTokens.infoColor,
         'onTap':
             () => Navigator.push(
               context,

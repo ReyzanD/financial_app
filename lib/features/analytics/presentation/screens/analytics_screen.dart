@@ -46,17 +46,20 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
             const AnalyticsHeader(),
             const OfflineIndicator(),
             Consumer<AnalyticsController>(
-              builder: (context, ctrl, _) => PeriodSelector(
-                selectedPeriod: ctrl.selectedPeriod,
-                onPeriodChanged: (period) => ctrl.setPeriod(period),
-              ),
+              builder:
+                  (context, ctrl, _) => PeriodSelector(
+                    selectedPeriod: ctrl.selectedPeriod,
+                    onPeriodChanged: (period) => ctrl.setPeriod(period),
+                  ),
             ),
             Expanded(
               child: Consumer<AnalyticsController>(
                 builder: (context, ctrl, _) {
                   if (ctrl.isLoading) {
                     return const Center(
-                      child: CircularProgressIndicator(color: DesignTokens.primaryColor),
+                      child: CircularProgressIndicator(
+                        color: DesignTokens.primaryColor,
+                      ),
                     );
                   }
                   return RefreshIndicator(
@@ -83,15 +86,22 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
             padding: ResponsiveHelper.padding(context, multiplier: 1.5),
             decoration: BoxDecoration(
               color: DesignTokens.surfaceDark,
-              borderRadius: BorderRadius.circular(ResponsiveHelper.borderRadius(context, 16)),
+              borderRadius: BorderRadius.circular(
+                ResponsiveHelper.borderRadius(context, 16),
+              ),
               border: Border.all(color: Colors.red.withValues(alpha: 0.3)),
             ),
             child: Column(
               children: [
-                Icon(Icons.error_outline, color: Colors.red[400], size: ResponsiveHelper.iconSize(context, 40)),
+                Icon(
+                  Icons.error_outline,
+                  color: Colors.red[400],
+                  size: ResponsiveHelper.iconSize(context, 40),
+                ),
                 SizedBox(height: ResponsiveHelper.verticalSpacing(context, 12)),
                 Text(
-                  AppLocalizations.of(context)?.failed_to_load_analytics ?? 'Gagal memuat data analitik',
+                  AppLocalizations.of(context)?.failed_to_load_analytics ??
+                      'Gagal memuat data analitik',
                   style: GoogleFonts.poppins(
                     color: Colors.grey[300],
                     fontSize: ResponsiveHelper.fontSize(context, 16),
@@ -102,7 +112,10 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                 Text(
                   ctrl.errorMessage!,
                   textAlign: TextAlign.center,
-                  style: GoogleFonts.poppins(color: Colors.grey[500], fontSize: ResponsiveHelper.fontSize(context, 12)),
+                  style: GoogleFonts.poppins(
+                    color: Colors.grey[500],
+                    fontSize: ResponsiveHelper.fontSize(context, 12),
+                  ),
                 ),
               ],
             ),
@@ -114,7 +127,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
     final filtered = ctrl.transactions;
 
     if (filtered.isEmpty) {
-      final l10n = AppLocalizations.of(context)!;
+      final l10n = AppLocalizations.of(context);
       return ListView(
         physics: const AlwaysScrollableScrollPhysics(),
         padding: ResponsiveHelper.padding(context),
@@ -123,22 +136,35 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
             padding: ResponsiveHelper.padding(context, multiplier: 2.0),
             decoration: BoxDecoration(
               color: DesignTokens.surfaceDark,
-              borderRadius: BorderRadius.circular(ResponsiveHelper.borderRadius(context, 16)),
+              borderRadius: BorderRadius.circular(
+                ResponsiveHelper.borderRadius(context, 16),
+              ),
               border: Border.all(color: DesignTokens.borderDark),
             ),
             child: Column(
               children: [
-                Icon(Icons.insights, color: Colors.grey[600], size: ResponsiveHelper.iconSize(context, 48)),
+                Icon(
+                  Icons.insights,
+                  color: Colors.grey[600],
+                  size: ResponsiveHelper.iconSize(context, 48),
+                ),
                 SizedBox(height: ResponsiveHelper.verticalSpacing(context, 12)),
                 Text(
-                  l10n.no_transactions_for_period,
-                  style: GoogleFonts.poppins(color: Colors.grey[400], fontSize: ResponsiveHelper.fontSize(context, 16), fontWeight: FontWeight.w600),
+                  l10n?.no_transactions_for_period ?? 'Tidak ada transaksi',
+                  style: GoogleFonts.poppins(
+                    color: Colors.grey[400],
+                    fontSize: ResponsiveHelper.fontSize(context, 16),
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
                 SizedBox(height: ResponsiveHelper.verticalSpacing(context, 4)),
                 Text(
-                  l10n.no_transactions_subtitle,
+                  l10n?.no_transactions_subtitle ?? 'Belum ada transaksi',
                   textAlign: TextAlign.center,
-                  style: GoogleFonts.poppins(color: Colors.grey[600], fontSize: ResponsiveHelper.fontSize(context, 12)),
+                  style: GoogleFonts.poppins(
+                    color: Colors.grey[600],
+                    fontSize: ResponsiveHelper.fontSize(context, 12),
+                  ),
                 ),
               ],
             ),

@@ -49,11 +49,7 @@ class HomeBottomNavBar extends StatelessWidget {
             activeIcon: Icon(Iconsax.receipt),
             label: 'Transactions',
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Iconsax.graph),
-            activeIcon: Icon(Iconsax.graph),
-            label: 'Forecast',
-          ),
+          // Forecast moved to More > Forecast (see more_tab_screen.dart)
           BottomNavigationBarItem(
             icon: Icon(Iconsax.menu),
             activeIcon: Icon(Iconsax.menu),

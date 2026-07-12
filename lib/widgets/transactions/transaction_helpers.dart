@@ -35,14 +35,25 @@ IconData getCategoryIcon(String category) {
       return Icons.account_balance_wallet_rounded;
     case 'Freelance':
       return Icons.work_outline_rounded;
+    case 'Investasi':
+      return Icons.trending_up_rounded;
+    case 'Makanan & Minuman':
+      return Icons.restaurant_rounded;
     case 'Belanja':
       return Icons.shopping_bag_rounded;
     case 'Transportasi':
       return Icons.directions_car_rounded;
+    case 'Tagihan & Utilitas':
     case 'Tagihan':
       return Icons.receipt_long_rounded;
     case 'Hiburan':
       return Icons.sports_esports_rounded;
+    case 'Kesehatan':
+      return Icons.local_hospital_rounded;
+    case 'Pendidikan':
+      return Icons.school_rounded;
+    case 'Tabungan':
+      return Icons.savings_rounded;
     default:
       return Icons.category_rounded;
   }

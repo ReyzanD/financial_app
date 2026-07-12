@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:financial_app/l10n/app_localizations.dart';
 import 'package:financial_app/widgets/goals/goal_card.dart';
 import 'package:financial_app/services/data/goal_data_service.dart';
 import 'package:financial_app/services/logger_service.dart';
 import 'package:financial_app/widgets/common/shimmer_loading.dart';
 import 'package:financial_app/widgets/common/empty_state.dart';
 import 'package:financial_app/utils/page_transitions.dart';
+import 'package:financial_app/utils/design_tokens.dart';
 
 class GoalsList extends StatefulWidget {
   final VoidCallback? onGoalsChanged;
@@ -61,18 +63,19 @@ class _GoalsListState extends State<GoalsList> {
     }
 
     if (goals.isEmpty && !_hasError) {
+      final l10n = AppLocalizations.of(context);
       return SizedBox(
         width: double.infinity,
         child: EmptyState(
           icon: Icons.flag_outlined,
-          title: 'Belum Ada Target',
+          title: l10n?.no_goals_title ?? 'Belum Ada Target',
           subtitle: 'Tetapkan target keuangan dan capai impian Anda',
         ),
       );
     }
 
     return ListView.builder(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(DesignTokens.spacing4),
       itemCount: goals.length,
       itemBuilder: (context, index) {
         final goal = goals[index];

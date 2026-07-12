@@ -65,10 +65,10 @@ class _LocationInsightCardState extends State<LocationInsightCard> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(DesignTokens.spacing4),
       decoration: BoxDecoration(
         color: DesignTokens.surfaceDark,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
         border: Border.all(color: Colors.white10),
       ),
       child: Column(
@@ -76,7 +76,11 @@ class _LocationInsightCardState extends State<LocationInsightCard> {
         children: [
           Row(
             children: [
-              const Icon(Iconsax.location, color: DesignTokens.primaryColor, size: 20),
+              const Icon(
+                Iconsax.location,
+                color: DesignTokens.primaryColor,
+                size: 20,
+              ),
               const SizedBox(width: 8),
               Text(
                 'Location Insight',

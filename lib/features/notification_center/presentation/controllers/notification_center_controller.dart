@@ -4,25 +4,43 @@ import 'package:financial_app/services/logger_service.dart';
 
 class NotificationCenterController extends ChangeNotifier {
   final NotificationRepositoryInterface _r;
-  NotificationCenterController({required NotificationRepositoryInterface repository}) : _r = repository;
+  NotificationCenterController({
+    required NotificationRepositoryInterface repository,
+  }) : _r = repository;
 
-  List<dynamic> _notifications = []; bool _isLoading = false;
-  List<dynamic> get notifications => _notifications; bool get isLoading => _isLoading;
+  List<dynamic> _notifications = [];
+  bool _isLoading = false;
+  List<dynamic> get notifications => _notifications;
+  bool get isLoading => _isLoading;
 
   Future<void> loadData() async {
-    _isLoading = true; notifyListeners();
-    try { _notifications = await _r.getNotifications(); }
-    catch (e) { LoggerService.error('Error loading notifications', error: e); }
-    finally { _isLoading = false; notifyListeners(); }
+    _isLoading = true;
+    notifyListeners();
+    try {
+      _notifications = await _r.getNotifications();
+    } catch (e) {
+      LoggerService.error('Error loading notifications', error: e);
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
   }
 
   Future<void> markAsRead(String id) async {
-    try { await _r.markAsRead(id); await loadData(); }
-    catch (e) { LoggerService.error('Error marking read', error: e); }
+    try {
+      await _r.markAsRead(id);
+      await loadData();
+    } catch (e) {
+      LoggerService.error('Error marking read', error: e);
+    }
   }
 
   Future<void> clearAll() async {
-    try { await _r.clearAll(); await loadData(); }
-    catch (e) { LoggerService.error('Error clearing notifications', error: e); }
+    try {
+      await _r.clearAll();
+      await loadData();
+    } catch (e) {
+      LoggerService.error('Error clearing notifications', error: e);
+    }
   }
 }

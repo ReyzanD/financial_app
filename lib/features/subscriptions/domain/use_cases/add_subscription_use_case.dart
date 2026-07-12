@@ -4,5 +4,6 @@ import 'package:financial_app/features/subscriptions/domain/repositories/subscri
 class AddSubscriptionUseCase {
   final SubscriptionRepositoryInterface _r;
   AddSubscriptionUseCase(this._r);
-  Future<SubscriptionModel> call(SubscriptionModel sub) => _r.addSubscription(sub);
+  Future<SubscriptionModel> call(SubscriptionModel sub) =>
+      _r.addSubscription(sub);
 }

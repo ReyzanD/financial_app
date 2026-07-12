@@ -4,10 +4,16 @@ import 'package:financial_app/features/splits/domain/repositories/split_reposito
 
 class SplitRepository implements SplitRepositoryInterface {
   final ExpenseSplitService _s;
-  SplitRepository({ExpenseSplitService? service}) : _s = service ?? ExpenseSplitService();
+  SplitRepository({ExpenseSplitService? service})
+    : _s = service ?? ExpenseSplitService();
 
-  @override Future<List<SplitModel>> getSplits({bool activeOnly = true}) => _s.getSplits(activeOnly: activeOnly);
-  @override Future<SplitModel> createSplit(SplitModel split) => _s.createSplit(split);
-  @override Future<void> deleteSplit(String id) => _s.deleteSplit(id);
-  @override Future<Map<String, dynamic>> getSplitSummary() => _s.getSplitSummary();
+  @override
+  Future<List<SplitModel>> getSplits({bool activeOnly = true}) =>
+      _s.getSplits(activeOnly: activeOnly);
+  @override
+  Future<SplitModel> createSplit(SplitModel split) => _s.createSplit(split);
+  @override
+  Future<void> deleteSplit(String id) => _s.deleteSplit(id);
+  @override
+  Future<Map<String, dynamic>> getSplitSummary() => _s.getSplitSummary();
 }

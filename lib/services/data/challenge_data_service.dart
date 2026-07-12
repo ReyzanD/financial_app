@@ -15,8 +15,7 @@ class ChallengeDataService {
   }) : _dbService = dbService ?? LocalDatabaseService(),
        _authService = authService ?? LocalAuthService();
 
-  Future<String?> getCurrentUserId() async =>
-      _authService.getCurrentUserId();
+  Future<String?> getCurrentUserId() async => _authService.getCurrentUserId();
 
   Future<List<Map<String, dynamic>>> getChallenges({
     bool activeOnly = true,

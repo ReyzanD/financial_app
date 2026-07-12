@@ -13,26 +13,33 @@ class AuthController extends ChangeNotifier {
     AuthService? authService,
     PinAuthService? pinAuthService,
     BiometricService? biometricService,
-  })  : authService = authService ?? AuthService(),
-        pinAuthService = pinAuthService ?? PinAuthService(),
-        biometricService = biometricService ?? BiometricService();
+  }) : authService = authService ?? AuthService(),
+       pinAuthService = pinAuthService ?? PinAuthService(),
+       biometricService = biometricService ?? BiometricService();
 
   Future<bool> hasValidToken() => authService.hasValidToken();
   Future<bool> hasPin() => pinAuthService.hasPin();
   Future<bool> shouldAutoLock() => pinAuthService.shouldAutoLock();
   Future<int> getPinLength() => pinAuthService.getPinLength();
   Future<int> getRemainingAttempts() => pinAuthService.getRemainingAttempts();
-  Future<Duration?> getLockRemainingTime() => pinAuthService.getLockRemainingTime();
+  Future<Duration?> getLockRemainingTime() =>
+      pinAuthService.getLockRemainingTime();
   Future<bool> verifyPin(String pin) => pinAuthService.verifyPin(pin);
   Future<void> createPin(String pin) => pinAuthService.createPin(pin);
   Future<void> clearPin() => pinAuthService.clearPin();
 
   Future<bool> get biometricAvailable => biometricService.isAvailable();
   Future<bool> get biometricEnabled => biometricService.isBiometricEnabled();
-  Future<bool> authenticate({required String reason}) => biometricService.authenticate(reason: reason);
+  Future<bool> authenticate({required String reason}) =>
+      biometricService.authenticate(reason: reason);
 
-  Future<Map<String, dynamic>> login(String email, String password) async => (await authService.login(email, password)) ?? {};
-  Future<Map<String, dynamic>> register(String email, String password, String name) async => (await authService.register(email, password, name)) ?? {};
+  Future<Map<String, dynamic>> login(String email, String password) async =>
+      (await authService.login(email, password)) ?? {};
+  Future<Map<String, dynamic>> register(
+    String email,
+    String password,
+    String name,
+  ) async => (await authService.register(email, password, name)) ?? {};
   Future<void> logout() => authService.logout();
 
   Future<bool> isOnboardingCompleted() async {
@@ -45,5 +52,6 @@ class AuthController extends ChangeNotifier {
     await prefs.setBool('onboarding_completed', value);
   }
 
-  Future<dynamic> getAvailableBiometrics() => biometricService.getAvailableBiometrics();
+  Future<dynamic> getAvailableBiometrics() =>
+      biometricService.getAvailableBiometrics();
 }

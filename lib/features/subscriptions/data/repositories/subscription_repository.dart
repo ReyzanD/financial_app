@@ -4,11 +4,23 @@ import 'package:financial_app/features/subscriptions/domain/repositories/subscri
 
 class SubscriptionRepository implements SubscriptionRepositoryInterface {
   final SubscriptionTrackerService _s;
-  SubscriptionRepository({SubscriptionTrackerService? service}) : _s = service ?? SubscriptionTrackerService();
+  SubscriptionRepository({SubscriptionTrackerService? service})
+    : _s = service ?? SubscriptionTrackerService();
 
-  @override Future<List<SubscriptionModel>> getSubscriptions({bool activeOnly = true}) => _s.getSubscriptions(activeOnly: activeOnly);
-  @override Future<SubscriptionModel> addSubscription(SubscriptionModel sub) => _s.addSubscription(sub);
-  @override Future<SubscriptionModel> updateSubscription(String id, Map<String, dynamic> updates) => _s.updateSubscription(id, updates);
-  @override Future<void> deleteSubscription(String id) => _s.cancelSubscription(id);
-  @override Future<Map<String, dynamic>> getSubscriptionSummary() => _s.getSubscriptionSummary();
+  @override
+  Future<List<SubscriptionModel>> getSubscriptions({bool activeOnly = true}) =>
+      _s.getSubscriptions(activeOnly: activeOnly);
+  @override
+  Future<SubscriptionModel> addSubscription(SubscriptionModel sub) =>
+      _s.addSubscription(sub);
+  @override
+  Future<SubscriptionModel> updateSubscription(
+    String id,
+    Map<String, dynamic> updates,
+  ) => _s.updateSubscription(id, updates);
+  @override
+  Future<void> deleteSubscription(String id) => _s.cancelSubscription(id);
+  @override
+  Future<Map<String, dynamic>> getSubscriptionSummary() =>
+      _s.getSubscriptionSummary();
 }

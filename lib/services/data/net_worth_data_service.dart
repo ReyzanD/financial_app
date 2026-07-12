@@ -16,8 +16,7 @@ class NetWorthDataService {
   }) : _dbService = dbService ?? LocalDatabaseService(),
        _authService = authService ?? LocalAuthService();
 
-  Future<String?> getCurrentUserId() async =>
-      _authService.getCurrentUserId();
+  Future<String?> getCurrentUserId() async => _authService.getCurrentUserId();
 
   Future<Map<String, dynamic>> recordNetWorthSnapshot(
     Map<String, dynamic> snapshotData,
@@ -76,8 +75,7 @@ class NetWorthDataService {
       return List<Map<String, dynamic>>.from(snapshots).map((s) {
         final map = Map<String, dynamic>.from(s);
         final assetBreakdown = map['asset_breakdown_232143'] as String?;
-        final liabilityBreakdown =
-            map['liability_breakdown_232143'] as String?;
+        final liabilityBreakdown = map['liability_breakdown_232143'] as String?;
 
         if (assetBreakdown != null) {
           try {
@@ -107,12 +105,15 @@ class NetWorthDataService {
       if (userId == null) throw Exception('Not authenticated');
 
       final db = await _dbService.database;
-      final result = await db.rawQuery('''
+      final result = await db.rawQuery(
+        '''
         SELECT net_worth_232143, snapshot_date_232143
         FROM net_worth_history_232143
         WHERE user_id_232143 = ?
         ORDER BY snapshot_date_232143 ASC
-      ''', [userId]);
+      ''',
+        [userId],
+      );
 
       if (result.isEmpty) {
         return {'trend': 'no_data', 'change': 0.0};
@@ -120,8 +121,7 @@ class NetWorthDataService {
 
       final first =
           (result.first['net_worth_232143'] as num?)?.toDouble() ?? 0.0;
-      final last =
-          (result.last['net_worth_232143'] as num?)?.toDouble() ?? 0.0;
+      final last = (result.last['net_worth_232143'] as num?)?.toDouble() ?? 0.0;
       final change = first != 0 ? ((last - first) / first.abs()) * 100 : 0.0;
 
       return {

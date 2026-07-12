@@ -5,6 +5,7 @@ import 'package:financial_app/services/expense_predictor.dart';
 import 'package:financial_app/services/spending_pattern_analyzer.dart';
 import 'package:financial_app/services/budget_predictor.dart';
 import 'package:financial_app/services/logger_service.dart';
+import 'package:financial_app/utils/key_normalizer.dart';
 
 class ForecastController extends ChangeNotifier {
   final ForecastRepositoryInterface _r;
@@ -17,10 +18,10 @@ class ForecastController extends ChangeNotifier {
     ExpensePredictor? expensePredictor,
     SpendingPatternAnalyzer? patternAnalyzer,
     BudgetPredictor? budgetPredictor,
-  })  : _r = repository,
-        _expensePredictor = expensePredictor ?? ExpensePredictor(),
-        _patternAnalyzer = patternAnalyzer ?? SpendingPatternAnalyzer(),
-        _budgetPredictor = budgetPredictor ?? BudgetPredictor();
+  }) : _r = repository,
+       _expensePredictor = expensePredictor ?? ExpensePredictor(),
+       _patternAnalyzer = patternAnalyzer ?? SpendingPatternAnalyzer(),
+       _budgetPredictor = budgetPredictor ?? BudgetPredictor();
 
   bool _isLoading = false;
   String? _error;
@@ -39,20 +40,6 @@ class ForecastController extends ChangeNotifier {
   Map<String, double> get suggestedBudgets => _suggestedBudgets;
   Map<String, Money> get categoryForecasts => _categoryForecasts;
 
-  List<Map<String, dynamic>> _normalizeTransactions(List<dynamic> txns) {
-    return txns.map((t) {
-      final map = t as Map;
-      return {
-        'transaction_date': map['transaction_date_232143'] ?? map['date'],
-        'date': map['transaction_date_232143'] ?? map['date'],
-        'type': map['type_232143'] ?? map['type'],
-        'amount': (map['amount_232143'] ?? map['amount'])?.toDouble() ?? 0.0,
-        'category_name': map['category_name_232143'] ?? map['category_name'] ?? 'Lainnya',
-        'description': map['description_232143'] ?? map['description'] ?? '',
-      };
-    }).toList();
-  }
-
   Future<void> loadData() async {
     _isLoading = true;
     _error = null;
@@ -61,10 +48,12 @@ class ForecastController extends ChangeNotifier {
     try {
       final transactionsData = await _r.getTransactions(limit: 1000);
       // Normalize keys early so all downstream code uses clean keys consistently
-      final rawTransactions = transactionsData['transactions'] as List<dynamic>? ?? [];
-      final transactions = _normalizeTransactions(rawTransactions);
+      final rawTransactions =
+          transactionsData['transactions'] as List<dynamic>? ?? [];
+      final transactions = KeyNormalizer.normalizeTransactions(rawTransactions);
 
-      final expenseTx = transactions.where((t) => t['type'] == 'expense').toList();
+      final expenseTx =
+          transactions.where((t) => t['type'] == 'expense').toList();
 
       if (expenseTx.isNotEmpty) {
         _expenseForecast = await _expensePredictor.predictNext30Days(

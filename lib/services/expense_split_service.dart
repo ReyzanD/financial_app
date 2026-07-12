@@ -90,7 +90,7 @@ class ExpenseSplitService {
       return await _splitData.getSplitSummary();
     } catch (e) {
       LoggerService.error('Error getting split summary', error: e);
-      return {};
+      rethrow;
     }
   }
 

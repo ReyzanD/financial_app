@@ -33,28 +33,46 @@ class _AuthGateState extends State<AuthGate> {
     try {
       final hasToken = await ctrl.hasValidToken();
       if (!hasToken) {
-        setState(() { _targetScreen = const LoginScreen(); _isLoading = false; });
+        setState(() {
+          _targetScreen = const LoginScreen();
+          _isLoading = false;
+        });
         return;
       }
       final hasPin = await ctrl.hasPin();
       if (!hasPin) {
-        setState(() { _targetScreen = const PinSetupScreen(); _isLoading = false; });
+        setState(() {
+          _targetScreen = const PinSetupScreen();
+          _isLoading = false;
+        });
         return;
       }
       final shouldLock = await ctrl.shouldAutoLock();
       final biometricShouldLock = await ctrl.biometricService.shouldLock();
 
       if (shouldLock || biometricShouldLock) {
-        setState(() { _targetScreen = const PinUnlockScreen(); _isLoading = false; });
+        setState(() {
+          _targetScreen = const PinUnlockScreen();
+          _isLoading = false;
+        });
       } else {
-        setState(() { _targetScreen = const HomeScreen(); _isLoading = false; });
+        setState(() {
+          _targetScreen = const HomeScreen();
+          _isLoading = false;
+        });
       }
     } catch (e) {
       LoggerService.error('Error determining route', error: e);
       if (mounted) {
-        ErrorHandlerService.showErrorSnackbar(context, ErrorHandlerService.getUserFriendlyMessage(e));
+        ErrorHandlerService.showErrorSnackbar(
+          context,
+          ErrorHandlerService.getUserFriendlyMessage(e),
+        );
       }
-      setState(() { _targetScreen = const LoginScreen(); _isLoading = false; });
+      setState(() {
+        _targetScreen = const LoginScreen();
+        _isLoading = false;
+      });
     }
   }
 
@@ -66,16 +84,23 @@ class _AuthGateState extends State<AuthGate> {
         body: Column(
           children: [
             const OfflineIndicator(),
-            Expanded(child: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const CircularProgressIndicator(color: DesignTokens.primaryColor),
-                  const SizedBox(height: 16),
-                  const Text('Loading...', style: TextStyle(color: Colors.white, fontSize: 16)),
-                ],
+            Expanded(
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const CircularProgressIndicator(
+                      color: DesignTokens.primaryColor,
+                    ),
+                    const SizedBox(height: 16),
+                    const Text(
+                      'Loading...',
+                      style: TextStyle(color: Colors.white, fontSize: 16),
+                    ),
+                  ],
+                ),
               ),
-            )),
+            ),
           ],
         ),
       );

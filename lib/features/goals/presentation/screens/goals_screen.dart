@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:financial_app/features/goals/presentation/controllers/goal_controller.dart';
-import 'package:financial_app/services/data/goal_data_service.dart';
 import 'package:financial_app/services/logger_service.dart';
 import 'package:financial_app/widgets/goals/goals_header.dart';
 import 'package:financial_app/widgets/goals/progress_summary.dart';
@@ -10,6 +9,7 @@ import 'package:financial_app/widgets/goals/goals_list.dart';
 import 'package:financial_app/widgets/goals/add_goal_modal.dart';
 import 'package:financial_app/widgets/common/offline_indicator.dart';
 import 'package:financial_app/utils/design_tokens.dart';
+import 'package:financial_app/l10n/app_localizations.dart';
 
 class GoalsScreen extends StatefulWidget {
   const GoalsScreen({super.key});
@@ -19,31 +19,26 @@ class GoalsScreen extends StatefulWidget {
 }
 
 class _GoalsScreenState extends State<GoalsScreen> {
-  final GoalDataService _goalDataService = GoalDataService();
-  List<Map<String, dynamic>> _goals = [];
-
   @override
   void initState() {
     super.initState();
-    _loadGoals();
+    // Defer data load to next frame so the controller is available from Provider
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        context.read<GoalController>().loadData();
+      }
+    });
   }
 
-  Future<void> _loadGoals() async {
-    try {
-      final goals = await _goalDataService.getGoals();
-      if (mounted) {
-        setState(() {
-          _goals = List<Map<String, dynamic>>.from(goals);
-        });
-      }
-    } catch (e) {
-      LoggerService.error('Error loading goals', error: e);
-    }
+  List<Map<String, dynamic>> _goalsFromEntities(GoalController ctrl) {
+    return ctrl.goals.map((g) => g.toJson()).toList();
   }
 
   @override
   Widget build(BuildContext context) {
     final controller = context.watch<GoalController>();
+    final l10n = AppLocalizations.of(context);
+    final goalsMaps = _goalsFromEntities(controller);
 
     return Scaffold(
       backgroundColor: DesignTokens.backgroundDark,
@@ -53,15 +48,22 @@ class _GoalsScreenState extends State<GoalsScreen> {
             const GoalsHeader(),
             const OfflineIndicator(),
 
+            // Loading indicator
+            if (controller.isLoading)
+              const Padding(
+                padding: EdgeInsets.symmetric(vertical: 16),
+                child: Center(child: CircularProgressIndicator()),
+              ),
+
             // Error state banner
-            if (controller.errorMessage != null)
+            if (!controller.isLoading && controller.errorMessage != null)
               Container(
                 width: double.infinity,
                 margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
                   color: Colors.red.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
                   border: Border.all(color: Colors.red.withValues(alpha: 0.3)),
                 ),
                 child: Row(
@@ -84,7 +86,7 @@ class _GoalsScreenState extends State<GoalsScreen> {
                         color: Colors.red,
                         size: 18,
                       ),
-                      tooltip: 'Tutup pesan error',
+                      tooltip: l10n?.close_error_message ?? 'Tutup pesan error',
                       onPressed: () => controller.clearError(),
                       padding: EdgeInsets.zero,
                       constraints: const BoxConstraints(),
@@ -93,21 +95,22 @@ class _GoalsScreenState extends State<GoalsScreen> {
                 ),
               ),
 
-            // Goals Progress Summary
+            // Goals Progress Summary — uses controller.summary directly
             ProgressSummary(
               key: const ValueKey('progress_summary'),
-              initialGoals: _goals,
+              initialGoals: goalsMaps,
             ),
+
             Expanded(
               child: RefreshIndicator(
                 onRefresh: () async {
                   controller.clearError();
-                  await _loadGoals();
+                  await controller.refresh();
                 },
                 child: GoalsList(
                   key: const ValueKey('goals_list'),
-                  initialGoals: _goals,
-                  onGoalsChanged: () => _loadGoals(),
+                  initialGoals: goalsMaps,
+                  onGoalsChanged: () => controller.refresh(),
                 ),
               ),
             ),
@@ -118,13 +121,14 @@ class _GoalsScreenState extends State<GoalsScreen> {
         heroTag: 'goals_fab',
         onPressed: () => _showAddGoalModal(context),
         backgroundColor: DesignTokens.primaryColor,
-        tooltip: 'Tambah Tujuan',
+        tooltip: l10n?.add_target ?? 'Tambah Tujuan',
         child: const Icon(Iconsax.add, color: Colors.white),
       ),
     );
   }
 
   void _showAddGoalModal(BuildContext context) async {
+    final ctrl = context.read<GoalController>();
     try {
       final result = await showModalBottomSheet<bool>(
         context: context,
@@ -139,11 +143,12 @@ class _GoalsScreenState extends State<GoalsScreen> {
       );
 
       if (result == true && mounted) {
-        await _loadGoals();
+        await ctrl.refresh();
       }
     } catch (e) {
+      LoggerService.error('Error in goal modal', error: e);
       if (mounted) {
-        _loadGoals();
+        await ctrl.refresh();
       }
     }
   }

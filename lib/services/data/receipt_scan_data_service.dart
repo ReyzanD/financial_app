@@ -16,8 +16,7 @@ class ReceiptScanDataService {
   }) : _dbService = dbService ?? LocalDatabaseService(),
        _authService = authService ?? LocalAuthService();
 
-  Future<String?> getCurrentUserId() async =>
-      _authService.getCurrentUserId();
+  Future<String?> getCurrentUserId() async => _authService.getCurrentUserId();
 
   /// Save a receipt scan record
   Future<Map<String, dynamic>> saveReceiptScan(

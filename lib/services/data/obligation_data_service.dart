@@ -254,9 +254,7 @@ class ObligationDataService {
   }
 
   /// Calculate obligations summary
-  Map<String, dynamic> calculateObligationsSummary(
-    List<dynamic> obligations,
-  ) {
+  Map<String, dynamic> calculateObligationsSummary(List<dynamic> obligations) {
     double totalMonthly = 0.0;
     double totalDebt = 0.0;
     int activeCount = 0;
@@ -267,8 +265,7 @@ class ObligationDataService {
       final isPaid = obligation['is_paid_232143'] == 1;
       if (!isPaid) {
         activeCount++;
-        final amount =
-            (obligation['amount_232143'] as num?)?.toDouble() ?? 0.0;
+        final amount = (obligation['amount_232143'] as num?)?.toDouble() ?? 0.0;
         final frequency =
             obligation['frequency_232143']?.toString() ?? 'monthly';
 

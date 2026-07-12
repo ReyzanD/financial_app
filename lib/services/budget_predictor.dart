@@ -1,10 +1,11 @@
 import 'package:financial_app/services/api_service.dart';
 import 'package:financial_app/services/logger_service.dart';
 import 'package:financial_app/services/expense_predictor.dart';
+import 'package:financial_app/core/di/service_locator.dart';
 
 /// Service for predicting budget exhaustion and assessing overspending risk
 class BudgetPredictor {
-  final ApiService _apiService = ApiService();
+  final ApiService _apiService = getIt<ApiService>();
   final ExpensePredictor _expensePredictor = ExpensePredictor();
 
   /// Predict when a budget will be exhausted

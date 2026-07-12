@@ -10,7 +10,11 @@ import 'package:financial_app/l10n/app_localizations.dart';
 class RecordPaymentModal extends StatefulWidget {
   final DebtModel debt;
   final VoidCallback onPaymentRecorded;
-  const RecordPaymentModal({super.key, required this.debt, required this.onPaymentRecorded});
+  const RecordPaymentModal({
+    super.key,
+    required this.debt,
+    required this.onPaymentRecorded,
+  });
 
   @override
   State<RecordPaymentModal> createState() => _RecordPaymentModalState();
@@ -31,7 +35,9 @@ class _RecordPaymentModalState extends State<RecordPaymentModal> {
     return Padding(
       padding: EdgeInsets.only(
         bottom: MediaQuery.of(context).viewInsets.bottom,
-        left: 20, right: 20, top: 20,
+        left: 20,
+        right: 20,
+        top: 20,
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -39,7 +45,8 @@ class _RecordPaymentModalState extends State<RecordPaymentModal> {
         children: [
           Center(
             child: Container(
-              width: 40, height: 4,
+              width: 40,
+              height: 4,
               decoration: BoxDecoration(
                 color: DesignTokens.textTertiaryDark,
                 borderRadius: BorderRadius.circular(2),
@@ -51,13 +58,17 @@ class _RecordPaymentModalState extends State<RecordPaymentModal> {
             l10n?.record_payment ?? 'Catat Pembayaran',
             style: GoogleFonts.poppins(
               color: DesignTokens.textPrimaryDark,
-              fontSize: 18, fontWeight: FontWeight.w600,
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
             ),
           ),
           const SizedBox(height: 8),
           Text(
             widget.debt.name,
-            style: GoogleFonts.poppins(color: DesignTokens.textSecondaryDark, fontSize: 14),
+            style: GoogleFonts.poppins(
+              color: DesignTokens.textSecondaryDark,
+              fontSize: 14,
+            ),
           ),
           const SizedBox(height: 20),
           TextFormField(
@@ -66,16 +77,22 @@ class _RecordPaymentModalState extends State<RecordPaymentModal> {
             style: GoogleFonts.poppins(color: DesignTokens.textPrimaryDark),
             decoration: InputDecoration(
               labelText: l10n?.amount ?? 'Jumlah',
-              labelStyle: GoogleFonts.poppins(color: DesignTokens.textSecondaryDark),
-              filled: true, fillColor: DesignTokens.surfaceDark,
+              labelStyle: GoogleFonts.poppins(
+                color: DesignTokens.textSecondaryDark,
+              ),
+              filled: true,
+              fillColor: DesignTokens.surfaceDark,
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
                 borderSide: BorderSide(color: DesignTokens.borderDark),
               ),
             ),
             validator: (v) {
-              if (v == null || v.trim().isEmpty) return 'Masukkan jumlah';
-              if (double.tryParse(v.replaceAll(',', '.')) == null) return 'Jumlah harus berupa angka';
+              if (v == null || v.trim().isEmpty)
+                return l10n?.amount_required ?? 'Masukkan jumlah';
+              if (double.tryParse(v.replaceAll(',', '.')) == null)
+                return l10n?.amount_must_be_number ??
+                    'Jumlah harus berupa angka';
               return null;
             },
           ),
@@ -88,12 +105,18 @@ class _RecordPaymentModalState extends State<RecordPaymentModal> {
                 backgroundColor: DesignTokens.successColor,
                 padding: const EdgeInsets.symmetric(vertical: 14),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                  borderRadius: BorderRadius.circular(
+                    DesignTokens.radiusMedium,
+                  ),
                 ),
               ),
               child: Text(
                 l10n?.pay ?? 'Bayar',
-                style: GoogleFonts.poppins(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w600),
+                style: GoogleFonts.poppins(
+                  color: Colors.white,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ),
           ),
@@ -116,7 +139,10 @@ class _RecordPaymentModalState extends State<RecordPaymentModal> {
       widget.onPaymentRecorded();
     } catch (e) {
       if (!mounted) return;
-      ErrorHandlerService.showErrorSnackbar(context, ErrorHandlerService.getUserFriendlyMessage(e));
+      ErrorHandlerService.showErrorSnackbar(
+        context,
+        ErrorHandlerService.getUserFriendlyMessage(e),
+      );
     }
   }
 }

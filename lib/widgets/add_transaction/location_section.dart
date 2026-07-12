@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
+import 'package:financial_app/l10n/app_localizations.dart';
 import 'package:financial_app/models/location_data.dart';
 import 'package:financial_app/utils/design_tokens.dart';
 
@@ -22,13 +23,14 @@ class LocationSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           children: [
             Text(
-              'Lokasi',
+              l10n?.location ?? 'Lokasi',
               style: GoogleFonts.poppins(
                 color: Colors.white,
                 fontSize: 16,
@@ -49,14 +51,14 @@ class LocationSection extends StatelessWidget {
         ),
         const SizedBox(height: 12),
         if (currentLocation != null)
-          _buildLocationInfo()
+          _buildLocationInfo(l10n)
         else
-          _buildLocationButton(),
+          _buildLocationButton(l10n),
       ],
     );
   }
 
-  Widget _buildLocationButton() {
+  Widget _buildLocationButton(AppLocalizations? l10n) {
     return Row(
       children: [
         Expanded(
@@ -74,7 +76,9 @@ class LocationSection extends StatelessWidget {
                     )
                     : const Icon(Iconsax.location, size: 16),
             label: Text(
-              isGettingLocation ? 'Mendeteksi...' : 'Lokasi Saat Ini',
+              isGettingLocation
+                  ? (l10n?.detecting ?? 'Mendeteksi...')
+                  : (l10n?.current_location ?? 'Lokasi Saat Ini'),
               style: GoogleFonts.poppins(fontSize: 12),
             ),
             style: OutlinedButton.styleFrom(
@@ -110,12 +114,12 @@ class LocationSection extends StatelessWidget {
     );
   }
 
-  Widget _buildLocationInfo() {
+  Widget _buildLocationInfo(AppLocalizations? l10n) {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: DesignTokens.surfaceDark,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
         border: Border.all(
           color: Color.lerp(Colors.green, Colors.transparent, 0.3)!,
           width: 0.3,
@@ -130,7 +134,8 @@ class LocationSection extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  currentLocation!.placeName ?? 'Lokasi Terdeteksi',
+                  currentLocation!.placeName ??
+                      (l10n?.location_detected ?? 'Lokasi Terdeteksi'),
                   style: GoogleFonts.poppins(
                     color: Colors.white,
                     fontSize: 14,
@@ -169,7 +174,7 @@ class LocationSection extends StatelessWidget {
                   color: DesignTokens.primaryColor,
                 ),
                 onPressed: onPickFromMap,
-                tooltip: 'Edit di peta',
+                tooltip: l10n?.edit_on_map ?? 'Edit di peta',
               ),
               IconButton(
                 icon: Icon(
@@ -178,7 +183,7 @@ class LocationSection extends StatelessWidget {
                   color: Colors.grey[500],
                 ),
                 onPressed: onClearLocation,
-                tooltip: 'Hapus lokasi',
+                tooltip: l10n?.delete_location ?? 'Hapus lokasi',
               ),
             ],
           ),

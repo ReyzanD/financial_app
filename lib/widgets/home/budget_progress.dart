@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:financial_app/l10n/app_localizations.dart';
 import 'package:financial_app/utils/formatters.dart';
 import 'package:financial_app/services/api_service.dart';
 import 'package:financial_app/services/budget_recommendation_service.dart';
@@ -7,6 +8,7 @@ import 'package:financial_app/services/logger_service.dart';
 import 'package:financial_app/features/budgets/presentation/screens/budgets_screen.dart';
 import 'package:financial_app/utils/responsive_helper.dart';
 import 'package:financial_app/utils/design_tokens.dart';
+import 'package:financial_app/core/di/service_locator.dart';
 
 class BudgetProgress extends StatefulWidget {
   const BudgetProgress({super.key});
@@ -17,7 +19,7 @@ class BudgetProgress extends StatefulWidget {
 
 class _BudgetProgressState extends State<BudgetProgress>
     with SingleTickerProviderStateMixin {
-  final ApiService _apiService = ApiService();
+  final ApiService _apiService = getIt<ApiService>();
   final BudgetRecommendationService _recommendationService =
       BudgetRecommendationService();
   List<Map<String, dynamic>> _budgets = [];
@@ -152,16 +154,19 @@ class _BudgetProgressState extends State<BudgetProgress>
   }
 
   String _getErrorMessage(dynamic error) {
+    final l10n = AppLocalizations.of(context);
     final errorStr = error.toString().toLowerCase();
     if (errorStr.contains('timeout')) {
       return 'Koneksi timeout. Cek koneksi internet Anda.';
     } else if (errorStr.contains('connection') ||
         errorStr.contains('network')) {
-      return 'Gagal terhubung ke server. Pastikan backend berjalan.';
+      return l10n?.failed_to_connect ??
+          'Gagal terhubung ke server. Pastikan backend berjalan.';
     } else if (errorStr.contains('unauthorized') || errorStr.contains('401')) {
-      return 'Sesi berakhir. Silakan login kembali.';
+      return l10n?.session_ended ?? 'Sesi berakhir. Silakan login kembali.';
     } else {
-      return 'Gagal memuat data. Tap untuk coba lagi.';
+      return l10n?.failed_to_load_transactions ??
+          'Gagal memuat data. Tap untuk coba lagi.';
     }
   }
 
@@ -184,6 +189,7 @@ class _BudgetProgressState extends State<BudgetProgress>
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -222,7 +228,9 @@ class _BudgetProgressState extends State<BudgetProgress>
           Center(
             child: Padding(
               padding: ResponsiveHelper.padding(context, multiplier: 1.25),
-              child: const CircularProgressIndicator(color: DesignTokens.primaryColor),
+              child: const CircularProgressIndicator(
+                color: DesignTokens.primaryColor,
+              ),
             ),
           )
         else if (_errorMessage != null)
@@ -321,7 +329,7 @@ class _BudgetProgressState extends State<BudgetProgress>
                 ),
                 SizedBox(height: ResponsiveHelper.verticalSpacing(context, 12)),
                 Text(
-                  'Belum ada budget',
+                  l10n?.no_budget_yet ?? 'Belum ada budget',
                   style: GoogleFonts.poppins(
                     color: Colors.grey[400],
                     fontSize: ResponsiveHelper.fontSize(context, 16),
@@ -330,7 +338,8 @@ class _BudgetProgressState extends State<BudgetProgress>
                 ),
                 SizedBox(height: ResponsiveHelper.verticalSpacing(context, 4)),
                 Text(
-                  'Buat budget untuk kelola keuangan lebih baik',
+                  l10n?.create_budget_to_manage ??
+                      'Buat budget untuk kelola keuangan lebih baik',
                   textAlign: TextAlign.center,
                   style: GoogleFonts.poppins(
                     color: Colors.grey[600],
@@ -674,11 +683,31 @@ class _BudgetProgressState extends State<BudgetProgress>
   Color _getCategoryColor(String category) {
     switch (category.toLowerCase()) {
       case 'makanan':
+      case 'makanan & minuman':
         return const Color(0xFFE74C3C);
       case 'transportasi':
         return const Color(0xFFF39C12);
       case 'hiburan':
         return const Color(0xFF9B59B6);
+      case 'belanja':
+        return const Color(0xFF9B59B6);
+      case 'kesehatan':
+        return const Color(0xFFE67E22);
+      case 'pendidikan':
+        return const Color(0xFF2980B9);
+      case 'gaji':
+        return const Color(0xFF2ECC71);
+      case 'investasi':
+        return const Color(0xFF27AE60);
+      case 'freelance':
+        return const Color(0xFF1ABC9C);
+      case 'tabungan':
+        return const Color(0xFF16A085);
+      case 'tagihan':
+      case 'tagihan & utilitas':
+        return const Color(0xFF95A5A6);
+      case 'pendapatan':
+        return const Color(0xFF2ECC71);
       default:
         return DesignTokens.primaryColor;
     }

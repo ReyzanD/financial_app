@@ -98,7 +98,7 @@ class EmptyState extends StatelessWidget {
                     vertical: 12,
                   ),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
                   ),
                 ),
               ),

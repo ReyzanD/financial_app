@@ -3,6 +3,8 @@ import 'package:financial_app/features/templates/domain/repositories/template_re
 
 class TemplateRepository implements TemplateRepositoryInterface {
   final TransactionTemplateDataService _s;
-  TemplateRepository({TransactionTemplateDataService? service}) : _s = service ?? TransactionTemplateDataService();
-  @override Future<List<dynamic>> getTemplates() => _s.getTransactionTemplates();
+  TemplateRepository({TransactionTemplateDataService? service})
+    : _s = service ?? TransactionTemplateDataService();
+  @override
+  Future<List<dynamic>> getTemplates() => _s.getTransactionTemplates();
 }

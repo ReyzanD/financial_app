@@ -6,9 +6,8 @@ import 'package:financial_app/services/logger_service.dart';
 class ExchangeRateDataService {
   final LocalDatabaseService _dbService;
 
-  ExchangeRateDataService({
-    LocalDatabaseService? dbService,
-  }) : _dbService = dbService ?? LocalDatabaseService();
+  ExchangeRateDataService({LocalDatabaseService? dbService})
+    : _dbService = dbService ?? LocalDatabaseService();
 
   Future<Map<String, double>> getExchangeRates() async {
     try {

@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:financial_app/utils/design_tokens.dart';
 
 class NotificationHistoryService {
   static const String _historyKey = 'notification_history';
@@ -118,7 +119,7 @@ class NotificationHistoryService {
       case 'bill':
         return 0xFFFFA726; // Orange
       case 'goal':
-        return 0xFF8B5FBF; // Purple
+        return DesignTokens.primaryColor.toARGB32(); // Purple
       case 'summary':
         return 0xFF42A5F5; // Blue
       case 'ai':
@@ -126,7 +127,7 @@ class NotificationHistoryService {
       case 'recurring':
         return 0xFF78909C; // Grey
       default:
-        return 0xFF8B5FBF; // Default purple
+        return DesignTokens.primaryColor.toARGB32(); // Default purple
     }
   }
 }

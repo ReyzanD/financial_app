@@ -22,8 +22,10 @@ class SettingsController extends ChangeNotifier {
 
   Future<void> load() async {
     final prefs = await SharedPreferences.getInstance();
-    _aiRecommendationsEnabled = prefs.getBool('ai_recommendations_enabled') ?? true;
-    _locationServicesEnabled = prefs.getBool('location_services_enabled') ?? true;
+    _aiRecommendationsEnabled =
+        prefs.getBool('ai_recommendations_enabled') ?? true;
+    _locationServicesEnabled =
+        prefs.getBool('location_services_enabled') ?? true;
     _notificationsEnabled = prefs.getBool('notifications_enabled') ?? true;
     _darkModeEnabled = prefs.getBool('dark_mode_enabled') ?? true;
     _defaultTabIndex = prefs.getInt('default_tab_index') ?? 0;
@@ -40,11 +42,35 @@ class SettingsController extends ChangeNotifier {
     await prefs.setInt(key, value);
   }
 
-  void toggleAi(bool v) { _aiRecommendationsEnabled = v; notifyListeners(); setBool('ai_recommendations_enabled', v); }
-  void toggleLocation(bool v) { _locationServicesEnabled = v; notifyListeners(); setBool('location_services_enabled', v); }
-  void toggleNotifications(bool v) { _notificationsEnabled = v; notifyListeners(); setBool('notifications_enabled', v); }
-  void toggleDarkMode(bool v) { _darkModeEnabled = v; notifyListeners(); setBool('dark_mode_enabled', v); }
-  void setDefaultTab(int index) { _defaultTabIndex = index; notifyListeners(); setInt('default_tab_index', index); }
+  void toggleAi(bool v) {
+    _aiRecommendationsEnabled = v;
+    notifyListeners();
+    setBool('ai_recommendations_enabled', v);
+  }
+
+  void toggleLocation(bool v) {
+    _locationServicesEnabled = v;
+    notifyListeners();
+    setBool('location_services_enabled', v);
+  }
+
+  void toggleNotifications(bool v) {
+    _notificationsEnabled = v;
+    notifyListeners();
+    setBool('notifications_enabled', v);
+  }
+
+  void toggleDarkMode(bool v) {
+    _darkModeEnabled = v;
+    notifyListeners();
+    setBool('dark_mode_enabled', v);
+  }
+
+  void setDefaultTab(int index) {
+    _defaultTabIndex = index;
+    notifyListeners();
+    setInt('default_tab_index', index);
+  }
 
   Future<void> logout() async {
     await _auth.logout();

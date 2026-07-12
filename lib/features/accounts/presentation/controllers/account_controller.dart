@@ -8,7 +8,7 @@ class AccountController extends ChangeNotifier {
   final AccountRepositoryInterface _repository;
 
   AccountController({required AccountRepositoryInterface repository})
-      : _repository = repository;
+    : _repository = repository;
 
   List<AccountModel> _accounts = [];
   double _totalBalance = 0.0;

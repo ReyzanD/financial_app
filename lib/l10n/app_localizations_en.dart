@@ -36,7 +36,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get add => 'Add';
 
   @override
+  String get add_account => 'Add Account';
+
+  @override
   String get add_description => 'Add description...';
+
+  @override
+  String get add_notes_hint => 'Add notes or additional details...';
+
+  @override
+  String get add_note_hint => 'Add a note...';
+
+  @override
+  String get description_hint => 'E.g.: Lunch, Monthly shopping, etc.';
 
   @override
   String get add_expense => 'Add Expense';
@@ -50,6 +62,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get add_obligation => 'Add Obligation';
+
+  @override
+  String get add_contribution => 'Add Contribution';
 
   @override
   String get add_obligation_hint => 'Tap + to add a bill';
@@ -70,6 +85,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get all => 'All';
 
   @override
+  String get health_score => 'Health Score';
+
+  @override
   String get all_categories => 'All Categories';
 
   @override
@@ -80,6 +98,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get analytics => 'Analytics';
+
+  @override
+  String get amount_must_be_greater_than_zero =>
+      'Amount must be greater than 0';
+
+  @override
+  String get contribution_amount => 'Contribution Amount';
 
   @override
   String get app => 'App';
@@ -142,6 +167,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get bahasa_indonesia => 'Bahasa Indonesia';
+
+  @override
+  String get back => 'Back';
 
   @override
   String get balance => 'Balance';
@@ -398,6 +426,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get edit => 'Edit';
 
   @override
+  String get enter_contribution_amount => 'Enter contribution amount';
+
+  @override
+  String get edit_account => 'Edit Account';
+
+  @override
   String get edit_feature_coming_soon => 'Edit feature coming soon';
 
   @override
@@ -633,6 +667,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get location => 'Location';
 
   @override
+  String get last_month => 'Last Month';
+
+  @override
+  String get add_more_transactions_insights =>
+      'Continue managing your finances well! Add more transactions to get more useful insights.';
+
+  @override
   String get location_permission_desc =>
       '• Location: Used to record transaction locations\\n• Notifications: To remind about bills and budgets\\n• Storage: To store app data';
 
@@ -712,10 +753,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get no_backup_yet => 'No backup yet';
 
   @override
+  String get no_accounts => 'No Accounts';
+
+  @override
   String get no_budgets_subtitle => 'Set budgets to control your spending';
 
   @override
   String get no_budgets_title => 'No Budgets';
+
+  @override
+  String get no_categories_available => 'No categories available';
 
   @override
   String get no_categories_create_first =>
@@ -1049,6 +1096,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get search_obligations => 'Search bills, debts, or subscriptions...';
 
   @override
+  String get search_transactions => 'Search transactions...';
+
+  @override
+  String get reset_filter => 'Reset Filter';
+
+  @override
   String get security => 'Security';
 
   @override
@@ -1087,6 +1140,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get settings => 'Settings';
+
+  @override
+  String get sort_by => 'Sort by:';
 
   @override
   String get seven_days => '7 days';
@@ -1131,6 +1187,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get subscription => 'Subscription';
+
+  @override
+  String get success_added_contribution => 'Successfully added';
 
   @override
   String get subscription_cycle => 'Cycle';
@@ -1181,7 +1240,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get today => 'Today';
 
   @override
-  String get total_amount => 'Total Portfolio Value';
+  String get total => 'Total';
+
+  @override
+  String get total_amount => 'Total Amount';
+
+  @override
+  String get total_saved => 'Total Saved';
+
+  @override
+  String get total_target => 'Total Target';
 
   @override
   String get total_budget => 'Total Budget';
@@ -1226,6 +1294,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get transaction_resumed => 'Transaction resumed';
+
+  @override
+  String get transaction_history => 'Transaction History';
 
   @override
   String get transaction_saved_successfully =>
@@ -1314,4 +1385,608 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get you_need_to_login_again =>
       'You need to login again with email and password.';
+
+  @override
+  String get delete_transaction_confirm => 'Delete Transaction?';
+
+  @override
+  String get delete_transaction_message_balance =>
+      'Are you sure you want to delete this transaction? The balance will be restored.';
+
+  @override
+  String get delete_transaction_message_short =>
+      'Are you sure you want to delete this transaction?';
+
+  @override
+  String get failed_to_delete_transaction => 'Failed to delete transaction';
+
+  @override
+  String get transaction_added_successfully =>
+      'Transaction added successfully!';
+
+  @override
+  String get delete_goal_confirm => 'Delete Goal?';
+
+  @override
+  String get goal_deleted_successfully => 'Goal deleted successfully';
+
+  @override
+  String get add_fund => 'Add Fund';
+
+  @override
+  String get contribution_history => 'Contribution History';
+
+  @override
+  String get no_contributions_yet => 'No contributions yet';
+
+  @override
+  String get delete_goal_message => 'Are you sure you want to delete';
+
+  @override
+  String get budget_updated_successfully => 'Budget updated successfully.';
+
+  @override
+  String get budget_added_successfully => 'Budget added successfully.';
+
+  @override
+  String get all_bills_paid => 'All your bills are paid or not due yet';
+
+  @override
+  String get no_data_for_recommendation => 'No data for recommendations';
+
+  @override
+  String get authentication_required_to_delete =>
+      'Authentication required to delete transaction';
+
+  @override
+  String get failed_to_delete_goal => 'Failed to delete goal';
+
+  @override
+  String get target_updated_successfully => 'Target updated successfully!';
+
+  @override
+  String get target_added_successfully => 'Target added successfully!';
+
+  @override
+  String get account_deleted_successfully => 'Account deleted successfully';
+
+  @override
+  String get create_report => 'Create Report';
+
+  @override
+  String get report_created_successfully => 'Report Created Successfully';
+
+  @override
+  String get spending_increased => 'Spending increased';
+
+  @override
+  String get spending_decreased => 'Spending decreased';
+
+  @override
+  String get spending_stable => 'Spending stable';
+
+  @override
+  String get budget_warning => 'Budget Warning';
+
+  @override
+  String get no_events => 'No events';
+
+  @override
+  String get failed_to_load_data => 'Failed to load data';
+
+  @override
+  String get failed_to_load_location => 'Failed to get location';
+
+  @override
+  String get failed_to_search => 'Search failed';
+
+  @override
+  String get search_placeholder => 'Search...';
+
+  @override
+  String get location_selected => 'Location selected';
+
+  @override
+  String get current_location => 'Current Location';
+
+  @override
+  String get detecting => 'Detecting...';
+
+  @override
+  String get location_detected => 'Location Detected';
+
+  @override
+  String get edit_on_map => 'Edit on map';
+
+  @override
+  String get delete_location => 'Delete location';
+
+  @override
+  String get save_transaction => 'Save Transaction';
+
+  @override
+  String get enter_valid_percentage => 'Enter a valid percentage (1-100)';
+
+  @override
+  String get edit_percentage => 'Edit Percentage';
+
+  @override
+  String get failed_to_load_transactions =>
+      'Failed to load data. Tap to retry.';
+
+  @override
+  String get failed_to_connect => 'Failed to connect to server';
+
+  @override
+  String get session_ended => 'Session ended. Please login again.';
+
+  @override
+  String get no_budget_yet => 'No budget yet';
+
+  @override
+  String get create_budget_to_manage =>
+      'Create a budget to manage your finances better';
+
+  @override
+  String get no_recommendations_available => 'No AI recommendations available';
+
+  @override
+  String get failed_to_load_budget_suggestions =>
+      'Failed to load budget suggestions';
+
+  @override
+  String get budget_deleted => 'Budget deleted.';
+
+  @override
+  String get failed_to_load_insights => 'Failed to load insights';
+
+  @override
+  String get no_insights_available => 'No insights available yet';
+
+  @override
+  String get no_financial_goals => 'No financial goals yet';
+
+  @override
+  String get no_expenses_this_month => 'No expenses this month.';
+
+  @override
+  String get authentication_cancelled_delete => 'Authentication cancelled';
+
+  @override
+  String get failed_to_delete_challenge => 'Failed to delete challenge';
+
+  @override
+  String get challenge_deleted_successfully => 'Challenge deleted successfully';
+
+  @override
+  String get delete_challenge_confirm =>
+      'Are you sure you want to delete this challenge?';
+
+  @override
+  String get investment_deleted_successfully =>
+      'Investment deleted successfully';
+
+  @override
+  String get delete_investment_confirm =>
+      'Are you sure you want to delete this investment?';
+
+  @override
+  String get subscription_deleted_successfully =>
+      'Subscription deleted successfully';
+
+  @override
+  String get delete_subscription_confirm =>
+      'Are you sure you want to delete this subscription?';
+
+  @override
+  String get split_deleted_successfully => 'Split deleted successfully';
+
+  @override
+  String get delete_split_confirm =>
+      'Are you sure you want to delete this split?';
+
+  @override
+  String get debt_deleted_successfully => 'Debt deleted successfully';
+
+  @override
+  String get category_deleted => 'Category deleted successfully';
+
+  @override
+  String get delete_category_confirm =>
+      'Are you sure you want to delete this category?';
+
+  @override
+  String get receipt_scanned => 'Receipt scanned successfully';
+
+  @override
+  String get delete_receipt_confirm => 'Delete Receipt?';
+
+  @override
+  String get receipt_deleted => 'Receipt deleted';
+
+  @override
+  String get processed => 'Processed';
+
+  @override
+  String get not_processed => 'Not Processed';
+
+  @override
+  String get create_transaction_again => 'Create transaction again';
+
+  @override
+  String get create_transaction => 'Create transaction';
+
+  @override
+  String get create_transaction_from_receipt =>
+      'Create Transaction from Receipt';
+
+  @override
+  String get profile_saved_successfully => 'Profile saved successfully';
+
+  @override
+  String get personal_information => 'Personal Information';
+
+  @override
+  String get import_successful => 'Import Successful';
+
+  @override
+  String get import_completed => 'Import Completed';
+
+  @override
+  String get import_success_count => 'Success';
+
+  @override
+  String get import_failed_count => 'Failed';
+
+  @override
+  String get failed_to_import_file => 'Failed to import file';
+
+  @override
+  String get pin_created_successfully => 'PIN created successfully!';
+
+  @override
+  String get pin_changed_successfully => 'PIN changed successfully!';
+
+  @override
+  String get too_many_attempts => 'Too many failed attempts';
+
+  @override
+  String get please_fill_all_fields => 'Please fill all fields';
+
+  @override
+  String get delete_search => 'Clear search';
+
+  @override
+  String get close_error_message => 'Close error message';
+
+  @override
+  String get receipt_history => 'Receipt History';
+
+  @override
+  String get no_receipts_yet => 'No receipts yet';
+
+  @override
+  String get forecast_and_prediction => 'Forecast & Prediction';
+
+  @override
+  String get failed_to_load_forecast => 'Failed to load forecast';
+
+  @override
+  String get all_budgets_safe => 'All budgets are safe';
+
+  @override
+  String get highest_spending_day => 'Highest spending on day';
+
+  @override
+  String get recurring_transactions => 'Recurring Transactions';
+
+  @override
+  String get feature_coming_soon => 'Recurring transaction feature coming soon';
+
+  @override
+  String get no_recurring_transactions => 'No recurring transactions';
+
+  @override
+  String get transaction => 'Transaction';
+
+  @override
+  String get daily => 'Daily';
+
+  @override
+  String get backup_history => 'Backup History';
+
+  @override
+  String get no_backups => 'No backups';
+
+  @override
+  String get delete_backup_warning =>
+      'Are you sure you want to delete this backup?';
+
+  @override
+  String get backup_deleted_message => 'Backup deleted';
+
+  @override
+  String get edit_budget => 'Edit Budget';
+
+  @override
+  String get add_budget => 'Add Budget';
+
+  @override
+  String get active_label => 'Active';
+
+  @override
+  String get save_changes_label => 'Save Changes';
+
+  @override
+  String get weekly_period => 'Weekly';
+
+  @override
+  String get monthly_period => 'Monthly';
+
+  @override
+  String get yearly_period => 'Yearly';
+
+  @override
+  String get target_saved => 'Target saved successfully';
+
+  @override
+  String get debt_payment_recorded => 'Debt payment recorded successfully';
+
+  @override
+  String get debt_deleted => 'Debt deleted successfully';
+
+  @override
+  String get no_active_debts => 'No active debts';
+
+  @override
+  String get receipt_scanned_success =>
+      'Receipt scanned successfully! Form has been filled automatically.';
+
+  @override
+  String get month => 'Month';
+
+  @override
+  String get year => 'Year';
+
+  @override
+  String get period_type => 'Period Type';
+
+  @override
+  String get report_format => 'Report Format';
+
+  @override
+  String get transaction_type => 'Transaction Type';
+
+  @override
+  String get information => 'Information';
+
+  @override
+  String get financial_report => 'Financial Report';
+
+  @override
+  String get export_transaction => 'Export Transaction';
+
+  @override
+  String get period => 'Period';
+
+  @override
+  String get future_date_error => 'Expense date cannot be in the future';
+
+  @override
+  String get insufficient_balance_title => 'Insufficient Balance';
+
+  @override
+  String get no_investments => 'No investments yet';
+
+  @override
+  String get no_splits => 'No splits yet';
+
+  @override
+  String get no_challenges => 'No challenges yet';
+
+  @override
+  String get no_alternative_recommendations =>
+      'No alternative recommendations for this category';
+
+  @override
+  String get add_category => 'Add Category';
+
+  @override
+  String get transaction_created_from_receipt =>
+      'Transaction created from receipt:';
+
+  @override
+  String get enter_balance => 'Enter balance';
+
+  @override
+  String get add_debt => 'Add Debt';
+
+  @override
+  String get add_investment => 'Add Investment';
+
+  @override
+  String get amount_required => 'Amount is required';
+
+  @override
+  String get old_pin => 'Old PIN';
+
+  @override
+  String get old_pin_subtitle => 'Enter your old PIN';
+
+  @override
+  String get new_pin => 'New PIN';
+
+  @override
+  String get new_pin_subtitle => 'Create new PIN';
+
+  @override
+  String get confirm_new_pin => 'Confirm New PIN';
+
+  @override
+  String get confirm_new_pin_subtitle => 'Enter the new PIN once more';
+
+  @override
+  String get wrong_old_pin => 'Wrong old PIN';
+
+  @override
+  String get new_pin_mismatch => 'New PIN doesn\'t match';
+
+  @override
+  String get start_now => 'Start Now';
+
+  @override
+  String get step => 'Step';
+
+  @override
+  String get set_budget_per_category => 'Set budget per category';
+
+  @override
+  String get enable_features_for_best_experience =>
+      'Enable features for best experience';
+
+  @override
+  String get just_now => 'Just now';
+
+  @override
+  String get manage_all_transactions =>
+      'Manage all your financial transactions';
+
+  @override
+  String get camera => 'Camera';
+
+  @override
+  String get minutes_ago => 'minutes ago';
+
+  @override
+  String get hours_ago => 'hours ago';
+
+  @override
+  String get days_ago => 'days ago';
+
+  @override
+  String get yesterday => 'Yesterday';
+
+  @override
+  String get notification_type => 'Notification Type';
+
+  @override
+  String get goal_notifications => 'Goal Achievements';
+
+  @override
+  String get ai_insights => 'AI Insights';
+
+  @override
+  String get ai_insights_subtitle => 'Financial tips and recommendations';
+
+  @override
+  String get periodic_summary => 'Periodic Summary';
+
+  @override
+  String get daily_summary => 'Daily Summary';
+
+  @override
+  String get weekly_summary => 'Weekly Summary';
+
+  @override
+  String get weekly_summary_subtitle => 'Weekly transaction summary';
+
+  @override
+  String get notes_optional => 'Notes (Optional)';
+
+  @override
+  String get cannot_get_current_location => 'Cannot get current location';
+
+  @override
+  String get current_position => 'Current position';
+
+  @override
+  String location_not_found(Object query) {
+    return 'Location \"$query\" not found';
+  }
+
+  @override
+  String locations_found_title(Object count) {
+    return '$count Locations Found';
+  }
+
+  @override
+  String get pick_location => 'Pick Location';
+
+  @override
+  String get quick_search_label => 'Quick:';
+
+  @override
+  String get reload_tooltip => 'Reload';
+
+  @override
+  String get search_places_hint => 'Search places (e.g: Losari Beach)';
+
+  @override
+  String search_results_found(Object count) {
+    return '$count locations found - select from list';
+  }
+
+  @override
+  String get select => 'Select';
+
+  @override
+  String get select_location_on_map_first =>
+      'Select a location on the map first';
+
+  @override
+  String get selected_location => 'Selected Location';
+
+  @override
+  String selected_prefix(Object name) {
+    return 'Selected: $name';
+  }
+
+  @override
+  String transaction_locations_shown(Object count) {
+    return '$count transaction locations displayed';
+  }
+
+  @override
+  String get transaction_map => 'Transaction Map';
+
+  @override
+  String get unable_to_get_location_permission =>
+      'Unable to get current location. Please check permissions.';
+
+  @override
+  String get your_location => 'Your Location';
+
+  @override
+  String get name_required => 'Name is required';
+
+  @override
+  String get cost => 'Cost';
+
+  @override
+  String get cost_required => 'Cost is required';
+
+  @override
+  String get next_bill => 'Next Bill';
+
+  @override
+  String get amount_must_be_number => 'Amount must be a number';
+
+  @override
+  String get snapshot_recorded => 'Snapshot recorded';
+
+  @override
+  String get added => 'added';
+
+  @override
+  String get scan_receipt => 'Scan Receipt';
+
+  @override
+  String get add_split => 'Add Split';
+
+  @override
+  String get add_template => 'Add Template';
+
+  @override
+  String get chart_placeholder =>
+      'Chart will be available after several periods';
 }

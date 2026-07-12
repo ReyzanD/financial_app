@@ -8,7 +8,7 @@ class ChallengeController extends ChangeNotifier {
   final ChallengeRepositoryInterface _repository;
 
   ChallengeController({required ChallengeRepositoryInterface repository})
-      : _repository = repository;
+    : _repository = repository;
 
   List<ChallengeModel> _challenges = [];
   Map<String, dynamic> _stats = {};

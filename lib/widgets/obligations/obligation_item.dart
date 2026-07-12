@@ -8,6 +8,7 @@ import 'package:financial_app/services/payment_history_service.dart';
 import 'package:financial_app/l10n/app_localizations.dart';
 import 'package:financial_app/services/error_handler_service.dart';
 import 'package:financial_app/utils/design_tokens.dart';
+import 'package:financial_app/utils/date_picker_helper.dart';
 
 class ObligationItem extends StatelessWidget {
   final FinancialObligation obligation;
@@ -23,6 +24,7 @@ class ObligationItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final isDebt = obligation.type == ObligationType.debt;
     final daysUntilDue = obligation.daysUntilDue;
     final urgencyColor = _getUrgencyColor(daysUntilDue);
@@ -40,7 +42,7 @@ class ObligationItem extends StatelessWidget {
             begin: Alignment.centerLeft,
             end: Alignment.centerRight,
           ),
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(DesignTokens.radiusLarge),
         ),
         alignment: Alignment.centerLeft,
         padding: const EdgeInsets.only(left: 24),
@@ -78,7 +80,7 @@ class ObligationItem extends StatelessWidget {
             begin: Alignment.centerRight,
             end: Alignment.centerLeft,
           ),
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(DesignTokens.radiusLarge),
         ),
         alignment: Alignment.centerRight,
         padding: const EdgeInsets.only(right: 24),
@@ -156,7 +158,7 @@ class ObligationItem extends StatelessWidget {
         margin: const EdgeInsets.only(bottom: 12),
         decoration: BoxDecoration(
           color: const Color(0xFF1F1F1F),
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(DesignTokens.radiusLarge),
           border: Border.all(
             color: urgencyColor.withValues(
               alpha: isOverdue || isDueSoon ? 0.4 : 0.15,
@@ -303,7 +305,7 @@ class ObligationItem extends StatelessWidget {
                       Icon(Iconsax.calendar, size: 14, color: Colors.grey[500]),
                       const SizedBox(width: 4),
                       Text(
-                        'Jatuh tempo: ${obligation.formattedDueDate}',
+                        '${l10n?.due_date ?? 'Jatuh Tempo'}: ${obligation.formattedDueDate}',
                         style: GoogleFonts.poppins(
                           color: Colors.grey[400],
                           fontSize: 12,
@@ -322,7 +324,7 @@ class ObligationItem extends StatelessWidget {
                         ),
                         const SizedBox(width: 4),
                         Text(
-                          'Sisa: ${CurrencyFormatter.formatRupiah(obligation.currentBalance!.toInt())}',
+                          '${l10n?.remaining ?? 'Sisa'}: ${CurrencyFormatter.formatRupiah(obligation.currentBalance!.toInt())}',
                           style: GoogleFonts.poppins(
                             color: Colors.grey[400],
                             fontSize: 12,
@@ -425,7 +427,7 @@ class ObligationItem extends StatelessWidget {
               padding: const EdgeInsets.all(4),
               decoration: BoxDecoration(
                 color: Colors.grey[900]!.withValues(alpha: 0.5),
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
               ),
               child: Row(
                 children: [
@@ -602,7 +604,7 @@ class ObligationItem extends StatelessWidget {
           (context) => AlertDialog(
             backgroundColor: DesignTokens.surfaceDark,
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(DesignTokens.radiusLarge),
             ),
             title: Text(
               AppLocalizations.of(context)!.record_payment,
@@ -635,7 +637,9 @@ class ObligationItem extends StatelessWidget {
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
-                      borderSide: const BorderSide(color: DesignTokens.primaryColor),
+                      borderSide: const BorderSide(
+                        color: DesignTokens.primaryColor,
+                      ),
                     ),
                   ),
                 ),
@@ -660,11 +664,13 @@ class ObligationItem extends StatelessWidget {
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
-                      borderSide: const BorderSide(color: DesignTokens.primaryColor),
+                      borderSide: const BorderSide(
+                        color: DesignTokens.primaryColor,
+                      ),
                     ),
                   ),
                   onTap: () async {
-                    final date = await showDatePicker(
+                    final date = await DatePickerHelper.showDarkDatePicker(
                       context: context,
                       initialDate: DateTime.now(),
                       firstDate: DateTime(2020),

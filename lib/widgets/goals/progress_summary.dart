@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
+import 'package:financial_app/l10n/app_localizations.dart';
 import 'package:financial_app/services/data/goal_data_service.dart';
 import 'package:financial_app/services/error_handler_service.dart';
 import 'package:financial_app/services/logger_service.dart';
@@ -37,8 +38,7 @@ class _ProgressSummaryState extends State<ProgressSummary> {
     int completedCount = 0;
 
     for (final goal in goals) {
-      totalTarget +=
-          (goal['target_amount_232143'] as num?)?.toDouble() ?? 0.0;
+      totalTarget += (goal['target_amount_232143'] as num?)?.toDouble() ?? 0.0;
       totalCurrent +=
           (goal['current_amount_232143'] as num?)?.toDouble() ?? 0.0;
       if (goal['is_completed_232143'] == 1) {
@@ -84,9 +84,10 @@ class _ProgressSummaryState extends State<ProgressSummary> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     if (_isLoading) {
       return Container(
-        margin: const EdgeInsets.all(16),
+        margin: const EdgeInsets.all(DesignTokens.spacing4),
         padding: const EdgeInsets.all(20),
         height: 120,
         decoration: BoxDecoration(
@@ -111,7 +112,7 @@ class _ProgressSummaryState extends State<ProgressSummary> {
     final inProgress = totalGoals - completedGoals;
 
     return Container(
-      margin: const EdgeInsets.all(16),
+      margin: const EdgeInsets.all(DesignTokens.spacing4),
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
@@ -148,7 +149,7 @@ class _ProgressSummaryState extends State<ProgressSummary> {
                     ),
                   ),
                   Text(
-                    'Total',
+                    l10n?.total ?? 'Total',
                     style: GoogleFonts.poppins(
                       color: Colors.white70,
                       fontSize: 10,
@@ -175,13 +176,13 @@ class _ProgressSummaryState extends State<ProgressSummary> {
                 _buildStatItem('Dalam Progress', '$inProgress', Iconsax.clock),
                 const SizedBox(height: 8),
                 _buildStatItem(
-                  'Total Target',
+                  l10n?.total_target ?? 'Total Target',
                   CurrencyFormatter.formatRupiah(totalTarget),
                   Iconsax.d_cube_scan,
                 ),
                 const SizedBox(height: 8),
                 _buildStatItem(
-                  'Total Tersimpan',
+                  l10n?.total_saved ?? 'Total Tersimpan',
                   CurrencyFormatter.formatRupiah(totalSaved),
                   Iconsax.wallet,
                 ),

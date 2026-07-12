@@ -3,18 +3,26 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:financial_app/utils/formatters.dart';
 import 'package:financial_app/widgets/transactions/transaction_helpers.dart';
 import 'package:financial_app/widgets/transactions/transaction_detail_screen.dart';
-import 'package:financial_app/services/api_service.dart';
 import 'package:financial_app/services/logger_service.dart';
 import 'package:financial_app/services/error_handler_service.dart';
 import 'package:financial_app/utils/responsive_helper.dart';
 import 'package:financial_app/utils/biometric_helper.dart';
+import 'package:financial_app/core/di/service_locator.dart';
 import 'package:financial_app/utils/design_tokens.dart';
+import 'package:financial_app/l10n/app_localizations.dart';
+import 'package:financial_app/features/transactions/presentation/controllers/transaction_controller.dart';
 
 class TransactionCard extends StatefulWidget {
   final Map<String, dynamic> transaction;
   final VoidCallback? onDeleted;
+  final VoidCallback? onUpdated;
 
-  const TransactionCard({super.key, required this.transaction, this.onDeleted});
+  const TransactionCard({
+    super.key,
+    required this.transaction,
+    this.onDeleted,
+    this.onUpdated,
+  });
 
   @override
   State<TransactionCard> createState() => _TransactionCardState();
@@ -52,7 +60,9 @@ class _TransactionCardState extends State<TransactionCard> {
         // Handle formats: #RRGGBB, #RGB, RRGGBB, or just a color name
         final cleanHex = hex.startsWith('#') ? hex.substring(1) : hex;
         if (cleanHex.length >= 6) {
-          categoryColor = Color(int.parse(cleanHex.substring(0, 6), radix: 16) + 0xFF000000);
+          categoryColor = Color(
+            int.parse(cleanHex.substring(0, 6), radix: 16) + 0xFF000000,
+          );
         }
       } catch (_) {
         categoryColor = Colors.grey;
@@ -69,28 +79,30 @@ class _TransactionCardState extends State<TransactionCard> {
         return await showDialog(
           context: context,
           builder: (BuildContext context) {
+            final l10n = AppLocalizations.of(context);
             return AlertDialog(
               backgroundColor: DesignTokens.surfaceDark,
               title: Text(
-                'Hapus Transaksi?',
+                l10n?.delete_transaction_confirm ?? 'Hapus Transaksi?',
                 style: GoogleFonts.poppins(color: Colors.white),
               ),
               content: Text(
-                'Apakah Anda yakin ingin menghapus transaksi ini? Saldo akan dikembalikan.',
+                l10n?.delete_transaction_message_balance ??
+                    'Apakah Anda yakin ingin menghapus transaksi ini? Saldo akan dikembalikan.',
                 style: GoogleFonts.poppins(color: Colors.grey[400]),
               ),
               actions: [
                 TextButton(
                   onPressed: () => Navigator.of(context).pop(false),
                   child: Text(
-                    'Batal',
+                    l10n?.cancel ?? 'Batal',
                     style: GoogleFonts.poppins(color: Colors.grey),
                   ),
                 ),
                 TextButton(
                   onPressed: () => Navigator.of(context).pop(true),
                   child: Text(
-                    'Hapus',
+                    l10n?.delete ?? 'Hapus',
                     style: GoogleFonts.poppins(color: Colors.red),
                   ),
                 ),
@@ -119,7 +131,7 @@ class _TransactionCardState extends State<TransactionCard> {
         padding: const EdgeInsets.only(right: 20),
         decoration: BoxDecoration(
           color: Colors.red,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(DesignTokens.radiusLarge),
         ),
         child: const Icon(Icons.delete, color: Colors.white, size: 32),
       ),
@@ -132,6 +144,7 @@ class _TransactionCardState extends State<TransactionCard> {
                   (context) => TransactionDetailScreen(
                     transaction: widget.transaction,
                     onDeleted: widget.onDeleted,
+                    onUpdated: widget.onUpdated,
                   ),
             ),
           );
@@ -298,6 +311,7 @@ class _TransactionCardState extends State<TransactionCard> {
   Future<void> _performDeletion(String transactionId) async {
     // Capture context early for safe use after async gaps
     final currentContext = context;
+    final l10n = AppLocalizations.of(context);
 
     // Exit if widget is already unmounted
     if (!mounted) return;
@@ -310,7 +324,9 @@ class _TransactionCardState extends State<TransactionCard> {
       // Biometric is available and enabled - require authentication
       final authenticated = await BiometricHelper.requestBiometricAuth(
         context: currentContext, // Use captured context
-        reason: 'Autentikasi diperlukan untuk menghapus transaksi',
+        reason:
+            l10n?.authentication_required_to_delete ??
+            'Autentikasi diperlukan untuk menghapus transaksi',
       );
 
       if (!authenticated) {
@@ -328,7 +344,7 @@ class _TransactionCardState extends State<TransactionCard> {
         if (currentContext.mounted) {
           ErrorHandlerService.showWarningSnackbar(
             currentContext,
-            'Autentikasi dibatalkan',
+            l10n?.authentication_cancelled_delete ?? 'Autentikasi dibatalkan',
           );
         }
         return;
@@ -336,15 +352,14 @@ class _TransactionCardState extends State<TransactionCard> {
     }
     // If biometric is not available/enabled, proceed with deletion without authentication
 
-    // Perform API call to delete from server
-    final apiService = ApiService();
+    final ctrl = getIt<TransactionController>();
 
     LoggerService.debug(
       '[TransactionCard] Starting deletion for ID: $transactionId',
     );
 
     try {
-      await apiService.deleteTransaction(transactionId);
+      await ctrl.deleteTransaction(transactionId);
       LoggerService.success('Transaction deleted successfully');
 
       // Refresh the parent list after successful deletion
@@ -353,7 +368,8 @@ class _TransactionCardState extends State<TransactionCard> {
       if (currentContext.mounted) {
         ErrorHandlerService.showSuccessSnackbar(
           currentContext,
-          'Transaksi berhasil dihapus',
+          l10n?.transaction_deleted_successfully ??
+              'Transaksi berhasil dihapus',
         );
       }
     } catch (e) {
@@ -372,7 +388,7 @@ class _TransactionCardState extends State<TransactionCard> {
       if (currentContext.mounted) {
         ErrorHandlerService.showErrorSnackbar(
           currentContext,
-          'Gagal menghapus transaksi: ${ErrorHandlerService.getUserFriendlyMessage(e)}',
+          '${l10n?.failed_to_delete_transaction ?? 'Gagal menghapus transaksi'}: ${ErrorHandlerService.getUserFriendlyMessage(e)}',
         );
       }
     }

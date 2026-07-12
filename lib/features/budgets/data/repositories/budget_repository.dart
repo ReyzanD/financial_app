@@ -12,16 +12,14 @@ class BudgetRepository implements BudgetRepositoryInterface {
   BudgetRepository({
     BudgetDataService? budgetData,
     CategoryDataService? categoryData,
-  })  : _budgetData = budgetData ?? BudgetDataService(),
-        _categoryData = categoryData ?? CategoryDataService();
+  }) : _budgetData = budgetData ?? BudgetDataService(),
+       _categoryData = categoryData ?? CategoryDataService();
 
   @override
   Future<List<BudgetEntity>> getBudgets({bool activeOnly = false}) async {
     try {
       final budgets = await _budgetData.getBudgets(activeOnly: activeOnly);
-      return budgets
-          .map((b) => BudgetEntity.fromJson(b))
-          .toList();
+      return budgets.map((b) => BudgetEntity.fromJson(b)).toList();
     } catch (e) {
       rethrow;
     }

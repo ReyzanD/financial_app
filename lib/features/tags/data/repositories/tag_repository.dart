@@ -4,5 +4,6 @@ import 'package:financial_app/features/tags/domain/repositories/tag_repository_i
 class TagRepository implements TagRepositoryInterface {
   final TagDataService _s;
   TagRepository({TagDataService? service}) : _s = service ?? TagDataService();
-  @override Future<List<dynamic>> getTags() => _s.getTags();
+  @override
+  Future<List<dynamic>> getTags() => _s.getTags();
 }

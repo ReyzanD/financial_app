@@ -179,7 +179,7 @@ class _ObligationDetailsModalState extends State<ObligationDetailsModal> {
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     color: color.withValues(alpha: 0.2),
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
                   ),
                   child: Icon(_getObligationIcon(), color: color, size: 24),
                 ),
@@ -216,7 +216,7 @@ class _ObligationDetailsModalState extends State<ObligationDetailsModal> {
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(DesignTokens.radiusLarge),
                 border: Border.all(
                   color: color.withValues(alpha: 0.3),
                   width: 1.5,
@@ -348,7 +348,7 @@ class _ObligationDetailsModalState extends State<ObligationDetailsModal> {
                       foregroundColor: Colors.red,
                       side: const BorderSide(color: Colors.red),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
                       ),
                       padding: const EdgeInsets.symmetric(vertical: 14),
                     ),
@@ -364,7 +364,7 @@ class _ObligationDetailsModalState extends State<ObligationDetailsModal> {
                       backgroundColor: DesignTokens.primaryColor,
                       foregroundColor: Colors.white,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
                       ),
                       padding: const EdgeInsets.symmetric(vertical: 14),
                     ),

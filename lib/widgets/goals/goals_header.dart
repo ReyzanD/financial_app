@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:financial_app/utils/design_tokens.dart';
 
 class GoalsHeader extends StatelessWidget {
   const GoalsHeader({super.key});
@@ -7,7 +8,7 @@ class GoalsHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(DesignTokens.spacing4),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

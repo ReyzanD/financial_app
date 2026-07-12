@@ -5,7 +5,8 @@ import 'package:financial_app/services/logger_service.dart';
 
 class ProfileController extends ChangeNotifier {
   final ProfileRepositoryInterface _r;
-  ProfileController({required ProfileRepositoryInterface repository}) : _r = repository;
+  ProfileController({required ProfileRepositoryInterface repository})
+    : _r = repository;
 
   bool _isLoading = false;
   bool _isSaving = false;
@@ -18,16 +19,33 @@ class ProfileController extends ChangeNotifier {
   Map<String, dynamic> get profile => _profile;
 
   Future<void> loadProfile() async {
-    _isLoading = true; _errorMessage = null; notifyListeners();
-    try { _profile = await _r.getProfile(); }
-    catch (e) { LoggerService.error('Error loading profile', error: e); _errorMessage = e.toString(); }
-    finally { _isLoading = false; notifyListeners(); }
+    _isLoading = true;
+    _errorMessage = null;
+    notifyListeners();
+    try {
+      _profile = await _r.getProfile();
+    } catch (e) {
+      LoggerService.error('Error loading profile', error: e);
+      _errorMessage = e.toString();
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
   }
 
   Future<void> saveProfile(Map<String, dynamic> data) async {
-    _isSaving = true; notifyListeners();
-    try { await _r.updateProfile(data); _profile = data; }
-    catch (e) { LoggerService.error('Error saving profile', error: e); _errorMessage = e.toString(); rethrow; }
-    finally { _isSaving = false; notifyListeners(); }
+    _isSaving = true;
+    notifyListeners();
+    try {
+      await _r.updateProfile(data);
+      _profile = data;
+    } catch (e) {
+      LoggerService.error('Error saving profile', error: e);
+      _errorMessage = e.toString();
+      rethrow;
+    } finally {
+      _isSaving = false;
+      notifyListeners();
+    }
   }
 }

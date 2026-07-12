@@ -5,6 +5,7 @@ import 'package:financial_app/services/budget_predictor.dart';
 import 'package:financial_app/services/spending_pattern_analyzer.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:financial_app/core/di/service_locator.dart';
+import 'package:financial_app/utils/design_tokens.dart';
 
 /// Service untuk generate AI budget recommendations with dynamic allocation
 class BudgetRecommendationService {
@@ -324,7 +325,7 @@ class BudgetRecommendationService {
       'percentage': savingsPercentage,
       'amount': finalSavingsAmount,
       'icon': Iconsax.chart,
-      'color': const Color(0xFF2196F3),
+      'color': DesignTokens.infoColor,
       'description':
           'Target: ${targetSavingsRate.toStringAsFixed(0)}% dari pendapatan (${goalAdjustments['savings_reason'] ?? 'sesuai pola pengeluaran'})',
       'flexibility': 'low', // Should maintain minimum
@@ -492,18 +493,18 @@ class BudgetRecommendationService {
   Color _getCategoryColor(String category) {
     switch (category.toLowerCase()) {
       case 'makanan':
-        return const Color(0xFF4CAF50);
+        return DesignTokens.successColor;
       case 'transportasi':
-        return const Color(0xFF2196F3);
+        return DesignTokens.infoColor;
       case 'hiburan':
-        return const Color(0xFFE91E63);
+        return DesignTokens.errorColor;
       case 'shopping':
         return const Color(0xFF9C27B0);
       case 'hobi':
         return const Color(0xFFFF9800);
       case 'tabungan':
       case 'investasi':
-        return const Color(0xFF2196F3);
+        return DesignTokens.infoColor;
       case 'dana darurat':
         return const Color(0xFFFF9800);
       default:
@@ -633,7 +634,7 @@ class BudgetRecommendationService {
       'percentage': savingsPercentage,
       'amount': savingsAmount,
       'icon': Iconsax.chart,
-      'color': const Color(0xFF2196F3),
+      'color': DesignTokens.infoColor,
       'description':
           goalSavingsAdjustment > 0
               ? 'Target: ${baseSavingsPercentage.toStringAsFixed(0)}% + penyesuaian untuk goals Anda'

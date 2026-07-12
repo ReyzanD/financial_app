@@ -3,9 +3,10 @@ import 'package:financial_app/services/logger_service.dart';
 import 'package:financial_app/services/expense_predictor.dart';
 import 'package:financial_app/services/spending_pattern_analyzer.dart';
 import 'package:financial_app/services/recommendation_personalizer.dart';
+import 'package:financial_app/core/di/service_locator.dart';
 
 class AIService {
-  final ApiService _apiService = ApiService();
+  final ApiService _apiService = getIt<ApiService>();
   final ExpensePredictor _expensePredictor = ExpensePredictor();
   final SpendingPatternAnalyzer _patternAnalyzer = SpendingPatternAnalyzer();
   final RecommendationPersonalizer _personalizer = RecommendationPersonalizer();

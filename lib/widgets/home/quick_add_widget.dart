@@ -8,6 +8,7 @@ import 'package:financial_app/services/logger_service.dart';
 import 'package:financial_app/widgets/home/quick_add/quick_add_modal.dart';
 import 'package:financial_app/l10n/app_localizations.dart';
 import 'package:financial_app/utils/design_tokens.dart';
+import 'package:financial_app/core/di/service_locator.dart';
 
 class QuickAddWidget extends StatefulWidget {
   final VoidCallback? onTransactionAdded;
@@ -19,7 +20,7 @@ class QuickAddWidget extends StatefulWidget {
 }
 
 class _QuickAddWidgetState extends State<QuickAddWidget> {
-  final ApiService _apiService = ApiService();
+  final ApiService _apiService = getIt<ApiService>();
   List<dynamic> _recentCategories = [];
   bool _isLoadingCategories = true;
 

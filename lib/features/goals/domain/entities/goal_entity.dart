@@ -32,10 +32,12 @@ class GoalEntity {
     return GoalEntity(
       id: json['goal_id_232143']?.toString() ?? json['id']?.toString() ?? '',
       name: json['name_232143']?.toString() ?? json['name']?.toString() ?? '',
-      description: json['description_232143']?.toString() ??
+      description:
+          json['description_232143']?.toString() ??
           json['description']?.toString() ??
           '',
-      goalType: json['goal_type_232143']?.toString() ??
+      goalType:
+          json['goal_type_232143']?.toString() ??
           json['goal_type']?.toString() ??
           'custom',
       targetAmount:
@@ -47,23 +49,24 @@ class GoalEntity {
               ?.toDouble() ??
           0.0,
       categoryId:
-          json['category_id_232143']?.toString() ?? json['category_id']?.toString(),
-      iconName:
-          json['icon_232143']?.toString() ?? json['icon']?.toString(),
+          json['category_id_232143']?.toString() ??
+          json['category_id']?.toString(),
+      iconName: json['icon_232143']?.toString() ?? json['icon']?.toString(),
       priority: (json['priority_232143'] ?? json['priority'] as int?) ?? 0,
       targetDate:
           json['target_date_232143'] != null
               ? DateTime.parse(json['target_date_232143'].toString())
               : json['target_date'] != null
-                  ? DateTime.parse(json['target_date'].toString())
-                  : DateTime.now().add(const Duration(days: 30)),
+              ? DateTime.parse(json['target_date'].toString())
+              : DateTime.now().add(const Duration(days: 30)),
       createdAt:
           json['created_at_232143'] != null
               ? DateTime.parse(json['created_at_232143'].toString())
               : DateTime.now(),
-      isCompleted: json['is_completed_232143'] != null
-          ? (json['is_completed_232143'] as num?) == 1
-          : json['is_completed'] as bool? ?? false,
+      isCompleted:
+          json['is_completed_232143'] != null
+              ? (json['is_completed_232143'] as num?) == 1
+              : json['is_completed'] as bool? ?? false,
     );
   }
 
@@ -86,5 +89,6 @@ class GoalEntity {
 
   double get progress =>
       targetAmount > 0 ? (currentAmount / targetAmount).clamp(0.0, 1.0) : 0.0;
-  double get remaining => (targetAmount - currentAmount).clamp(0, double.infinity);
+  double get remaining =>
+      (targetAmount - currentAmount).clamp(0, double.infinity);
 }

@@ -7,7 +7,7 @@ class GoalRepository implements GoalRepositoryInterface {
   final GoalDataService _goalData;
 
   GoalRepository({GoalDataService? goalData})
-      : _goalData = goalData ?? GoalDataService();
+    : _goalData = goalData ?? GoalDataService();
 
   @override
   Future<List<GoalEntity>> getGoals() async {
@@ -48,9 +48,13 @@ class GoalRepository implements GoalRepositoryInterface {
 
     for (final g in goals) {
       final target =
-          (g['target_amount_232143'] ?? g['target_amount'] as num?)?.toDouble() ?? 0;
+          (g['target_amount_232143'] ?? g['target_amount'] as num?)
+              ?.toDouble() ??
+          0;
       final current =
-          (g['current_amount_232143'] ?? g['current_amount'] as num?)?.toDouble() ?? 0;
+          (g['current_amount_232143'] ?? g['current_amount'] as num?)
+              ?.toDouble() ??
+          0;
       totalTarget += target;
       totalSaved += current;
       if ((g['is_completed_232143'] as num?) == 1) completedCount++;
@@ -73,8 +77,12 @@ class GoalRepository implements GoalRepositoryInterface {
     String? accountId,
     String? note,
   }) async {
-    return await _goalData.addGoalContribution(goalId, amount,
-        accountId: accountId, note: note);
+    return await _goalData.addGoalContribution(
+      goalId,
+      amount,
+      accountId: accountId,
+      note: note,
+    );
   }
 
   @override

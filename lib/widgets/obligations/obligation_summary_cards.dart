@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:financial_app/l10n/app_localizations.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:financial_app/services/obligation_service.dart';
 import 'package:financial_app/utils/formatters.dart';
@@ -15,15 +16,16 @@ class ObligationSummaryCards extends StatelessWidget {
         if (!snapshot.hasData) return SizedBox();
 
         final summary = snapshot.data!;
+        final l10n = AppLocalizations.of(context);
 
         return Container(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(DesignTokens.spacing4),
           child: Row(
             children: [
               // Monthly Obligations
               Expanded(
                 child: _buildSummaryCard(
-                  'Bulan Ini',
+                  l10n?.this_month ?? 'Bulan Ini',
                   CurrencyFormatter.formatRupiah(
                     (summary['monthlyTotal'] as num?)?.toInt() ?? 0,
                   ),
@@ -36,7 +38,7 @@ class ObligationSummaryCards extends StatelessWidget {
               // Total Debt
               Expanded(
                 child: _buildSummaryCard(
-                  'Total Hutang',
+                  l10n?.total_debt ?? 'Total Hutang',
                   CurrencyFormatter.formatRupiah(
                     (summary['totalDebt'] as num?)?.toInt() ?? 0,
                   ),
@@ -60,7 +62,7 @@ class ObligationSummaryCards extends StatelessWidget {
     return Card(
       color: DesignTokens.surfaceDark,
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(DesignTokens.spacing4),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

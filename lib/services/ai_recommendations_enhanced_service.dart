@@ -1,9 +1,10 @@
 import 'package:financial_app/services/api_service.dart';
 import 'package:financial_app/services/logger_service.dart';
+import 'package:financial_app/core/di/service_locator.dart';
 
 /// Enhanced AI Recommendations Service dengan personalization, pattern analysis, dan savings opportunities
 class AIRecommendationsEnhancedService {
-  final ApiService _apiService = ApiService();
+  final ApiService _apiService = getIt<ApiService>();
 
   /// Generate personalized recommendations
   Future<List<Map<String, dynamic>>>

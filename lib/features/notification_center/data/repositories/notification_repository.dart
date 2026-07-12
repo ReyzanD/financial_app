@@ -3,8 +3,12 @@ import 'package:financial_app/features/notification_center/domain/repositories/n
 
 class NotificationRepository implements NotificationRepositoryInterface {
   final NotificationHistoryService _s;
-  NotificationRepository({NotificationHistoryService? service}) : _s = service ?? NotificationHistoryService();
-  @override Future<List<dynamic>> getNotifications() => _s.getHistory();
-  @override Future<void> markAsRead(String id) => _s.markAsRead(id);
-  @override Future<void> clearAll() => _s.clearHistory();
+  NotificationRepository({NotificationHistoryService? service})
+    : _s = service ?? NotificationHistoryService();
+  @override
+  Future<List<dynamic>> getNotifications() => _s.getHistory();
+  @override
+  Future<void> markAsRead(String id) => _s.markAsRead(id);
+  @override
+  Future<void> clearAll() => _s.clearHistory();
 }

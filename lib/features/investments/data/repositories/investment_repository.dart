@@ -5,10 +5,17 @@ import 'package:financial_app/features/investments/domain/repositories/investmen
 class InvestmentRepository implements InvestmentRepositoryInterface {
   final InvestmentService _service;
   InvestmentRepository({InvestmentService? service})
-      : _service = service ?? InvestmentService();
+    : _service = service ?? InvestmentService();
 
-  @override Future<List<InvestmentModel>> getInvestments({String? type}) => _service.getInvestments(type: type);
-  @override Future<InvestmentModel> addInvestment(InvestmentModel inv) => _service.addInvestment(inv);
-  @override Future<void> deleteInvestment(String id) => _service.deleteInvestment(id);
-  @override Future<Map<String, dynamic>> getPortfolioSummary() => _service.getPortfolioSummary();
+  @override
+  Future<List<InvestmentModel>> getInvestments({String? type}) =>
+      _service.getInvestments(type: type);
+  @override
+  Future<InvestmentModel> addInvestment(InvestmentModel inv) =>
+      _service.addInvestment(inv);
+  @override
+  Future<void> deleteInvestment(String id) => _service.deleteInvestment(id);
+  @override
+  Future<Map<String, dynamic>> getPortfolioSummary() =>
+      _service.getPortfolioSummary();
 }

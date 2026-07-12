@@ -48,23 +48,6 @@ class DebtModel {
     return startDate.add(Duration(days: monthsRemaining * 30));
   }
 
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'name': name,
-      'original_amount': originalAmount,
-      'current_balance': currentBalance,
-      'interest_rate': interestRate,
-      'type': type,
-      'start_date': startDate.toIso8601String(),
-      'due_date': dueDate?.toIso8601String(),
-      'monthly_payment': monthlyPayment,
-      'creditor_name': creditorName,
-      'notes': notes,
-      'created_at': createdAt.toIso8601String(),
-    };
-  }
-
   Map<String, dynamic> toMap() {
     return {
       'debt_id_232143': id,

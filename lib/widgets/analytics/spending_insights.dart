@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:financial_app/l10n/app_localizations.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:financial_app/utils/design_tokens.dart';
@@ -16,10 +17,10 @@ class SpendingInsights extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(DesignTokens.spacing4),
       decoration: BoxDecoration(
         color: DesignTokens.surfaceDark,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(DesignTokens.radiusLarge),
         border: Border.all(
           color: DesignTokens.primaryColor.withValues(alpha: 0.3),
         ),
@@ -46,13 +47,14 @@ class SpendingInsights extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 12),
-          ..._generateInsights(),
+          ..._generateInsights(context),
         ],
       ),
     );
   }
 
-  List<Widget> _generateInsights() {
+  List<Widget> _generateInsights(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final summaries = summary['summary'] ?? {};
     final income =
         (summaries['income'] as Map<String, dynamic>?)?['total_amount'] ?? 0.0;
@@ -112,8 +114,8 @@ class SpendingInsights extends StatelessWidget {
     if (insights.isEmpty) {
       insights.add(
         _buildInsightText(
-          'Terus kelola keuangan Anda dengan baik! '
-          'Tambahkan lebih banyak transaksi untuk mendapatkan insights yang lebih berguna.',
+          l10n?.add_more_transactions_insights ??
+              'Terus kelola keuangan Anda dengan baik! Tambahkan lebih banyak transaksi untuk mendapatkan insights yang lebih berguna.',
         ),
       );
     }

@@ -82,10 +82,10 @@ class _ObligationFiltersWidgetState extends State<ObligationFiltersWidget> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(DesignTokens.spacing4),
       decoration: BoxDecoration(
         color: DesignTokens.surfaceDark,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
         border: Border.all(color: DesignTokens.borderDark),
       ),
       child: Column(
@@ -241,7 +241,7 @@ class _ObligationFiltersWidgetState extends State<ObligationFiltersWidget> {
                 foregroundColor: Colors.white,
                 padding: const EdgeInsets.symmetric(vertical: 14),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
                 ),
               ),
               child: Text(
@@ -267,7 +267,10 @@ class _ObligationFiltersWidgetState extends State<ObligationFiltersWidget> {
                   : Colors.grey[900],
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
-            color: isSelected ? DesignTokens.primaryColor : DesignTokens.borderDark,
+            color:
+                isSelected
+                    ? DesignTokens.primaryColor
+                    : DesignTokens.borderDark,
           ),
         ),
         child: Text(

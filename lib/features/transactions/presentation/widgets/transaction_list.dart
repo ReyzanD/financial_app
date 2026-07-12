@@ -9,6 +9,7 @@ import 'package:financial_app/widgets/common/empty_state.dart';
 import 'package:financial_app/utils/page_transitions.dart';
 import 'package:financial_app/utils/responsive_helper.dart';
 import 'package:financial_app/services/search_service.dart';
+import 'package:financial_app/core/di/service_locator.dart';
 import 'package:financial_app/l10n/app_localizations.dart';
 import 'package:financial_app/utils/design_tokens.dart';
 
@@ -40,7 +41,7 @@ class TransactionList extends StatefulWidget {
 }
 
 class _TransactionListState extends State<TransactionList> {
-  final SearchService _searchService = SearchService();
+  final SearchService _searchService = getIt<SearchService>();
   List<TransactionEntity> _searchedTransactions = [];
   bool _isSearching = false;
 
@@ -114,17 +115,27 @@ class _TransactionListState extends State<TransactionList> {
       );
 
       setState(() {
-        _searchedTransactions = results
-            .map((t) => TransactionEntity(
-                  id: t.id,
-                  type: t.type,
-                  amount: t.amount,
-                  categoryId: t.categoryId,
-                  categoryName: t.categoryName,
-                  description: t.description,
-                  transactionDate: t.transactionDate,
-                ))
-            .toList();
+        _searchedTransactions =
+            results
+                .map(
+                  (t) => TransactionEntity(
+                    id: t.id,
+                    type: t.type,
+                    amount: t.amount,
+                    categoryId: t.categoryId,
+                    categoryName: t.categoryName,
+                    description: t.description,
+                    transactionDate: t.transactionDate,
+                    locationName:
+                        t.locationData?['address'] as String? ??
+                        t.locationData?['name'] as String?,
+                    latitude:
+                        (t.locationData?['latitude'] as num?)?.toDouble(),
+                    longitude:
+                        (t.locationData?['longitude'] as num?)?.toDouble(),
+                  ),
+                )
+                .toList();
         _isSearching = false;
       });
     } catch (e) {
@@ -166,18 +177,29 @@ class _TransactionListState extends State<TransactionList> {
         int.parse(parts[2]),
       );
 
+      final l10n = AppLocalizations.of(context);
       String label;
       String subtitle;
       if (date == today) {
-        label = 'Hari Ini';
+        label = l10n?.today ?? 'Hari Ini';
         subtitle = '';
       } else if (date == yesterday) {
-        label = 'Kemarin';
+        label = l10n?.yesterday ?? 'Kemarin';
         subtitle = '';
       } else {
         const months = [
-          'Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun',
-          'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des',
+          'Jan',
+          'Feb',
+          'Mar',
+          'Apr',
+          'Mei',
+          'Jun',
+          'Jul',
+          'Agu',
+          'Sep',
+          'Okt',
+          'Nov',
+          'Des',
         ];
         const dayNames = ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'];
         label = '${date.day} ${months[date.month - 1]} ${date.year}';
@@ -206,7 +228,7 @@ class _TransactionListState extends State<TransactionList> {
       'payment_method': 'cash',
       'date': t.transactionDate.toIso8601String(),
       'location': t.locationName ?? '',
-      'category_color': 0xFF8B5FBF,
+      'category_color': DesignTokens.primaryColor,
     };
   }
 
@@ -337,7 +359,9 @@ class _TransactionListState extends State<TransactionList> {
         if (_isSearching) {
           return const Expanded(
             child: Center(
-              child: CircularProgressIndicator(color: DesignTokens.primaryColor),
+              child: CircularProgressIndicator(
+                color: DesignTokens.primaryColor,
+              ),
             ),
           );
         }

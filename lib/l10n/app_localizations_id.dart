@@ -36,7 +36,19 @@ class AppLocalizationsId extends AppLocalizations {
   String get add => 'Tambah';
 
   @override
+  String get add_account => 'Tambah Akun';
+
+  @override
   String get add_description => 'Tambahkan deskripsi...';
+
+  @override
+  String get add_notes_hint => 'Tambahkan catatan atau detail tambahan...';
+
+  @override
+  String get add_note_hint => 'Tambahkan catatan...';
+
+  @override
+  String get description_hint => 'Contoh: Makan siang, Belanja bulanan, dll.';
 
   @override
   String get add_expense => 'Tambah Pengeluaran';
@@ -50,6 +62,9 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get add_obligation => 'Tambah Kewajiban';
+
+  @override
+  String get add_contribution => 'Tambah Kontribusi';
 
   @override
   String get add_obligation_hint => 'Tap + untuk menambah tagihan';
@@ -70,6 +85,9 @@ class AppLocalizationsId extends AppLocalizations {
   String get all => 'Semua';
 
   @override
+  String get health_score => 'Skor Kesehatan';
+
+  @override
   String get all_categories => 'Semua Kategori';
 
   @override
@@ -80,6 +98,12 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get analytics => 'Analitik';
+
+  @override
+  String get amount_must_be_greater_than_zero => 'Jumlah harus lebih dari 0';
+
+  @override
+  String get contribution_amount => 'Jumlah Kontribusi';
 
   @override
   String get app => 'Aplikasi';
@@ -142,6 +166,9 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get bahasa_indonesia => 'Bahasa Indonesia';
+
+  @override
+  String get back => 'Kembali';
 
   @override
   String get balance => 'Saldo';
@@ -393,6 +420,12 @@ class AppLocalizationsId extends AppLocalizations {
   String get edit => 'Edit';
 
   @override
+  String get enter_contribution_amount => 'Masukkan jumlah kontribusi';
+
+  @override
+  String get edit_account => 'Edit akun';
+
+  @override
   String get edit_feature_coming_soon => 'Fitur edit segera hadir';
 
   @override
@@ -628,6 +661,13 @@ class AppLocalizationsId extends AppLocalizations {
   String get location => 'Lokasi';
 
   @override
+  String get last_month => 'Bulan Lalu';
+
+  @override
+  String get add_more_transactions_insights =>
+      'Terus kelola keuangan Anda dengan baik! Tambahkan lebih banyak transaksi untuk mendapatkan insights yang lebih berguna.';
+
+  @override
   String get location_permission_desc =>
       '• Lokasi: Digunakan untuk mencatat lokasi transaksi\\n• Notifikasi: Untuk mengingatkan tagihan dan budget\\n• Penyimpanan: Untuk menyimpan data aplikasi';
 
@@ -708,11 +748,17 @@ class AppLocalizationsId extends AppLocalizations {
   String get no_backup_yet => 'Belum ada backup';
 
   @override
+  String get no_accounts => 'Belum Ada Akun';
+
+  @override
   String get no_budgets_subtitle =>
       'Atur budget untuk mengontrol pengeluaran Anda';
 
   @override
   String get no_budgets_title => 'Belum Ada Budget';
+
+  @override
+  String get no_categories_available => 'Tidak ada kategori tersedia';
 
   @override
   String get no_categories_create_first =>
@@ -1051,6 +1097,12 @@ class AppLocalizationsId extends AppLocalizations {
   String get search_obligations => 'Cari tagihan, hutang, atau langganan...';
 
   @override
+  String get search_transactions => 'Cari transaksi...';
+
+  @override
+  String get reset_filter => 'Reset Filter';
+
+  @override
   String get security => 'Keamanan';
 
   @override
@@ -1089,6 +1141,9 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get settings => 'Pengaturan';
+
+  @override
+  String get sort_by => 'Urutkan:';
 
   @override
   String get seven_days => '7 hari';
@@ -1135,7 +1190,10 @@ class AppLocalizationsId extends AppLocalizations {
   String get subscription => 'Langganan';
 
   @override
-  String get subscription_cycle => 'Siklus';
+  String get success_added_contribution => 'Berhasil menambah';
+
+  @override
+  String get subscription_cycle => 'Siklus Langganan';
 
   @override
   String get subscription_cycle_label => 'Siklus Langganan';
@@ -1183,7 +1241,16 @@ class AppLocalizationsId extends AppLocalizations {
   String get today => 'Hari Ini';
 
   @override
-  String get total_amount => 'Total Nilai Portofolio';
+  String get total => 'Total';
+
+  @override
+  String get total_amount => 'Total Jumlah';
+
+  @override
+  String get total_saved => 'Total Tersimpan';
+
+  @override
+  String get total_target => 'Total Target';
 
   @override
   String get total_budget => 'Total Budget';
@@ -1227,6 +1294,9 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get transaction_resumed => 'Transaksi dilanjutkan';
+
+  @override
+  String get transaction_history => 'Riwayat Transaksi';
 
   @override
   String get transaction_saved_successfully => 'Transaksi berhasil disimpan!';
@@ -1314,4 +1384,604 @@ class AppLocalizationsId extends AppLocalizations {
   @override
   String get you_need_to_login_again =>
       'Anda perlu login kembali dengan email dan password.';
+
+  @override
+  String get delete_transaction_confirm => 'Hapus Transaksi?';
+
+  @override
+  String get delete_transaction_message_balance =>
+      'Apakah Anda yakin ingin menghapus transaksi ini? Saldo akan dikembalikan.';
+
+  @override
+  String get delete_transaction_message_short =>
+      'Apakah Anda yakin ingin menghapus transaksi ini?';
+
+  @override
+  String get failed_to_delete_transaction => 'Gagal menghapus transaksi';
+
+  @override
+  String get transaction_added_successfully =>
+      'Transaksi berhasil ditambahkan!';
+
+  @override
+  String get delete_goal_confirm => 'Hapus Goal?';
+
+  @override
+  String get goal_deleted_successfully => 'Goal berhasil dihapus';
+
+  @override
+  String get add_fund => 'Tambah Dana';
+
+  @override
+  String get contribution_history => 'Riwayat Kontribusi';
+
+  @override
+  String get no_contributions_yet => 'Belum ada kontribusi';
+
+  @override
+  String get delete_goal_message => 'Apakah Anda yakin ingin menghapus';
+
+  @override
+  String get budget_updated_successfully => 'Budget berhasil diperbarui.';
+
+  @override
+  String get budget_added_successfully => 'Budget berhasil ditambahkan.';
+
+  @override
+  String get all_bills_paid =>
+      'Semua tagihan Anda sudah dibayar atau belum jatuh tempo';
+
+  @override
+  String get no_data_for_recommendation => 'Belum ada data untuk rekomendasi';
+
+  @override
+  String get authentication_required_to_delete =>
+      'Autentikasi diperlukan untuk menghapus transaksi';
+
+  @override
+  String get failed_to_delete_goal => 'Gagal menghapus goal';
+
+  @override
+  String get target_updated_successfully => 'Target berhasil diperbarui!';
+
+  @override
+  String get target_added_successfully => 'Target berhasil ditambahkan!';
+
+  @override
+  String get account_deleted_successfully => 'Akun berhasil dihapus';
+
+  @override
+  String get create_report => 'Buat Laporan';
+
+  @override
+  String get report_created_successfully => 'Laporan Berhasil Dibuat';
+
+  @override
+  String get spending_increased => 'Pengeluaran meningkat';
+
+  @override
+  String get spending_decreased => 'Pengeluaran menurun';
+
+  @override
+  String get spending_stable => 'Pengeluaran stabil';
+
+  @override
+  String get budget_warning => 'Peringatan Budget';
+
+  @override
+  String get no_events => 'Tidak ada event';
+
+  @override
+  String get failed_to_load_data => 'Gagal Memuat Data';
+
+  @override
+  String get failed_to_load_location => 'Gagal mendapatkan lokasi';
+
+  @override
+  String get failed_to_search => 'Gagal mencari';
+
+  @override
+  String get search_placeholder => 'Cari...';
+
+  @override
+  String get location_selected => 'Lokasi dipilih';
+
+  @override
+  String get current_location => 'Lokasi Saat Ini';
+
+  @override
+  String get detecting => 'Mendeteksi...';
+
+  @override
+  String get location_detected => 'Lokasi Terdeteksi';
+
+  @override
+  String get edit_on_map => 'Edit di peta';
+
+  @override
+  String get delete_location => 'Hapus lokasi';
+
+  @override
+  String get save_transaction => 'Simpan Transaksi';
+
+  @override
+  String get enter_valid_percentage => 'Masukkan persentase yang valid (1-100)';
+
+  @override
+  String get edit_percentage => 'Edit Persentase';
+
+  @override
+  String get failed_to_load_transactions =>
+      'Gagal memuat data. Tap untuk coba lagi.';
+
+  @override
+  String get failed_to_connect => 'Gagal terhubung ke server';
+
+  @override
+  String get session_ended => 'Sesi berakhir. Silakan login kembali.';
+
+  @override
+  String get no_budget_yet => 'Belum ada budget';
+
+  @override
+  String get create_budget_to_manage =>
+      'Buat budget untuk kelola keuangan lebih baik';
+
+  @override
+  String get no_recommendations_available =>
+      'Belum ada rekomendasi AI tersedia';
+
+  @override
+  String get failed_to_load_budget_suggestions => 'Gagal memuat saran budget';
+
+  @override
+  String get budget_deleted => 'Budget berhasil dihapus.';
+
+  @override
+  String get failed_to_load_insights => 'Gagal memuat wawasan';
+
+  @override
+  String get no_insights_available => 'Belum ada wawasan yang tersedia';
+
+  @override
+  String get no_financial_goals => 'Belum ada target keuangan';
+
+  @override
+  String get no_expenses_this_month => 'Belum ada pengeluaran bulan ini.';
+
+  @override
+  String get authentication_cancelled_delete => 'Autentikasi dibatalkan';
+
+  @override
+  String get failed_to_delete_challenge => 'Gagal menghapus challenge';
+
+  @override
+  String get challenge_deleted_successfully => 'Challenge berhasil dihapus';
+
+  @override
+  String get delete_challenge_confirm => 'Yakin ingin menghapus challenge ini?';
+
+  @override
+  String get investment_deleted_successfully => 'Investasi berhasil dihapus';
+
+  @override
+  String get delete_investment_confirm =>
+      'Yakin ingin menghapus investasi ini?';
+
+  @override
+  String get subscription_deleted_successfully => 'Langganan berhasil dihapus';
+
+  @override
+  String get delete_subscription_confirm =>
+      'Yakin ingin menghapus langganan ini?';
+
+  @override
+  String get split_deleted_successfully => 'Split berhasil dihapus';
+
+  @override
+  String get delete_split_confirm => 'Yakin ingin menghapus split ini?';
+
+  @override
+  String get debt_deleted_successfully => 'Hutang berhasil dihapus';
+
+  @override
+  String get category_deleted => 'Kategori berhasil dihapus';
+
+  @override
+  String get delete_category_confirm => 'Yakin ingin menghapus kategori ini?';
+
+  @override
+  String get receipt_scanned => 'Struk berhasil dipindai';
+
+  @override
+  String get delete_receipt_confirm => 'Hapus Struk?';
+
+  @override
+  String get receipt_deleted => 'Struk dihapus';
+
+  @override
+  String get processed => 'Diproses';
+
+  @override
+  String get not_processed => 'Belum Diproses';
+
+  @override
+  String get create_transaction_again => 'Buat transaksi lagi';
+
+  @override
+  String get create_transaction => 'Buat transaksi';
+
+  @override
+  String get create_transaction_from_receipt => 'Buat Transaksi dari Struk';
+
+  @override
+  String get profile_saved_successfully => 'Profil berhasil disimpan';
+
+  @override
+  String get personal_information => 'Informasi Pribadi';
+
+  @override
+  String get import_successful => 'Import Berhasil';
+
+  @override
+  String get import_completed => 'Import Selesai';
+
+  @override
+  String get import_success_count => 'Berhasil';
+
+  @override
+  String get import_failed_count => 'Gagal';
+
+  @override
+  String get failed_to_import_file => 'Gagal mengimpor file';
+
+  @override
+  String get pin_created_successfully => 'PIN berhasil dibuat!';
+
+  @override
+  String get pin_changed_successfully => 'PIN berhasil diubah!';
+
+  @override
+  String get too_many_attempts => 'Terlalu banyak percobaan gagal';
+
+  @override
+  String get please_fill_all_fields => 'Silakan isi semua field';
+
+  @override
+  String get delete_search => 'Hapus pencarian';
+
+  @override
+  String get close_error_message => 'Tutup pesan error';
+
+  @override
+  String get receipt_history => 'Riwayat Struk';
+
+  @override
+  String get no_receipts_yet => 'Belum Ada Struk';
+
+  @override
+  String get forecast_and_prediction => 'Forecast & Prediksi';
+
+  @override
+  String get failed_to_load_forecast => 'Gagal Memuat Forecast';
+
+  @override
+  String get all_budgets_safe => 'Semua budget dalam kondisi aman';
+
+  @override
+  String get highest_spending_day => 'Pengeluaran tertinggi pada hari';
+
+  @override
+  String get recurring_transactions => 'Transaksi Berulang';
+
+  @override
+  String get feature_coming_soon =>
+      'Fitur transaksi berulang akan segera hadir';
+
+  @override
+  String get no_recurring_transactions => 'Belum ada transaksi berulang';
+
+  @override
+  String get transaction => 'Transaksi';
+
+  @override
+  String get daily => 'Harian';
+
+  @override
+  String get backup_history => 'Riwayat Backup';
+
+  @override
+  String get no_backups => 'Belum ada backup';
+
+  @override
+  String get delete_backup_warning => 'Yakin ingin menghapus backup ini?';
+
+  @override
+  String get backup_deleted_message => 'Backup dihapus';
+
+  @override
+  String get edit_budget => 'Edit Budget';
+
+  @override
+  String get add_budget => 'Tambah Budget';
+
+  @override
+  String get active_label => 'Aktif';
+
+  @override
+  String get save_changes_label => 'Simpan Perubahan';
+
+  @override
+  String get weekly_period => 'Mingguan';
+
+  @override
+  String get monthly_period => 'Bulanan';
+
+  @override
+  String get yearly_period => 'Tahunan';
+
+  @override
+  String get target_saved => 'Target berhasil disimpan';
+
+  @override
+  String get debt_payment_recorded => 'Pembayaran hutang berhasil dicatat';
+
+  @override
+  String get debt_deleted => 'Hutang berhasil dihapus';
+
+  @override
+  String get no_active_debts => 'Tidak ada hutang aktif';
+
+  @override
+  String get receipt_scanned_success =>
+      'Struk berhasil dipindai! Form telah diisi otomatis.';
+
+  @override
+  String get month => 'Bulan';
+
+  @override
+  String get year => 'Tahun';
+
+  @override
+  String get period_type => 'Jenis Periode';
+
+  @override
+  String get report_format => 'Format Report';
+
+  @override
+  String get transaction_type => 'Tipe Transaksi';
+
+  @override
+  String get information => 'Informasi';
+
+  @override
+  String get financial_report => 'Laporan Keuangan';
+
+  @override
+  String get export_transaction => 'Export Transaksi';
+
+  @override
+  String get period => 'Periode';
+
+  @override
+  String get future_date_error =>
+      'Tanggal pengeluaran tidak boleh di masa depan';
+
+  @override
+  String get insufficient_balance_title => 'Saldo Tidak Cukup';
+
+  @override
+  String get no_investments => 'Belum ada investasi';
+
+  @override
+  String get no_splits => 'Belum ada split';
+
+  @override
+  String get no_challenges => 'Belum Ada Challenges';
+
+  @override
+  String get no_alternative_recommendations =>
+      'Tidak ada rekomendasi alternatif untuk kategori ini';
+
+  @override
+  String get add_category => 'Tambah Kategori';
+
+  @override
+  String get transaction_created_from_receipt =>
+      'Transaksi berhasil dibuat dari struk:';
+
+  @override
+  String get enter_balance => 'Masukkan saldo';
+
+  @override
+  String get add_debt => 'Tambah Hutang';
+
+  @override
+  String get add_investment => 'Tambah Investasi';
+
+  @override
+  String get amount_required => 'Jumlah tidak boleh kosong';
+
+  @override
+  String get old_pin => 'PIN Lama';
+
+  @override
+  String get old_pin_subtitle => 'Masukkan PIN lama Anda';
+
+  @override
+  String get new_pin => 'PIN Baru';
+
+  @override
+  String get new_pin_subtitle => 'Buat PIN baru';
+
+  @override
+  String get confirm_new_pin => 'Konfirmasi PIN Baru';
+
+  @override
+  String get confirm_new_pin_subtitle => 'Masukkan PIN baru sekali lagi';
+
+  @override
+  String get wrong_old_pin => 'PIN lama salah';
+
+  @override
+  String get new_pin_mismatch => 'PIN baru tidak cocok';
+
+  @override
+  String get start_now => 'Mulai Sekarang';
+
+  @override
+  String get step => 'Langkah';
+
+  @override
+  String get set_budget_per_category => 'Atur anggaran per kategori';
+
+  @override
+  String get enable_features_for_best_experience =>
+      'Aktifkan fitur untuk pengalaman terbaik';
+
+  @override
+  String get just_now => 'Baru saja';
+
+  @override
+  String get manage_all_transactions => 'Kelola semua transaksi keuangan Anda';
+
+  @override
+  String get camera => 'Kamera';
+
+  @override
+  String get minutes_ago => 'menit yang lalu';
+
+  @override
+  String get hours_ago => 'jam yang lalu';
+
+  @override
+  String get days_ago => 'hari yang lalu';
+
+  @override
+  String get yesterday => 'Kemarin';
+
+  @override
+  String get notification_type => 'Jenis Notifikasi';
+
+  @override
+  String get goal_notifications => 'Pencapaian Tujuan';
+
+  @override
+  String get ai_insights => 'Insight AI';
+
+  @override
+  String get ai_insights_subtitle => 'Saran dan rekomendasi finansial';
+
+  @override
+  String get periodic_summary => 'Ringkasan Berkala';
+
+  @override
+  String get daily_summary => 'Ringkasan Harian';
+
+  @override
+  String get weekly_summary => 'Ringkasan Mingguan';
+
+  @override
+  String get weekly_summary_subtitle => 'Ringkasan transaksi mingguan';
+
+  @override
+  String get notes_optional => 'Catatan (Opsional)';
+
+  @override
+  String get cannot_get_current_location =>
+      'Tidak dapat mendapatkan lokasi saat ini';
+
+  @override
+  String get current_position => 'Posisi saat ini';
+
+  @override
+  String location_not_found(Object query) {
+    return 'Lokasi \"$query\" tidak ditemukan';
+  }
+
+  @override
+  String locations_found_title(Object count) {
+    return '$count Lokasi Ditemukan';
+  }
+
+  @override
+  String get pick_location => 'Pilih Lokasi';
+
+  @override
+  String get quick_search_label => 'Cepat:';
+
+  @override
+  String get reload_tooltip => 'Muat ulang';
+
+  @override
+  String get search_places_hint => 'Cari tempat (contoh: Pantai Losari)';
+
+  @override
+  String search_results_found(Object count) {
+    return '$count lokasi ditemukan - pilih dari daftar';
+  }
+
+  @override
+  String get select => 'Pilih';
+
+  @override
+  String get select_location_on_map_first =>
+      'Pilih lokasi di peta terlebih dahulu';
+
+  @override
+  String get selected_location => 'Lokasi Terpilih';
+
+  @override
+  String selected_prefix(Object name) {
+    return 'Dipilih: $name';
+  }
+
+  @override
+  String transaction_locations_shown(Object count) {
+    return '$count lokasi transaksi ditampilkan';
+  }
+
+  @override
+  String get transaction_map => 'Peta Transaksi';
+
+  @override
+  String get unable_to_get_location_permission =>
+      'Tidak dapat mendapatkan lokasi. Periksa izin lokasi.';
+
+  @override
+  String get your_location => 'Lokasi Anda';
+
+  @override
+  String get name_required => 'Nama tidak boleh kosong';
+
+  @override
+  String get cost => 'Biaya';
+
+  @override
+  String get cost_required => 'Biaya tidak boleh kosong';
+
+  @override
+  String get next_bill => 'Tagihan Berikutnya';
+
+  @override
+  String get amount_must_be_number => 'Jumlah harus berupa angka';
+
+  @override
+  String get snapshot_recorded => 'Snapshot berhasil dicatat';
+
+  @override
+  String get added => 'ditambahkan';
+
+  @override
+  String get scan_receipt => 'Scan Struk';
+
+  @override
+  String get add_split => 'Tambah Split';
+
+  @override
+  String get add_template => 'Tambah Template';
+
+  @override
+  String get chart_placeholder =>
+      'Grafik akan tersedia setelah beberapa periode';
 }

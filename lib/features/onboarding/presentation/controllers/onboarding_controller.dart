@@ -11,17 +11,24 @@ class OnboardingController extends ChangeNotifier {
   int get currentPage => _currentPage;
   bool get isComplete => _isComplete;
 
-  void setPage(int page) { _currentPage = page; notifyListeners(); }
+  void setPage(int page) {
+    _currentPage = page;
+    notifyListeners();
+  }
 
   Future<void> completeOnboarding() async {
-    _isLoading = true; notifyListeners();
+    _isLoading = true;
+    notifyListeners();
     try {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setBool('onboarding_complete', true);
       _isComplete = true;
     } catch (e) {
       LoggerService.error('Error saving onboarding state', error: e);
-    } finally { _isLoading = false; notifyListeners(); }
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
   }
 
   Future<bool> checkOnboardingComplete() async {

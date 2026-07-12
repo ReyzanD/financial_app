@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:financial_app/services/api_service.dart';
 import 'package:financial_app/services/error_handler_service.dart';
 import 'package:financial_app/services/logger_service.dart';
 import 'package:financial_app/utils/form_validators.dart';
 import 'package:intl/intl.dart';
+import 'package:financial_app/l10n/app_localizations.dart';
 import 'package:financial_app/utils/design_tokens.dart';
+import 'package:financial_app/utils/dropdown_helper.dart';
+import 'package:financial_app/utils/date_picker_helper.dart';
+import 'package:financial_app/core/di/service_locator.dart';
+import 'package:financial_app/features/budgets/domain/entities/budget_entity.dart';
+import 'package:financial_app/features/budgets/presentation/controllers/budget_controller.dart';
 
 class AddBudgetModal extends StatefulWidget {
   final Map<String, String> categories;
@@ -23,7 +28,6 @@ class AddBudgetModal extends StatefulWidget {
 
 class _AddBudgetModalState extends State<AddBudgetModal> {
   final _formKey = GlobalKey<FormState>();
-  final ApiService _apiService = ApiService();
 
   late TextEditingController _amountController;
   String? _selectedCategoryId;
@@ -89,24 +93,11 @@ class _AddBudgetModalState extends State<AddBudgetModal> {
   }
 
   Future<void> _selectStartDate() async {
-    final picked = await showDatePicker(
+    final picked = await DatePickerHelper.showDarkDatePicker(
       context: context,
       initialDate: _startDate,
       firstDate: DateTime(2000),
       lastDate: DateTime.now().add(const Duration(days: 3650)),
-      builder: (context, child) {
-        return Theme(
-          data: ThemeData.dark().copyWith(
-            colorScheme: const ColorScheme.dark(
-              primary: DesignTokens.primaryColor,
-              onPrimary: Colors.white,
-              surface: DesignTokens.surfaceDark,
-              onSurface: Colors.white,
-            ),
-          ),
-          child: child!,
-        );
-      },
     );
     if (picked != null && picked != _startDate) {
       setState(() {
@@ -116,6 +107,7 @@ class _AddBudgetModalState extends State<AddBudgetModal> {
   }
 
   Future<void> _submit() async {
+    final l10n = AppLocalizations.of(context);
     if (!_formKey.currentState!.validate()) {
       return;
     }
@@ -162,6 +154,7 @@ class _AddBudgetModalState extends State<AddBudgetModal> {
         data['category_id'] = _selectedCategoryId;
       }
 
+      final ctrl = getIt<BudgetController>();
       if (_isEdit) {
         final id =
             widget.initialBudget?['budget_id_232143']?.toString() ??
@@ -169,9 +162,11 @@ class _AddBudgetModalState extends State<AddBudgetModal> {
         if (id == null) {
           throw Exception('ID budget tidak valid');
         }
-        await _apiService.updateBudget(id, data);
+        await ctrl.updateBudgetFromMap(id, data);
       } else {
-        await _apiService.createBudget(data);
+        data['id'] = '';
+        final entity = BudgetEntity.fromJson(data);
+        await ctrl.createBudget(entity);
       }
 
       if (!mounted) return;
@@ -181,8 +176,10 @@ class _AddBudgetModalState extends State<AddBudgetModal> {
         ErrorHandlerService.showSuccessSnackbar(
           context,
           _isEdit
-              ? 'Budget berhasil diperbarui.'
-              : 'Budget berhasil ditambahkan.',
+              ? (l10n?.budget_updated_successfully ??
+                  'Budget berhasil diperbarui.')
+              : (l10n?.budget_added_successfully ??
+                  'Budget berhasil ditambahkan.'),
         );
       }
     } catch (e) {
@@ -203,11 +200,12 @@ class _AddBudgetModalState extends State<AddBudgetModal> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final periodOptions = <String, String>{
-      'daily': 'Harian',
-      'weekly': 'Mingguan',
-      'monthly': 'Bulanan',
-      'yearly': 'Tahunan',
+      'daily': l10n?.daily ?? 'Harian',
+      'weekly': l10n?.weekly ?? 'Mingguan',
+      'monthly': l10n?.monthly ?? 'Bulanan',
+      'yearly': l10n?.yearly ?? 'Tahunan',
     };
 
     return Container(
@@ -233,7 +231,9 @@ class _AddBudgetModalState extends State<AddBudgetModal> {
               ),
               const SizedBox(height: 20),
               Text(
-                _isEdit ? 'Edit Budget' : 'Tambah Budget',
+                _isEdit
+                    ? (l10n?.edit_budget ?? 'Edit Budget')
+                    : (l10n?.add_budget ?? 'Tambah Budget'),
                 style: GoogleFonts.poppins(
                   color: Colors.white,
                   fontSize: 18,
@@ -245,20 +245,13 @@ class _AddBudgetModalState extends State<AddBudgetModal> {
                 initialValue: _selectedCategoryId,
                 dropdownColor: DesignTokens.surfaceDark,
                 style: const TextStyle(color: Colors.white),
-                decoration: InputDecoration(
-                  labelText: 'Kategori',
-                  labelStyle: TextStyle(color: Colors.grey[400]),
-                  filled: true,
-                  fillColor: DesignTokens.surfaceDark,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide.none,
-                  ),
+                decoration: DropdownHelper.darkDropdownDecoration(
+                  labelText: l10n?.category ?? 'Kategori',
                 ),
                 items: [
-                  const DropdownMenuItem<String?>(
+                  DropdownMenuItem<String?>(
                     value: null,
-                    child: Text('Semua Kategori'),
+                    child: Text(l10n?.all_categories ?? 'Semua Kategori'),
                   ),
                   ...widget.categories.entries.map(
                     (entry) => DropdownMenuItem<String?>(
@@ -284,7 +277,7 @@ class _AddBudgetModalState extends State<AddBudgetModal> {
                   filled: true,
                   fillColor: DesignTokens.surfaceDark,
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
                     borderSide: BorderSide.none,
                   ),
                 ),
@@ -295,15 +288,8 @@ class _AddBudgetModalState extends State<AddBudgetModal> {
                 initialValue: _selectedPeriod,
                 dropdownColor: DesignTokens.surfaceDark,
                 style: const TextStyle(color: Colors.white),
-                decoration: InputDecoration(
+                decoration: DropdownHelper.darkDropdownDecoration(
                   labelText: 'Periode',
-                  labelStyle: TextStyle(color: Colors.grey[400]),
-                  filled: true,
-                  fillColor: DesignTokens.surfaceDark,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide.none,
-                  ),
                 ),
                 items:
                     periodOptions.entries
@@ -325,10 +311,10 @@ class _AddBudgetModalState extends State<AddBudgetModal> {
               InkWell(
                 onTap: _selectStartDate,
                 child: Container(
-                  padding: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.all(DesignTokens.spacing4),
                   decoration: BoxDecoration(
                     color: DesignTokens.surfaceDark,
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
                   ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -392,7 +378,10 @@ class _AddBudgetModalState extends State<AddBudgetModal> {
                   });
                 },
                 activeThumbColor: DesignTokens.primaryColor,
-                title: Text('Aktif', style: TextStyle(color: Colors.white)),
+                title: Text(
+                  l10n?.active_label ?? 'Aktif',
+                  style: TextStyle(color: Colors.white),
+                ),
                 contentPadding: EdgeInsets.zero,
               ),
               const SizedBox(height: 24),
@@ -403,7 +392,7 @@ class _AddBudgetModalState extends State<AddBudgetModal> {
                   foregroundColor: Colors.white,
                   disabledBackgroundColor: Colors.grey[800],
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
                   ),
                   minimumSize: const Size(double.infinity, 50),
                 ),
@@ -417,7 +406,11 @@ class _AddBudgetModalState extends State<AddBudgetModal> {
                             color: Colors.white,
                           ),
                         )
-                        : Text(_isEdit ? 'Simpan Perubahan' : 'Tambah Budget'),
+                        : Text(
+                          _isEdit
+                              ? (l10n?.save_changes_label ?? 'Simpan Perubahan')
+                              : (l10n?.add_budget ?? 'Tambah Budget'),
+                        ),
               ),
               const SizedBox(height: 20),
             ],

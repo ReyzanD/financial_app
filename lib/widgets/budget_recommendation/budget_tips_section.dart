@@ -10,10 +10,10 @@ class BudgetTipsSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(DesignTokens.spacing4),
       decoration: BoxDecoration(
         color: DesignTokens.surfaceDark,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(DesignTokens.radiusLarge),
         border: Border.all(color: DesignTokens.borderDark),
       ),
       child: Column(
@@ -21,7 +21,7 @@ class BudgetTipsSection extends StatelessWidget {
         children: [
           Row(
             children: [
-              const Icon(Iconsax.lamp, color: Color(0xFFFFB74D), size: 20),
+              const Icon(Iconsax.lamp, color: DesignTokens.warningColor, size: 20),
               const SizedBox(width: 8),
               Text(
                 'Tips Mengelola Budget',
@@ -60,7 +60,7 @@ class BudgetTipsSection extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Icon(Iconsax.tick_circle, color: Color(0xFF4CAF50), size: 16),
+          const Icon(Iconsax.tick_circle, color: DesignTokens.successColor, size: 16),
           const SizedBox(width: 12),
           Expanded(
             child: Text(

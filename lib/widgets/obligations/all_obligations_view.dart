@@ -12,7 +12,11 @@ class AllObligationsView extends StatefulWidget {
   final String searchQuery;
   final ObligationFilters filters;
 
-  const AllObligationsView({super.key, this.searchQuery = '', this.filters = const ObligationFilters()});
+  const AllObligationsView({
+    super.key,
+    this.searchQuery = '',
+    this.filters = const ObligationFilters(),
+  });
 
   @override
   State<AllObligationsView> createState() => _AllObligationsViewState();
@@ -97,19 +101,26 @@ class _AllObligationsViewState extends State<AllObligationsView> {
         // Apply filters
         if (widget.filters.hasFilters) {
           final f = widget.filters;
-          obligations = obligations.where((o) {
-            if (f.type != null && o.type.name != f.type) return false;
-            if (f.category != null && o.category != f.category) return false;
-            if (f.status != null) {
-              if (f.status == 'active' && o.daysUntilDue <= 0) return false;
-              if (f.status == 'overdue' && o.daysUntilDue >= 0) return false;
-            }
-            if (f.minAmount != null && o.monthlyAmount < f.minAmount!) return false;
-            if (f.maxAmount != null && o.monthlyAmount > f.maxAmount!) return false;
-            if (f.startDate != null && o.dueDate.isBefore(f.startDate!)) return false;
-            if (f.endDate != null && o.dueDate.isAfter(f.endDate!)) return false;
-            return true;
-          }).toList();
+          obligations =
+              obligations.where((o) {
+                if (f.type != null && o.type.name != f.type) return false;
+                if (f.category != null && o.category != f.category)
+                  return false;
+                if (f.status != null) {
+                  if (f.status == 'active' && o.daysUntilDue <= 0) return false;
+                  if (f.status == 'overdue' && o.daysUntilDue >= 0)
+                    return false;
+                }
+                if (f.minAmount != null && o.monthlyAmount < f.minAmount!)
+                  return false;
+                if (f.maxAmount != null && o.monthlyAmount > f.maxAmount!)
+                  return false;
+                if (f.startDate != null && o.dueDate.isBefore(f.startDate!))
+                  return false;
+                if (f.endDate != null && o.dueDate.isAfter(f.endDate!))
+                  return false;
+                return true;
+              }).toList();
         }
 
         if (obligations.isEmpty) {
@@ -156,7 +167,7 @@ class _AllObligationsViewState extends State<AllObligationsView> {
         final items = _buildSectionItems(bills, subscriptions, debts);
 
         return ListView.builder(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(DesignTokens.spacing4),
           itemCount: items.length,
           itemBuilder: (context, index) {
             final item = items[index];
@@ -201,7 +212,7 @@ class _AllObligationsViewState extends State<AllObligationsView> {
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
           decoration: BoxDecoration(
             color: DesignTokens.primaryColor.withValues(alpha: 0.2),
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
           ),
           child: Text(
             count.toString(),

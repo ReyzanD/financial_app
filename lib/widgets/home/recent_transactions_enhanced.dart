@@ -8,9 +8,11 @@ import 'package:financial_app/models/transaction_model.dart';
 import 'package:financial_app/features/transactions/presentation/screens/transaction_screen.dart';
 import 'package:financial_app/utils/responsive_helper.dart';
 import 'package:financial_app/services/search_service.dart';
-import 'package:financial_app/services/api_service.dart';
 import 'package:financial_app/services/error_handler_service.dart';
 import 'package:financial_app/utils/design_tokens.dart';
+import 'package:financial_app/l10n/app_localizations.dart';
+import 'package:financial_app/core/di/service_locator.dart';
+import 'package:financial_app/features/transactions/presentation/controllers/transaction_controller.dart';
 
 /// Enhanced Recent Transactions dengan search, filter, dan swipe actions
 class RecentTransactionsEnhanced extends StatefulWidget {
@@ -23,8 +25,7 @@ class RecentTransactionsEnhanced extends StatefulWidget {
 
 class _RecentTransactionsEnhancedState
     extends State<RecentTransactionsEnhanced> {
-  final SearchService _searchService = SearchService();
-  final ApiService _apiService = ApiService();
+  final SearchService _searchService = getIt<SearchService>();
   final TextEditingController _searchController = TextEditingController();
 
   String _searchQuery = '';
@@ -138,33 +139,35 @@ class _RecentTransactionsEnhancedState
         ),
       ),
       confirmDismiss: (direction) async {
+        final l10n = AppLocalizations.of(context);
         if (direction == DismissDirection.endToStart) {
-          // Delete action
-          return await showDialog<bool>(
+          // Show confirmation dialog
+          final confirmed = await showDialog<bool>(
                 context: context,
                 builder:
                     (context) => AlertDialog(
                       backgroundColor: DesignTokens.surfaceDark,
                       title: Text(
-                        'Hapus Transaksi?',
+                        l10n?.delete_transaction_confirm ?? 'Hapus Transaksi?',
                         style: GoogleFonts.poppins(color: Colors.white),
                       ),
                       content: Text(
-                        'Apakah Anda yakin ingin menghapus transaksi ini?',
+                        l10n?.delete_transaction_message_short ??
+                            'Apakah Anda yakin ingin menghapus transaksi ini?',
                         style: GoogleFonts.poppins(color: Colors.grey[400]),
                       ),
                       actions: [
                         TextButton(
                           onPressed: () => Navigator.pop(context, false),
                           child: Text(
-                            'Batal',
+                            l10n?.cancel ?? 'Batal',
                             style: GoogleFonts.poppins(color: Colors.grey),
                           ),
                         ),
                         TextButton(
                           onPressed: () => Navigator.pop(context, true),
                           child: Text(
-                            'Hapus',
+                            l10n?.delete ?? 'Hapus',
                             style: GoogleFonts.poppins(color: Colors.red),
                           ),
                         ),
@@ -172,32 +175,35 @@ class _RecentTransactionsEnhancedState
                     ),
               ) ??
               false;
-        } else {
-          // Edit action - navigate to edit screen
-          // Navigator.push(...);
-          return false;
-        }
-      },
-      onDismissed: (direction) async {
-        if (direction == DismissDirection.endToStart) {
-          // Delete transaction
+
+          if (!confirmed) return false;
+
+          // Perform deletion inside confirmDismiss so the item is NOT
+          // removed visually if deletion fails.
           try {
-            await _apiService.deleteTransaction(transaction.id.toString());
-            if (!context.mounted) return;
+            final ctrl = getIt<TransactionController>();
+            await ctrl.deleteTransaction(transaction.id.toString());
+            if (!context.mounted) return false;
             ErrorHandlerService.showSuccessSnackbar(
               context,
-              'Transaksi berhasil dihapus',
+              l10n?.transaction_deleted_successfully ??
+                  'Transaksi berhasil dihapus',
             );
-            _applyFilters(); // Refresh list
+            _applyFilters();
+            return true; // Allow dismiss animation
           } catch (e) {
-            if (!context.mounted) return;
+            if (!context.mounted) return false;
             ErrorHandlerService.showErrorSnackbar(
               context,
-              'Gagal menghapus transaksi',
+              l10n?.failed_to_delete_transaction ?? 'Gagal menghapus transaksi',
             );
+            return false; // Keep item visible
           }
         }
+        return false;
       },
+      // onDismissed is intentionally empty — all logic is in confirmDismiss
+      onDismissed: (_) {},
       child: Container(
         margin: EdgeInsets.only(
           bottom: ResponsiveHelper.verticalSpacing(context, 8),
@@ -356,15 +362,15 @@ class _RecentTransactionsEnhancedState
                   filled: true,
                   fillColor: DesignTokens.surfaceDark,
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
                     borderSide: BorderSide(color: DesignTokens.borderDark),
                   ),
                   enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
                     borderSide: BorderSide(color: DesignTokens.borderDark),
                   ),
                   focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
                     borderSide: const BorderSide(
                       color: DesignTokens.primaryColor,
                       width: 2,
@@ -414,7 +420,9 @@ class _RecentTransactionsEnhancedState
               Padding(
                 padding: ResponsiveHelper.padding(context, multiplier: 2.0),
                 child: const Center(
-                  child: CircularProgressIndicator(color: DesignTokens.primaryColor),
+                  child: CircularProgressIndicator(
+                    color: DesignTokens.primaryColor,
+                  ),
                 ),
               )
             else if (transactions.isEmpty)
@@ -479,10 +487,14 @@ class _RecentTransactionsEnhancedState
           vertical: 8,
         ),
         decoration: BoxDecoration(
-          color: isSelected ? DesignTokens.primaryColor : DesignTokens.surfaceDark,
+          color:
+              isSelected ? DesignTokens.primaryColor : DesignTokens.surfaceDark,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
-            color: isSelected ? DesignTokens.primaryColor : DesignTokens.borderDark,
+            color:
+                isSelected
+                    ? DesignTokens.primaryColor
+                    : DesignTokens.borderDark,
           ),
         ),
         child: Text(

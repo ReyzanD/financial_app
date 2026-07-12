@@ -1,10 +1,11 @@
 import 'package:financial_app/services/api_service.dart';
 import 'package:financial_app/services/location_intelligence_service.dart';
 import 'package:financial_app/services/logger_service.dart';
+import 'package:financial_app/core/di/service_locator.dart';
 
 /// Enhanced Location Recommendations Service dengan price comparisons, alternative suggestions, dan analytics
 class LocationRecommendationsEnhancedService {
-  final ApiService _apiService = ApiService();
+  final ApiService _apiService = getIt<ApiService>();
   final LocationIntelligenceService _locationService =
       LocationIntelligenceService();
 

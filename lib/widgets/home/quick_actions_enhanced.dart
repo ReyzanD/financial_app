@@ -33,6 +33,7 @@ class _QuickActionsEnhancedState extends State<QuickActionsEnhanced> {
   }
 
   Future<void> _loadActions() async {
+    if (!mounted) return;
     setState(() => _isLoading = true);
 
     try {
@@ -41,6 +42,8 @@ class _QuickActionsEnhancedState extends State<QuickActionsEnhanced> {
 
       // Load saved preferences (only contains encodable fields)
       final preferences = await _analyticsService.getPreferences();
+
+      if (!mounted) return;
 
       if (preferences.isNotEmpty) {
         // Merge saved preferences with defaults to restore icon, color, onTap
@@ -61,9 +64,13 @@ class _QuickActionsEnhancedState extends State<QuickActionsEnhanced> {
 
                   // Parse colorHex safely
                   Color? resolvedColor;
-                  if (pref['colorHex'] != null && defaultAction['color'] != null) {
+                  if (pref['colorHex'] != null &&
+                      defaultAction['color'] != null) {
                     try {
-                      final hex = pref['colorHex'].toString().replaceFirst('#', '0x');
+                      final hex = pref['colorHex'].toString().replaceFirst(
+                        '#',
+                        '0x',
+                      );
                       resolvedColor = Color(int.parse(hex));
                     } catch (_) {
                       resolvedColor = defaultAction['color'] as Color?;
@@ -77,7 +84,8 @@ class _QuickActionsEnhancedState extends State<QuickActionsEnhanced> {
                     'id': pref['id'] ?? defaultAction['id'],
                     'label': pref['label'] ?? defaultAction['label'],
                     'category': pref['category'] ?? defaultAction['category'],
-                    'visible': pref['visible'] ?? defaultAction['visible'] ?? true,
+                    'visible':
+                        pref['visible'] ?? defaultAction['visible'] ?? true,
                     'order': pref['order'] ?? defaultAction['order'] ?? 0,
                     'icon': defaultAction['icon'],
                     'color': resolvedColor,
@@ -100,9 +108,9 @@ class _QuickActionsEnhancedState extends State<QuickActionsEnhanced> {
         await _analyticsService.savePreferences(_actions);
       }
 
-      setState(() => _isLoading = false);
+      if (mounted) setState(() => _isLoading = false);
     } catch (e) {
-      setState(() => _isLoading = false);
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 
@@ -112,7 +120,7 @@ class _QuickActionsEnhancedState extends State<QuickActionsEnhanced> {
         'id': 'ai_budget',
         'icon': Iconsax.flash,
         'label': 'AI Budget',
-        'color': const Color(0xFFFFB74D),
+        'color': DesignTokens.warningColor,
         'category': 'Analytics',
         'visible': true,
         'order': 0,
@@ -127,7 +135,8 @@ class _QuickActionsEnhancedState extends State<QuickActionsEnhanced> {
       {
         'id': 'riwayat',
         'icon': Iconsax.note_2,
-        'label': 'Riwayat',
+        'label':
+            'Riwayat', // l10n not accessible here — label is stored in preferences
         'color': DesignTokens.primaryColor,
         'category': 'Transactions',
         'visible': true,
@@ -144,7 +153,7 @@ class _QuickActionsEnhancedState extends State<QuickActionsEnhanced> {
         'id': 'tagihan',
         'icon': Iconsax.receipt_2,
         'label': 'Tagihan',
-        'color': const Color(0xFFE91E63),
+        'color': DesignTokens.errorColor,
         'category': 'Transactions',
         'visible': true,
         'order': 2,
@@ -160,7 +169,7 @@ class _QuickActionsEnhancedState extends State<QuickActionsEnhanced> {
         'id': 'backup',
         'icon': Iconsax.shield_tick,
         'label': 'Backup',
-        'color': const Color(0xFF4CAF50),
+        'color': DesignTokens.successColor,
         'category': 'Settings',
         'visible': true,
         'order': 3,
@@ -174,7 +183,7 @@ class _QuickActionsEnhancedState extends State<QuickActionsEnhanced> {
         'id': 'berulang',
         'icon': Iconsax.repeat,
         'label': 'Berulang',
-        'color': const Color(0xFF2196F3),
+        'color': DesignTokens.infoColor,
         'category': 'Transactions',
         'visible': true,
         'order': 4,
@@ -234,7 +243,10 @@ class _QuickActionsEnhancedState extends State<QuickActionsEnhanced> {
               ),
             ),
             IconButton(
-              icon: const Icon(Iconsax.setting_2, color: DesignTokens.primaryColor),
+              icon: const Icon(
+                Iconsax.setting_2,
+                color: DesignTokens.primaryColor,
+              ),
               onPressed: () => _showCustomizationDialog(),
             ),
           ],
@@ -306,7 +318,10 @@ class _QuickActionsEnhancedState extends State<QuickActionsEnhanced> {
                   : DesignTokens.surfaceDark,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
-            color: isSelected ? DesignTokens.primaryColor : DesignTokens.borderDark,
+            color:
+                isSelected
+                    ? DesignTokens.primaryColor
+                    : DesignTokens.borderDark,
           ),
         ),
         child: Text(
@@ -326,43 +341,52 @@ class _QuickActionsEnhancedState extends State<QuickActionsEnhanced> {
     required Map<String, dynamic> action,
   }) {
     final iconSize = ResponsiveHelper.iconSize(context, 48);
-    return GestureDetector(
-      onTap: () => _handleActionTap(action),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            width: iconSize,
-            height: iconSize,
-            decoration: BoxDecoration(
-              color: (action['color'] as Color?)?.withValues(alpha: 0.1) ?? DesignTokens.primaryColor.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(
-                ResponsiveHelper.borderRadius(context, 14),
+    final label = action['label'] as String? ?? '';
+    return Semantics(
+      label: label,
+      hint: 'Ketuk untuk membuka $label',
+      child: GestureDetector(
+        onTap: () => _handleActionTap(action),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: iconSize,
+              height: iconSize,
+              decoration: BoxDecoration(
+                color:
+                    (action['color'] as Color?)?.withValues(alpha: 0.1) ??
+                    DesignTokens.primaryColor.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(
+                  ResponsiveHelper.borderRadius(context, 14),
+                ),
+                border: Border.all(
+                  color:
+                      (action['color'] as Color?)?.withValues(alpha: 0.3) ??
+                      DesignTokens.primaryColor.withValues(alpha: 0.3),
+                ),
               ),
-              border: Border.all(
-                color: (action['color'] as Color?)?.withValues(alpha: 0.3) ?? DesignTokens.primaryColor.withValues(alpha: 0.3),
+              child: Icon(
+                action['icon'] as IconData? ?? Iconsax.category,
+                color: action['color'] as Color? ?? DesignTokens.primaryColor,
+                size: ResponsiveHelper.iconSize(context, 22),
               ),
             ),
-            child: Icon(
-              action['icon'] as IconData? ?? Iconsax.category,
-              color: action['color'] as Color? ?? DesignTokens.primaryColor,
-              size: ResponsiveHelper.iconSize(context, 22),
-            ),
-          ),
-          SizedBox(height: ResponsiveHelper.verticalSpacing(context, 6)),
-          Flexible(
-            child: Text(
-              action['label'] as String? ?? '',
-              style: GoogleFonts.poppins(
-                color: Colors.white70,
-                fontSize: ResponsiveHelper.fontSize(context, 12),
+            SizedBox(height: ResponsiveHelper.verticalSpacing(context, 6)),
+            Flexible(
+              child: Text(
+                action['label'] as String? ?? '',
+                style: GoogleFonts.poppins(
+                  color: Colors.white70,
+                  fontSize: ResponsiveHelper.fontSize(context, 12),
+                ),
+                textAlign: TextAlign.center,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
               ),
-              textAlign: TextAlign.center,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

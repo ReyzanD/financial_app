@@ -41,7 +41,8 @@ class _CashFlowScreenState extends State<CashFlowScreen> {
                 backgroundColor: DesignTokens.surfaceDark,
                 onRefresh: () => context.read<CashFlowController>().refresh(),
                 child: Consumer<CashFlowController>(
-                  builder: (context, ctrl, _) => _buildBody(context, l10n, ctrl),
+                  builder:
+                      (context, ctrl, _) => _buildBody(context, l10n, ctrl),
                 ),
               ),
             ),
@@ -53,31 +54,41 @@ class _CashFlowScreenState extends State<CashFlowScreen> {
 
   Widget _buildHeader(BuildContext context, AppLocalizations? l10n) {
     final ctrl = context.watch<CashFlowController>();
-    final currentIncome = (ctrl.summary['current_month_income'] as num?)?.toDouble() ?? 0.0;
-    final currentExpense = (ctrl.summary['current_month_expense'] as num?)?.toDouble() ?? 0.0;
-    final currentNet = (ctrl.summary['current_month_net'] as num?)?.toDouble() ?? 0.0;
+    final currentIncome =
+        (ctrl.summary['current_month_income'] as num?)?.toDouble() ?? 0.0;
+    final currentExpense =
+        (ctrl.summary['current_month_expense'] as num?)?.toDouble() ?? 0.0;
+    final currentNet =
+        (ctrl.summary['current_month_net'] as num?)?.toDouble() ?? 0.0;
 
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(DesignTokens.spacing4),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
               IconButton(
-                icon: const Icon(Iconsax.arrow_left, color: DesignTokens.textPrimaryDark),
+                icon: const Icon(
+                  Iconsax.arrow_left,
+                  color: DesignTokens.textPrimaryDark,
+                ),
                 onPressed: () => Navigator.pop(context),
               ),
               const SizedBox(width: 8),
               Text(
                 'Cash Flow',
-                style: GoogleFonts.poppins(color: DesignTokens.textPrimaryDark, fontSize: 20, fontWeight: FontWeight.bold),
+                style: GoogleFonts.poppins(
+                  color: DesignTokens.textPrimaryDark,
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ],
           ),
           const SizedBox(height: 12),
           Container(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(DesignTokens.spacing4),
             decoration: BoxDecoration(
               color: DesignTokens.surfaceDark,
               borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
@@ -86,7 +97,13 @@ class _CashFlowScreenState extends State<CashFlowScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(l10n?.this_month ?? 'Bulan Ini', style: GoogleFonts.poppins(color: DesignTokens.textSecondaryDark, fontSize: 12)),
+                Text(
+                  l10n?.this_month ?? 'Bulan Ini',
+                  style: GoogleFonts.poppins(
+                    color: DesignTokens.textSecondaryDark,
+                    fontSize: 12,
+                  ),
+                ),
                 const SizedBox(height: 8),
                 Row(
                   children: [
@@ -94,10 +111,22 @@ class _CashFlowScreenState extends State<CashFlowScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(l10n?.income ?? 'Pemasukan', style: GoogleFonts.poppins(color: DesignTokens.textSecondaryDark, fontSize: 11)),
                           Text(
-                            CurrencyFormatter.formatRupiah(currentIncome.toInt()),
-                            style: GoogleFonts.poppins(color: DesignTokens.successColor, fontSize: 14, fontWeight: FontWeight.w600),
+                            l10n?.income ?? 'Pemasukan',
+                            style: GoogleFonts.poppins(
+                              color: DesignTokens.textSecondaryDark,
+                              fontSize: 11,
+                            ),
+                          ),
+                          Text(
+                            CurrencyFormatter.formatRupiah(
+                              currentIncome.toInt(),
+                            ),
+                            style: GoogleFonts.poppins(
+                              color: DesignTokens.successColor,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
                         ],
                       ),
@@ -106,10 +135,22 @@ class _CashFlowScreenState extends State<CashFlowScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(l10n?.expense ?? 'Pengeluaran', style: GoogleFonts.poppins(color: DesignTokens.textSecondaryDark, fontSize: 11)),
                           Text(
-                            CurrencyFormatter.formatRupiah(currentExpense.toInt()),
-                            style: GoogleFonts.poppins(color: DesignTokens.errorColor, fontSize: 14, fontWeight: FontWeight.w600),
+                            l10n?.expense ?? 'Pengeluaran',
+                            style: GoogleFonts.poppins(
+                              color: DesignTokens.textSecondaryDark,
+                              fontSize: 11,
+                            ),
+                          ),
+                          Text(
+                            CurrencyFormatter.formatRupiah(
+                              currentExpense.toInt(),
+                            ),
+                            style: GoogleFonts.poppins(
+                              color: DesignTokens.errorColor,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
                         ],
                       ),
@@ -118,12 +159,22 @@ class _CashFlowScreenState extends State<CashFlowScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Net', style: GoogleFonts.poppins(color: DesignTokens.textSecondaryDark, fontSize: 11)),
+                          Text(
+                            'Net',
+                            style: GoogleFonts.poppins(
+                              color: DesignTokens.textSecondaryDark,
+                              fontSize: 11,
+                            ),
+                          ),
                           Text(
                             CurrencyFormatter.formatRupiah(currentNet.toInt()),
                             style: GoogleFonts.poppins(
-                              color: currentNet >= 0 ? DesignTokens.successColor : DesignTokens.errorColor,
-                              fontSize: 14, fontWeight: FontWeight.w600,
+                              color:
+                                  currentNet >= 0
+                                      ? DesignTokens.successColor
+                                      : DesignTokens.errorColor,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
                             ),
                           ),
                         ],
@@ -139,15 +190,21 @@ class _CashFlowScreenState extends State<CashFlowScreen> {
     );
   }
 
-  Widget _buildBody(BuildContext context, AppLocalizations? l10n, CashFlowController ctrl) {
+  Widget _buildBody(
+    BuildContext context,
+    AppLocalizations? l10n,
+    CashFlowController ctrl,
+  ) {
     if (ctrl.isLoading) {
-      return Center(child: CircularProgressIndicator(color: DesignTokens.primaryColor));
+      return Center(
+        child: CircularProgressIndicator(color: DesignTokens.primaryColor),
+      );
     }
     if (ctrl.errorMessage != null) {
       return _buildErrorState(context, l10n, ctrl);
     }
     return ListView(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(DesignTokens.spacing4),
       children: [
         _buildWeeklyForecast(context, l10n, ctrl.weeklyForecast),
         const SizedBox(height: 16),
@@ -158,18 +215,33 @@ class _CashFlowScreenState extends State<CashFlowScreen> {
     );
   }
 
-  Widget _buildWeeklyForecast(BuildContext context, AppLocalizations? l10n, Map<String, dynamic> weeklyForecast) {
-    final forecast = (weeklyForecast['weekly_forecast'] as List?)?.cast<Map<String, dynamic>>() ?? [];
+  Widget _buildWeeklyForecast(
+    BuildContext context,
+    AppLocalizations? l10n,
+    Map<String, dynamic> weeklyForecast,
+  ) {
+    final forecast =
+        (weeklyForecast['weekly_forecast'] as List?)
+            ?.cast<Map<String, dynamic>>() ??
+        [];
     if (forecast.isEmpty) return const SizedBox.shrink();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Weekly Forecast', style: GoogleFonts.poppins(color: DesignTokens.textPrimaryDark, fontSize: 16, fontWeight: FontWeight.w600)),
+        Text(
+          'Weekly Forecast',
+          style: GoogleFonts.poppins(
+            color: DesignTokens.textPrimaryDark,
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
         const SizedBox(height: 12),
         ...forecast.map((week) {
           final weekStart = week['week_start'] as DateTime? ?? DateTime.now();
-          final projectedBalance = (week['projected_balance'] as num?)?.toDouble() ?? 0.0;
+          final projectedBalance =
+              (week['projected_balance'] as num?)?.toDouble() ?? 0.0;
           final isLow = projectedBalance < 0;
 
           return Container(
@@ -178,17 +250,32 @@ class _CashFlowScreenState extends State<CashFlowScreen> {
             decoration: BoxDecoration(
               color: DesignTokens.surfaceDark,
               borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
-              border: Border.all(color: isLow ? DesignTokens.errorColor.withValues(alpha: 0.3) : DesignTokens.borderDark),
+              border: Border.all(
+                color:
+                    isLow
+                        ? DesignTokens.errorColor.withValues(alpha: 0.3)
+                        : DesignTokens.borderDark,
+              ),
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('Week ${weekStart.day}/${weekStart.month}', style: GoogleFonts.poppins(color: DesignTokens.textPrimaryDark, fontSize: 13)),
+                Text(
+                  'Week ${weekStart.day}/${weekStart.month}',
+                  style: GoogleFonts.poppins(
+                    color: DesignTokens.textPrimaryDark,
+                    fontSize: 13,
+                  ),
+                ),
                 Text(
                   CurrencyFormatter.formatRupiah(projectedBalance.toInt()),
                   style: GoogleFonts.poppins(
-                    color: isLow ? DesignTokens.errorColor : DesignTokens.successColor,
-                    fontSize: 14, fontWeight: FontWeight.w600,
+                    color:
+                        isLow
+                            ? DesignTokens.errorColor
+                            : DesignTokens.successColor,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
               ],
@@ -199,13 +286,24 @@ class _CashFlowScreenState extends State<CashFlowScreen> {
     );
   }
 
-  Widget _buildDailyForecast(BuildContext context, AppLocalizations? l10n, List<Map<String, dynamic>> dailyForecast) {
+  Widget _buildDailyForecast(
+    BuildContext context,
+    AppLocalizations? l10n,
+    List<Map<String, dynamic>> dailyForecast,
+  ) {
     if (dailyForecast.isEmpty) return const SizedBox.shrink();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Daily Forecast (14 Days)', style: GoogleFonts.poppins(color: DesignTokens.textPrimaryDark, fontSize: 16, fontWeight: FontWeight.w600)),
+        Text(
+          'Daily Forecast (14 Days)',
+          style: GoogleFonts.poppins(
+            color: DesignTokens.textPrimaryDark,
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
         const SizedBox(height: 12),
         Container(
           padding: const EdgeInsets.all(12),
@@ -215,52 +313,76 @@ class _CashFlowScreenState extends State<CashFlowScreen> {
             border: Border.all(color: DesignTokens.borderDark),
           ),
           child: Column(
-            children: dailyForecast.take(7).map((day) {
-              final date = day['date'] as DateTime? ?? DateTime.now();
-              final projectedBalance = (day['projected_balance'] as num?)?.toDouble() ?? 0.0;
-              final isWeekend = day['is_weekend'] as bool? ?? false;
+            children:
+                dailyForecast.take(7).map((day) {
+                  final date = day['date'] as DateTime? ?? DateTime.now();
+                  final projectedBalance =
+                      (day['projected_balance'] as num?)?.toDouble() ?? 0.0;
+                  final isWeekend = day['is_weekend'] as bool? ?? false;
 
-              return Container(
-                padding: const EdgeInsets.symmetric(vertical: 8),
-                decoration: BoxDecoration(
-                  border: Border(bottom: BorderSide(color: DesignTokens.borderDark, width: 0.5)),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      children: [
-                        Text(
-                          '${date.day}/${date.month}',
-                          style: GoogleFonts.poppins(
-                            color: isWeekend ? DesignTokens.primaryColor : DesignTokens.textPrimaryDark,
-                            fontSize: 12,
-                          ),
+                  return Container(
+                    padding: const EdgeInsets.symmetric(vertical: 8),
+                    decoration: BoxDecoration(
+                      border: Border(
+                        bottom: BorderSide(
+                          color: DesignTokens.borderDark,
+                          width: 0.5,
                         ),
-                        if (isWeekend) ...[
-                          const SizedBox(width: 4),
-                          Icon(Iconsax.calendar, size: 12, color: DesignTokens.primaryColor),
-                        ],
-                      ],
-                    ),
-                    Text(
-                      CurrencyFormatter.formatRupiah(projectedBalance.toInt()),
-                      style: GoogleFonts.poppins(
-                        color: projectedBalance >= 0 ? DesignTokens.successColor : DesignTokens.errorColor,
-                        fontSize: 13, fontWeight: FontWeight.w600,
                       ),
                     ),
-                  ],
-                ),
-              );
-            }).toList(),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+                          children: [
+                            Text(
+                              '${date.day}/${date.month}',
+                              style: GoogleFonts.poppins(
+                                color:
+                                    isWeekend
+                                        ? DesignTokens.primaryColor
+                                        : DesignTokens.textPrimaryDark,
+                                fontSize: 12,
+                              ),
+                            ),
+                            if (isWeekend) ...[
+                              const SizedBox(width: 4),
+                              Icon(
+                                Iconsax.calendar,
+                                size: 12,
+                                color: DesignTokens.primaryColor,
+                              ),
+                            ],
+                          ],
+                        ),
+                        Text(
+                          CurrencyFormatter.formatRupiah(
+                            projectedBalance.toInt(),
+                          ),
+                          style: GoogleFonts.poppins(
+                            color:
+                                projectedBalance >= 0
+                                    ? DesignTokens.successColor
+                                    : DesignTokens.errorColor,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                }).toList(),
           ),
         ),
       ],
     );
   }
 
-  Widget _buildRiskWeeks(BuildContext context, AppLocalizations? l10n, Map<String, dynamic> weeklyForecast) {
+  Widget _buildRiskWeeks(
+    BuildContext context,
+    AppLocalizations? l10n,
+    Map<String, dynamic> weeklyForecast,
+  ) {
     final riskWeeks = (weeklyForecast['risk_weeks'] as num?)?.toInt() ?? 0;
     if (riskWeeks == 0) return const SizedBox.shrink();
 
@@ -269,16 +391,25 @@ class _CashFlowScreenState extends State<CashFlowScreen> {
       decoration: BoxDecoration(
         color: DesignTokens.errorColor.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
-        border: Border.all(color: DesignTokens.errorColor.withValues(alpha: 0.3)),
+        border: Border.all(
+          color: DesignTokens.errorColor.withValues(alpha: 0.3),
+        ),
       ),
       child: Row(
         children: [
-          const Icon(Iconsax.warning_2, color: DesignTokens.errorColor, size: 20),
+          const Icon(
+            Iconsax.warning_2,
+            color: DesignTokens.errorColor,
+            size: 20,
+          ),
           const SizedBox(width: 8),
           Expanded(
             child: Text(
               '$riskWeeks risk weeks detected - projected negative balance',
-              style: GoogleFonts.poppins(color: DesignTokens.errorColor, fontSize: 12),
+              style: GoogleFonts.poppins(
+                color: DesignTokens.errorColor,
+                fontSize: 12,
+              ),
             ),
           ),
         ],
@@ -286,7 +417,11 @@ class _CashFlowScreenState extends State<CashFlowScreen> {
     );
   }
 
-  Widget _buildErrorState(BuildContext context, AppLocalizations? l10n, CashFlowController ctrl) {
+  Widget _buildErrorState(
+    BuildContext context,
+    AppLocalizations? l10n,
+    CashFlowController ctrl,
+  ) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -295,15 +430,30 @@ class _CashFlowScreenState extends State<CashFlowScreen> {
           const SizedBox(height: 16),
           Text(
             l10n?.error ?? 'Terjadi kesalahan',
-            style: GoogleFonts.poppins(color: DesignTokens.textPrimaryDark, fontSize: 18, fontWeight: FontWeight.w600),
+            style: GoogleFonts.poppins(
+              color: DesignTokens.textPrimaryDark,
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
+            ),
           ),
           const SizedBox(height: 8),
-          Text(ctrl.errorMessage ?? '', style: GoogleFonts.poppins(color: DesignTokens.textSecondaryDark, fontSize: 14)),
+          Text(
+            ctrl.errorMessage ?? '',
+            style: GoogleFonts.poppins(
+              color: DesignTokens.textSecondaryDark,
+              fontSize: 14,
+            ),
+          ),
           const SizedBox(height: 16),
           ElevatedButton(
             onPressed: ctrl.refresh,
-            style: ElevatedButton.styleFrom(backgroundColor: DesignTokens.primaryColor),
-            child: Text(l10n?.retry ?? 'Coba Lagi', style: GoogleFonts.poppins(color: Colors.white)),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: DesignTokens.primaryColor,
+            ),
+            child: Text(
+              l10n?.retry ?? 'Coba Lagi',
+              style: GoogleFonts.poppins(color: Colors.white),
+            ),
           ),
         ],
       ),

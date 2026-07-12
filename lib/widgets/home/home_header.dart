@@ -3,6 +3,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:financial_app/services/api_service.dart';
 import 'package:financial_app/utils/design_tokens.dart';
+import 'package:financial_app/core/di/service_locator.dart';
+import 'package:financial_app/widgets/home/global_search_sheet.dart';
 
 class HomeHeader extends StatefulWidget {
   const HomeHeader({super.key});
@@ -12,7 +14,7 @@ class HomeHeader extends StatefulWidget {
 }
 
 class _HomeHeaderState extends State<HomeHeader> {
-  final ApiService _apiService = ApiService();
+  final ApiService _apiService = getIt<ApiService>();
   Map<String, dynamic>? _userProfile;
   bool _isLoading = true;
 
@@ -44,7 +46,7 @@ class _HomeHeaderState extends State<HomeHeader> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(DesignTokens.spacing4),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [Colors.black, Colors.black.withValues(alpha: 0.8)],
@@ -81,23 +83,53 @@ class _HomeHeaderState extends State<HomeHeader> {
             ),
           ),
 
-          // Notifications & Settings
+          // Search, Notifications & Settings
           Row(
             children: [
               _buildIconButton(
+                icon: Iconsax.search_normal_1,
+                onPressed: () => _showGlobalSearch(context),
+              ),
+              const SizedBox(width: 8),
+              _buildIconButton(
                 icon: Iconsax.notification,
-                onPressed: () => Navigator.pushNamed(context, '/notifications'),
+                onPressed: () {
+                  try {
+                    Navigator.pushNamed(context, '/notifications');
+                  } catch (e) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Halaman notifikasi belum tersedia')),
+                    );
+                  }
+                },
                 hasNotification: true,
               ),
               const SizedBox(width: 8),
               _buildIconButton(
                 icon: Iconsax.setting,
-                onPressed: () => Navigator.pushNamed(context, '/settings'),
+                onPressed: () {
+                  try {
+                    Navigator.pushNamed(context, '/settings');
+                  } catch (e) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Halaman pengaturan belum tersedia')),
+                    );
+                  }
+                },
               ),
             ],
           ),
         ],
       ),
+    );
+  }
+
+  void _showGlobalSearch(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => const GlobalSearchSheet(),
     );
   }
 
@@ -109,11 +141,11 @@ class _HomeHeaderState extends State<HomeHeader> {
     return Stack(
       children: [
         Container(
-          width: 40,
-          height: 40,
+          width: 48,
+          height: 48,
           decoration: BoxDecoration(
             color: DesignTokens.surfaceDark,
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
             border: Border.all(color: DesignTokens.borderDark),
           ),
           child: IconButton(

@@ -3,13 +3,17 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:financial_app/services/api_service.dart';
 import 'package:financial_app/services/logger_service.dart';
-import 'package:financial_app/utils/formatters.dart';
 import 'package:financial_app/utils/form_validators.dart';
 import 'package:financial_app/utils/app_refresh.dart';
+import 'package:financial_app/utils/balance_check_helper.dart';
 import 'package:financial_app/l10n/app_localizations.dart';
 import 'package:financial_app/services/error_handler_service.dart';
 import 'package:financial_app/services/data/budget_data_service.dart';
 import 'package:financial_app/utils/design_tokens.dart';
+import 'package:financial_app/core/di/service_locator.dart';
+import 'package:financial_app/utils/dropdown_helper.dart';
+import 'package:financial_app/features/transactions/domain/entities/transaction_entity.dart';
+import 'package:financial_app/features/transactions/presentation/controllers/transaction_controller.dart';
 
 /// Modal untuk quick add transaction dengan form lengkap
 class QuickAddModal extends StatefulWidget {
@@ -33,7 +37,7 @@ class QuickAddModal extends StatefulWidget {
 }
 
 class _QuickAddModalState extends State<QuickAddModal> {
-  final ApiService _apiService = ApiService();
+  final ApiService _apiService = getIt<ApiService>();
   final TextEditingController _amountController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
 
@@ -93,196 +97,17 @@ class _QuickAddModalState extends State<QuickAddModal> {
   }
 
   Future<bool> _checkBalanceBeforeExpense(double expenseAmount) async {
-    final ctx = context;
     try {
-      // Get current financial summary
       final summary = await _apiService.getFinancialSummary();
-      final summaries = summary['summary'] as Map<String, dynamic>?;
-
-      if (summaries == null) return true; // Allow if we can't check
-
-      final income =
-          (summaries['income'] as Map<String, dynamic>?)?['total_amount'] ??
-          0.0;
-      final expense =
-          (summaries['expense'] as Map<String, dynamic>?)?['total_amount'] ??
-          0.0;
-      final currentBalance = income - expense;
-      final newBalance = currentBalance - expenseAmount;
-
-      // Minimum balance requirement: 25000
-      const double minimumBalance = 25000.0;
-
-      // If balance would go below the minimum, block the transaction
-      if (newBalance < minimumBalance) {
-        if (!ctx.mounted) return false;
-        await showDialog(
-          context: ctx,
-          builder:
-              (context) => AlertDialog(
-                backgroundColor: DesignTokens.surfaceDark,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                title: Row(
-                  children: [
-                    const Icon(Icons.block, color: Colors.red, size: 28),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Text(
-                        'Saldo Tidak Cukup',
-                        style: GoogleFonts.poppins(
-                          color: Colors.white,
-                          fontSize: 18,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                content: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      AppLocalizations.of(
-                        context,
-                      )!.transaction_rejected_insufficient_balance,
-                      style: GoogleFonts.poppins(
-                        color: Colors.white70,
-                        fontSize: 14,
-                        height: 1.5,
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: Colors.red.withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(
-                          color: Colors.red.withValues(alpha: 0.3),
-                        ),
-                      ),
-                      child: Column(
-                        children: [
-                          _buildBalanceRow(
-                            AppLocalizations.of(context)!.available_balance,
-                            currentBalance,
-                            Colors.white70,
-                          ),
-                          const SizedBox(height: 8),
-                          _buildBalanceRow(
-                            AppLocalizations.of(context)!.minimum_balance,
-                            minimumBalance,
-                            Colors.orange[300]!,
-                          ),
-                          const SizedBox(height: 8),
-                          _buildBalanceRow(
-                            AppLocalizations.of(context)!.expense,
-                            expenseAmount,
-                            Colors.red[300]!,
-                          ),
-                          const Divider(color: Colors.grey, height: 20),
-                          _buildBalanceRow(
-                            AppLocalizations.of(context)!.shortage,
-                            (minimumBalance - newBalance).abs(),
-                            Colors.red[400]!,
-                            isBold: true,
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    Container(
-                      padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        color: Colors.blue.withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(
-                          color: Colors.blue.withValues(alpha: 0.3),
-                        ),
-                      ),
-                      child: Row(
-                        children: [
-                          Icon(
-                            Icons.lightbulb_outline,
-                            color: Colors.blue[300],
-                            size: 18,
-                          ),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: Text(
-                              AppLocalizations.of(context)!.add_income_first,
-                              style: GoogleFonts.poppins(
-                                color: Colors.blue[300],
-                                fontSize: 11,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-                actions: [
-                  ElevatedButton(
-                    onPressed: () => Navigator.pop(context),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: DesignTokens.primaryColor,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      minimumSize: const Size(double.infinity, 45),
-                    ),
-                    child: Text(
-                      AppLocalizations.of(context)!.understood,
-                      style: GoogleFonts.poppins(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-        );
-        return false; // Block the transaction
-      }
-
-      return true; // Balance is fine, proceed
+      return await BalanceCheckHelper.checkBalanceBeforeExpense(
+        context: context,
+        expenseAmount: expenseAmount,
+        summary: summary,
+      );
     } catch (e) {
       LoggerService.error('Error checking balance', error: e);
-      return true; // Allow transaction if check fails
+      return true;
     }
-  }
-
-  Widget _buildBalanceRow(
-    String label,
-    double amount,
-    Color color, {
-    bool isBold = false,
-  }) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(
-          label,
-          style: GoogleFonts.poppins(
-            color: color,
-            fontSize: 12,
-            fontWeight: isBold ? FontWeight.w600 : FontWeight.normal,
-          ),
-        ),
-        Text(
-          CurrencyFormatter.formatRupiah(amount.abs()),
-          style: GoogleFonts.poppins(
-            color: color,
-            fontSize: 12,
-            fontWeight: isBold ? FontWeight.bold : FontWeight.w600,
-          ),
-        ),
-      ],
-    );
   }
 
   Future<void> _submitTransaction() async {
@@ -327,7 +152,8 @@ class _QuickAddModalState extends State<QuickAddModal> {
     setState(() => _isLoading = true);
 
     try {
-      await _apiService.addTransaction({
+      final transactionData = <String, dynamic>{
+        'id': '',
         'description':
             description.isEmpty
                 ? widget.type == 'income'
@@ -337,8 +163,12 @@ class _QuickAddModalState extends State<QuickAddModal> {
         'amount': amount,
         'type': widget.type,
         'category_id': _selectedCategoryId,
-        'date': DateTime.now().toIso8601String(),
-      });
+        'transaction_date': DateTime.now().toIso8601String(),
+      };
+      final entity = TransactionEntity.fromJson(transactionData);
+      final ctrl = getIt<TransactionController>();
+      final success = await ctrl.createTransaction(entity);
+      if (!success) throw Exception('Failed to create transaction');
 
       // Update budget spending for expense transactions
       if (widget.type == 'expense' && _selectedCategoryId != null) {
@@ -362,7 +192,7 @@ class _QuickAddModalState extends State<QuickAddModal> {
       if (!ctx.mounted) return;
       ErrorHandlerService.showSuccessSnackbar(
         ctx,
-        'Transaksi berhasil ditambahkan!',
+        AppLocalizations.of(ctx)!.transaction_added_successfully,
       );
       widget.onTransactionAdded?.call();
     } catch (e) {
@@ -400,7 +230,7 @@ class _QuickAddModalState extends State<QuickAddModal> {
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     color: typeColor.withValues(alpha: 0.2),
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
                   ),
                   child: Icon(typeIcon, color: typeColor, size: 24),
                 ),
@@ -427,7 +257,7 @@ class _QuickAddModalState extends State<QuickAddModal> {
 
             // Amount
             Text(
-              'Jumlah',
+              AppLocalizations.of(context)!.amount,
               style: GoogleFonts.poppins(
                 color: Colors.white,
                 fontSize: 14,
@@ -445,15 +275,15 @@ class _QuickAddModalState extends State<QuickAddModal> {
                 filled: true,
                 fillColor: DesignTokens.surfaceDark,
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
                   borderSide: BorderSide(color: DesignTokens.borderDark),
                 ),
                 enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
                   borderSide: BorderSide(color: DesignTokens.borderDark),
                 ),
                 focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
                   borderSide: const BorderSide(
                     color: DesignTokens.primaryColor,
                     width: 2,
@@ -476,14 +306,16 @@ class _QuickAddModalState extends State<QuickAddModal> {
             const SizedBox(height: 8),
             _isLoadingCategories
                 ? const Center(
-                  child: CircularProgressIndicator(color: DesignTokens.primaryColor),
+                  child: CircularProgressIndicator(
+                    color: DesignTokens.primaryColor,
+                  ),
                 )
                 : _categories.isEmpty
                 ? Container(
-                  padding: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.all(DesignTokens.spacing4),
                   decoration: BoxDecoration(
                     color: Colors.orange.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
                     border: Border.all(
                       color: Colors.orange.withValues(alpha: 0.3),
                     ),
@@ -514,33 +346,18 @@ class _QuickAddModalState extends State<QuickAddModal> {
                   initialValue: _selectedCategoryId,
                   dropdownColor: DesignTokens.surfaceDark,
                   style: GoogleFonts.poppins(color: Colors.white),
-                  hint: Text(
-                    AppLocalizations.of(context)!.select_category,
-                    style: GoogleFonts.poppins(color: Colors.grey[600]),
-                  ),
-                  decoration: InputDecoration(
-                    filled: true,
-                    fillColor: DesignTokens.surfaceDark,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(color: DesignTokens.borderDark),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(color: DesignTokens.borderDark),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(
-                        color: DesignTokens.primaryColor,
-                        width: 2,
-                      ),
-                    ),
+                  decoration: DropdownHelper.darkDropdownDecoration(
+                    hintText: AppLocalizations.of(context)!.select_category,
                   ),
                   items:
                       _categories.map((category) {
-                        final id = category['id']?.toString() ?? '';
-                        final name = category['name']?.toString() ?? 'Unknown';
+                        final id = category['id']?.toString() ??
+                            category['category_id']?.toString() ??
+                            category['category_id_232143']?.toString() ??
+                            '';
+                        final name = category['name']?.toString() ??
+                            category['name_232143']?.toString() ??
+                            'Unknown';
                         return DropdownMenuItem(value: id, child: Text(name));
                       }).toList(),
                   onChanged: (value) {
@@ -570,15 +387,15 @@ class _QuickAddModalState extends State<QuickAddModal> {
                 filled: true,
                 fillColor: DesignTokens.surfaceDark,
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
                   borderSide: BorderSide(color: DesignTokens.borderDark),
                 ),
                 enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
                   borderSide: BorderSide(color: DesignTokens.borderDark),
                 ),
                 focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
                   borderSide: const BorderSide(
                     color: DesignTokens.primaryColor,
                     width: 2,
@@ -597,7 +414,7 @@ class _QuickAddModalState extends State<QuickAddModal> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: typeColor,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
                   ),
                 ),
                 child:

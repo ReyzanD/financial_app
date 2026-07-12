@@ -45,7 +45,9 @@ class _AddDebtModalState extends State<AddDebtModal> {
     return Padding(
       padding: EdgeInsets.only(
         bottom: MediaQuery.of(context).viewInsets.bottom,
-        left: 20, right: 20, top: 20,
+        left: 20,
+        right: 20,
+        top: 20,
       ),
       child: SingleChildScrollView(
         child: Form(
@@ -56,7 +58,8 @@ class _AddDebtModalState extends State<AddDebtModal> {
             children: [
               Center(
                 child: Container(
-                  width: 40, height: 4,
+                  width: 40,
+                  height: 4,
                   decoration: BoxDecoration(
                     color: DesignTokens.textTertiaryDark,
                     borderRadius: BorderRadius.circular(2),
@@ -65,10 +68,11 @@ class _AddDebtModalState extends State<AddDebtModal> {
               ),
               const SizedBox(height: 20),
               Text(
-                l10n?.add ?? 'Tambah Hutang',
+                l10n?.add_debt ?? 'Tambah Hutang',
                 style: GoogleFonts.poppins(
                   color: DesignTokens.textPrimaryDark,
-                  fontSize: 18, fontWeight: FontWeight.w600,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
               const SizedBox(height: 20),
@@ -77,28 +81,58 @@ class _AddDebtModalState extends State<AddDebtModal> {
                 style: GoogleFonts.poppins(color: DesignTokens.textPrimaryDark),
                 decoration: InputDecoration(
                   labelText: l10n?.name ?? 'Nama',
-                  labelStyle: GoogleFonts.poppins(color: DesignTokens.textSecondaryDark),
-                  filled: true, fillColor: DesignTokens.surfaceDark,
+                  labelStyle: GoogleFonts.poppins(
+                    color: DesignTokens.textSecondaryDark,
+                  ),
+                  filled: true,
+                  fillColor: DesignTokens.surfaceDark,
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                    borderRadius: BorderRadius.circular(
+                      DesignTokens.radiusMedium,
+                    ),
                     borderSide: BorderSide(color: DesignTokens.borderDark),
                   ),
                 ),
-                validator: (v) => (v == null || v.isEmpty) ? 'Nama tidak boleh kosong' : null,
+                validator:
+                    (v) =>
+                        (v == null || v.isEmpty)
+                            ? 'Nama tidak boleh kosong'
+                            : null,
               ),
               const SizedBox(height: 16),
-              Text('Tipe Hutang', style: GoogleFonts.poppins(color: DesignTokens.textSecondaryDark, fontSize: 12)),
+              Text(
+                'Tipe Hutang',
+                style: GoogleFonts.poppins(
+                  color: DesignTokens.textSecondaryDark,
+                  fontSize: 12,
+                ),
+              ),
               const SizedBox(height: 8),
-              Wrap(spacing: 8, children: _types.map((type) {
-                final isSelected = _selectedType == type['value'];
-                return ChoiceChip(
-                  label: Text(type['label'], style: GoogleFonts.poppins(color: isSelected ? Colors.white : DesignTokens.textSecondaryDark, fontSize: 12)),
-                  selected: isSelected,
-                  onSelected: (_) => setState(() => _selectedType = type['value']),
-                  backgroundColor: DesignTokens.surfaceDark,
-                  selectedColor: DesignTokens.primaryColor,
-                );
-              }).toList()),
+              Wrap(
+                spacing: 8,
+                children:
+                    _types.map((type) {
+                      final isSelected = _selectedType == type['value'];
+                      return ChoiceChip(
+                        label: Text(
+                          type['label'],
+                          style: GoogleFonts.poppins(
+                            color:
+                                isSelected
+                                    ? Colors.white
+                                    : DesignTokens.textSecondaryDark,
+                            fontSize: 12,
+                          ),
+                        ),
+                        selected: isSelected,
+                        onSelected:
+                            (_) =>
+                                setState(() => _selectedType = type['value']),
+                        backgroundColor: DesignTokens.surfaceDark,
+                        selectedColor: DesignTokens.primaryColor,
+                      );
+                    }).toList(),
+              ),
               const SizedBox(height: 16),
               TextFormField(
                 controller: _amountController,
@@ -106,14 +140,23 @@ class _AddDebtModalState extends State<AddDebtModal> {
                 style: GoogleFonts.poppins(color: DesignTokens.textPrimaryDark),
                 decoration: InputDecoration(
                   labelText: l10n?.original_amount ?? 'Jumlah Awal',
-                  labelStyle: GoogleFonts.poppins(color: DesignTokens.textSecondaryDark),
-                  filled: true, fillColor: DesignTokens.surfaceDark,
+                  labelStyle: GoogleFonts.poppins(
+                    color: DesignTokens.textSecondaryDark,
+                  ),
+                  filled: true,
+                  fillColor: DesignTokens.surfaceDark,
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                    borderRadius: BorderRadius.circular(
+                      DesignTokens.radiusMedium,
+                    ),
                     borderSide: BorderSide(color: DesignTokens.borderDark),
                   ),
                 ),
-                validator: (v) => (v == null || v.isEmpty) ? 'Jumlah tidak boleh kosong' : null,
+                validator:
+                    (v) =>
+                        (v == null || v.isEmpty)
+                            ? 'Jumlah tidak boleh kosong'
+                            : null,
               ),
               const SizedBox(height: 16),
               TextFormField(
@@ -122,15 +165,22 @@ class _AddDebtModalState extends State<AddDebtModal> {
                 style: GoogleFonts.poppins(color: DesignTokens.textPrimaryDark),
                 decoration: InputDecoration(
                   labelText: l10n?.interest_rate ?? 'Bunga (%)',
-                  labelStyle: GoogleFonts.poppins(color: DesignTokens.textSecondaryDark),
-                  filled: true, fillColor: DesignTokens.surfaceDark,
+                  labelStyle: GoogleFonts.poppins(
+                    color: DesignTokens.textSecondaryDark,
+                  ),
+                  filled: true,
+                  fillColor: DesignTokens.surfaceDark,
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                    borderRadius: BorderRadius.circular(
+                      DesignTokens.radiusMedium,
+                    ),
                     borderSide: BorderSide(color: DesignTokens.borderDark),
                   ),
                 ),
                 validator: (v) {
-                  if (v != null && v.trim().isNotEmpty && double.tryParse(v.replaceAll(',', '.')) == null) {
+                  if (v != null &&
+                      v.trim().isNotEmpty &&
+                      double.tryParse(v.replaceAll(',', '.')) == null) {
                     return 'Bunga harus berupa angka';
                   }
                   return null;
@@ -145,12 +195,18 @@ class _AddDebtModalState extends State<AddDebtModal> {
                     backgroundColor: DesignTokens.primaryColor,
                     padding: const EdgeInsets.symmetric(vertical: 14),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                      borderRadius: BorderRadius.circular(
+                        DesignTokens.radiusMedium,
+                      ),
                     ),
                   ),
                   child: Text(
                     l10n?.add ?? 'Tambah',
-                    style: GoogleFonts.poppins(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w600),
+                    style: GoogleFonts.poppins(
+                      color: Colors.white,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
               ),
@@ -166,22 +222,27 @@ class _AddDebtModalState extends State<AddDebtModal> {
     if (!_formKey.currentState!.validate()) return;
     try {
       final debtService = getIt<DebtService>();
-      await debtService.addDebt(DebtModel(
-        id: 'debt_${DateTime.now().millisecondsSinceEpoch}',
-        name: _nameController.text,
-        originalAmount: double.tryParse(_amountController.text) ?? 0.0,
-        currentBalance: double.tryParse(_amountController.text) ?? 0.0,
-        interestRate: double.tryParse(_interestController.text) ?? 0.0,
-        type: _selectedType,
-        startDate: DateTime.now(),
-        createdAt: DateTime.now(),
-      ));
+      await debtService.addDebt(
+        DebtModel(
+          id: 'debt_${DateTime.now().millisecondsSinceEpoch}',
+          name: _nameController.text,
+          originalAmount: double.tryParse(_amountController.text) ?? 0.0,
+          currentBalance: double.tryParse(_amountController.text) ?? 0.0,
+          interestRate: double.tryParse(_interestController.text) ?? 0.0,
+          type: _selectedType,
+          startDate: DateTime.now(),
+          createdAt: DateTime.now(),
+        ),
+      );
       if (!mounted) return;
       Navigator.pop(context);
       widget.onDebtAdded();
     } catch (e) {
       if (!mounted) return;
-      ErrorHandlerService.showErrorSnackbar(context, ErrorHandlerService.getUserFriendlyMessage(e));
+      ErrorHandlerService.showErrorSnackbar(
+        context,
+        ErrorHandlerService.getUserFriendlyMessage(e),
+      );
     }
   }
 }

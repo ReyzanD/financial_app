@@ -12,7 +12,11 @@ class AddAccountModal extends StatefulWidget {
   final AccountModel? account;
   final VoidCallback onAccountAdded;
 
-  const AddAccountModal({super.key, this.account, required this.onAccountAdded});
+  const AddAccountModal({
+    super.key,
+    this.account,
+    required this.onAccountAdded,
+  });
 
   @override
   State<AddAccountModal> createState() => _AddAccountModalState();
@@ -91,7 +95,9 @@ class _AddAccountModalState extends State<AddAccountModal> {
               ),
               const SizedBox(height: 20),
               Text(
-                isEditing ? 'Edit Akun' : l10n?.add ?? 'Tambah Akun',
+                isEditing
+                    ? (l10n?.edit_account ?? 'Edit Akun')
+                    : (l10n?.add ?? 'Tambah Akun'),
                 style: GoogleFonts.poppins(
                   color: DesignTokens.textPrimaryDark,
                   fontSize: 18,
@@ -181,7 +187,7 @@ class _AddAccountModalState extends State<AddAccountModal> {
                 ),
                 validator: (value) {
                   if (value == null || value.trim().isEmpty) {
-                    return 'Masukkan saldo';
+                    return l10n?.enter_balance ?? 'Masukkan saldo';
                   }
                   if (double.tryParse(value.replaceAll(',', '.')) == null) {
                     return 'Saldo harus berupa angka';
@@ -248,7 +254,9 @@ class _AddAccountModalState extends State<AddAccountModal> {
                     ),
                   ),
                   child: Text(
-                    isEditing ? 'Simpan' : l10n?.add ?? 'Tambah',
+                    isEditing
+                        ? (l10n?.save ?? 'Simpan')
+                        : (l10n?.add ?? 'Tambah'),
                     style: GoogleFonts.poppins(
                       color: Colors.white,
                       fontSize: 14,

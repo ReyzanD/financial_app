@@ -1,10 +1,11 @@
 import 'package:financial_app/services/api_service.dart';
 import 'package:financial_app/services/logger_service.dart';
 import 'package:financial_app/services/notification_service.dart';
+import 'package:financial_app/core/di/service_locator.dart';
 
 /// Service untuk budget forecasting dan analytics
 class BudgetForecastService {
-  final ApiService _apiService = ApiService();
+  final ApiService _apiService = getIt<ApiService>();
   final NotificationService _notificationService = NotificationService();
 
   /// Calculate budget forecast berdasarkan spending pattern

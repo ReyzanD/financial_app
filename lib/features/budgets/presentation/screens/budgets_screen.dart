@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:financial_app/services/error_handler_service.dart';
 import 'package:financial_app/services/logger_service.dart';
 import 'package:financial_app/services/budget_predictor.dart';
@@ -36,6 +37,7 @@ class _BudgetsScreenState extends State<BudgetsScreen> {
   Widget build(BuildContext context) {
     return Consumer<BudgetController>(
       builder: (context, controller, child) {
+        final l10n = AppLocalizations.of(context);
         return Scaffold(
           backgroundColor: DesignTokens.backgroundDark,
           body: SafeArea(
@@ -58,7 +60,7 @@ class _BudgetsScreenState extends State<BudgetsScreen> {
             heroTag: 'budgets_fab',
             backgroundColor: DesignTokens.primaryColor,
             onPressed: _showAddBudgetModal,
-            tooltip: 'Tambah Anggaran',
+            tooltip: l10n?.add_budget ?? 'Tambah Anggaran',
             child: const Icon(Icons.add, color: Colors.white),
           ),
         );
@@ -80,7 +82,7 @@ class _BudgetsScreenState extends State<BudgetsScreen> {
           Row(
             children: [
               IconButton(
-                icon: const Icon(Icons.arrow_back, color: Colors.white),
+                icon: const Icon(Iconsax.arrow_left, color: Colors.white),
                 tooltip: 'Kembali',
                 onPressed: () => Navigator.pop(context),
               ),
@@ -113,7 +115,10 @@ class _BudgetsScreenState extends State<BudgetsScreen> {
                 },
               ),
               IconButton(
-                icon: const Icon(Icons.auto_awesome, color: DesignTokens.primaryColor),
+                icon: const Icon(
+                  Icons.auto_awesome,
+                  color: DesignTokens.primaryColor,
+                ),
                 onPressed: _showSmartBudgetSuggestions,
                 tooltip: 'Saran Budget AI',
               ),
@@ -246,8 +251,11 @@ class _BudgetsScreenState extends State<BudgetsScreen> {
     };
   }
 
-  Widget _buildBudgetItem(BuildContext context, BudgetEntity budgetEntity,
-      Map<String, String> categories) {
+  Widget _buildBudgetItem(
+    BuildContext context,
+    BudgetEntity budgetEntity,
+    Map<String, String> categories,
+  ) {
     final budget = _budgetToMap(budgetEntity);
     final categoryId =
         (budget['category_id_232143'] ?? budget['category_id'])?.toString();
@@ -522,11 +530,14 @@ class _BudgetsScreenState extends State<BudgetsScreen> {
   Future<void> _showSmartBudgetSuggestions() async {
     try {
       if (!mounted) return;
+      final l10n = AppLocalizations.of(context);
       showDialog(
         context: context,
         builder:
             (context) => const Center(
-              child: CircularProgressIndicator(color: DesignTokens.primaryColor),
+              child: CircularProgressIndicator(
+                color: DesignTokens.primaryColor,
+              ),
             ),
       );
 
@@ -603,7 +614,8 @@ class _BudgetsScreenState extends State<BudgetsScreen> {
                         ] else
                           Center(
                             child: Text(
-                              'Belum ada data untuk rekomendasi',
+                              l10n?.no_data_for_recommendation ??
+                                  'Belum ada data untuk rekomendasi',
                               style: GoogleFonts.poppins(
                                 color: Colors.grey[500],
                               ),
@@ -612,7 +624,7 @@ class _BudgetsScreenState extends State<BudgetsScreen> {
                         if (risks.isNotEmpty) ...[
                           const SizedBox(height: 20),
                           Text(
-                            'Peringatan Budget',
+                            l10n?.budget_warning ?? 'Peringatan Budget',
                             style: GoogleFonts.poppins(
                               color: Colors.white,
                               fontSize: 16,
@@ -635,11 +647,10 @@ class _BudgetsScreenState extends State<BudgetsScreen> {
       );
     } catch (e) {
       if (mounted) {
+        final msg = AppLocalizations.of(context)?.failed_to_load_budget_suggestions ??
+            'Gagal memuat saran budget';
         Navigator.pop(context);
-        ErrorHandlerService.showErrorSnackbar(
-          context,
-          'Gagal memuat saran budget',
-        );
+        ErrorHandlerService.showErrorSnackbar(context, msg);
       }
     }
   }
@@ -650,7 +661,7 @@ class _BudgetsScreenState extends State<BudgetsScreen> {
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: const Color(0xFF2A2A2A),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
         border: Border.all(
           color: DesignTokens.primaryColor.withValues(alpha: 0.3),
         ),
@@ -691,7 +702,7 @@ class _BudgetsScreenState extends State<BudgetsScreen> {
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: color!.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
         border: Border.all(color: color.withValues(alpha: 0.3)),
       ),
       child: Column(
@@ -714,7 +725,7 @@ class _BudgetsScreenState extends State<BudgetsScreen> {
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
                   color: color,
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
                 ),
                 child: Text(
                   '${usagePercent.toInt()}%',
@@ -751,7 +762,10 @@ class _BudgetsScreenState extends State<BudgetsScreen> {
       ),
       builder: (context) {
         final ctrl = context.read<BudgetController>();
-        return AddBudgetModal(categories: ctrl.categories, initialBudget: budget);
+        return AddBudgetModal(
+          categories: ctrl.categories,
+          initialBudget: budget,
+        );
       },
     );
     if (result == true && mounted) {
@@ -761,6 +775,7 @@ class _BudgetsScreenState extends State<BudgetsScreen> {
   }
 
   Future<void> _confirmDeleteBudget(Map<String, dynamic> budget) async {
+    final l10n = AppLocalizations.of(context);
     final id = (budget['budget_id_232143'] ?? budget['id'])?.toString();
     if (id == null) return;
 
@@ -820,7 +835,7 @@ class _BudgetsScreenState extends State<BudgetsScreen> {
               if (context.mounted) {
                 ErrorHandlerService.showSuccessSnackbar(
                   context,
-                  'Budget berhasil dihapus.',
+                  l10n?.budget_deleted ?? 'Budget berhasil dihapus.',
                 );
               }
             } catch (retryError) {

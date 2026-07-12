@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
+import 'package:financial_app/l10n/app_localizations.dart';
 import 'package:financial_app/services/data/account_data_service.dart';
 import 'package:financial_app/utils/design_tokens.dart';
 
@@ -74,12 +75,13 @@ class _AccountSectionState extends State<AccountSection> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     if (_isLoading) {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Akun',
+            l10n?.account ?? 'Akun',
             style: GoogleFonts.poppins(
               color: Colors.white,
               fontSize: 16,
@@ -102,7 +104,7 @@ class _AccountSectionState extends State<AccountSection> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Akun',
+          l10n?.account ?? 'Akun',
           style: GoogleFonts.poppins(
             color: Colors.white,
             fontSize: 16,
@@ -126,7 +128,7 @@ class _AccountSectionState extends State<AccountSection> {
                       widget.selectedAccountId == null
                           ? DesignTokens.primaryColor.withValues(alpha: 0.3)
                           : DesignTokens.surfaceDark,
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
                   border: Border.all(
                     color:
                         widget.selectedAccountId == null
@@ -147,7 +149,7 @@ class _AccountSectionState extends State<AccountSection> {
                     ),
                     const SizedBox(width: 6),
                     Text(
-                      'Semua',
+                      l10n?.all ?? 'Semua',
                       style: GoogleFonts.poppins(
                         color:
                             widget.selectedAccountId == null
@@ -185,7 +187,7 @@ class _AccountSectionState extends State<AccountSection> {
                         isSelected
                             ? accountColor.withValues(alpha: 0.3)
                             : DesignTokens.surfaceDark,
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
                     border: Border.all(
                       color: isSelected ? accountColor : Colors.grey[700]!,
                     ),

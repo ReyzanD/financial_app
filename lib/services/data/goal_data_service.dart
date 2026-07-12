@@ -288,9 +288,7 @@ class GoalDataService {
   }
 
   /// Get contributions for a specific goal
-  Future<List<Map<String, dynamic>>> getGoalContributions(
-    String goalId,
-  ) async {
+  Future<List<Map<String, dynamic>>> getGoalContributions(String goalId) async {
     try {
       final db = await _dbService.database;
       final contributions = await db.rawQuery(

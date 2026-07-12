@@ -26,7 +26,9 @@ class SubscriptionTrackerService {
     SubscriptionModel subscription,
   ) async {
     try {
-      final result = await _subscriptionData.addSubscription(subscription.toMap());
+      final result = await _subscriptionData.addSubscription(
+        subscription.toMap(),
+      );
       final created = SubscriptionModel.fromMap(
         result['subscription'] as Map<String, dynamic>,
       );

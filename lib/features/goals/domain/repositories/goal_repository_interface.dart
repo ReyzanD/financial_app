@@ -8,7 +8,11 @@ abstract class GoalRepositoryInterface {
   Future<void> deleteGoal(String id);
   Future<Map<String, dynamic>> getSummary();
   Future<Map<String, dynamic>> addContribution(
-      String goalId, double amount, {String? accountId, String? note});
+    String goalId,
+    double amount, {
+    String? accountId,
+    String? note,
+  });
   Future<List<Map<String, dynamic>>> getContributions(String goalId);
   Future<double> getTotalContributions();
 }

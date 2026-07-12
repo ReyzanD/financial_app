@@ -7,6 +7,8 @@ import 'package:financial_app/utils/form_validators.dart';
 import 'package:intl/intl.dart';
 import 'package:financial_app/l10n/app_localizations.dart';
 import 'package:financial_app/utils/design_tokens.dart';
+import 'package:financial_app/utils/dropdown_helper.dart';
+import 'package:financial_app/utils/date_picker_helper.dart';
 
 class AddGoalModal extends StatefulWidget {
   final Map<String, dynamic>? initialGoal;
@@ -88,12 +90,15 @@ class _AddGoalModalState extends State<AddGoalModal> {
     final initial = widget.initialGoal;
     if (initial != null) {
       // DB uses suffixed _232143 keys; fall back to clean keys for flexibility
-      final name = initial['name_232143']?.toString() ?? initial['name']?.toString();
+      final name =
+          initial['name_232143']?.toString() ?? initial['name']?.toString();
       if (name != null) {
         _nameController.text = name;
       }
 
-      final description = initial['description_232143']?.toString() ?? initial['description']?.toString();
+      final description =
+          initial['description_232143']?.toString() ??
+          initial['description']?.toString();
       if (description != null) {
         _descriptionController.text = description;
       }
@@ -102,7 +107,9 @@ class _AddGoalModalState extends State<AddGoalModal> {
       targetValue ??= initial['target_amount'] as num?;
       targetValue ??= initial['target'] as num?;
       if (targetValue != null) {
-        _targetAmountController.text = targetValue.toDouble().toStringAsFixed(0);
+        _targetAmountController.text = targetValue.toDouble().toStringAsFixed(
+          0,
+        );
       }
 
       final monthlyTargetValue =
@@ -111,12 +118,19 @@ class _AddGoalModalState extends State<AddGoalModal> {
         _monthlyTargetController.text = monthlyTargetValue.toString();
       }
 
-      final type = initial['goal_type_232143']?.toString() ?? initial['goal_type']?.toString() ?? initial['type']?.toString() ?? '';
+      final type =
+          initial['goal_type_232143']?.toString() ??
+          initial['goal_type']?.toString() ??
+          initial['type']?.toString() ??
+          '';
       if (type.isNotEmpty) {
         _selectedType = type;
       }
 
-      final deadlineStr = initial['target_date_232143']?.toString() ?? initial['target_date']?.toString() ?? initial['deadline']?.toString();
+      final deadlineStr =
+          initial['target_date_232143']?.toString() ??
+          initial['target_date']?.toString() ??
+          initial['deadline']?.toString();
       if (deadlineStr != null && deadlineStr.isNotEmpty) {
         try {
           _targetDate = DateTime.parse(deadlineStr);
@@ -145,24 +159,11 @@ class _AddGoalModalState extends State<AddGoalModal> {
   }
 
   Future<void> _selectTargetDate() async {
-    final DateTime? picked = await showDatePicker(
+    final DateTime? picked = await DatePickerHelper.showDarkDatePicker(
       context: context,
       initialDate: _targetDate,
       firstDate: DateTime.now(),
       lastDate: DateTime.now().add(const Duration(days: 3650)),
-      builder: (context, child) {
-        return Theme(
-          data: ThemeData.dark().copyWith(
-            colorScheme: const ColorScheme.dark(
-              primary: DesignTokens.primaryColor,
-              onPrimary: Colors.white,
-              surface: DesignTokens.surfaceDark,
-              onSurface: Colors.white,
-            ),
-          ),
-          child: child!,
-        );
-      },
     );
     if (picked != null && picked != _targetDate) {
       setState(() {
@@ -181,6 +182,8 @@ class _AddGoalModalState extends State<AddGoalModal> {
 
     LoggerService.debug('Form validated successfully');
 
+    final l10n = AppLocalizations.of(context);
+
     setState(() {
       _isLoading = true;
     });
@@ -198,7 +201,9 @@ class _AddGoalModalState extends State<AddGoalModal> {
       };
 
       if (_isEdit) {
-        final goalId = widget.initialGoal?['goal_id_232143']?.toString() ?? widget.initialGoal?['id']?.toString();
+        final goalId =
+            widget.initialGoal?['goal_id_232143']?.toString() ??
+            widget.initialGoal?['id']?.toString();
         if (goalId == null || goalId.isEmpty) {
           throw Exception('ID goal tidak valid');
         }
@@ -211,7 +216,7 @@ class _AddGoalModalState extends State<AddGoalModal> {
         if (mounted) {
           ErrorHandlerService.showSuccessSnackbar(
             context,
-            'Target berhasil diperbarui!',
+            l10n?.target_updated_successfully ?? 'Target berhasil diperbarui!',
           );
           Navigator.pop(context, true);
         }
@@ -228,7 +233,7 @@ class _AddGoalModalState extends State<AddGoalModal> {
         if (mounted) {
           ErrorHandlerService.showSuccessSnackbar(
             context,
-            'Target berhasil ditambahkan!',
+            l10n?.target_added_successfully ?? 'Target berhasil ditambahkan!',
           );
           Navigator.pop(context, true);
         }
@@ -253,6 +258,7 @@ class _AddGoalModalState extends State<AddGoalModal> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Container(
       padding: EdgeInsets.only(
         bottom: MediaQuery.of(context).viewInsets.bottom,
@@ -295,7 +301,7 @@ class _AddGoalModalState extends State<AddGoalModal> {
                   filled: true,
                   fillColor: DesignTokens.surfaceDark,
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
                     borderSide: BorderSide.none,
                   ),
                 ),
@@ -312,15 +318,8 @@ class _AddGoalModalState extends State<AddGoalModal> {
                 initialValue: _selectedType,
                 dropdownColor: DesignTokens.surfaceDark,
                 style: const TextStyle(color: Colors.white),
-                decoration: InputDecoration(
+                decoration: DropdownHelper.darkDropdownDecoration(
                   labelText: 'Tipe Target',
-                  labelStyle: TextStyle(color: Colors.grey[400]),
-                  filled: true,
-                  fillColor: DesignTokens.surfaceDark,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide.none,
-                  ),
                 ),
                 items:
                     _getGoalTypes(context).map<DropdownMenuItem<String>>((
@@ -360,7 +359,7 @@ class _AddGoalModalState extends State<AddGoalModal> {
                   filled: true,
                   fillColor: DesignTokens.surfaceDark,
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
                     borderSide: BorderSide.none,
                   ),
                 ),
@@ -379,7 +378,7 @@ class _AddGoalModalState extends State<AddGoalModal> {
                   filled: true,
                   fillColor: DesignTokens.surfaceDark,
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
                     borderSide: BorderSide.none,
                   ),
                 ),
@@ -390,10 +389,10 @@ class _AddGoalModalState extends State<AddGoalModal> {
               InkWell(
                 onTap: _selectTargetDate,
                 child: Container(
-                  padding: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.all(DesignTokens.spacing4),
                   decoration: BoxDecoration(
                     color: DesignTokens.surfaceDark,
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
                   ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -459,7 +458,7 @@ class _AddGoalModalState extends State<AddGoalModal> {
                   filled: true,
                   fillColor: DesignTokens.surfaceDark,
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
                     borderSide: BorderSide.none,
                   ),
                 ),
@@ -474,7 +473,7 @@ class _AddGoalModalState extends State<AddGoalModal> {
                   foregroundColor: Colors.white,
                   disabledBackgroundColor: Colors.grey[800],
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
                   ),
                   minimumSize: const Size(double.infinity, 50),
                 ),
@@ -488,7 +487,7 @@ class _AddGoalModalState extends State<AddGoalModal> {
                             color: Colors.white,
                           ),
                         )
-                        : Text(AppLocalizations.of(context)!.add_target),
+                        : Text(l10n?.add_target ?? 'Tambah Target'),
               ),
               const SizedBox(height: 20),
             ],

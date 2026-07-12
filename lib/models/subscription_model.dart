@@ -45,22 +45,6 @@ class SubscriptionModel {
     return nextRenewal!.difference(DateTime.now()).inDays;
   }
 
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'name': name,
-      'cost': cost,
-      'cycle': cycle,
-      'category': category,
-      'start_date': startDate.toIso8601String(),
-      'next_renewal': nextRenewal?.toIso8601String(),
-      'is_active': isActive ? 1 : 0,
-      'notes': notes,
-      'account_id': accountId,
-      'created_at': createdAt.toIso8601String(),
-    };
-  }
-
   Map<String, dynamic> toMap() {
     return {
       'subscription_id_232143': id,

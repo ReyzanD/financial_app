@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:financial_app/l10n/app_localizations.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:financial_app/utils/design_tokens.dart';
 
@@ -17,23 +18,24 @@ class PeriodSelector extends StatefulWidget {
 }
 
 class _PeriodSelectorState extends State<PeriodSelector> {
-  final List<String> _periods = [
-    'Minggu Ini',
-    'Bulan Ini',
-    '3 Bulan',
-    'Tahun Ini',
-  ];
-
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final periods = [
+      l10n?.this_week ?? 'Minggu Ini',
+      l10n?.this_month ?? 'Bulan Ini',
+      '3 Bulan',
+      l10n?.this_year ?? 'Tahun Ini',
+    ];
+
     return SizedBox(
       height: 40,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(horizontal: 16),
-        itemCount: _periods.length,
+        itemCount: periods.length,
         itemBuilder: (context, index) {
-          final period = _periods[index];
+          final period = periods[index];
           final isSelected = widget.selectedPeriod == period;
 
           return GestureDetector(
@@ -51,7 +53,9 @@ class _PeriodSelectorState extends State<PeriodSelector> {
                 borderRadius: BorderRadius.circular(20),
                 border: Border.all(
                   color:
-                      isSelected ? DesignTokens.primaryColor : DesignTokens.borderDark,
+                      isSelected
+                          ? DesignTokens.primaryColor
+                          : DesignTokens.borderDark,
                 ),
               ),
               child: Text(

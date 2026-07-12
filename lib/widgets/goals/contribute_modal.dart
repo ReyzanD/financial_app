@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
+import 'package:financial_app/l10n/app_localizations.dart';
 import 'package:financial_app/services/data/goal_data_service.dart';
 import 'package:financial_app/services/account_service.dart';
 import 'package:financial_app/models/account_model.dart';
@@ -76,11 +77,12 @@ class _ContributeModalState extends State<ContributeModal> {
   }
 
   Future<void> _contributeToGoal() async {
+    final l10n = AppLocalizations.of(context);
     final amountText = _amountController.text.replaceAll(RegExp(r'[^0-9]'), '');
     if (amountText.isEmpty) {
       ErrorHandlerService.showWarningSnackbar(
         context,
-        'Masukkan jumlah kontribusi',
+        l10n?.enter_contribution_amount ?? 'Masukkan jumlah kontribusi',
       );
       return;
     }
@@ -89,7 +91,7 @@ class _ContributeModalState extends State<ContributeModal> {
     if (amount <= 0) {
       ErrorHandlerService.showWarningSnackbar(
         context,
-        'Jumlah harus lebih dari 0',
+        l10n?.amount_must_be_greater_than_zero ?? 'Jumlah harus lebih dari 0',
       );
       return;
     }
@@ -116,7 +118,8 @@ class _ContributeModalState extends State<ContributeModal> {
 
       ErrorHandlerService.showSuccessSnackbar(
         context,
-        'Berhasil menambah ${CurrencyFormatter.formatRupiah(amount)}${_selectedAccount != null ? ' dari ${_selectedAccount!.name}' : ''}',
+        l10n?.success_added_contribution ??
+            'Berhasil menambah ${CurrencyFormatter.formatRupiah(amount)}${_selectedAccount != null ? ' dari ${_selectedAccount!.name}' : ''}',
       );
       Navigator.pop(context, true);
     } catch (e) {
@@ -140,6 +143,7 @@ class _ContributeModalState extends State<ContributeModal> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final currentAmount =
         ((widget.goal['current_amount_232143'] ??
                     widget.goal['current_amount'] ??
@@ -171,7 +175,7 @@ class _ContributeModalState extends State<ContributeModal> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Tambah Kontribusi',
+                  l10n?.add_contribution ?? 'Tambah Kontribusi',
                   style: GoogleFonts.poppins(
                     color: Colors.white,
                     fontSize: 20,
@@ -188,10 +192,10 @@ class _ContributeModalState extends State<ContributeModal> {
 
             // Goal Info
             Container(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(DesignTokens.spacing4),
               decoration: BoxDecoration(
                 color: DesignTokens.surfaceDark,
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
                 border: Border.all(
                   color: DesignTokens.primaryColor.withValues(alpha: 0.3),
                 ),
@@ -273,7 +277,7 @@ class _ContributeModalState extends State<ContributeModal> {
                 padding: const EdgeInsets.symmetric(horizontal: 12),
                 decoration: BoxDecoration(
                   color: DesignTokens.surfaceDark,
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
                   border: Border.all(color: DesignTokens.borderDark),
                 ),
                 child: DropdownButtonHideUnderline(
@@ -427,12 +431,12 @@ class _ContributeModalState extends State<ContributeModal> {
                           vertical: 10,
                         ),
                         decoration: BoxDecoration(
-                          color: DesignTokens.primaryColor.withValues(alpha: 0.2),
+                          color: DesignTokens.primaryColor.withValues(
+                            alpha: 0.2,
+                          ),
                           borderRadius: BorderRadius.circular(20),
                           border: Border.all(
-                            color: const Color(
-                              0xFF8B5FBF,
-                            ).withValues(alpha: 0.5),
+                            color: DesignTokens.primaryColor.withValues(alpha: 0.5),
                           ),
                         ),
                         child: Text(
@@ -451,7 +455,7 @@ class _ContributeModalState extends State<ContributeModal> {
 
             // Amount Input
             Text(
-              'Jumlah Kontribusi',
+              l10n?.contribution_amount ?? 'Jumlah Kontribusi',
               style: GoogleFonts.poppins(
                 color: Colors.white,
                 fontSize: 14,
@@ -469,15 +473,15 @@ class _ContributeModalState extends State<ContributeModal> {
                 filled: true,
                 fillColor: DesignTokens.surfaceDark,
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
                   borderSide: BorderSide(color: DesignTokens.borderDark),
                 ),
                 enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
                   borderSide: BorderSide(color: DesignTokens.borderDark),
                 ),
                 focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
                   borderSide: const BorderSide(
                     color: DesignTokens.primaryColor,
                     width: 2,
@@ -507,20 +511,20 @@ class _ContributeModalState extends State<ContributeModal> {
               maxLines: 2,
               style: GoogleFonts.poppins(color: Colors.white, fontSize: 14),
               decoration: InputDecoration(
-                hintText: 'Tambahkan catatan...',
+                hintText: l10n?.add_note_hint ?? 'Tambahkan catatan...',
                 hintStyle: GoogleFonts.poppins(color: Colors.grey[600]),
                 filled: true,
                 fillColor: DesignTokens.surfaceDark,
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
                   borderSide: BorderSide(color: DesignTokens.borderDark),
                 ),
                 enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
                   borderSide: BorderSide(color: DesignTokens.borderDark),
                 ),
                 focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
                   borderSide: const BorderSide(
                     color: DesignTokens.primaryColor,
                     width: 2,
@@ -539,14 +543,14 @@ class _ContributeModalState extends State<ContributeModal> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: DesignTokens.primaryColor,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
                   ),
                 ),
                 child:
                     _isLoading
                         ? const CircularProgressIndicator(color: Colors.white)
                         : Text(
-                          'Tambah Kontribusi',
+                          l10n?.add_contribution ?? 'Tambah Kontribusi',
                           style: GoogleFonts.poppins(
                             color: Colors.white,
                             fontSize: 16,

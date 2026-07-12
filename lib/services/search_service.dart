@@ -1,10 +1,11 @@
 import 'package:financial_app/services/api_service.dart';
 import 'package:financial_app/services/logger_service.dart';
 import 'package:financial_app/models/transaction_model.dart';
+import 'package:financial_app/core/di/service_locator.dart';
 
 /// Service untuk global search functionality
 class SearchService {
-  final ApiService _apiService = ApiService();
+  final ApiService _apiService = getIt<ApiService>();
 
   /// Search transactions dengan query
   Future<List<TransactionModel>> searchTransactions({

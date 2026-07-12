@@ -94,22 +94,25 @@ class ThemeService extends ChangeNotifier {
       cardTheme: CardThemeData(
         color: Colors.white,
         elevation: 2,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(DesignTokens.radiusLarge)),
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: const Color(0xFFF5F5F5),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
           borderSide: BorderSide(color: Colors.grey[300]!),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
           borderSide: BorderSide(color: Colors.grey[300]!),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: DesignTokens.primaryColor, width: 2),
+          borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+          borderSide: const BorderSide(
+            color: DesignTokens.primaryColor,
+            width: 2,
+          ),
         ),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
@@ -119,7 +122,7 @@ class ThemeService extends ChangeNotifier {
           elevation: 0,
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
           ),
         ),
       ),
@@ -167,22 +170,25 @@ class ThemeService extends ChangeNotifier {
       cardTheme: CardThemeData(
         color: DesignTokens.surfaceDark,
         elevation: 0,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(DesignTokens.radiusLarge)),
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: DesignTokens.surfaceDark,
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
           borderSide: BorderSide(color: DesignTokens.borderDark),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
           borderSide: BorderSide(color: DesignTokens.borderDark),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: DesignTokens.primaryColor, width: 2),
+          borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+          borderSide: const BorderSide(
+            color: DesignTokens.primaryColor,
+            width: 2,
+          ),
         ),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
@@ -192,7 +198,7 @@ class ThemeService extends ChangeNotifier {
           elevation: 0,
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
           ),
         ),
       ),

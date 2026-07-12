@@ -128,19 +128,38 @@ class BudgetDataService {
       final db = await _dbService.database;
       final now = DateTime.now().toIso8601String();
 
+      // If the budget amount is being updated, recalculate remaining amount
+      // using the new amount minus current spent_amount_232143
+      double? newRemaining;
+      if (budgetData['amount'] != null) {
+        final currentBudget = await db.query(
+          'budgets_232143',
+          where: 'budget_id_232143 = ? AND user_id_232143 = ?',
+          whereArgs: [budgetId, userId],
+          limit: 1,
+        );
+        if (currentBudget.isNotEmpty) {
+          final currentSpent =
+              (currentBudget.first['spent_amount_232143'] as num?)
+                      ?.toDouble() ??
+                  0.0;
+          final newAmount = (budgetData['amount'] as num).toDouble();
+          newRemaining = newAmount - currentSpent;
+        }
+      }
+
       final data = <String, dynamic>{
         if (budgetData['category_id'] != null)
           'category_id_232143': budgetData['category_id'],
-        if (budgetData['amount'] != null)
-          'amount_232143': budgetData['amount'],
-        if (budgetData['period'] != null)
-          'period_232143': budgetData['period'],
+        if (budgetData['amount'] != null) 'amount_232143': budgetData['amount'],
+        if (budgetData['period'] != null) 'period_232143': budgetData['period'],
         if (budgetData['period_start'] != null)
           'period_start_232143': budgetData['period_start'],
         if (budgetData['period_end'] != null)
           'period_end_232143': budgetData['period_end'],
         if (budgetData['is_active'] != null)
           'is_active_232143': budgetData['is_active'] ? 1 : 0,
+        if (newRemaining != null) 'remaining_amount_232143': newRemaining,
         'updated_at_232143': now,
       };
 
@@ -208,9 +227,11 @@ class BudgetDataService {
       // Find the budget whose period covers this transaction date
       Map<String, dynamic>? matchingBudget;
       for (final budget in budgets) {
-        final periodStartStr = budget['period_start_232143']?.toString() ??
+        final periodStartStr =
+            budget['period_start_232143']?.toString() ??
             budget['period_start']?.toString();
-        final periodEndStr = budget['period_end_232143']?.toString() ??
+        final periodEndStr =
+            budget['period_end_232143']?.toString() ??
             budget['period_end']?.toString();
         if (periodStartStr == null || periodEndStr == null) continue;
 
@@ -233,7 +254,8 @@ class BudgetDataService {
 
       if (matchingBudget == null) return false;
 
-      final budgetId = matchingBudget['budget_id_232143']?.toString() ??
+      final budgetId =
+          matchingBudget['budget_id_232143']?.toString() ??
           matchingBudget['budget_id']?.toString() ??
           '';
       if (budgetId.isEmpty) return false;
@@ -241,7 +263,8 @@ class BudgetDataService {
       final currentSpent =
           ((matchingBudget['spent_amount_232143'] ??
                       matchingBudget['spent_amount'] ??
-                      0) as num)
+                      0)
+                  as num)
               .toDouble();
       final budgetAmount =
           ((matchingBudget['amount_232143'] ?? matchingBudget['amount'] ?? 0)

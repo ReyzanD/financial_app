@@ -32,7 +32,7 @@ class BudgetCategoryCard extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
         color: DesignTokens.surfaceDark,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(DesignTokens.radiusLarge),
         border: Border.all(color: DesignTokens.borderDark),
       ),
       child: Theme(
@@ -43,7 +43,7 @@ class BudgetCategoryCard extends StatelessWidget {
             height: 48,
             decoration: BoxDecoration(
               color: (category['color'] as Color).withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
             ),
             child: Icon(
               category['icon'] as IconData,

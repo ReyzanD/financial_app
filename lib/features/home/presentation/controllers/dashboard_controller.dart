@@ -1,0 +1,53 @@
+import 'package:flutter/material.dart';
+import 'package:financial_app/state/app_state.dart';
+import 'package:financial_app/core/di/service_locator.dart';
+
+/// Coordinates dashboard-level refresh orchestration.
+///
+/// Dashboard widgets currently fetch their own data from ApiService
+/// directly. This controller provides a single refresh coordination
+/// point so the home screen and FAB don't need to reach into AppState
+/// directly for that purpose.
+class DashboardController extends ChangeNotifier {
+  bool _isRefreshing = false;
+  bool get isRefreshing => _isRefreshing;
+
+  String? _error;
+  String? get error => _error;
+
+  /// Refresh all dashboard data.
+  ///
+  /// Triggers AppState's refreshData (which feeds DataService streams)
+  /// and increments the refresh counter so downstream widgets re-fetch.
+  Future<void> refresh() async {
+    _isRefreshing = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      await getIt<AppState>().refreshData(forceRefresh: true);
+      _error = null;
+    } catch (e) {
+      _error = e.toString();
+    } finally {
+      _isRefreshing = false;
+      notifyListeners();
+    }
+  }
+
+  /// Load initial data on first launch.
+  Future<void> loadInitialData() async {
+    _isRefreshing = true;
+    notifyListeners();
+
+    try {
+      await getIt<AppState>().loadInitialData();
+      _error = null;
+    } catch (e) {
+      _error = e.toString();
+    } finally {
+      _isRefreshing = false;
+      notifyListeners();
+    }
+  }
+}

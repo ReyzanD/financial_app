@@ -9,6 +9,7 @@ import 'package:financial_app/services/logger_service.dart';
 import 'package:financial_app/services/error_handler_service.dart';
 import 'package:financial_app/models/location_data.dart';
 import 'package:financial_app/utils/design_tokens.dart';
+import 'package:financial_app/l10n/app_localizations.dart';
 
 class LocationPickerMap extends StatefulWidget {
   final LocationData? initialLocation;
@@ -43,10 +44,11 @@ class _LocationPickerMapState extends State<LocationPickerMap> {
   }
 
   Future<void> _searchLocation(String query) async {
+    final l10n = AppLocalizations.of(context);
     if (query.trim().isEmpty) {
       ErrorHandlerService.showWarningSnackbar(
         context,
-        'Masukkan nama tempat untuk mencari',
+        l10n?.search_placeholder ?? 'Masukkan nama tempat untuk mencari',
       );
       return;
     }
@@ -74,7 +76,8 @@ class _LocationPickerMapState extends State<LocationPickerMap> {
         if (!mounted) return;
         ErrorHandlerService.showSuccessSnackbar(
           context,
-          '${results.length} lokasi ditemukan - pilih dari daftar',
+          l10n?.search_results_found(results.length) ??
+              '${results.length} lokasi ditemukan - pilih dari daftar',
         );
       } else {
         LoggerService.warning('❌ No results found for: $query');
@@ -85,7 +88,7 @@ class _LocationPickerMapState extends State<LocationPickerMap> {
         if (!mounted) return;
         ErrorHandlerService.showWarningSnackbar(
           context,
-          'Lokasi "$query" tidak ditemukan',
+          l10n?.location_not_found(query) ?? 'Lokasi "$query" tidak ditemukan',
         );
       }
     } catch (e, stackTrace) {
@@ -97,7 +100,7 @@ class _LocationPickerMapState extends State<LocationPickerMap> {
       if (!mounted) return;
       ErrorHandlerService.showErrorSnackbar(
         context,
-        'Gagal mencari: ${ErrorHandlerService.getUserFriendlyMessage(e)}',
+        '${l10n?.failed_to_search ?? 'Gagal mencari'}: ${ErrorHandlerService.getUserFriendlyMessage(e)}',
       );
     } finally {
       setState(() => _isSearching = false);
@@ -130,19 +133,20 @@ class _LocationPickerMapState extends State<LocationPickerMap> {
   }
 
   void _onMapTap(TapPosition tapPosition, LatLng position) {
+    final l10n = AppLocalizations.of(context);
     setState(() {
       _selectedPosition = position;
-      _selectedAddress = null; // Will be fetched if needed
+      _selectedAddress = null;
     });
 
-    // Show snackbar with coordinates
     ErrorHandlerService.showInfoSnackbar(
       context,
-      'Lokasi dipilih: ${position.latitude.toStringAsFixed(6)}, ${position.longitude.toStringAsFixed(6)}',
+      '${l10n?.location_selected ?? 'Lokasi dipilih'}: ${position.latitude.toStringAsFixed(6)}, ${position.longitude.toStringAsFixed(6)}',
     );
   }
 
   void _moveToCurrentLocation() async {
+    final l10n = AppLocalizations.of(context);
     final position = await LocationService.getCurrentLatLng();
     if (position != null) {
       final latLng = LatLng(position.latitude, position.longitude);
@@ -156,25 +160,28 @@ class _LocationPickerMapState extends State<LocationPickerMap> {
       if (!mounted) return;
       ErrorHandlerService.showErrorSnackbar(
         context,
-        'Tidak dapat mendapatkan lokasi saat ini',
+        l10n?.cannot_get_current_location ??
+            'Tidak dapat mendapatkan lokasi saat ini',
       );
     }
   }
 
   void _confirmLocation() {
+    final l10n = AppLocalizations.of(context);
     if (_selectedPosition == null) {
       ErrorHandlerService.showWarningSnackbar(
         context,
-        'Pilih lokasi di peta terlebih dahulu',
+        l10n?.select_location_on_map_first ??
+            'Pilih lokasi di peta terlebih dahulu',
       );
       return;
     }
 
-    // Return the selected location
     final locationData = LocationData(
       latitude: _selectedPosition!.latitude,
       longitude: _selectedPosition!.longitude,
-      placeName: _selectedAddress ?? 'Lokasi Terpilih',
+      placeName:
+          _selectedAddress ?? (l10n?.selected_location ?? 'Lokasi Terpilih'),
       address: _selectedAddress,
     );
 
@@ -182,6 +189,7 @@ class _LocationPickerMapState extends State<LocationPickerMap> {
   }
 
   void _selectSearchResult(Map<String, dynamic> result) {
+    final l10n = AppLocalizations.of(context);
     final lat = result['lat'] as double;
     final lng = result['lng'] as double;
     final displayName = result['displayName'] as String;
@@ -199,7 +207,8 @@ class _LocationPickerMapState extends State<LocationPickerMap> {
 
     ErrorHandlerService.showSuccessSnackbar(
       context,
-      'Dipilih: ${displayName.split(',').first}',
+      l10n?.selected_prefix(displayName.split(',').first) ??
+          'Dipilih: ${displayName.split(',').first}',
     );
   }
 
@@ -213,7 +222,7 @@ class _LocationPickerMapState extends State<LocationPickerMap> {
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
         decoration: BoxDecoration(
           color: DesignTokens.primaryColor.withValues(alpha: 0.2),
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(DesignTokens.radiusLarge),
           border: Border.all(
             color: DesignTokens.primaryColor.withValues(alpha: 0.5),
             width: 1,
@@ -270,12 +279,13 @@ class _LocationPickerMapState extends State<LocationPickerMap> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
       backgroundColor: DesignTokens.backgroundDark,
       appBar: AppBar(
         backgroundColor: DesignTokens.backgroundDark,
         title: Text(
-          'Pilih Lokasi',
+          l10n?.pick_location ?? 'Pilih Lokasi',
           style: GoogleFonts.poppins(
             color: Colors.white,
             fontWeight: FontWeight.w600,
@@ -288,9 +298,12 @@ class _LocationPickerMapState extends State<LocationPickerMap> {
         actions: [
           TextButton.icon(
             onPressed: _confirmLocation,
-            icon: const Icon(Iconsax.tick_circle, color: DesignTokens.primaryColor),
+            icon: const Icon(
+              Iconsax.tick_circle,
+              color: DesignTokens.primaryColor,
+            ),
             label: Text(
-              'Pilih',
+              l10n?.select ?? 'Pilih',
               style: GoogleFonts.poppins(
                 color: DesignTokens.primaryColor,
                 fontWeight: FontWeight.w600,
@@ -338,7 +351,7 @@ class _LocationPickerMapState extends State<LocationPickerMap> {
                       ),
                       decoration: BoxDecoration(
                         color: DesignTokens.surfaceDark,
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
                         boxShadow: [
                           BoxShadow(
                             color: Colors.black.withValues(alpha: 0.3),
@@ -363,7 +376,9 @@ class _LocationPickerMapState extends State<LocationPickerMap> {
                                 fontSize: 14,
                               ),
                               decoration: InputDecoration(
-                                hintText: 'Cari tempat (contoh: Pantai Losari)',
+                                hintText:
+                                    l10n?.search_places_hint ??
+                                    'Cari tempat (contoh: Pantai Losari)',
                                 hintStyle: GoogleFonts.poppins(
                                   color: Colors.grey[500],
                                   fontSize: 13,
@@ -392,7 +407,7 @@ class _LocationPickerMapState extends State<LocationPickerMap> {
                               ),
                               onPressed:
                                   () => _searchLocation(_searchController.text),
-                              tooltip: 'Cari',
+                              tooltip: l10n?.search ?? 'Cari',
                             ),
                         ],
                       ),
@@ -418,7 +433,7 @@ class _LocationPickerMapState extends State<LocationPickerMap> {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Text(
-                              'Cepat:',
+                              l10n?.quick_search_label ?? 'Cepat:',
                               style: GoogleFonts.poppins(
                                 color: Colors.grey[400],
                                 fontSize: 11,
@@ -451,7 +466,7 @@ class _LocationPickerMapState extends State<LocationPickerMap> {
                         constraints: const BoxConstraints(maxHeight: 300),
                         decoration: BoxDecoration(
                           color: DesignTokens.surfaceDark,
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
                           boxShadow: [
                             BoxShadow(
                               color: Colors.black.withValues(alpha: 0.5),
@@ -484,7 +499,10 @@ class _LocationPickerMapState extends State<LocationPickerMap> {
                                   const SizedBox(width: 8),
                                   Expanded(
                                     child: Text(
-                                      '${_searchResults.length} Lokasi Ditemukan',
+                                      l10n?.locations_found_title(
+                                            _searchResults.length,
+                                          ) ??
+                                          '${_searchResults.length} Lokasi Ditemukan',
                                       style: GoogleFonts.poppins(
                                         color: Colors.white,
                                         fontSize: 13,
@@ -504,7 +522,7 @@ class _LocationPickerMapState extends State<LocationPickerMap> {
                                         _searchResults = [];
                                       });
                                     },
-                                    tooltip: 'Tutup',
+                                    tooltip: l10n?.close ?? 'Tutup',
                                   ),
                                 ],
                               ),
@@ -555,9 +573,7 @@ class _LocationPickerMapState extends State<LocationPickerMap> {
                                           Container(
                                             padding: const EdgeInsets.all(8),
                                             decoration: BoxDecoration(
-                                              color: const Color(
-                                                0xFF8B5FBF,
-                                              ).withValues(alpha: 0.2),
+                                              color: DesignTokens.primaryColor.withValues(alpha: 0.2),
                                               borderRadius:
                                                   BorderRadius.circular(8),
                                             ),
@@ -624,10 +640,10 @@ class _LocationPickerMapState extends State<LocationPickerMap> {
                       left: 16,
                       right: 16,
                       child: Container(
-                        padding: const EdgeInsets.all(16),
+                        padding: const EdgeInsets.all(DesignTokens.spacing4),
                         decoration: BoxDecoration(
                           color: DesignTokens.surfaceDark,
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
                           boxShadow: [
                             BoxShadow(
                               color: Colors.black.withValues(alpha: 0.3),
@@ -649,7 +665,7 @@ class _LocationPickerMapState extends State<LocationPickerMap> {
                                 ),
                                 const SizedBox(width: 8),
                                 Text(
-                                  'Lokasi Terpilih',
+                                  l10n?.selected_location ?? 'Lokasi Terpilih',
                                   style: GoogleFonts.poppins(
                                     color: Colors.white,
                                     fontSize: 14,

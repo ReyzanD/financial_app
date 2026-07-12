@@ -7,7 +7,7 @@ class ChallengeRepository implements ChallengeRepositoryInterface {
   final ChallengeDataService _challengeData;
 
   ChallengeRepository({ChallengeDataService? challengeData})
-      : _challengeData = challengeData ?? ChallengeDataService();
+    : _challengeData = challengeData ?? ChallengeDataService();
 
   @override
   Future<List<ChallengeModel>> getChallenges({bool activeOnly = true}) async {

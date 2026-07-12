@@ -7,5 +7,6 @@ class ForecastRepository implements ForecastRepositoryInterface {
   ForecastRepository({ApiService? api}) : _api = api ?? getIt<ApiService>();
 
   @override
-  Future<Map<String, dynamic>> getTransactions({int limit = 1000}) => _api.getTransactions(limit: limit);
+  Future<Map<String, dynamic>> getTransactions({int limit = 1000}) =>
+      _api.getTransactions(limit: limit);
 }

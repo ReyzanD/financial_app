@@ -99,6 +99,7 @@ class BiometricService {
   }
 
   /// Authenticate dengan biometric
+  /// TODO: Inject l10n (requires BuildContext) for 'authentication_required' key
   Future<bool> authenticate({
     String reason = 'Autentikasi diperlukan untuk melanjutkan',
     bool useErrorDialogs = true,

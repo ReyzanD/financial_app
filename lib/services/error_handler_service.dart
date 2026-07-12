@@ -8,6 +8,7 @@ class ErrorHandlerService {
   static String getUserFriendlyMessage(dynamic error) {
     final errorString = error.toString().toLowerCase();
 
+    // TODO: Localize - these messages should come from injectable AppLocalizations
     // Network errors
     if (errorString.contains('socketexception') ||
         errorString.contains('failed host lookup') ||
@@ -246,7 +247,7 @@ class ErrorHandlerService {
           (context) => AlertDialog(
             backgroundColor: DesignTokens.surfaceDark,
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(DesignTokens.radiusLarge),
             ),
             title: Row(
               children: [

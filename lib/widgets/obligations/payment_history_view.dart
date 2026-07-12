@@ -121,11 +121,11 @@ class _PaymentHistoryViewState extends State<PaymentHistoryView> {
         // Statistics Card
         if (_statistics['total_payments'] as int > 0) ...[
           Container(
-            padding: const EdgeInsets.all(16),
-            margin: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(DesignTokens.spacing4),
+            margin: const EdgeInsets.all(DesignTokens.spacing4),
             decoration: BoxDecoration(
               color: DesignTokens.surfaceDark,
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
               border: Border.all(
                 color: DesignTokens.primaryColor.withValues(alpha: 0.3),
               ),
@@ -328,10 +328,10 @@ class _PaymentHistoryViewState extends State<PaymentHistoryView> {
 
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(DesignTokens.spacing4),
       decoration: BoxDecoration(
         color: DesignTokens.surfaceDark,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
         border: Border.all(
           color:
               wasOnTime
@@ -349,7 +349,7 @@ class _PaymentHistoryViewState extends State<PaymentHistoryView> {
                   wasOnTime
                       ? Colors.green.withValues(alpha: 0.2)
                       : Colors.red.withValues(alpha: 0.2),
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
             ),
             child: Icon(
               wasOnTime ? Iconsax.tick_circle : Iconsax.warning_2,

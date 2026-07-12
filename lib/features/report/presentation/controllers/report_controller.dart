@@ -4,15 +4,32 @@ import 'package:financial_app/services/logger_service.dart';
 
 class ReportController extends ChangeNotifier {
   final ReportRepositoryInterface _r;
-  ReportController({required ReportRepositoryInterface repository}) : _r = repository;
+  ReportController({required ReportRepositoryInterface repository})
+    : _r = repository;
 
-  bool _isLoading = false; String? _error; Map<String, dynamic> _reportData = {};
-  bool get isLoading => _isLoading; String? get error => _error; Map<String, dynamic> get reportData => _reportData;
+  bool _isLoading = false;
+  String? _error;
+  Map<String, dynamic> _reportData = {};
+  bool get isLoading => _isLoading;
+  String? get error => _error;
+  Map<String, dynamic> get reportData => _reportData;
 
-  Future<void> generate({required DateTime start, required DateTime end, String type = 'summary'}) async {
-    _isLoading = true; _error = null; notifyListeners();
-    try { _reportData = await _r.generateReport(start: start, end: end, type: type); }
-    catch (e) { LoggerService.error('Error generating report', error: e); _error = e.toString(); }
-    finally { _isLoading = false; notifyListeners(); }
+  Future<void> generate({
+    required DateTime start,
+    required DateTime end,
+    String type = 'summary',
+  }) async {
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+    try {
+      _reportData = await _r.generateReport(start: start, end: end, type: type);
+    } catch (e) {
+      LoggerService.error('Error generating report', error: e);
+      _error = e.toString();
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
   }
 }

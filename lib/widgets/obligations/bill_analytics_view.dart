@@ -86,7 +86,7 @@ class _BillAnalyticsViewState extends State<BillAnalyticsView> {
     }
 
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(DesignTokens.spacing4),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -144,10 +144,10 @@ class _BillAnalyticsViewState extends State<BillAnalyticsView> {
     Color color,
   ) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(DesignTokens.spacing4),
       decoration: BoxDecoration(
         color: DesignTokens.surfaceDark,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
         border: Border.all(color: color.withValues(alpha: 0.3)),
       ),
       child: Column(
@@ -186,10 +186,10 @@ class _BillAnalyticsViewState extends State<BillAnalyticsView> {
     final total = breakdown.values.fold(0.0, (sum, amount) => sum + amount);
 
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(DesignTokens.spacing4),
       decoration: BoxDecoration(
         color: DesignTokens.surfaceDark,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
         border: Border.all(color: DesignTokens.borderDark),
       ),
       child: Column(
@@ -273,10 +273,10 @@ class _BillAnalyticsViewState extends State<BillAnalyticsView> {
         _analytics['monthlyTrends'] as List<Map<String, dynamic>>? ?? [];
 
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(DesignTokens.spacing4),
       decoration: BoxDecoration(
         color: DesignTokens.surfaceDark,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
         border: Border.all(color: DesignTokens.borderDark),
       ),
       child: Column(
@@ -360,10 +360,10 @@ class _BillAnalyticsViewState extends State<BillAnalyticsView> {
     }
 
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(DesignTokens.spacing4),
       decoration: BoxDecoration(
         color: DesignTokens.surfaceDark,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
         border: Border.all(color: DesignTokens.borderDark),
       ),
       child: Column(

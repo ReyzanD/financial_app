@@ -4,6 +4,7 @@ import 'package:financial_app/features/insights/domain/repositories/insights_rep
 import 'package:financial_app/services/spending_pattern_analyzer.dart';
 import 'package:financial_app/services/logger_service.dart';
 import 'package:financial_app/utils/design_tokens.dart';
+import 'package:financial_app/utils/key_normalizer.dart';
 import 'package:flutter/material.dart';
 
 class InsightsController extends ChangeNotifier {
@@ -13,8 +14,8 @@ class InsightsController extends ChangeNotifier {
   InsightsController({
     required InsightsRepositoryInterface repository,
     SpendingPatternAnalyzer? analyzer,
-  })  : _r = repository,
-        _analyzer = analyzer ?? SpendingPatternAnalyzer();
+  }) : _r = repository,
+       _analyzer = analyzer ?? SpendingPatternAnalyzer();
 
   bool _isLoading = false;
   String? _errorMessage;
@@ -34,37 +35,22 @@ class InsightsController extends ChangeNotifier {
   double get healthScore => _healthScore;
   Map<String, dynamic> get spendingTrend => _spendingTrend;
 
-  /// Normalize raw DB maps (with _232143 suffixed keys) to clean keys.
-  /// The SQL query uses `t.*` which returns suffixed keys plus JOIN aliases
-  /// (e.g. `c.name_232143 AS category_name`) that are already clean.
-  /// This ensures ALL consumers see consistent clean keys regardless.
-  List<Map<String, dynamic>> _normalizeTransactions(List<dynamic> txns) {
-    return txns.map((t) {
-      final map = t as Map<String, dynamic>;
-      final rawAmount = (map['amount_232143'] ?? map['amount']);
-      return {
-        'transaction_date': map['transaction_date_232143'] ?? map['transaction_date'] ?? map['date'],
-        'date': map['transaction_date_232143'] ?? map['transaction_date'] ?? map['date'],
-        'type': map['type_232143'] ?? map['type'],
-        'amount': (rawAmount is num) ? rawAmount.toDouble() : 0.0,
-        'category_name': map['category_name_232143'] ?? map['category_name'] ?? 'Lainnya',
-        'category_id': map['category_id_232143'] ?? map['category_id'],
-        'description': map['description_232143'] ?? map['description'] ?? '',
-        'transaction_id': map['transaction_id_232143'] ?? map['transaction_id'] ?? map['id'],
-        'id': map['transaction_id_232143'] ?? map['id'] ?? map['transaction_id'],
-        'account_id': map['account_id_232143'] ?? map['account_id'],
-        'payment_method': map['payment_method_232143'] ?? map['payment_method'],
-      };
-    }).toList();
-  }
+  // Normalization now uses shared KeyNormalizer.normalizeTransactions() from
+  // lib/utils/key_normalizer.dart — the controller-level _normalizeTransactions
+  // has been removed to eliminate duplication.
 
   List<dynamic> _transactionsThisMonth() {
     final now = DateTime.now();
     return _transactions.where((t) {
-      final dateStr = t['transaction_date']?.toString() ?? t['date']?.toString() ?? '';
+      final dateStr =
+          t['transaction_date']?.toString() ?? t['date']?.toString() ?? '';
       if (dateStr.isEmpty) return false;
-      try { final date = DateTime.parse(dateStr); return date.year == now.year && date.month == now.month; }
-      catch (_) { return false; }
+      try {
+        final date = DateTime.parse(dateStr);
+        return date.year == now.year && date.month == now.month;
+      } catch (_) {
+        return false;
+      }
     }).toList();
   }
 
@@ -73,15 +59,23 @@ class InsightsController extends ChangeNotifier {
     final lastMonth = now.month == 1 ? 12 : now.month - 1;
     final year = now.month == 1 ? now.year - 1 : now.year;
     return _transactions.where((t) {
-      final dateStr = t['transaction_date']?.toString() ?? t['date']?.toString() ?? '';
+      final dateStr =
+          t['transaction_date']?.toString() ?? t['date']?.toString() ?? '';
       if (dateStr.isEmpty) return false;
-      try { final date = DateTime.parse(dateStr); return date.year == year && date.month == lastMonth; }
-      catch (_) { return false; }
+      try {
+        final date = DateTime.parse(dateStr);
+        return date.year == year && date.month == lastMonth;
+      } catch (_) {
+        return false;
+      }
     }).toList();
   }
 
   void _calculateHealthScore() {
-    if (_transactions.isEmpty) { _healthScore = 0; return; }
+    if (_transactions.isEmpty) {
+      _healthScore = 0;
+      return;
+    }
 
     double score = 50;
     final thisMonth = _transactionsThisMonth();
@@ -98,24 +92,32 @@ class InsightsController extends ChangeNotifier {
     }
 
     if (thisMonthIncome > 0) {
-      final savingsRate = ((thisMonthIncome - thisMonthExpense) / thisMonthIncome) * 100;
-      if (savingsRate >= 20) score += 20;
-      else if (savingsRate >= 10) score += 10;
-      else if (savingsRate < 0) score -= 15;
+      final savingsRate =
+          ((thisMonthIncome - thisMonthExpense) / thisMonthIncome) * 100;
+      if (savingsRate >= 20)
+        score += 20;
+      else if (savingsRate >= 10)
+        score += 10;
+      else if (savingsRate < 0)
+        score -= 15;
     }
 
-    if (lastMonth.isNotEmpty && thisMonth.length < lastMonth.length * 0.8) score += 5;
+    if (lastMonth.isNotEmpty && thisMonth.length < lastMonth.length * 0.8)
+      score += 5;
 
     final categorySpending = <String, double>{};
     for (final t in thisMonth) {
       if ((t['type']?.toString().toLowerCase() ?? 'expense') == 'expense') {
         final category = t['category_name']?.toString() ?? 'Lainnya';
-        categorySpending[category] = (categorySpending[category] ?? 0) + ((t['amount'] as num?)?.toDouble() ?? 0);
+        categorySpending[category] =
+            (categorySpending[category] ?? 0) +
+            ((t['amount'] as num?)?.toDouble() ?? 0);
       }
     }
     if (categorySpending.isNotEmpty) {
       final vals = categorySpending.values.toList();
-      final topShare = vals.reduce((a, b) => a > b ? a : b) / vals.reduce((a, b) => a + b);
+      final topShare =
+          vals.reduce((a, b) => a > b ? a : b) / vals.reduce((a, b) => a + b);
       if (topShare < 0.5) score += 10;
     }
 
@@ -128,10 +130,15 @@ class InsightsController extends ChangeNotifier {
     if (thisMonth.isEmpty) return 0;
     int weekendCount = 0;
     for (final t in thisMonth) {
-      final dateStr = t['transaction_date']?.toString() ?? t['date']?.toString() ?? '';
+      final dateStr =
+          t['transaction_date']?.toString() ?? t['date']?.toString() ?? '';
       if (dateStr.isEmpty) continue;
-      try { final date = DateTime.parse(dateStr); if (date.weekday >= 6) weekendCount++; }
-      catch (_) { continue; }
+      try {
+        final date = DateTime.parse(dateStr);
+        if (date.weekday >= 6) weekendCount++;
+      } catch (_) {
+        continue;
+      }
     }
     return weekendCount / thisMonth.length;
   }
@@ -146,8 +153,10 @@ class InsightsController extends ChangeNotifier {
     double thisExpense = 0, lastExpense = 0, thisIncome = 0;
     for (final t in thisMonth) {
       final amt = (t['amount'] as num?)?.toDouble() ?? 0;
-      if ((t['type']?.toString().toLowerCase() ?? 'expense') == 'expense') thisExpense += amt;
-      else thisIncome += amt;
+      if ((t['type']?.toString().toLowerCase() ?? 'expense') == 'expense')
+        thisExpense += amt;
+      else
+        thisIncome += amt;
     }
     for (final t in lastMonth) {
       if ((t['type']?.toString().toLowerCase() ?? 'expense') == 'expense')
@@ -157,18 +166,46 @@ class InsightsController extends ChangeNotifier {
     if (lastExpense > 0 && thisExpense > 0) {
       final change = ((thisExpense - lastExpense) / lastExpense) * 100;
       if (change < -10) {
-        _insights.add({'type': 'positive', 'icon': Iconsax.arrow_down_1, 'title': 'Pengeluaran menurun!', 'description': 'Pengeluaran turun ${change.abs().toStringAsFixed(0)}% dibanding bulan lalu. Pertahankan!'});
+        // TODO: Localize - move to screen layer or inject AppLocalizations
+        _insights.add({
+          'type': 'positive',
+          'icon': Iconsax.arrow_down_1,
+          'title': 'Pengeluaran menurun!',
+          'description':
+              'Pengeluaran turun ${change.abs().toStringAsFixed(0)}% dibanding bulan lalu. Pertahankan!',
+        });
       } else if (change > 15) {
-        _insights.add({'type': 'warning', 'icon': Iconsax.arrow_up_1, 'title': 'Pengeluaran meningkat', 'description': 'Pengeluaran naik ${change.toStringAsFixed(0)}% dibanding bulan lalu. Periksa kategori yang meningkat.'});
+        // TODO: Localize - move to screen layer or inject AppLocalizations
+        _insights.add({
+          'type': 'warning',
+          'icon': Iconsax.arrow_up_1,
+          'title': 'Pengeluaran meningkat',
+          'description':
+              'Pengeluaran naik ${change.toStringAsFixed(0)}% dibanding bulan lalu. Periksa kategori yang meningkat.',
+        });
       }
     }
 
     if (thisIncome > 0) {
       final savingsRate = ((thisIncome - thisExpense) / thisIncome) * 100;
       if (savingsRate >= 20) {
-        _insights.add({'type': 'positive', 'icon': Iconsax.safe_home, 'title': 'Tabungan sehat', 'description': 'Anda menabung ${savingsRate.toStringAsFixed(0)}% dari pendapatan. Luar biasa!'});
+        // TODO: Localize - move to screen layer or inject AppLocalizations
+        _insights.add({
+          'type': 'positive',
+          'icon': Iconsax.safe_home,
+          'title': 'Tabungan sehat',
+          'description':
+              'Anda menabung ${savingsRate.toStringAsFixed(0)}% dari pendapatan. Luar biasa!',
+        });
       } else if (savingsRate < 0) {
-        _insights.add({'type': 'danger', 'icon': Iconsax.warning_2, 'title': 'Pengeluaran melebihi pendapatan', 'description': 'Defisit ${savingsRate.abs().toStringAsFixed(0)}%. Pertimbangkan untuk mengurangi pengeluaran.'});
+        // TODO: Localize - move to screen layer or inject AppLocalizations
+        _insights.add({
+          'type': 'danger',
+          'icon': Iconsax.warning_2,
+          'title': 'Pengeluaran melebihi pendapatan',
+          'description':
+              'Defisit ${savingsRate.abs().toStringAsFixed(0)}%. Pertimbangkan untuk mengurangi pengeluaran.',
+        });
       }
     }
 
@@ -176,22 +213,40 @@ class InsightsController extends ChangeNotifier {
     for (final t in thisMonth) {
       if ((t['type']?.toString().toLowerCase() ?? 'expense') == 'expense') {
         final cat = t['category_name']?.toString() ?? 'Lainnya';
-        categorySpending[cat] = (categorySpending[cat] ?? 0) + ((t['amount'] as num?)?.toDouble() ?? 0);
+        categorySpending[cat] =
+            (categorySpending[cat] ?? 0) +
+            ((t['amount'] as num?)?.toDouble() ?? 0);
       }
     }
     if (categorySpending.isNotEmpty) {
       final total = categorySpending.values.reduce((a, b) => a + b);
-      final sorted = categorySpending.entries.toList()..sort((a, b) => b.value.compareTo(a.value));
+      final sorted =
+          categorySpending.entries.toList()
+            ..sort((a, b) => b.value.compareTo(a.value));
       final top = sorted.first;
       final share = (top.value / total) * 100;
       if (share > 40) {
-        _insights.add({'type': 'info', 'icon': Iconsax.chart, 'title': '${top.key} mendominasi', 'description': '${top.key} mengambil ${share.toStringAsFixed(0)}% dari total pengeluaran.'});
+        // TODO: Localize - move to screen layer or inject AppLocalizations
+        _insights.add({
+          'type': 'info',
+          'icon': Iconsax.chart,
+          'title': '${top.key} mendominasi',
+          'description':
+              '${top.key} mengambil ${share.toStringAsFixed(0)}% dari total pengeluaran.',
+        });
       }
     }
 
     final weekendSpending = _calculateWeekendSpending();
     if (weekendSpending > 0.3) {
-      _insights.add({'type': 'info', 'icon': Iconsax.calendar, 'title': 'Pengeluaran akhir pekan tinggi', 'description': '${(weekendSpending * 100).toStringAsFixed(0)}% pengeluaran terjadi di akhir pekan.'});
+      // TODO: Localize - move to screen layer or inject AppLocalizations
+      _insights.add({
+        'type': 'info',
+        'icon': Iconsax.calendar,
+        'title': 'Pengeluaran akhir pekan tinggi',
+        'description':
+            '${(weekendSpending * 100).toStringAsFixed(0)}% pengeluaran terjadi di akhir pekan.',
+      });
     }
   }
 
@@ -204,10 +259,14 @@ class InsightsController extends ChangeNotifier {
       final transactionsResult = await _r.getTransactions(limit: 500);
       _goals = await _r.getGoals();
 
-      final rawTransactions = (transactionsResult['transactions'] as List?) ?? [];
-      _transactions = _normalizeTransactions(rawTransactions);
+      final rawTransactions =
+          (transactionsResult['transactions'] as List?) ?? [];
+      _transactions = KeyNormalizer.normalizeTransactions(rawTransactions);
 
-      _patternAnalysis = _analyzer.analyzeMultiPeriod(transactions: _transactions, monthsToAnalyze: 3);
+      _patternAnalysis = _analyzer.analyzeMultiPeriod(
+        transactions: _transactions,
+        monthsToAnalyze: 3,
+      );
       _generateInsights();
       _calculateHealthScore();
       _spendingTrend = _patternAnalysis['trends'] ?? {};
@@ -225,10 +284,15 @@ class InsightsController extends ChangeNotifier {
   Future<void> refresh() async => loadData();
 
   String getHealthScoreLabel() {
+    // TODO: Localize - move to screen layer or inject AppLocalizations
     if (_healthScore >= 80) return 'Sangat Sehat';
+    // TODO: Localize - move to screen layer or inject AppLocalizations
     if (_healthScore >= 60) return 'Sehat';
+    // TODO: Localize - move to screen layer or inject AppLocalizations
     if (_healthScore >= 40) return 'Cukup';
+    // TODO: Localize - move to screen layer or inject AppLocalizations
     if (_healthScore >= 20) return 'Perlu Perbaikan';
+    // TODO: Localize - move to screen layer or inject AppLocalizations
     return 'Kritis';
   }
 

@@ -15,8 +15,7 @@ class ExpenseSplitDataService {
   }) : _dbService = dbService ?? LocalDatabaseService(),
        _authService = authService ?? LocalAuthService();
 
-  Future<String?> getCurrentUserId() async =>
-      _authService.getCurrentUserId();
+  Future<String?> getCurrentUserId() async => _authService.getCurrentUserId();
 
   Future<List<Map<String, dynamic>>> getSplits({
     String? transactionId,
@@ -51,9 +50,7 @@ class ExpenseSplitDataService {
     }
   }
 
-  Future<Map<String, dynamic>> addSplit(
-    Map<String, dynamic> splitData,
-  ) async {
+  Future<Map<String, dynamic>> addSplit(Map<String, dynamic> splitData) async {
     try {
       final userId = await getCurrentUserId();
       if (userId == null) throw Exception('Not authenticated');
@@ -76,7 +73,9 @@ class ExpenseSplitDataService {
       });
 
       LoggerService.info('✅ Split added: $splitId');
-      return {'split': {'split_id_232143': splitId, ...splitData}};
+      return {
+        'split': {'split_id_232143': splitId, ...splitData},
+      };
     } catch (e) {
       LoggerService.error('Error adding split', error: e);
       rethrow;
@@ -136,7 +135,8 @@ class ExpenseSplitDataService {
       if (userId == null) throw Exception('Not authenticated');
 
       final db = await _dbService.database;
-      final result = await db.rawQuery('''
+      final result = await db.rawQuery(
+        '''
         SELECT
           SUM(CASE WHEN is_settled_232143 = 0 THEN (amount_232143 - paid_amount_232143) ELSE 0 END) as total_owed,
           SUM(CASE WHEN is_settled_232143 = 1 THEN amount_232143 ELSE 0 END) as total_settled,
@@ -144,7 +144,9 @@ class ExpenseSplitDataService {
           SUM(CASE WHEN is_settled_232143 = 1 THEN 1 ELSE 0 END) as settled_count
         FROM expense_splits_232143
         WHERE user_id_232143 = ?
-      ''', [userId]);
+      ''',
+        [userId],
+      );
 
       final row = result.first;
       return {

@@ -83,7 +83,7 @@ class _ChallengesScreenState extends State<ChallengesScreen> {
         (controller.stats['total_streak'] as num?)?.toInt() ?? 0;
 
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(DesignTokens.spacing4),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -220,7 +220,7 @@ class _ChallengesScreenState extends State<ChallengesScreen> {
 
     return ListView.builder(
       physics: const AlwaysScrollableScrollPhysics(),
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(DesignTokens.spacing4),
       itemCount: controller.challenges.length,
       itemBuilder: (context, index) {
         final challenge = controller.challenges[index];
@@ -238,7 +238,7 @@ class _ChallengesScreenState extends State<ChallengesScreen> {
 
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(DesignTokens.spacing4),
       decoration: BoxDecoration(
         color: DesignTokens.surfaceDark,
         borderRadius: BorderRadius.circular(DesignTokens.radiusLarge),
@@ -252,8 +252,9 @@ class _ChallengesScreenState extends State<ChallengesScreen> {
               Container(
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: _getChallengeTypeColor(challenge.type)
-                      .withValues(alpha: 0.15),
+                  color: _getChallengeTypeColor(
+                    challenge.type,
+                  ).withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(
                     DesignTokens.radiusMedium,
                   ),
@@ -360,8 +361,7 @@ class _ChallengesScreenState extends State<ChallengesScreen> {
                 ),
               ),
               InkWell(
-                onTap: () =>
-                    _deleteChallenge(context, challenge),
+                onTap: () => _deleteChallenge(context, challenge),
                 child: Icon(
                   Iconsax.trash,
                   size: 16,
@@ -396,7 +396,7 @@ class _ChallengesScreenState extends State<ChallengesScreen> {
           Icon(Iconsax.medal, size: 64, color: DesignTokens.textTertiaryDark),
           const SizedBox(height: 16),
           Text(
-            'Belum Ada Challenges',
+            l10n?.no_challenges ?? 'Belum Ada Challenges',
             style: GoogleFonts.poppins(
               color: DesignTokens.textPrimaryDark,
               fontSize: 18,
@@ -469,8 +469,7 @@ class _ChallengesScreenState extends State<ChallengesScreen> {
       ),
       builder: (context) {
         return AddChallengeModal(
-          onChallengeAdded: () =>
-              context.read<ChallengeController>().refresh(),
+          onChallengeAdded: () => context.read<ChallengeController>().refresh(),
         );
       },
     );
@@ -495,7 +494,7 @@ class _ChallengesScreenState extends State<ChallengesScreen> {
             ),
           ),
           content: Text(
-            l10n?.confirm_delete_budget ??
+            l10n?.delete_challenge_confirm ??
                 'Yakin ingin menghapus challenge ini?',
             style: GoogleFonts.poppins(
               color: DesignTokens.textSecondaryDark,
@@ -525,7 +524,7 @@ class _ChallengesScreenState extends State<ChallengesScreen> {
         if (!mounted) return;
         ErrorHandlerService.showSuccessSnackbar(
           context,
-          l10n?.transaction_deleted_successfully ?? 'Challenge berhasil dihapus',
+          l10n?.challenge_deleted_successfully ?? 'Challenge berhasil dihapus',
         );
       } catch (e) {
         if (!mounted) return;

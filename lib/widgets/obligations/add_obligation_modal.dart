@@ -4,6 +4,7 @@ import 'package:financial_app/services/obligation_service.dart';
 import 'package:financial_app/services/error_handler_service.dart';
 import 'package:financial_app/services/logger_service.dart';
 import 'package:financial_app/utils/form_validators.dart';
+import 'package:financial_app/utils/dropdown_helper.dart';
 import 'package:financial_app/l10n/app_localizations.dart';
 import 'package:financial_app/utils/design_tokens.dart';
 
@@ -224,7 +225,7 @@ class _AddObligationModalState extends State<AddObligationModal> {
                   filled: true,
                   fillColor: DesignTokens.surfaceDark,
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
                     borderSide: BorderSide.none,
                   ),
                 ),
@@ -241,15 +242,8 @@ class _AddObligationModalState extends State<AddObligationModal> {
                 initialValue: _selectedType,
                 dropdownColor: DesignTokens.surfaceDark,
                 style: const TextStyle(color: Colors.white),
-                decoration: InputDecoration(
+                decoration: DropdownHelper.darkDropdownDecoration(
                   labelText: AppLocalizations.of(context)!.type,
-                  labelStyle: TextStyle(color: Colors.grey[400]),
-                  filled: true,
-                  fillColor: DesignTokens.surfaceDark,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide.none,
-                  ),
                 ),
                 items: [
                   DropdownMenuItem(
@@ -280,15 +274,8 @@ class _AddObligationModalState extends State<AddObligationModal> {
                 initialValue: _selectedCategory,
                 dropdownColor: DesignTokens.surfaceDark,
                 style: const TextStyle(color: Colors.white),
-                decoration: InputDecoration(
+                decoration: DropdownHelper.darkDropdownDecoration(
                   labelText: AppLocalizations.of(context)!.category,
-                  labelStyle: TextStyle(color: Colors.grey[400]),
-                  filled: true,
-                  fillColor: DesignTokens.surfaceDark,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide.none,
-                  ),
                 ),
                 items: [
                   DropdownMenuItem(
@@ -357,7 +344,7 @@ class _AddObligationModalState extends State<AddObligationModal> {
                   filled: true,
                   fillColor: DesignTokens.surfaceDark,
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
                     borderSide: BorderSide.none,
                   ),
                 ),
@@ -370,15 +357,8 @@ class _AddObligationModalState extends State<AddObligationModal> {
                 initialValue: _dueDayOfMonth,
                 dropdownColor: DesignTokens.surfaceDark,
                 style: const TextStyle(color: Colors.white),
-                decoration: InputDecoration(
+                decoration: DropdownHelper.darkDropdownDecoration(
                   labelText: AppLocalizations.of(context)!.due_date_day,
-                  labelStyle: TextStyle(color: Colors.grey[400]),
-                  filled: true,
-                  fillColor: DesignTokens.surfaceDark,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide.none,
-                  ),
                 ),
                 items: List.generate(
                   31,
@@ -412,7 +392,7 @@ class _AddObligationModalState extends State<AddObligationModal> {
                     filled: true,
                     fillColor: DesignTokens.surfaceDark,
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
                       borderSide: BorderSide.none,
                     ),
                   ),
@@ -429,7 +409,7 @@ class _AddObligationModalState extends State<AddObligationModal> {
                     filled: true,
                     fillColor: DesignTokens.surfaceDark,
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
                       borderSide: BorderSide.none,
                     ),
                   ),
@@ -448,7 +428,7 @@ class _AddObligationModalState extends State<AddObligationModal> {
                     filled: true,
                     fillColor: DesignTokens.surfaceDark,
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
                       borderSide: BorderSide.none,
                     ),
                   ),
@@ -465,7 +445,7 @@ class _AddObligationModalState extends State<AddObligationModal> {
                     filled: true,
                     fillColor: DesignTokens.surfaceDark,
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
                       borderSide: BorderSide.none,
                     ),
                   ),
@@ -479,16 +459,8 @@ class _AddObligationModalState extends State<AddObligationModal> {
                   initialValue: _subscriptionCycle,
                   dropdownColor: DesignTokens.surfaceDark,
                   style: const TextStyle(color: Colors.white),
-                  decoration: InputDecoration(
-                    labelText:
-                        AppLocalizations.of(context)!.subscription_cycle_label,
-                    labelStyle: TextStyle(color: Colors.grey[400]),
-                    filled: true,
-                    fillColor: DesignTokens.surfaceDark,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide.none,
-                    ),
+                  decoration: DropdownHelper.darkDropdownDecoration(
+                    labelText: AppLocalizations.of(context)!.subscription_cycle_label,
                   ),
                   items: [
                     DropdownMenuItem(
@@ -521,7 +493,7 @@ class _AddObligationModalState extends State<AddObligationModal> {
                   foregroundColor: Colors.white,
                   disabledBackgroundColor: Colors.grey[800],
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
                   ),
                   minimumSize: const Size(double.infinity, 50),
                 ),

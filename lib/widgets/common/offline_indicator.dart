@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:financial_app/l10n/app_localizations.dart';
 import 'package:financial_app/services/network_service.dart';
 
 /// Widget untuk menampilkan offline indicator
@@ -51,7 +52,8 @@ class _OfflineIndicatorState extends State<OfflineIndicator> {
           const SizedBox(width: 8),
           Expanded(
             child: Text(
-              'Tidak ada koneksi internet',
+              AppLocalizations.of(context)?.no_connection_title ??
+                  'Tidak ada koneksi internet',
               style: GoogleFonts.poppins(
                 color: Colors.white,
                 fontSize: 12,

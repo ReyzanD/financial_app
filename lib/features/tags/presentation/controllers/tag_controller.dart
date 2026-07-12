@@ -15,10 +15,18 @@ class TagController extends ChangeNotifier {
   String? get errorMessage => _errorMessage;
 
   Future<void> loadData() async {
-    _isLoading = true; _errorMessage = null; notifyListeners();
-    try { _tags = await _r.getTags(); }
-    catch (e) { LoggerService.error('Error loading tags', error: e); _errorMessage = e.toString(); }
-    finally { _isLoading = false; notifyListeners(); }
+    _isLoading = true;
+    _errorMessage = null;
+    notifyListeners();
+    try {
+      _tags = await _r.getTags();
+    } catch (e) {
+      LoggerService.error('Error loading tags', error: e);
+      _errorMessage = e.toString();
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
   }
 
   Future<void> refresh() async => loadData();

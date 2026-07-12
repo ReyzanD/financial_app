@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:financial_app/utils/formatters.dart';
 import 'package:financial_app/models/location_recommendation.dart';
 import 'package:financial_app/l10n/app_localizations.dart';
 import 'package:financial_app/services/error_handler_service.dart';
 import 'package:financial_app/utils/design_tokens.dart';
+import 'dart:io' show Platform;
 
 class AlternativeRecommendationCard extends StatelessWidget {
   final LocationRecommendation recommendation;
@@ -19,10 +21,10 @@ class AlternativeRecommendationCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(DesignTokens.spacing4),
       decoration: BoxDecoration(
         color: DesignTokens.surfaceDark,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(DesignTokens.radiusLarge),
         border: Border.all(color: DesignTokens.borderDark),
       ),
       child: Column(
@@ -112,18 +114,23 @@ class AlternativeRecommendationCard extends StatelessWidget {
                         final lng = recommendation.metadata?['longitude'];
 
                         if (lat != null && lng != null) {
-                          // Open in Google Maps
-                          // final googleMapsUrl =
-                          //     'https://www.google.com/maps/search/?api=1&query=$lat,$lng';
-                          // For iOS, use maps.apple.com
-                          // For Android, this will open in browser which redirects to Google Maps
                           try {
-                            // You can use url_launcher package here
-                            // For now, show a message
-                            ErrorHandlerService.showInfoSnackbar(
-                              context,
-                              'Membuka navigasi ke $location',
+                            // Build platform-appropriate maps URL
+                            final uri = Uri.parse(
+                              Platform.isAndroid
+                                  ? 'https://www.google.com/maps/search/?api=1&query=$lat,$lng'
+                                  : Platform.isIOS
+                                      ? 'https://maps.apple.com/?ll=$lat,$lng&q=$location'
+                                      : 'https://www.openstreetmap.org/?mlat=$lat&mlon=$lng',
                             );
+                            if (await canLaunchUrl(uri)) {
+                              await launchUrl(uri, mode: LaunchMode.externalApplication);
+                            } else {
+                              ErrorHandlerService.showInfoSnackbar(
+                                context,
+                                'Membuka navigasi ke $location',
+                              );
+                            }
                           } catch (e) {
                             ErrorHandlerService.showErrorSnackbar(
                               context,

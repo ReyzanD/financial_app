@@ -1,12 +1,13 @@
+import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:financial_app/services/api_service.dart';
 import 'package:financial_app/services/payment_history_service.dart';
 import 'package:financial_app/services/logger_service.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'dart:convert';
+import 'package:financial_app/core/di/service_locator.dart';
 
 /// Service untuk menghubungkan obligations dengan transactions
 class ObligationTransactionLinker {
-  final ApiService _apiService = ApiService();
+  final ApiService _apiService = getIt<ApiService>();
   final PaymentHistoryService _paymentService = PaymentHistoryService();
 
   /// Auto-link transaction to obligation berdasarkan amount dan date

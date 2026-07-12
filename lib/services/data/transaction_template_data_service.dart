@@ -19,8 +19,7 @@ class TransactionTemplateDataService {
        _authService = authService ?? LocalAuthService(),
        _transactionData = transactionData ?? TransactionDataService();
 
-  Future<String?> getCurrentUserId() async =>
-      _authService.getCurrentUserId();
+  Future<String?> getCurrentUserId() async => _authService.getCurrentUserId();
 
   Future<List<Map<String, dynamic>>> getTransactionTemplates() async {
     try {

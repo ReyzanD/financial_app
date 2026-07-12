@@ -11,9 +11,9 @@ class DebtProgressCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       color: DesignTokens.surfaceDark,
-      margin: const EdgeInsets.all(16),
+      margin: const EdgeInsets.all(DesignTokens.spacing4),
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(DesignTokens.spacing4),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

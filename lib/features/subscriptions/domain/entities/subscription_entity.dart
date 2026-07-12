@@ -1,1 +1,2 @@
-export 'package:financial_app/models/subscription_model.dart' show SubscriptionModel;
+export 'package:financial_app/models/subscription_model.dart'
+    show SubscriptionModel;

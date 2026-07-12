@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
+import 'package:financial_app/l10n/app_localizations.dart';
 import 'package:financial_app/utils/design_tokens.dart';
 
 class CategorySection extends StatelessWidget {
@@ -64,6 +65,7 @@ class CategorySection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     // Filter categories by type
     final filteredCategories =
         categories.where((cat) {
@@ -77,7 +79,7 @@ class CategorySection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Kategori',
+          l10n?.category ?? 'Kategori',
           style: GoogleFonts.poppins(
             color: Colors.white,
             fontSize: 16,
@@ -100,11 +102,11 @@ class CategorySection extends StatelessWidget {
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
               color: DesignTokens.surfaceDark,
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
               border: Border.all(color: DesignTokens.borderDark),
             ),
             child: Text(
-              'Tidak ada kategori tersedia untuk ${selectedType == "income" ? "pemasukan" : "pengeluaran"}',
+              l10n?.no_categories_available ?? 'Tidak ada kategori tersedia',
               style: GoogleFonts.poppins(color: Colors.grey[500]),
               textAlign: TextAlign.center,
             ),

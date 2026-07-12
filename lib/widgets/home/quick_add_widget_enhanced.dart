@@ -11,6 +11,7 @@ import 'package:financial_app/widgets/home/quick_add/quick_add_modal.dart';
 import 'package:financial_app/l10n/app_localizations.dart';
 import 'package:financial_app/services/error_handler_service.dart';
 import 'package:financial_app/utils/design_tokens.dart';
+import 'package:financial_app/core/di/service_locator.dart';
 
 /// Enhanced Quick Add Widget dengan voice input, receipt scanning, smart suggestions, dan templates
 class QuickAddWidgetEnhanced extends StatefulWidget {
@@ -23,7 +24,7 @@ class QuickAddWidgetEnhanced extends StatefulWidget {
 }
 
 class _QuickAddWidgetEnhancedState extends State<QuickAddWidgetEnhanced> {
-  final ApiService _apiService = ApiService();
+  final ApiService _apiService = getIt<ApiService>();
   final VoiceInputService _voiceService = VoiceInputService();
   final ReceiptScanningService _receiptService = ReceiptScanningService();
   final TransactionTemplatesService _templatesService =
@@ -244,15 +245,16 @@ class _QuickAddWidgetEnhancedState extends State<QuickAddWidgetEnhanced> {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      builder: (context) => QuickAddModal(
-        type: type,
-        presetAmount: presetAmount,
-        presetDescription: presetDescription,
-        presetCategoryId: presetCategoryId,
-        onTransactionAdded: () {
-          widget.onTransactionAdded?.call();
-        },
-      ),
+      builder:
+          (context) => QuickAddModal(
+            type: type,
+            presetAmount: presetAmount,
+            presetDescription: presetDescription,
+            presetCategoryId: presetCategoryId,
+            onTransactionAdded: () {
+              widget.onTransactionAdded?.call();
+            },
+          ),
     );
   }
 

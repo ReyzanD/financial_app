@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
+import 'package:financial_app/l10n/app_localizations.dart';
 import 'package:financial_app/utils/design_tokens.dart';
 
 class TypeSelector extends StatelessWidget {
@@ -15,18 +16,19 @@ class TypeSelector extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Container(
       padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
         color: DesignTokens.surfaceDark,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
         border: Border.all(color: Colors.grey[700]!),
       ),
       child: Row(
         children: [
           Expanded(
             child: _buildTypeButton(
-              'Pengeluaran',
+              l10n?.expense ?? 'Pengeluaran',
               'expense',
               Iconsax.arrow_down,
               Colors.red,
@@ -34,7 +36,7 @@ class TypeSelector extends StatelessWidget {
           ),
           Expanded(
             child: _buildTypeButton(
-              'Pemasukan',
+              l10n?.income ?? 'Pemasukan',
               'income',
               Iconsax.arrow_up,
               Colors.green,

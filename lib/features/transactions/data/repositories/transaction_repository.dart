@@ -16,6 +16,8 @@ class TransactionRepository implements TransactionRepositoryInterface {
     DateTime? startDate,
     DateTime? endDate,
     String? categoryId,
+    int? limit,
+    int? offset,
   }) async {
     try {
       final transactions = await _dataSource.getTransactions(
@@ -23,6 +25,8 @@ class TransactionRepository implements TransactionRepositoryInterface {
         startDate: startDate,
         endDate: endDate,
         categoryId: categoryId,
+        limit: limit,
+        offset: offset,
       );
       return transactions.map((t) => TransactionEntity.fromJson(t)).toList();
     } catch (e) {

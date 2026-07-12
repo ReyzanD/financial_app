@@ -71,6 +71,7 @@ dependencies:
   image_picker: ^1.1.2 # Receipt scanning
   google_mlkit_text_recognition: ^0.12.0 # OCR for receipt scanning
   camera: ^0.11.0+2 # Camera for receipt scanning
+  url_launcher: ^6.2.6 # Open external URLs (maps, browser)
   money2: ^6.0.9 # Precise currency calculations
 
   path: any

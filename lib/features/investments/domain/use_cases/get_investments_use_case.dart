@@ -4,5 +4,6 @@ import 'package:financial_app/features/investments/domain/repositories/investmen
 class GetInvestmentsUseCase {
   final InvestmentRepositoryInterface _r;
   GetInvestmentsUseCase(this._r);
-  Future<List<InvestmentModel>> call({String? type}) => _r.getInvestments(type: type);
+  Future<List<InvestmentModel>> call({String? type}) =>
+      _r.getInvestments(type: type);
 }

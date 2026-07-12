@@ -128,24 +128,28 @@ class ApiSecurityService {
     LoggerService.debug('Rate limit history cleared');
   }
 
-  /// Certificate pinning storage
-  /// In production, these should be stored securely (e.g., in encrypted storage)
+  /// Certificate pinning storage — holds SHA-256 certificate hashes.
   ///
-  /// To add a certificate pin:
-  /// 1. Extract your server's certificate SHA-256 hash
-  /// 2. Call ApiSecurityService.addCertificatePin('your-server.com', 'hash_here')
-  /// 3. In production builds, set _pinnedCertificates with your actual certificate hashes
+  /// This is a LOCAL OFFLINE-FIRST application — no backend server is required.
+  /// Certificate pinning is a no-op in the current architecture.
   ///
-  /// Example:
+  /// **Production configuration:** When a backend API is introduced, register
+  /// each server's certificate SHA-256 hash by calling
+  /// [addCertificatePin] during app initialization:
+  ///
   /// ```dart
   /// ApiSecurityService.addCertificatePin(
   ///   'api.yourdomain.com',
   ///   'a1b2c3d4e5f6...', // SHA-256 hash of your certificate
   /// );
   /// ```
+  ///
+  /// Without pinned hashes, [validateCertificate] will allow all connections in
+  /// all builds (including release), which is acceptable for internal services
+  /// but should be hardened for public-facing APIs.
   static final Map<String, String> _pinnedCertificates = {
-    // TODO: Add your production server's certificate SHA-256 hash here
-    // Example: 'api.yourdomain.com': 'your_certificate_sha256_hash_here',
+    // No pins configured — this is an offline-first application.
+    // Populate via addCertificatePin() when a backend is introduced.
   };
 
   /// Validate certificate (certificate pinning implementation)

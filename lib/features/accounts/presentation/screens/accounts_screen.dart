@@ -76,7 +76,7 @@ class _AccountsScreenState extends State<AccountsScreen> {
         heroTag: 'accounts_fab',
         backgroundColor: DesignTokens.primaryColor,
         onPressed: () => _showAddAccountModal(context),
-        tooltip: 'Tambah Akun',
+        tooltip: l10n?.add_account ?? 'Tambah Akun',
         child: const Icon(Iconsax.add, color: Colors.white),
       ),
     );
@@ -88,7 +88,7 @@ class _AccountsScreenState extends State<AccountsScreen> {
     AccountController controller,
   ) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(DesignTokens.spacing4),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -132,7 +132,7 @@ class _AccountsScreenState extends State<AccountsScreen> {
           ),
           const SizedBox(height: 12),
           Container(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(DesignTokens.spacing4),
             decoration: BoxDecoration(
               color: DesignTokens.surfaceDark,
               borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
@@ -150,7 +150,9 @@ class _AccountsScreenState extends State<AccountsScreen> {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  CurrencyFormatter.formatRupiah(controller.totalBalance.toInt()),
+                  CurrencyFormatter.formatRupiah(
+                    controller.totalBalance.toInt(),
+                  ),
                   style: GoogleFonts.poppins(
                     color: DesignTokens.textPrimaryDark,
                     fontSize: 24,
@@ -231,23 +233,24 @@ class _AccountsScreenState extends State<AccountsScreen> {
 
     return ListView.builder(
       physics: const AlwaysScrollableScrollPhysics(),
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(DesignTokens.spacing4),
       itemCount: controller.accounts.length,
       itemBuilder: (context, index) {
         final account = controller.accounts[index];
-        return _buildAccountCard(context, account, controller);
+        return _buildAccountCard(context, l10n, account, controller);
       },
     );
   }
 
   Widget _buildAccountCard(
     BuildContext context,
+    AppLocalizations? l10n,
     AccountModel account,
     AccountController controller,
   ) {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(DesignTokens.spacing4),
       decoration: BoxDecoration(
         color: DesignTokens.surfaceDark,
         borderRadius: BorderRadius.circular(DesignTokens.radiusLarge),
@@ -306,7 +309,7 @@ class _AccountsScreenState extends State<AccountsScreen> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Semantics(
-                    label: 'Edit akun',
+                    label: l10n?.edit_account ?? 'Edit akun',
                     button: true,
                     child: InkWell(
                       onTap: () => _editAccount(context, account),
@@ -319,7 +322,7 @@ class _AccountsScreenState extends State<AccountsScreen> {
                   ),
                   const SizedBox(width: 8),
                   Semantics(
-                    label: 'Hapus akun',
+                    label: l10n?.delete_account ?? 'Hapus akun',
                     button: true,
                     child: InkWell(
                       onTap: () => _deleteAccount(context, account, controller),
@@ -347,7 +350,7 @@ class _AccountsScreenState extends State<AccountsScreen> {
           Icon(Iconsax.wallet, size: 64, color: DesignTokens.textTertiaryDark),
           const SizedBox(height: 16),
           Text(
-            l10n?.no_transactions_title ?? 'Belum Ada Akun',
+            l10n?.no_accounts ?? 'Belum Ada Akun',
             style: GoogleFonts.poppins(
               color: DesignTokens.textPrimaryDark,
               fontSize: 18,
@@ -492,7 +495,7 @@ class _AccountsScreenState extends State<AccountsScreen> {
         if (!mounted) return;
         ErrorHandlerService.showSuccessSnackbar(
           context,
-          l10n?.transaction_deleted_successfully ?? 'Akun berhasil dihapus',
+          l10n?.account_deleted_successfully ?? 'Akun berhasil dihapus',
         );
       } catch (e) {
         if (!mounted) return;

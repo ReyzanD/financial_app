@@ -1,9 +1,10 @@
 import 'package:financial_app/services/logger_service.dart';
 import 'package:financial_app/services/cache_service.dart';
+import 'package:financial_app/core/di/service_locator.dart';
 
 /// Helper untuk prefetching data untuk better perceived performance
 class PrefetchHelper {
-  static final CacheService _cacheService = CacheService();
+  static final CacheService _cacheService = getIt<CacheService>();
 
   /// Prefetch data jika belum ada di cache
   static Future<void> prefetchIfNeeded<T>({

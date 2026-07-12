@@ -7,7 +7,8 @@ class InsightsRepository implements InsightsRepositoryInterface {
   InsightsRepository({ApiService? api}) : _api = api ?? getIt<ApiService>();
 
   @override
-  Future<Map<String, dynamic>> getTransactions({int limit = 500}) => _api.getTransactions(limit: limit);
+  Future<Map<String, dynamic>> getTransactions({int limit = 500}) =>
+      _api.getTransactions(limit: limit);
 
   @override
   Future<List<dynamic>> getGoals() => _api.getGoals();

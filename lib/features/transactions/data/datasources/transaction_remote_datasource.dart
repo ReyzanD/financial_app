@@ -5,21 +5,23 @@ import 'package:financial_app/services/api_service.dart';
 class TransactionRemoteDataSource {
   final ApiService _apiService;
   TransactionRemoteDataSource({ApiService? apiService})
-      : _apiService = apiService ?? getIt<ApiService>();
+    : _apiService = apiService ?? getIt<ApiService>();
 
   Future<List<Map<String, dynamic>>> getTransactions({
     String? type,
     DateTime? startDate,
     DateTime? endDate,
     String? categoryId,
-    int limit = 100,
+    int? limit,
+    int? offset,
   }) async {
     final result = await _apiService.getTransactions(
       type: type,
       categoryId: categoryId,
       startDate: startDate,
       endDate: endDate,
-      limit: limit,
+      limit: limit ?? 100,
+      offset: offset ?? 0,
     );
     final transactions = result['transactions'] as List;
     return transactions.map((t) => t as Map<String, dynamic>).toList();

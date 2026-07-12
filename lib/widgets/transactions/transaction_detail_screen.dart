@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
+import 'package:financial_app/l10n/app_localizations.dart';
 import 'package:financial_app/utils/formatters.dart';
 import 'package:financial_app/widgets/transactions/transaction_helpers.dart';
 import 'package:financial_app/widgets/transactions/alternative_recommendation_card.dart';
@@ -11,15 +12,18 @@ import 'package:financial_app/services/logger_service.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:financial_app/features/transactions/presentation/screens/add_transaction_screen.dart';
 import 'package:financial_app/utils/design_tokens.dart';
+import 'package:financial_app/widgets/common/offline_indicator.dart';
 
 class TransactionDetailScreen extends StatefulWidget {
   final Map<String, dynamic> transaction;
   final VoidCallback? onDeleted;
+  final VoidCallback? onUpdated;
 
   const TransactionDetailScreen({
     super.key,
     required this.transaction,
     this.onDeleted,
+    this.onUpdated,
   });
 
   @override
@@ -31,6 +35,7 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
   LatLng? _transactionLocation;
   List<LocationRecommendation>? _alternativeRecommendations;
   bool _isLoadingRecommendations = false;
+  AppLocalizations? _l10n;
 
   @override
   void initState() {
@@ -61,7 +66,8 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
       final recommendations = await LocationRecommendationService()
           .getCategoryBasedAlternatives(category, _decodedLocationData);
 
-      if (mounted) setState(() => _alternativeRecommendations = recommendations);
+      if (mounted)
+        setState(() => _alternativeRecommendations = recommendations);
     } catch (e) {
       LoggerService.error(
         'Error loading alternative recommendations',
@@ -76,6 +82,7 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    _l10n = AppLocalizations.of(context);
     // Debug: Log the entire transaction data
     LoggerService.debug(
       'TransactionDetailScreen Data: ${json.encode(widget.transaction)}',
@@ -116,8 +123,8 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
                       (context) => AddTransactionScreen(
                         transaction: widget.transaction,
                         onUpdated: () {
-                          // Refresh parent screen
-                          widget.onDeleted?.call();
+                          // Refresh parent screen via onUpdated
+                          widget.onUpdated?.call();
                           // Close detail screen
                           Navigator.pop(context);
                         },
@@ -128,36 +135,43 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Transaction Basic Info
-            _buildTransactionCard(
-              isIncome,
-              amount,
-              category,
-              date,
-              location,
-              notes,
+      body: Column(
+        children: [
+          const OfflineIndicator(),
+          Expanded(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(DesignTokens.spacing4),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Transaction Basic Info
+                  _buildTransactionCard(
+                    isIncome,
+                    amount,
+                    category,
+                    date,
+                    location,
+                    notes,
+                  ),
+                  const SizedBox(height: 20),
+
+                  // Location Insight Section
+                  if (widget.transaction['location'] != '') ...[
+                    _buildLocationInsightSection(),
+                    const SizedBox(height: 20),
+                  ],
+
+                  // Alternative Recommendations Section
+                  _buildAlternativeRecommendationsSection(),
+                  const SizedBox(height: 20),
+
+                  // Transaction Notes & Details
+                  _buildTransactionDetails(),
+                ],
+              ),
             ),
-            const SizedBox(height: 20),
-
-            // Location Insight Section
-            if (widget.transaction['location'] != '') ...[
-              _buildLocationInsightSection(),
-              const SizedBox(height: 20),
-            ],
-
-            // Alternative Recommendations Section
-            _buildAlternativeRecommendationsSection(),
-            const SizedBox(height: 20),
-
-            // Transaction Notes & Details
-            _buildTransactionDetails(),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -174,7 +188,7 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: DesignTokens.surfaceDark,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(DesignTokens.radiusLarge),
         border: Border.all(color: DesignTokens.borderDark),
       ),
       child: Column(
@@ -241,7 +255,7 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
                           isIncome
                               ? Colors.green.withValues(alpha: 0.2)
                               : Colors.red.withValues(alpha: 0.2),
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
                     ),
                     child: Text(
                       isIncome ? 'PEMASUKAN' : 'PENGELUARAN',
@@ -341,10 +355,10 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
 
   Widget _buildLoadingRecommendations() {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(DesignTokens.spacing4),
       decoration: BoxDecoration(
         color: DesignTokens.surfaceDark,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(DesignTokens.radiusLarge),
       ),
       child: Row(
         children: [
@@ -361,17 +375,18 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
 
   Widget _buildNoRecommendationsAvailable() {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(DesignTokens.spacing4),
       decoration: BoxDecoration(
         color: DesignTokens.surfaceDark,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(DesignTokens.radiusLarge),
       ),
       child: Row(
         children: [
           Icon(Iconsax.info_circle, color: Colors.grey[500]),
           const SizedBox(width: 8),
           Text(
-            'Tidak ada rekomendasi alternatif untuk kategori ini',
+            _l10n?.no_alternative_recommendations ??
+                'Tidak ada rekomendasi alternatif untuk kategori ini',
             style: GoogleFonts.poppins(color: Colors.grey[500]),
           ),
         ],
@@ -393,27 +408,30 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
         ),
         const SizedBox(height: 12),
         Container(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(DesignTokens.spacing4),
           decoration: BoxDecoration(
             color: DesignTokens.surfaceDark,
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(DesignTokens.radiusLarge),
           ),
           child: Column(
             children: [
               _buildDetailRow(
-                'Tanggal',
+                _l10n?.date ?? 'Tanggal',
                 formatDate(widget.transaction['date'] as String? ?? ''),
               ),
               _buildDetailRow(
-                'Kategori',
+                _l10n?.category ?? 'Kategori',
                 widget.transaction['category'] ?? 'Uncategorized',
               ),
-              _buildDetailRow('Lokasi', widget.transaction['location'] ?? ''),
               _buildDetailRow(
-                'Tipe',
+                _l10n?.location ?? 'Lokasi',
+                widget.transaction['location'] ?? '',
+              ),
+              _buildDetailRow(
+                _l10n?.transaction_type ?? 'Tipe',
                 widget.transaction['type'] == 'income'
-                    ? 'Pemasukan'
-                    : 'Pengeluaran',
+                    ? (_l10n?.income ?? 'Pemasukan')
+                    : (_l10n?.expense ?? 'Pengeluaran'),
               ),
             ],
           ),

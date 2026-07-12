@@ -7,7 +7,7 @@ class AccountRepository implements AccountRepositoryInterface {
   final AccountService _accountService;
 
   AccountRepository({AccountService? accountService})
-      : _accountService = accountService ?? AccountService();
+    : _accountService = accountService ?? AccountService();
 
   @override
   Future<List<AccountModel>> getAccounts({bool activeOnly = true}) async {
@@ -21,7 +21,9 @@ class AccountRepository implements AccountRepositoryInterface {
 
   @override
   Future<AccountModel> updateAccount(
-      String id, Map<String, dynamic> updates) async {
+    String id,
+    Map<String, dynamic> updates,
+  ) async {
     return await _accountService.updateAccount(id, updates);
   }
 
@@ -56,8 +58,7 @@ class AccountRepository implements AccountRepositoryInterface {
   }
 
   @override
-  Future<void> adjustBalance(String id, double amount,
-      {String? notes}) async {
+  Future<void> adjustBalance(String id, double amount, {String? notes}) async {
     await _accountService.adjustBalance(id, amount, notes: notes);
   }
 

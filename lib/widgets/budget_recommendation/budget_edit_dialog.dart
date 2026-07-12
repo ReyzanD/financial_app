@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:financial_app/l10n/app_localizations.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:financial_app/services/error_handler_service.dart';
 import 'package:financial_app/utils/design_tokens.dart';
@@ -39,15 +40,16 @@ class BudgetEditDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final controller = TextEditingController(
       text: currentPercentage.toString(),
     );
 
     return AlertDialog(
       backgroundColor: DesignTokens.surfaceDark,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(DesignTokens.radiusLarge)),
       title: Text(
-        'Edit Persentase',
+        l10n?.edit_percentage ?? 'Edit Persentase',
         style: GoogleFonts.poppins(color: Colors.white),
       ),
       content: Column(
@@ -89,7 +91,10 @@ class BudgetEditDialog extends StatelessWidget {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: Text('Batal', style: GoogleFonts.poppins(color: Colors.grey)),
+          child: Text(
+            l10n?.cancel ?? 'Batal',
+            style: GoogleFonts.poppins(color: Colors.grey),
+          ),
         ),
         ElevatedButton(
           onPressed: () {
@@ -101,7 +106,8 @@ class BudgetEditDialog extends StatelessWidget {
             } else {
               ErrorHandlerService.showWarningSnackbar(
                 context,
-                'Masukkan persentase yang valid (1-100)',
+                l10n?.enter_valid_percentage ??
+                    'Masukkan persentase yang valid (1-100)',
               );
             }
           },
@@ -109,7 +115,7 @@ class BudgetEditDialog extends StatelessWidget {
             backgroundColor: DesignTokens.primaryColor,
           ),
           child: Text(
-            'Simpan',
+            l10n?.save ?? 'Simpan',
             style: GoogleFonts.poppins(color: Colors.white),
           ),
         ),

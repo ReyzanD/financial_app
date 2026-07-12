@@ -85,8 +85,10 @@ void main() {
     test('get should return cached data for valid duration', () async {
       await cacheService.set<String>('valid_key', 'valid_value');
       // Use a generous cache duration so data is still valid
-      final result =
-          await cacheService.get<String>('valid_key', cacheDuration: 3600);
+      final result = await cacheService.get<String>(
+        'valid_key',
+        cacheDuration: 3600,
+      );
       expect(result, 'valid_value');
     });
 

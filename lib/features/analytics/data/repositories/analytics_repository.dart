@@ -7,10 +7,19 @@ class AnalyticsRepository implements AnalyticsRepositoryInterface {
   AnalyticsRepository({ApiService? api}) : _api = api ?? getIt<ApiService>();
 
   @override
-  Future<Map<String, dynamic>> getTransactions({int limit = 100, DateTime? startDate, DateTime? endDate}) =>
-      _api.getTransactions(limit: limit, startDate: startDate, endDate: endDate);
+  Future<Map<String, dynamic>> getTransactions({
+    int limit = 100,
+    DateTime? startDate,
+    DateTime? endDate,
+  }) => _api.getTransactions(
+    limit: limit,
+    startDate: startDate,
+    endDate: endDate,
+  );
 
   @override
-  Future<Map<String, dynamic>> getFinancialSummary({required int year, required int month}) =>
-      _api.getFinancialSummary(year: year, month: month);
+  Future<Map<String, dynamic>> getFinancialSummary({
+    required int year,
+    required int month,
+  }) => _api.getFinancialSummary(year: year, month: month);
 }

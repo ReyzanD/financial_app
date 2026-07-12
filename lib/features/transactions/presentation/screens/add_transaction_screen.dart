@@ -44,22 +44,19 @@ import 'package:financial_app/services/smart_categorization_service.dart';
 import 'package:financial_app/services/data/transaction_data_service.dart';
 import 'package:financial_app/services/data/budget_data_service.dart';
 import 'package:financial_app/services/data/category_data_service.dart';
-import 'package:financial_app/utils/formatters.dart';
+import 'package:financial_app/utils/date_picker_helper.dart';
 import 'package:financial_app/utils/design_tokens.dart';
 import 'package:financial_app/utils/app_refresh.dart';
+import 'package:financial_app/utils/balance_check_helper.dart';
 import 'package:financial_app/utils/responsive_helper.dart';
 import 'package:financial_app/widgets/maps/location_picker_map.dart';
-import 'package:financial_app/widgets/add_transaction/account_section.dart';
 import 'package:financial_app/widgets/add_transaction/amount_field.dart';
 import 'package:financial_app/widgets/add_transaction/type_selector.dart';
 import 'package:financial_app/widgets/add_transaction/category_section.dart';
 import 'package:financial_app/widgets/add_transaction/description_field.dart';
-import 'package:financial_app/widgets/add_transaction/location_section.dart';
 import 'package:financial_app/widgets/add_transaction/date_time_section.dart';
-import 'package:financial_app/widgets/add_transaction/payment_method_section.dart';
 import 'package:financial_app/widgets/add_transaction/submit_button.dart';
-import 'package:financial_app/widgets/add_transaction/additional_options.dart';
-import 'package:financial_app/widgets/add_transaction/notes_field.dart';
+import 'package:financial_app/widgets/add_transaction/more_options_section.dart';
 import 'package:financial_app/utils/form_validators.dart';
 import 'package:financial_app/l10n/app_localizations.dart';
 import 'package:financial_app/features/receipt_history/presentation/screens/receipt_history_screen.dart';
@@ -69,7 +66,16 @@ class AddTransactionScreen extends StatefulWidget {
   final Map<String, dynamic>? transaction; // Optional for edit mode
   final VoidCallback? onUpdated;
 
-  const AddTransactionScreen({super.key, this.transaction, this.onUpdated});
+  /// Optional: pre-select transaction type ('income' or 'expense').
+  /// If null, defaults to 'expense' (or the transaction's type in edit mode).
+  final String? defaultType;
+
+  const AddTransactionScreen({
+    super.key,
+    this.transaction,
+    this.onUpdated,
+    this.defaultType,
+  });
 
   @override
   State<AddTransactionScreen> createState() => _AddTransactionScreenState();
@@ -89,7 +95,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
       SmartCategorizationService();
 
   // Form state
-  String _selectedType = 'expense';
+  late String _selectedType;
   String? _selectedCategory;
   String? _selectedAccountId;
   String _selectedPaymentMethod = 'cash';
@@ -97,11 +103,14 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
   TimeOfDay _selectedTime = TimeOfDay.now();
   LocationData? _currentLocation;
   bool _isGettingLocation = false;
-  bool _isRecurring = false;
   bool _isSubmitting = false;
   bool _isScanningReceipt = false;
   String? _receiptImagePath;
   List<Map<String, dynamic>> _categorySuggestions = [];
+
+  // Recurring transaction state
+  bool _isRecurring = false;
+  String? _recurringFrequency;
 
   // Category data from API
   List<Map<String, dynamic>> _categories = [];
@@ -110,6 +119,12 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
   @override
   void initState() {
     super.initState();
+
+    // Initialize type: defaultType param > edit mode > 'expense'
+    _selectedType =
+        widget.defaultType ??
+        (widget.transaction?['type']?.toString()) ??
+        'expense';
 
     // If editing, populate form with existing data
     if (widget.isEditMode) {
@@ -120,12 +135,6 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
     _loadCategories();
 
     _descriptionController.addListener(_onDescriptionChanged);
-
-    // Auto-get location when screen opens (only for new expense transactions)
-    // Income transactions don't need location
-    if (!widget.isEditMode && _selectedType == 'expense') {
-      _getCurrentLocation();
-    }
   }
 
   void _populateFormData() {
@@ -162,20 +171,48 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
   Future<void> _loadCategories() async {
     try {
       LoggerService.info('Loading categories from API...');
-      final categories = await _categoryData
-          .getCategories()
-          .timeout(
-            const Duration(seconds: 10),
-            onTimeout: () {
-              LoggerService.warning('Category loading timed out');
-              return [];
-            },
-          );
+      final categories = await _categoryData.getCategories().timeout(
+        const Duration(seconds: 10),
+        onTimeout: () {
+          LoggerService.warning('Category loading timed out');
+          return [];
+        },
+      );
       LoggerService.success('Categories loaded: ${categories.length}');
       if (mounted) {
         setState(() {
           _categories = categories.whereType<Map<String, dynamic>>().toList();
           _isLoadingCategories = false;
+
+          // Pre-select a default category if none is selected and not in edit mode
+          if (!widget.isEditMode && _selectedCategory == null) {
+            final filtered = _categories.where((cat) {
+              final type =
+                  (cat['type_232143'] ?? cat['type'])
+                      ?.toString()
+                      .toLowerCase() ??
+                  '';
+              return type == _selectedType;
+            }).toList();
+            if (filtered.isNotEmpty) {
+              // Prefer "Lainnya" or "Other" category as sensible default
+              final defaultCat = filtered.firstWhere(
+                (cat) {
+                  final name =
+                      (cat['name_232143'] ?? cat['name'])
+                          ?.toString()
+                          .toLowerCase() ??
+                      '';
+                  return name == 'lainnya' || name == 'other';
+                },
+                orElse: () => filtered.first,
+              );
+              _selectedCategory =
+                  (defaultCat['category_id_232143'] ?? defaultCat['id'])
+                      ?.toString() ??
+                  '';
+            }
+          }
         });
       }
     } catch (e) {
@@ -269,7 +306,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
     });
     ErrorHandlerService.showInfoSnackbar(
       context,
-      AppLocalizations.of(context)!.location_removed,
+      AppLocalizations.of(context)?.location_removed ?? 'Location removed',
     );
   }
 
@@ -285,7 +322,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
         if (mounted) {
           ErrorHandlerService.showWarningSnackbar(
             context,
-            AppLocalizations.of(context)!.failed_to_get_location,
+            AppLocalizations.of(context)?.failed_to_get_location ?? 'Failed to get location',
           );
         }
       } else {
@@ -298,16 +335,18 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
         );
         LoggerService.debug('Place name: $placeName');
 
-        // Mock location data - in real app, use geolocator package
-        setState(() {
-          _currentLocation = LocationData(
-            latitude: position.latitude,
-            longitude: position.longitude,
-            placeName: placeName,
-            address: null,
-            placeType: null,
-          );
-        });
+        if (mounted) {
+          // Mock location data - in real app, use geolocator package
+          setState(() {
+            _currentLocation = LocationData(
+              latitude: position.latitude,
+              longitude: position.longitude,
+              placeName: placeName,
+              address: null,
+              placeType: null,
+            );
+          });
+        }
 
         LoggerService.success('Location set successfully');
 
@@ -323,7 +362,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
         );
       }
     } finally {
-      setState(() => _isGettingLocation = false);
+      if (mounted) setState(() => _isGettingLocation = false);
     }
   }
 
@@ -341,7 +380,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  AppLocalizations.of(context)!.select_image_source,
+                  AppLocalizations.of(context)?.select_image_source ?? 'Select Image Source',
                   style: GoogleFonts.poppins(
                     color: Colors.white,
                     fontSize: 18,
@@ -350,9 +389,12 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                 ),
                 const SizedBox(height: 20),
                 ListTile(
-                  leading: const Icon(Iconsax.camera, color: DesignTokens.primaryColor),
+                  leading: const Icon(
+                    Iconsax.camera,
+                    color: DesignTokens.primaryColor,
+                  ),
                   title: Text(
-                    AppLocalizations.of(context)!.take_photo,
+                    AppLocalizations.of(context)?.take_photo ?? 'Take Photo',
                     style: GoogleFonts.poppins(color: Colors.white),
                   ),
                   onTap: () => Navigator.pop(context, 'camera'),
@@ -363,7 +405,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                     color: DesignTokens.primaryColor,
                   ),
                   title: Text(
-                    AppLocalizations.of(context)!.choose_from_gallery,
+                    AppLocalizations.of(context)?.choose_from_gallery ?? 'Choose from Gallery',
                     style: GoogleFonts.poppins(color: Colors.white),
                   ),
                   onTap: () => Navigator.pop(context, 'gallery'),
@@ -372,7 +414,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                 TextButton(
                   onPressed: () => Navigator.pop(context),
                   child: Text(
-                    AppLocalizations.of(context)!.cancel,
+                    AppLocalizations.of(context)?.cancel ?? 'Cancel',
                     style: GoogleFonts.poppins(color: Colors.grey),
                   ),
                 ),
@@ -399,7 +441,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
       if (mounted) {
         ErrorHandlerService.showInfoSnackbar(
           context,
-          AppLocalizations.of(context)!.loading,
+          AppLocalizations.of(context)?.loading ?? 'Loading...',
         );
       }
 
@@ -456,7 +498,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
 
         ErrorHandlerService.showSuccessSnackbar(
           context,
-          AppLocalizations.of(context)!.receipt_scanned_successfully,
+          AppLocalizations.of(context)?.receipt_scanned_successfully ?? 'Receipt scanned successfully',
         );
 
         LoggerService.success('Receipt scanned successfully');
@@ -464,7 +506,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
         if (mounted) {
           ErrorHandlerService.showWarningSnackbar(
             context,
-            AppLocalizations.of(context)!.cannot_scan_receipt,
+            AppLocalizations.of(context)?.cannot_scan_receipt ?? 'Cannot scan receipt',
           );
         }
       }
@@ -473,11 +515,11 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
       if (mounted) {
         ErrorHandlerService.showErrorSnackbar(
           context,
-          AppLocalizations.of(context)!.error_scanning_receipt,
+          AppLocalizations.of(context)?.error_scanning_receipt ?? 'Error scanning receipt',
         );
       }
     } finally {
-      setState(() => _isScanningReceipt = false);
+      if (mounted) setState(() => _isScanningReceipt = false);
     }
   }
 
@@ -496,9 +538,13 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
     if (categoryName != null) {
       // Find the category ID from the loaded categories
       final category = _categories.firstWhere(
-        (cat) =>
-            cat['name']?.toString().toLowerCase().contains(categoryName!) ??
-            false,
+        (cat) {
+          final name =
+              cat['name']?.toString() ??
+              cat['name_232143']?.toString() ??
+              '';
+          return name.toLowerCase().contains(categoryName!);
+        },
         orElse: () => {},
       );
 
@@ -512,7 +558,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
   }
 
   Future<void> _selectDate() async {
-    final DateTime? picked = await showDatePicker(
+    final DateTime? picked = await DatePickerHelper.showDarkDatePicker(
       context: context,
       initialDate: _selectedDate,
       firstDate: DateTime(2020),
@@ -520,33 +566,9 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
           _selectedType == 'expense'
               ? DateTime.now()
               : DateTime.now().add(const Duration(days: 365)),
-      builder: (context, child) {
-        return Theme(
-          data: ThemeData.dark().copyWith(
-            colorScheme: const ColorScheme.dark(
-              primary: DesignTokens.primaryColor,
-              onPrimary: Colors.white,
-              surface: DesignTokens.surfaceDark,
-              onSurface: Colors.white,
-            ),
-            dialogTheme: DialogThemeData(backgroundColor: DesignTokens.backgroundDark),
-          ),
-          child: child!,
-        );
-      },
     );
 
     if (picked != null && picked != _selectedDate) {
-      // Validate: expense cannot have future dates
-      if (_selectedType == 'expense' && picked.isAfter(DateTime.now())) {
-        if (mounted) {
-          ErrorHandlerService.showWarningSnackbar(
-            context,
-            'Tanggal pengeluaran tidak boleh di masa depan',
-          );
-        }
-        return;
-      }
       setState(() => _selectedDate = picked);
     }
   }
@@ -564,7 +586,9 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
               surface: DesignTokens.surfaceDark,
               onSurface: Colors.white,
             ),
-            dialogTheme: DialogThemeData(backgroundColor: DesignTokens.backgroundDark),
+            dialogTheme: DialogThemeData(
+              backgroundColor: DesignTokens.backgroundDark,
+            ),
           ),
           child: child!,
         );
@@ -577,208 +601,21 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
   }
 
   Future<bool> _checkBalanceBeforeExpense(double expenseAmount) async {
-    final ctx = context;
     try {
-      // Get current financial summary
       final summary = await _transactionData.getFinancialSummary();
-      final summaries = summary['summary'] as Map<String, dynamic>?;
-
-      if (summaries == null) return true; // Allow if we can't check
-
-      final income =
-          (summaries['income'] as Map<String, dynamic>?)?['total_amount'] ??
-          0.0;
-      final expense =
-          (summaries['expense'] as Map<String, dynamic>?)?['total_amount'] ??
-          0.0;
-      final currentBalance = income - expense;
-      final newBalance = currentBalance - expenseAmount;
-
-      // Minimum balance requirement: 25000
-      const double minimumBalance = 25000.0;
-
-      // If balance would go below the minimum, block the transaction
-      if (newBalance < minimumBalance) {
-        if (!ctx.mounted) return false;
-        await showDialog(
-          context: ctx,
-          builder:
-              (context) => AlertDialog(
-                backgroundColor: DesignTokens.surfaceDark,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                title: Row(
-                  children: [
-                    const Icon(Icons.block, color: Colors.red, size: 28),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Text(
-                        'Saldo Tidak Cukup',
-                        style: GoogleFonts.poppins(
-                          color: Colors.white,
-                          fontSize: 18,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                content: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Transaksi ditolak! Saldo Anda tidak mencukupi untuk pengeluaran ini.',
-                      style: GoogleFonts.poppins(
-                        color: Colors.white70,
-                        fontSize: 14,
-                        height: 1.5,
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: Colors.red.withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(
-                          color: Colors.red.withValues(alpha: 0.3),
-                        ),
-                      ),
-                      child: Column(
-                        children: [
-                          _buildBalanceRow(
-                            'Saldo Tersedia',
-                            currentBalance,
-                            Colors.white70,
-                          ),
-                          const SizedBox(height: 8),
-                          _buildBalanceRow(
-                            'Saldo Minimum',
-                            minimumBalance,
-                            Colors.orange[300]!,
-                          ),
-                          const SizedBox(height: 8),
-                          _buildBalanceRow(
-                            'Pengeluaran',
-                            expenseAmount,
-                            Colors.red[300]!,
-                          ),
-                          const Divider(color: Colors.grey, height: 20),
-                          _buildBalanceRow(
-                            'Kekurangan',
-                            (minimumBalance - newBalance).abs(),
-                            Colors.red[400]!,
-                            isBold: true,
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    Container(
-                      padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        color: Colors.blue.withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(
-                          color: Colors.blue.withValues(alpha: 0.3),
-                        ),
-                      ),
-                      child: Row(
-                        children: [
-                          Icon(
-                            Icons.lightbulb_outline,
-                            color: Colors.blue[300],
-                            size: 18,
-                          ),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: Text(
-                              AppLocalizations.of(context)!.add_income_first,
-                              style: GoogleFonts.poppins(
-                                color: Colors.blue[300],
-                                fontSize: 11,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-                actions: [
-                  ElevatedButton(
-                    onPressed: () => Navigator.pop(context),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: DesignTokens.primaryColor,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      minimumSize: const Size(double.infinity, 45),
-                    ),
-                    child: Text(
-                      AppLocalizations.of(context)!.understood,
-                      style: GoogleFonts.poppins(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-        );
-        return false; // Block the transaction
-      }
-
-      return true; // Balance is fine, proceed
+      return await BalanceCheckHelper.checkBalanceBeforeExpense(
+        context: context,
+        expenseAmount: expenseAmount,
+        summary: summary,
+      );
     } catch (e) {
       LoggerService.error('Error checking balance', error: e);
-      return true; // Allow transaction if check fails
+      return true;
     }
-  }
-
-  Widget _buildBalanceRow(
-    String label,
-    double amount,
-    Color color, {
-    bool isBold = false,
-  }) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(
-          label,
-          style: GoogleFonts.poppins(
-            color: color,
-            fontSize: 12,
-            fontWeight: isBold ? FontWeight.w600 : FontWeight.normal,
-          ),
-        ),
-        Text(
-          CurrencyFormatter.formatRupiah(amount.abs()),
-          style: GoogleFonts.poppins(
-            color: color,
-            fontSize: 12,
-            fontWeight: isBold ? FontWeight.bold : FontWeight.w600,
-          ),
-        ),
-      ],
-    );
   }
 
   void _submitForm() async {
     if (_formKey.currentState!.validate()) {
-      // Additional validation: expense cannot have future dates
-      final dateError = FormValidators.validateDate(
-        _selectedDate,
-        allowFuture: _selectedType == 'income',
-      );
-      if (dateError != null) {
-        ErrorHandlerService.showWarningSnackbar(context, dateError);
-        return;
-      }
-
       final ctx = context;
 
       // Check for duplicate transactions
@@ -809,24 +646,24 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                 (dialogContext) => AlertDialog(
                   backgroundColor: DesignTokens.surfaceDark,
                   title: Text(
-                    AppLocalizations.of(ctx)!.duplicate_transaction,
+                    AppLocalizations.of(ctx)?.duplicate_transaction ?? 'Duplicate Transaction?',
                     style: const TextStyle(color: Colors.white),
                   ),
                   content: Text(
-                    AppLocalizations.of(ctx)!.similar_transaction_added,
+                    AppLocalizations.of(ctx)?.similar_transaction_added ?? 'A similar transaction was just added',
                     style: const TextStyle(color: Colors.white70),
                   ),
                   actions: [
                     TextButton(
                       onPressed: () => Navigator.pop(dialogContext, false),
-                      child: Text(AppLocalizations.of(ctx)!.cancel),
+                      child: Text(AppLocalizations.of(ctx)?.cancel ?? 'Cancel'),
                     ),
                     ElevatedButton(
                       onPressed: () => Navigator.pop(dialogContext, true),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: DesignTokens.primaryColor,
                       ),
-                      child: Text(AppLocalizations.of(ctx)!.continueText),
+                      child: Text(AppLocalizations.of(ctx)?.continueText ?? 'Continue'),
                     ),
                   ],
                 ),
@@ -872,7 +709,9 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
               'place_name': _currentLocation?.placeName,
               'address': _currentLocation?.address,
             },
-          'is_recurring': _isRecurring,
+          if (_isRecurring) 'is_recurring': true,
+          if (_isRecurring && _recurringFrequency != null)
+            'recurring_pattern': _recurringFrequency,
         };
 
         LoggerService.debug(
@@ -918,7 +757,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
         if (!ctx.mounted) return;
         ErrorHandlerService.showSuccessSnackbar(
           ctx,
-          AppLocalizations.of(ctx)!.transaction_saved_successfully,
+          AppLocalizations.of(ctx)?.transaction_saved_successfully ?? 'Transaction saved successfully!',
         );
 
         if (!ctx.mounted) return;
@@ -935,18 +774,19 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
           onRetry: () => _submitForm(),
         );
       } finally {
-        setState(() => _isSubmitting = false);
+        if (mounted) setState(() => _isSubmitting = false);
       }
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
       backgroundColor: DesignTokens.backgroundDark,
       appBar: AppBar(
         title: Text(
-          'Tambah Transaksi',
+          l10n?.add_transaction ?? 'Tambah Transaksi',
           style: GoogleFonts.poppins(
             color: Colors.white,
             fontWeight: FontWeight.w600,
@@ -983,7 +823,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                 ),
               );
             },
-            tooltip: 'Riwayat Struk',
+            tooltip: l10n?.receipt_history ?? 'Riwayat Struk',
           ),
         ],
       ),
@@ -993,6 +833,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
           Expanded(
             child: Form(
               key: _formKey,
+              autovalidateMode: AutovalidateMode.onUserInteraction,
               child: SingleChildScrollView(
                 padding: ResponsiveHelper.padding(context),
                 child: Column(
@@ -1011,13 +852,8 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                           _selectedType = type;
                           _selectedCategory = null;
 
-                          // Clear location when switching to income
                           if (type == 'income') {
                             _currentLocation = null;
-                          } else if (type == 'expense' &&
-                              _currentLocation == null) {
-                            // Auto-get location when switching to expense
-                            _getCurrentLocation();
                           }
                         });
                       },
@@ -1027,24 +863,46 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                     ),
 
                     // Category Selection
-                    CategorySection(
-                      selectedType: _selectedType,
-                      selectedCategory: _selectedCategory,
-                      categories: _categories,
-                      isLoading: _isLoadingCategories,
-                      onCategorySelected: (categoryId) {
-                        setState(() => _selectedCategory = categoryId);
+                    FormField<String>(
+                      initialValue: _selectedCategory,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return l10n?.select_category ?? 'Pilih kategori';
+                        }
+                        return null;
                       },
-                    ),
-                    SizedBox(
-                      height: ResponsiveHelper.verticalSpacing(context, 20),
-                    ),
-
-                    // Account Selection
-                    AccountSection(
-                      selectedAccountId: _selectedAccountId,
-                      onAccountSelected: (accountId) {
-                        setState(() => _selectedAccountId = accountId);
+                      builder: (FormFieldState<String> field) {
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            CategorySection(
+                              selectedType: _selectedType,
+                              selectedCategory: _selectedCategory,
+                              categories: _categories,
+                              isLoading: _isLoadingCategories,
+                              onCategorySelected: (categoryId) {
+                                field.didChange(categoryId);
+                                setState(
+                                  () => _selectedCategory = categoryId,
+                                );
+                              },
+                            ),
+                            if (field.hasError)
+                              Padding(
+                                padding: const EdgeInsets.only(
+                                  top: 4,
+                                  left: 12,
+                                ),
+                                child: Text(
+                                  field.errorText!,
+                                  style: TextStyle(
+                                    color: Colors.red[400],
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              ),
+                          ],
+                        );
                       },
                     ),
                     SizedBox(
@@ -1116,56 +974,80 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                       height: ResponsiveHelper.verticalSpacing(context, 20),
                     ),
 
-                    // Location Section (only for expenses, not for income)
-                    if (_selectedType == 'expense') ...[
-                      LocationSection(
-                        currentLocation: _currentLocation,
-                        isGettingLocation: _isGettingLocation,
-                        onGetLocation: _getCurrentLocation,
-                        onPickFromMap: _pickLocationFromMap,
-                        onClearLocation: _clearLocation,
-                      ),
-                      SizedBox(
-                        height: ResponsiveHelper.verticalSpacing(context, 20),
-                      ),
-                    ],
-
                     // Date & Time
-                    DateTimeSection(
-                      selectedDate: _selectedDate,
-                      selectedTime: _selectedTime,
-                      onSelectDate: _selectDate,
-                      onSelectTime: _selectTime,
-                    ),
-                    SizedBox(
-                      height: ResponsiveHelper.verticalSpacing(context, 20),
-                    ),
-
-                    // Payment Method
-                    PaymentMethodSection(
-                      selectedPaymentMethod: _selectedPaymentMethod,
-                      onPaymentMethodSelected: (method) {
-                        setState(() => _selectedPaymentMethod = method);
+                    FormField<DateTime>(
+                      initialValue: _selectedDate,
+                      validator: (value) {
+                        return FormValidators.validateDate(
+                          value,
+                          allowFuture: _selectedType == 'income',
+                        );
+                      },
+                      builder: (FormFieldState<DateTime> field) {
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            DateTimeSection(
+                              selectedDate: _selectedDate,
+                              selectedTime: _selectedTime,
+                              onSelectDate: () {
+                                _selectDate().then((_) {
+                                  field.didChange(_selectedDate);
+                                });
+                              },
+                              onSelectTime: _selectTime,
+                            ),
+                            if (field.hasError)
+                              Padding(
+                                padding: const EdgeInsets.only(top: 4),
+                                child: Text(
+                                  field.errorText!,
+                                  style: TextStyle(
+                                    color: Colors.red[400],
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              ),
+                          ],
+                        );
                       },
                     ),
                     SizedBox(
                       height: ResponsiveHelper.verticalSpacing(context, 20),
                     ),
 
-                    // Additional Options
-                    AdditionalOptions(
+                    // More Options (collapsible — Account, Payment, Location, Notes, Recurring)
+                    MoreOptionsSection(
+                      selectedAccountId: _selectedAccountId,
+                      onAccountSelected: (accountId) {
+                        setState(() => _selectedAccountId = accountId);
+                      },
+                      selectedPaymentMethod: _selectedPaymentMethod,
+                      onPaymentMethodSelected: (method) {
+                        setState(() => _selectedPaymentMethod = method);
+                      },
+                      currentLocation:
+                          _selectedType == 'expense' ? _currentLocation : null,
+                      isGettingLocation: _isGettingLocation,
+                      onGetLocation: _getCurrentLocation,
+                      onPickFromMap: _pickLocationFromMap,
+                      onClearLocation: _clearLocation,
+                      notesController: _notesController,
+                      showRecurring: !widget.isEditMode,
                       isRecurring: _isRecurring,
-                      onChanged:
-                          (value) => setState(() => _isRecurring = value),
+                      onRecurringChanged: (value) {
+                        setState(() {
+                          _isRecurring = value;
+                          if (!value) _recurringFrequency = null;
+                        });
+                      },
+                      recurringFrequency: _recurringFrequency,
+                      onRecurringFrequencyChanged: (value) {
+                        setState(() => _recurringFrequency = value);
+                      },
                     ),
                     SizedBox(
-                      height: ResponsiveHelper.verticalSpacing(context, 20),
-                    ),
-
-                    // Notes
-                    NotesField(controller: _notesController),
-                    SizedBox(
-                      height: ResponsiveHelper.verticalSpacing(context, 30),
+                      height: ResponsiveHelper.verticalSpacing(context, 24),
                     ),
 
                     // Save Button

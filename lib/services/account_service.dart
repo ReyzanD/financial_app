@@ -13,7 +13,9 @@ class AccountService {
 
   Future<List<AccountModel>> getAccounts({bool activeOnly = true}) async {
     try {
-      final accountsData = await _accountData.getAccounts(activeOnly: activeOnly);
+      final accountsData = await _accountData.getAccounts(
+        activeOnly: activeOnly,
+      );
       return accountsData.map((a) => AccountModel.fromMap(a)).toList();
     } catch (e) {
       LoggerService.error('Error getting accounts', error: e);
@@ -155,6 +157,7 @@ class AccountService {
       await updateAccount(id, {'is_default': true});
     } catch (e) {
       LoggerService.error('Error setting default account', error: e);
+      rethrow;
     }
   }
 

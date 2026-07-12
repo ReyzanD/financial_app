@@ -29,27 +29,30 @@ class LoginForm extends StatefulWidget {
 class _LoginFormState extends State<LoginForm> {
   @override
   Widget build(BuildContext context) {
-    return Column(
-      key: const ValueKey('login-form'),
-      children: [
-        // Username Field
-        CustomTextField(
-          controller: widget.emailController,
-          label: 'Email',
-          icon: Icons.person_outline_rounded,
-          isPassword: false,
-        ),
-        const SizedBox(height: 20),
+    return AutofillGroup(
+      child: Column(
+        key: const ValueKey('login-form'),
+        children: [
+          // Username Field
+          CustomTextField(
+            controller: widget.emailController,
+            label: 'Email',
+            icon: Icons.person_outline_rounded,
+            isPassword: false,
+            autofillHints: const [AutofillHints.email],
+          ),
+          const SizedBox(height: 20),
 
-        // Password Field
-        CustomTextField(
-          controller: widget.passwordController,
-          label: 'Password',
-          icon: Icons.lock_outline_rounded,
-          isPassword: true,
-          obscureText: widget.obscurePassword,
-          onToggleObscure: widget.onToggleObscure,
-        ),
+          // Password Field
+          CustomTextField(
+            controller: widget.passwordController,
+            label: 'Password',
+            icon: Icons.lock_outline_rounded,
+            isPassword: true,
+            obscureText: widget.obscurePassword,
+            onToggleObscure: widget.onToggleObscure,
+            autofillHints: const [AutofillHints.password],
+          ),
         const SizedBox(height: 15),
 
         // Forgot Password
@@ -77,6 +80,7 @@ class _LoginFormState extends State<LoginForm> {
           isLoading: widget.isLoading,
         ),
       ],
+      ),
     );
   }
 }
@@ -108,45 +112,50 @@ class RegisterForm extends StatefulWidget {
 class _RegisterFormState extends State<RegisterForm> {
   @override
   Widget build(BuildContext context) {
-    return Column(
-      key: const ValueKey('register-form'),
-      children: [
-        // Name Field
-        CustomTextField(
-          controller: widget.nameController,
-          label: 'Name',
-          icon: Icons.person_add_outlined,
-          isPassword: false,
-        ),
-        const SizedBox(height: 20),
+    return AutofillGroup(
+      child: Column(
+        key: const ValueKey('register-form'),
+        children: [
+          // Name Field
+          CustomTextField(
+            controller: widget.nameController,
+            label: 'Name',
+            icon: Icons.person_add_outlined,
+            isPassword: false,
+            autofillHints: const [AutofillHints.name],
+          ),
+          const SizedBox(height: 20),
 
-        // Email Field
-        CustomTextField(
-          controller: widget.emailController,
-          label: 'Email',
-          icon: Icons.email_outlined,
-          isPassword: false,
-        ),
-        const SizedBox(height: 20),
+          // Email Field
+          CustomTextField(
+            controller: widget.emailController,
+            label: 'Email',
+            icon: Icons.email_outlined,
+            isPassword: false,
+            autofillHints: const [AutofillHints.email],
+          ),
+          const SizedBox(height: 20),
 
-        // Password Field
-        CustomTextField(
-          controller: widget.passwordController,
-          label: 'Password',
-          icon: Icons.lock_outline_rounded,
-          isPassword: true,
-          obscureText: widget.obscurePassword,
-          onToggleObscure: widget.onToggleObscure,
-        ),
-        const SizedBox(height: 30),
+          // Password Field
+          CustomTextField(
+            controller: widget.passwordController,
+            label: 'Password',
+            icon: Icons.lock_outline_rounded,
+            isPassword: true,
+            obscureText: widget.obscurePassword,
+            onToggleObscure: widget.onToggleObscure,
+            autofillHints: const [AutofillHints.newPassword],
+          ),
+          const SizedBox(height: 30),
 
-        // Sign Up Button
-        AuthButton(
-          text: 'Sign Up',
-          onPressed: widget.onRegisterPressed,
-          isLoading: widget.isLoading,
-        ),
-      ],
+          // Sign Up Button
+          AuthButton(
+            text: 'Sign Up',
+            onPressed: widget.onRegisterPressed,
+            isLoading: widget.isLoading,
+          ),
+        ],
+      ),
     );
   }
 }

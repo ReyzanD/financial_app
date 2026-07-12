@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:financial_app/l10n/app_localizations.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:financial_app/utils/formatters.dart';
 import 'package:financial_app/services/api_service.dart';
@@ -11,6 +12,8 @@ import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:money2/money2.dart';
 import 'package:financial_app/utils/design_tokens.dart';
+import 'package:financial_app/utils/date_picker_helper.dart';
+import 'package:financial_app/core/di/service_locator.dart';
 
 class FinancialSummaryCard extends StatefulWidget {
   const FinancialSummaryCard({super.key});
@@ -26,7 +29,7 @@ class FinancialSummaryCard extends StatefulWidget {
 
 class _FinancialSummaryCardState extends State<FinancialSummaryCard>
     with SingleTickerProviderStateMixin {
-  final ApiService _apiService = ApiService();
+  final ApiService _apiService = getIt<ApiService>();
   final FinancialCalculator _calculator = FinancialCalculator();
   Map<String, dynamic>? _summary;
   bool _isLoading = true;
@@ -95,32 +98,23 @@ class _FinancialSummaryCardState extends State<FinancialSummaryCard>
       }
     } catch (e) {
       if (mounted) {
+        final l10n = AppLocalizations.of(context);
         setState(() {
           _isLoading = false;
-          _errorMessage = 'Gagal memuat data. Tap untuk coba lagi.';
+          _errorMessage =
+              l10n?.failed_to_load_transactions ??
+              'Gagal memuat data. Tap untuk coba lagi.';
         });
       }
     }
   }
 
   void _showMonthPicker() async {
-    final DateTime? picked = await showDatePicker(
+    final DateTime? picked = await DatePickerHelper.showDarkDatePicker(
       context: context,
       initialDate: _selectedDate,
       firstDate: DateTime(2020),
       lastDate: DateTime.now(),
-      helpText: 'Pilih Bulan & Tahun',
-      builder: (context, child) {
-        return Theme(
-          data: ThemeData.dark().copyWith(
-            colorScheme: const ColorScheme.dark(
-              primary: DesignTokens.primaryColor,
-              surface: DesignTokens.surfaceDark,
-            ),
-          ),
-          child: child!,
-        );
-      },
     );
 
     if (picked != null && picked != _selectedDate && mounted) {
@@ -179,7 +173,7 @@ class _FinancialSummaryCardState extends State<FinancialSummaryCard>
               width: 180,
               decoration: BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(DesignTokens.radiusLarge),
               ),
             ),
             SizedBox(height: ResponsiveHelper.verticalSpacing(context, 12)),
@@ -246,6 +240,7 @@ class _FinancialSummaryCardState extends State<FinancialSummaryCard>
   }
 
   Widget _buildContent() {
+    final l10n = AppLocalizations.of(context);
     if (_isLoading) {
       return _buildShimmerPlaceholder();
     }
@@ -483,9 +478,9 @@ class _FinancialSummaryCardState extends State<FinancialSummaryCard>
               children: [
                 Expanded(
                   child: _buildFinanceItem(
-                    title: 'Pemasukan',
+                    title: l10n?.income ?? 'Pemasukan',
                     amount: CurrencyFormatter.formatRupiah(income),
-                    color: const Color(0xFF4CAF50),
+                    color: DesignTokens.successColor,
                     icon: Icons.trending_up_rounded,
                   ),
                 ),
@@ -494,9 +489,9 @@ class _FinancialSummaryCardState extends State<FinancialSummaryCard>
                 ),
                 Expanded(
                   child: _buildFinanceItem(
-                    title: 'Pengeluaran',
+                    title: l10n?.expense ?? 'Pengeluaran',
                     amount: CurrencyFormatter.formatRupiah(expense),
-                    color: const Color(0xFFF44336),
+                    color: DesignTokens.errorColor,
                     icon: Icons.trending_down_rounded,
                   ),
                 ),
@@ -513,10 +508,10 @@ class _FinancialSummaryCardState extends State<FinancialSummaryCard>
                     value: '${savingsRate.toStringAsFixed(1)}%',
                     color:
                         savingsRate >= 20
-                            ? const Color(0xFF4CAF50)
+                            ? DesignTokens.successColor
                             : savingsRate >= 10
-                            ? const Color(0xFFFFB74D)
-                            : const Color(0xFFF44336),
+                            ? DesignTokens.warningColor
+                            : DesignTokens.errorColor,
                     icon: Iconsax.wallet_3,
                   ),
                 ),
@@ -529,10 +524,10 @@ class _FinancialSummaryCardState extends State<FinancialSummaryCard>
                     value: (healthScore['score'] as double).toStringAsFixed(0),
                     color:
                         (healthScore['score'] as double) >= 80
-                            ? const Color(0xFF4CAF50)
+                            ? DesignTokens.successColor
                             : (healthScore['score'] as double) >= 60
-                            ? const Color(0xFFFFB74D)
-                            : const Color(0xFFF44336),
+                            ? DesignTokens.warningColor
+                            : DesignTokens.errorColor,
                     icon: Iconsax.health,
                   ),
                 ),
