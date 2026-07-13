@@ -4,6 +4,7 @@ import 'package:financial_app/services/data/debt_data_service.dart';
 import 'package:financial_app/services/data/goal_data_service.dart';
 import 'package:financial_app/services/data/subscription_data_service.dart';
 import 'package:financial_app/services/data/expense_split_data_service.dart';
+import 'package:financial_app/models/investment_model.dart';
 import 'package:financial_app/services/data/investment_data_service.dart';
 
 /// Transforms clean JSON keys to `_232143` suffixed DB format.
@@ -319,42 +320,38 @@ class FakeInvestmentDataService extends InvestmentDataService {
   String _nextId() => 'inv_${++_counter}';
 
   @override
-  Future<List<Map<String, dynamic>>> getInvestments({String? type}) async {
+  Future<List<InvestmentModel>> getInvestments({String? type}) async {
     var result = _investments.values.toList();
     if (type != null) {
       result = result.where((i) => i['type_232143'] == type).toList();
     }
-    return result;
+    return result.map((m) => InvestmentModel.fromMap(m)).toList();
   }
 
   @override
-  Future<Map<String, dynamic>> addInvestment(Map<String, dynamic> data) async {
+  Future<InvestmentModel> addInvestment(Map<String, dynamic> data) async {
     final id = _nextId();
     final record =
         _toDbFormat(data)
           ..['investment_id_232143'] = id
           ..['user_id_232143'] = 'test_user_1';
     _investments[id] = record;
-    return {'investment': Map<String, dynamic>.from(record)};
+    return InvestmentModel.fromMap(record);
   }
 
   @override
-  Future<Map<String, dynamic>> updateInvestmentPrice(
-    String invId,
-    double newPrice,
-  ) async {
+  Future<void> updateInvestmentPrice(String invId, double newPrice) async {
     if (_investments.containsKey(invId)) {
       _investments[invId]!['current_price_232143'] = newPrice;
       _investments[invId]!['updated_at_232143'] =
           DateTime.now().toIso8601String();
     }
-    return {'success': true};
   }
 
   @override
-  Future<Map<String, dynamic>> deleteInvestment(String invId) async {
+  Future<bool> deleteInvestment(String invId) async {
     _investments.remove(invId);
-    return {'success': true};
+    return true;
   }
 
   @override

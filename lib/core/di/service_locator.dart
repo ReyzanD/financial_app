@@ -75,6 +75,7 @@ import 'package:financial_app/features/backup/presentation/controllers/backup_co
 import 'package:financial_app/features/backup/data/repositories/backup_repository.dart';
 import 'package:financial_app/features/backup/domain/repositories/backup_repository_interface.dart';
 import 'package:financial_app/services/data/tag_data_service.dart';
+import 'package:financial_app/services/data/investment_data_service.dart';
 import 'package:financial_app/features/tags/presentation/controllers/tag_controller.dart';
 import 'package:financial_app/features/tags/data/repositories/tag_repository.dart';
 import 'package:financial_app/features/tags/domain/repositories/tag_repository_interface.dart';
@@ -562,6 +563,7 @@ Future<void> setupServiceLocator() async {
   getIt.registerLazySingleton<SubscriptionTrackerService>(
     () => SubscriptionTrackerService(),
   );
+  getIt.registerLazySingleton<InvestmentDataService>(() => InvestmentDataService());
   getIt.registerLazySingleton<InvestmentService>(() => InvestmentService());
   getIt.registerLazySingleton<ExpenseSplitService>(() => ExpenseSplitService());
 

@@ -1,4 +1,5 @@
 import 'package:uuid/uuid.dart';
+import 'package:financial_app/models/investment_model.dart';
 import 'package:financial_app/services/local_database_service.dart';
 import 'package:financial_app/services/local_auth_service.dart';
 import 'package:financial_app/services/logger_service.dart';
@@ -17,7 +18,7 @@ class InvestmentDataService {
 
   Future<String?> getCurrentUserId() async => _authService.getCurrentUserId();
 
-  Future<List<Map<String, dynamic>>> getInvestments({String? type}) async {
+  Future<List<InvestmentModel>> getInvestments({String? type}) async {
     try {
       final userId = await getCurrentUserId();
       if (userId == null) throw Exception('Not authenticated');
@@ -37,14 +38,14 @@ class InvestmentDataService {
         whereArgs: whereArgs,
         orderBy: 'created_at_232143 DESC',
       );
-      return List<Map<String, dynamic>>.from(investments);
+      return investments.map((m) => InvestmentModel.fromMap(m)).toList();
     } catch (e) {
       LoggerService.error('Error getting investments', error: e);
       rethrow;
     }
   }
 
-  Future<Map<String, dynamic>> addInvestment(
+  Future<InvestmentModel> addInvestment(
     Map<String, dynamic> invData,
   ) async {
     try {
@@ -73,14 +74,14 @@ class InvestmentDataService {
 
       await db.insert('investments_232143', data);
       LoggerService.info('✅ Investment added: $invId');
-      return {'investment': data};
+      return InvestmentModel.fromMap(data);
     } catch (e) {
       LoggerService.error('Error adding investment', error: e);
       rethrow;
     }
   }
 
-  Future<Map<String, dynamic>> updateInvestmentPrice(
+  Future<void> updateInvestmentPrice(
     String invId,
     double newPrice,
   ) async {
@@ -100,14 +101,13 @@ class InvestmentDataService {
       );
 
       LoggerService.info('✅ Investment price updated: $invId');
-      return {'success': true, 'new_price': newPrice};
     } catch (e) {
       LoggerService.error('Error updating investment price', error: e);
       rethrow;
     }
   }
 
-  Future<Map<String, dynamic>> deleteInvestment(String invId) async {
+  Future<bool> deleteInvestment(String invId) async {
     try {
       final userId = await getCurrentUserId();
       if (userId == null) throw Exception('Not authenticated');
@@ -121,10 +121,9 @@ class InvestmentDataService {
 
       if (rowsDeleted > 0) {
         LoggerService.info('✅ Investment deleted: $invId');
-        return {'success': true};
-      } else {
-        return {'success': false, 'message': 'Investment not found'};
+        return true;
       }
+      return false;
     } catch (e) {
       LoggerService.error('Error deleting investment', error: e);
       rethrow;

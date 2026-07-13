@@ -21,6 +21,9 @@ class CategoryModel {
     required this.displayOrder,
   });
 
+  factory CategoryModel.fromMap(Map<String, dynamic> map) =>
+      CategoryModel.fromJson(map);
+
   factory CategoryModel.fromJson(Map<String, dynamic> json) {
     return CategoryModel(
       id:
@@ -56,5 +59,19 @@ class CategoryModel {
           json['is_system_default'] == 1,
       displayOrder: json['display_order_232143'] ?? json['display_order'] ?? 0,
     );
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'category_id_232143': id,
+      'name_232143': name,
+      'type_232143': type,
+      'color_232143': color,
+      'icon_232143': icon,
+      'budget_limit_232143': budgetLimit,
+      'budget_period_232143': budgetPeriod,
+      'is_system_default_232143': isSystemDefault ? 1 : 0,
+      'display_order_232143': displayOrder,
+    };
   }
 }
