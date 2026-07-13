@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:provider/provider.dart';
-import 'package:financial_app/models/feature_models.dart';
 import 'package:financial_app/utils/design_tokens.dart';
 import 'package:financial_app/widgets/common/offline_indicator.dart';
 import 'package:financial_app/features/tags/presentation/controllers/tag_controller.dart';
@@ -118,7 +117,7 @@ class _TagsScreenState extends State<TagsScreen> {
                   padding: const EdgeInsets.all(DesignTokens.spacing4),
                   itemCount: ctrl.tags.length,
                   itemBuilder: (_, i) {
-                    final tag = ctrl.tags[i] as TransactionTagModel;
+                    final tag = ctrl.tags[i];
                     return Container(
                       margin: const EdgeInsets.only(bottom: 8),
                       padding: const EdgeInsets.symmetric(

@@ -1,4 +1,5 @@
 import 'package:uuid/uuid.dart';
+import 'package:financial_app/models/transaction_tag_model.dart';
 import 'package:financial_app/services/local_database_service.dart';
 import 'package:financial_app/services/local_auth_service.dart';
 import 'package:financial_app/services/logger_service.dart';
@@ -22,7 +23,7 @@ class TagDataService {
   }
 
   /// Get all tags
-  Future<List<Map<String, dynamic>>> getTags() async {
+  Future<List<TransactionTagModel>> getTags() async {
     try {
       final userId = await getCurrentUserId();
       if (userId == null) throw Exception('Not authenticated');
@@ -35,7 +36,7 @@ class TagDataService {
         orderBy: 'name_232143 ASC',
       );
 
-      return List<Map<String, dynamic>>.from(tags);
+      return tags.map((m) => TransactionTagModel.fromMap(m)).toList();
     } catch (e) {
       LoggerService.error('Error getting tags', error: e);
       rethrow;
@@ -43,26 +44,30 @@ class TagDataService {
   }
 
   /// Add a tag
-  Future<Map<String, dynamic>> addTag(Map<String, dynamic> tagData) async {
+  Future<TransactionTagModel> addTag(String name, {String color = '#8B5FBF'}) async {
     try {
       final userId = await getCurrentUserId();
       if (userId == null) throw Exception('Not authenticated');
 
       final db = await _dbService.database;
       final tagId = _uuid.v4();
+      final now = DateTime.now();
 
       await db.insert('tags_232143', {
         'tag_id_232143': tagId,
         'user_id_232143': userId,
-        'name_232143': tagData['name'],
-        'color_232143': tagData['color'] ?? '#8B5FBF',
-        'created_at_232143': DateTime.now().toIso8601String(),
+        'name_232143': name,
+        'color_232143': color,
+        'created_at_232143': now.toIso8601String(),
       });
 
       LoggerService.info('✅ Tag added: $tagId');
-      return {
-        'tag': {'tag_id_232143': tagId, ...tagData},
-      };
+      return TransactionTagModel(
+        id: tagId,
+        name: name,
+        color: color,
+        createdAt: now,
+      );
     } catch (e) {
       LoggerService.error('Error adding tag', error: e);
       rethrow;
@@ -70,7 +75,7 @@ class TagDataService {
   }
 
   /// Delete a tag
-  Future<Map<String, dynamic>> deleteTag(String tagId) async {
+  Future<bool> deleteTag(String tagId) async {
     try {
       final userId = await getCurrentUserId();
       if (userId == null) throw Exception('Not authenticated');
@@ -84,10 +89,9 @@ class TagDataService {
 
       if (rowsDeleted > 0) {
         LoggerService.info('✅ Tag deleted: $tagId');
-        return {'success': true};
-      } else {
-        return {'success': false, 'message': 'Tag not found'};
+        return true;
       }
+      return false;
     } catch (e) {
       LoggerService.error('Error deleting tag', error: e);
       rethrow;
@@ -95,7 +99,7 @@ class TagDataService {
   }
 
   /// Get tags for a specific transaction
-  Future<List<Map<String, dynamic>>> getTransactionTags(
+  Future<List<TransactionTagModel>> getTransactionTags(
     String transactionId,
   ) async {
     try {
@@ -109,7 +113,7 @@ class TagDataService {
         [transactionId],
       );
 
-      return List<Map<String, dynamic>>.from(result);
+      return result.map((m) => TransactionTagModel.fromMap(m)).toList();
     } catch (e) {
       LoggerService.error('Error getting transaction tags', error: e);
       rethrow;
