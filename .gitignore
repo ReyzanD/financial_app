@@ -76,7 +76,11 @@ logs/
 .cursor/
 .claude/
 .crush/
-/docs
+/docs/*
+# But allow manually created documentation files (not auto-generated)
+!/docs/BUGS_I_FOUND.md
+!/docs/ARCHITECTURE.md
+!/docs/ACCESSIBILITY.md
 # Database
 *.db
 *.sqlite
