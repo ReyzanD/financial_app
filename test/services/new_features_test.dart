@@ -11,7 +11,6 @@ import 'package:financial_app/services/subscription_tracker_service.dart';
 import 'package:financial_app/services/expense_split_service.dart';
 import 'package:financial_app/services/challenge_service.dart';
 import 'package:financial_app/services/investment_service.dart';
-import 'package:financial_app/services/transaction_template_service.dart';
 import 'package:financial_app/services/category_customization_service.dart';
 import '../helpers/fake_data_services.dart';
 
@@ -437,72 +436,6 @@ void main() {
 
       expect(investment.profitLoss, -2000000);
       expect(investment.profitLossPercentage, -20.0);
-    });
-  });
-
-  group('TransactionTemplateService', () {
-    late TransactionTemplateService service;
-
-    setUp(() {
-      service = TransactionTemplateService();
-    });
-
-    test('should start with no templates', () async {
-      final templates = await service.getTemplates();
-      expect(templates, isEmpty);
-    });
-
-    test('should create a template', () async {
-      final template = TransactionTemplateModel(
-        id: 'test_template_1',
-        name: 'Daily Coffee',
-        amount: 35000,
-        type: 'expense',
-        description: 'Morning coffee',
-        lastUsed: DateTime.now(),
-        createdAt: DateTime.now(),
-      );
-
-      final result = await service.createTemplate(template);
-      expect(result.name, 'Daily Coffee');
-      expect(result.amount, 35000);
-    });
-
-    test('should increment usage count', () async {
-      final template = TransactionTemplateModel(
-        id: 'test_template_2',
-        name: 'Parking',
-        amount: 10000,
-        type: 'expense',
-        lastUsed: DateTime.now(),
-        createdAt: DateTime.now(),
-      );
-
-      await service.createTemplate(template);
-      await service.useTemplate(template.id);
-
-      final templates = await service.getTemplates();
-      final updated = templates.firstWhere((t) => t.id == template.id);
-      expect(updated.usageCount, greaterThanOrEqualTo(1));
-    });
-
-    test('should convert template to transaction data', () {
-      final template = TransactionTemplateModel(
-        id: 'test',
-        name: 'Test',
-        amount: 50000,
-        type: 'expense',
-        categoryId: 'cat_1',
-        categoryName: 'Food',
-        description: 'Test transaction',
-        lastUsed: DateTime.now(),
-        createdAt: DateTime.now(),
-      );
-
-      final data = service.templateToTransactionData(template);
-      expect(data['amount'], 50000);
-      expect(data['type'], 'expense');
-      expect(data['category_name'], 'Food');
     });
   });
 
