@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:financial_app/core/di/service_locator.dart';
 import 'package:financial_app/services/notification_service.dart';
 import 'package:financial_app/services/notification_history_service.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -23,9 +24,9 @@ class NotificationCenterScreen extends StatefulWidget {
 class _NotificationCenterScreenState extends State<NotificationCenterScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  final NotificationService _notificationService = NotificationService();
+  final NotificationService _notificationService = getIt<NotificationService>();
   final NotificationHistoryService _historyService =
-      NotificationHistoryService();
+      getIt<NotificationHistoryService>();
 
   List<Map<String, dynamic>> _history = [];
   int _unreadCount = 0;

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:financial_app/core/di/service_locator.dart';
 import 'package:financial_app/models/financial_obligation.dart';
 import 'package:financial_app/services/obligation_service.dart';
 import 'package:financial_app/widgets/obligations/obligation_filters.dart';
@@ -90,7 +91,7 @@ class _AllObligationsViewState extends State<AllObligationsView> {
   Widget build(BuildContext context) {
     return FutureBuilder<List<FinancialObligation>>(
       key: ValueKey('obligations_$_refreshKey'),
-      future: ObligationService().getObligations(),
+      future: getIt<ObligationService>().getObligations(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
           return const Center(child: CircularProgressIndicator());

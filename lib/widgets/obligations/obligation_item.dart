@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
+import 'package:financial_app/core/di/service_locator.dart';
 import 'package:financial_app/models/financial_obligation.dart';
 import 'package:financial_app/utils/formatters.dart';
 import 'package:financial_app/services/obligation_service.dart';
@@ -717,7 +718,7 @@ class ObligationItem extends StatelessWidget {
                     );
 
                     // Also record in API
-                    await ObligationService().recordPayment(
+                    await getIt<ObligationService>().recordPayment(
                       obligation.id,
                       paymentData,
                     );

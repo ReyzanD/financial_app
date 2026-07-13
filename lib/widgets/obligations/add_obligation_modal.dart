@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:financial_app/core/di/service_locator.dart';
 import 'package:financial_app/services/obligation_service.dart';
 import 'package:financial_app/services/error_handler_service.dart';
 import 'package:financial_app/services/logger_service.dart';
@@ -19,7 +20,7 @@ class AddObligationModal extends StatefulWidget {
 
 class _AddObligationModalState extends State<AddObligationModal> {
   final _formKey = GlobalKey<FormState>();
-  final ObligationService _obligationService = ObligationService();
+  final ObligationService _obligationService = getIt<ObligationService>();
 
   late TextEditingController _nameController;
   late TextEditingController _monthlyAmountController;

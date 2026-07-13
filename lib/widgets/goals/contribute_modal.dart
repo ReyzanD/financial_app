@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
+import 'package:financial_app/core/di/service_locator.dart';
 import 'package:financial_app/l10n/app_localizations.dart';
 import 'package:financial_app/services/data/goal_data_service.dart';
 import 'package:financial_app/services/account_service.dart';
@@ -24,7 +25,7 @@ class _ContributeModalState extends State<ContributeModal> {
   final TextEditingController _amountController = TextEditingController();
   final TextEditingController _noteController = TextEditingController();
   final GoalDataService _goalService = GoalDataService();
-  final AccountService _accountService = AccountService();
+  final AccountService _accountService = getIt<AccountService>();
   bool _isLoading = false;
 
   List<AccountModel> _accounts = [];

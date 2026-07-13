@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:provider/provider.dart';
+import 'package:financial_app/core/di/service_locator.dart';
 import 'package:financial_app/services/goal_forecasting_service.dart';
 import 'package:financial_app/widgets/common/offline_indicator.dart';
 import 'package:financial_app/widgets/common/empty_state.dart';
@@ -362,7 +363,7 @@ class _FinancialInsightsScreenState extends State<FinancialInsightsScreen> {
       );
     }
 
-    final forecaster = GoalForecastingService();
+    final forecaster = getIt<GoalForecastingService>();
     return Container(
       padding: const EdgeInsets.all(DesignTokens.spacing4),
       decoration: BoxDecoration(

@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
+import 'package:provider/provider.dart';
+import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:fl_chart/fl_chart.dart';
+import 'package:financial_app/core/di/service_locator.dart';
+import 'package:financial_app/state/app_state.dart';
 import 'package:financial_app/services/obligation_service.dart';
-import 'package:financial_app/utils/formatters.dart';
 import 'package:financial_app/services/logger_service.dart';
 import 'package:financial_app/l10n/app_localizations.dart';
-import 'package:intl/intl.dart';
 import 'package:financial_app/utils/design_tokens.dart';
+import 'package:financial_app/utils/formatters.dart';
 
 /// Widget untuk menampilkan analytics dan trends untuk obligations
 class BillAnalyticsView extends StatefulWidget {
@@ -17,7 +22,7 @@ class BillAnalyticsView extends StatefulWidget {
 }
 
 class _BillAnalyticsViewState extends State<BillAnalyticsView> {
-  final ObligationService _obligationService = ObligationService();
+  final ObligationService _obligationService = getIt<ObligationService>();
   bool _isLoading = true;
   Map<String, dynamic> _analytics = {};
 

@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:financial_app/core/di/service_locator.dart';
 import 'package:financial_app/services/biometric_service.dart';
 import 'package:financial_app/services/logger_service.dart';
 
 /// Helper untuk biometric authentication pada sensitive actions
 class BiometricHelper {
-  static final BiometricService _biometricService = BiometricService();
+  static final BiometricService _biometricService = getIt<BiometricService>();
 
   /// Request biometric authentication untuk sensitive action
   /// Returns true if authenticated, false if cancelled or failed

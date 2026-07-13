@@ -18,7 +18,7 @@ class FinancialFacade {
   final FinancialCalculator _calculator = FinancialCalculator();
   final AIService _aiService = AIService();
   final ApiService _apiService = getIt<ApiService>();
-  final EncryptionService _encryptionService = EncryptionService();
+  final EncryptionService _encryptionService = getIt<EncryptionService>();
   final FlutterSecureStorage _secureStorage = const FlutterSecureStorage();
 
   static const String _cacheKey = 'financial_overview_cache';

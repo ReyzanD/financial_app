@@ -39,6 +39,7 @@ import 'package:financial_app/models/location_data.dart';
 import 'package:financial_app/services/location_service.dart';
 import 'package:financial_app/services/error_handler_service.dart';
 import 'package:financial_app/services/logger_service.dart';
+import 'package:financial_app/core/di/service_locator.dart';
 import 'package:financial_app/services/receipt_scanning_service.dart';
 import 'package:financial_app/services/smart_categorization_service.dart';
 import 'package:financial_app/services/data/transaction_data_service.dart';
@@ -90,9 +91,9 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
   final _notesController = TextEditingController();
   final TransactionDataService _transactionData = TransactionDataService();
   final CategoryDataService _categoryData = CategoryDataService();
-  final ReceiptScanningService _receiptService = ReceiptScanningService();
+  final ReceiptScanningService _receiptService = getIt<ReceiptScanningService>();
   final SmartCategorizationService _categorizationService =
-      SmartCategorizationService();
+      getIt<SmartCategorizationService>();
 
   // Form state
   late String _selectedType;

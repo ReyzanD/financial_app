@@ -6,7 +6,7 @@ import 'package:financial_app/core/di/service_locator.dart';
 /// Service untuk budget forecasting dan analytics
 class BudgetForecastService {
   final ApiService _apiService = getIt<ApiService>();
-  final NotificationService _notificationService = NotificationService();
+  final NotificationService _notificationService = getIt<NotificationService>();
 
   /// Calculate budget forecast berdasarkan spending pattern
   Future<Map<String, dynamic>> calculateForecast({

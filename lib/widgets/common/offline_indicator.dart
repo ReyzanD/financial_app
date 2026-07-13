@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:financial_app/core/di/service_locator.dart';
 import 'package:financial_app/l10n/app_localizations.dart';
 import 'package:financial_app/services/network_service.dart';
 
@@ -12,7 +13,7 @@ class OfflineIndicator extends StatefulWidget {
 }
 
 class _OfflineIndicatorState extends State<OfflineIndicator> {
-  final NetworkService _networkService = NetworkService();
+  final NetworkService _networkService = getIt<NetworkService>();
   bool _isOnline = true;
 
   @override

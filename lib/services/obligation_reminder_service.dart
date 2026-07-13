@@ -1,3 +1,4 @@
+import 'package:financial_app/core/di/service_locator.dart';
 import 'package:financial_app/models/financial_obligation.dart';
 import 'package:financial_app/services/notification_service.dart';
 import 'package:financial_app/services/obligation_service.dart';
@@ -6,8 +7,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 /// Service untuk mengelola reminder tagihan dengan smart scheduling
 class ObligationReminderService {
-  final NotificationService _notificationService = NotificationService();
-  final ObligationService _obligationService = ObligationService();
+  final NotificationService _notificationService = getIt<NotificationService>();
+  final ObligationService _obligationService = getIt<ObligationService>();
 
   /// Schedule reminders untuk semua active obligations
   Future<void> scheduleAllReminders() async {

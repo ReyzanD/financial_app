@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
+import 'package:financial_app/core/di/service_locator.dart';
 import 'package:financial_app/models/financial_obligation.dart';
 import 'package:financial_app/services/obligation_service.dart';
 import 'package:financial_app/utils/formatters.dart';
@@ -20,7 +21,7 @@ class ObligationDetailsModal extends StatefulWidget {
 }
 
 class _ObligationDetailsModalState extends State<ObligationDetailsModal> {
-  final ObligationService _obligationService = ObligationService();
+  final ObligationService _obligationService = getIt<ObligationService>();
   bool _isDeleting = false;
 
   Future<void> _deleteObligation() async {

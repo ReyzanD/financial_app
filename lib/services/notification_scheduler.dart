@@ -1,3 +1,4 @@
+import 'package:financial_app/core/di/service_locator.dart';
 import 'package:financial_app/services/notification_service.dart';
 import 'package:financial_app/services/data/subscription_data_service.dart';
 import 'package:financial_app/services/data/challenge_data_service.dart';
@@ -10,7 +11,7 @@ class NotificationScheduler {
   final ChallengeDataService _challengeData = ChallengeDataService();
   final DebtDataService _debtData = DebtDataService();
   final ExpenseSplitDataService _splitData = ExpenseSplitDataService();
-  final NotificationService _notifications = NotificationService();
+  final NotificationService _notifications = getIt<NotificationService>();
 
   Future<void> scheduleAllNotifications() async {
     LoggerService.info('Scheduling all notifications...');

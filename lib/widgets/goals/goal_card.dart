@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
+import 'package:financial_app/core/di/service_locator.dart';
 import 'package:financial_app/widgets/goals/goals_helpers.dart';
 import 'package:financial_app/services/data/goal_data_service.dart';
 import 'package:financial_app/services/account_service.dart';
@@ -37,7 +38,7 @@ class _GoalCardState extends State<GoalCard> {
         (widget.goal['goal_id_232143'] ?? widget.goal['id']).toString();
     if (goalId.isEmpty) return;
     try {
-      final accountService = AccountService();
+      final accountService = getIt<AccountService>();
       final contribs = await accountService.getGoalContributions(goalId);
       if (mounted) setState(() => _contributions = contribs);
     } catch (e) {

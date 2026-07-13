@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:financial_app/core/di/service_locator.dart';
 import 'package:financial_app/models/financial_obligation.dart';
 import 'package:financial_app/services/obligation_service.dart';
 import 'package:financial_app/widgets/obligations/obligation_filters.dart';
@@ -20,7 +21,7 @@ class UpcomingObligationsView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<List<FinancialObligation>>(
-      future: ObligationService().getUpcomingObligations(),
+      future: getIt<ObligationService>().getUpcomingObligations(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
           return const Center(child: CircularProgressIndicator());

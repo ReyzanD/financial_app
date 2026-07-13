@@ -1,4 +1,5 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:financial_app/core/di/service_locator.dart';
 import 'package:financial_app/services/logger_service.dart';
 import 'package:financial_app/services/local_auth_service.dart';
 import 'package:financial_app/services/budget_recommendation_service.dart';
@@ -276,7 +277,7 @@ class ApiService {
   // AI Recommendations - Using BudgetRecommendationService for local data
   Future<dynamic> getAIRecommendations() async {
     try {
-      final recommendationService = BudgetRecommendationService();
+      final recommendationService = getIt<BudgetRecommendationService>();
       final recommendations =
           await recommendationService.generateRecommendation();
       return {

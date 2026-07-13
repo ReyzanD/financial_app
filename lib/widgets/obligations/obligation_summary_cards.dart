@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:financial_app/l10n/app_localizations.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
+import 'package:financial_app/core/di/service_locator.dart';
 import 'package:financial_app/services/obligation_service.dart';
 import 'package:financial_app/utils/formatters.dart';
 import 'package:financial_app/utils/design_tokens.dart';
@@ -11,7 +12,7 @@ class ObligationSummaryCards extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<Map<String, dynamic>>(
-      future: ObligationService().getObligationsSummary(),
+      future: getIt<ObligationService>().getObligationsSummary(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) return SizedBox();
 
