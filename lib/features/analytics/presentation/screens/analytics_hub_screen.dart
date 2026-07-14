@@ -6,6 +6,7 @@ import 'package:financial_app/features/net_worth/presentation/screens/net_worth_
 import 'package:financial_app/features/cash_flow/presentation/screens/cash_flow_screen.dart';
 import 'package:financial_app/features/report/presentation/screens/report_screen.dart';
 import 'package:financial_app/utils/design_tokens.dart';
+import 'package:financial_app/widgets/common/responsive_content.dart';
 
 /// Hub screen that consolidates 5 analytics/insights features into tabs:
 ///   analytics, insights, networth, cashflow, reports
@@ -133,15 +134,17 @@ class _AnalyticsHubScreenState extends State<AnalyticsHubScreen>
           ),
         ),
       ),
-      body: TabBarView(
-        controller: _tabController,
-        children: const [
-          AnalyticsScreen(),
-          FinancialInsightsScreen(),
-          NetWorthScreen(),
-          CashFlowScreen(),
-          ReportScreen(),
-        ],
+      body: ResponsiveContent(
+        child: TabBarView(
+          controller: _tabController,
+          children: const [
+            AnalyticsScreen(),
+            FinancialInsightsScreen(),
+            NetWorthScreen(),
+            CashFlowScreen(),
+            ReportScreen(),
+          ],
+        ),
       ),
     );
   }

@@ -13,6 +13,7 @@ import 'package:financial_app/widgets/obligations/overdue_obligations_view.dart'
 import 'package:financial_app/widgets/obligations/obligation_helpers.dart';
 import 'package:financial_app/widgets/obligations/obligation_filters.dart';
 import 'package:financial_app/widgets/common/offline_indicator.dart';
+import 'package:financial_app/widgets/common/responsive_content.dart';
 import 'package:financial_app/utils/responsive_helper.dart';
 import 'package:financial_app/utils/design_tokens.dart';
 import 'package:financial_app/l10n/app_localizations.dart';
@@ -81,9 +82,10 @@ class _FinancialObligationsScreenState
           ),
         ],
       ),
-      body: Column(
-        children: [
-          const OfflineIndicator(),
+      body: ResponsiveContent(
+        child: Column(
+          children: [
+            const OfflineIndicator(),
           Consumer<ObligationController>(
             builder: (context, ctrl, _) => _buildSummaryCards(context, ctrl),
           ),
@@ -179,6 +181,7 @@ class _FinancialObligationsScreenState
             ),
           ),
         ],
+      ),
       ),
       floatingActionButton: Container(
         decoration: BoxDecoration(

@@ -13,6 +13,7 @@ import 'package:financial_app/widgets/common/empty_state.dart';
 import 'package:financial_app/widgets/common/offline_indicator.dart';
 import 'package:financial_app/utils/design_tokens.dart';
 import 'package:financial_app/utils/responsive_helper.dart';
+import 'package:financial_app/widgets/common/responsive_content.dart';
 
 class TransactionHistoryScreen extends StatefulWidget {
   const TransactionHistoryScreen({super.key});
@@ -387,9 +388,10 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
           ),
         ],
       ),
-      body: Column(
-        children: [
-          const OfflineIndicator(),
+      body: ResponsiveContent(
+        child: Column(
+          children: [
+            const OfflineIndicator(),
           Expanded(
             child:
                 _isLoading
@@ -407,6 +409,7 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
                     ),
           ),
         ],
+      ),
       ),
     );
   }

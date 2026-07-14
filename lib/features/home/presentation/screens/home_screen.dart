@@ -18,6 +18,7 @@ import 'package:financial_app/widgets/common/expandable_section.dart';
 import 'package:financial_app/widgets/home/health_score_card.dart';
 import 'package:financial_app/utils/app_refresh.dart';
 import 'package:financial_app/utils/responsive_helper.dart';
+import 'package:financial_app/widgets/common/responsive_content.dart';
 import 'package:financial_app/features/more_tab/presentation/screens/more_tab_screen.dart';
 import 'package:financial_app/utils/design_tokens.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
@@ -131,12 +132,13 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildDashboardTab() {
     final l10n = AppLocalizations.of(context);
     if (_errorMessage != null) return _buildErrorState();
-    return RefreshIndicator(
-      key: _refreshIndicatorKey,
-      onRefresh: _refreshDashboard,
-      color: DesignTokens.primaryColor,
-      backgroundColor: DesignTokens.surfaceDark,
-      child: SingleChildScrollView(
+    return ResponsiveContent(
+      child: RefreshIndicator(
+        key: _refreshIndicatorKey,
+        onRefresh: _refreshDashboard,
+        color: DesignTokens.primaryColor,
+        backgroundColor: DesignTokens.surfaceDark,
+        child: SingleChildScrollView(
         physics: const AlwaysScrollableScrollPhysics(),
         padding: ResponsiveHelper.padding(context),
         child: Column(
@@ -173,6 +175,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ],
         ),
+      ),
       ),
     );
   }
