@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:financial_app/core/di/service_locator.dart';
 import 'package:financial_app/services/data/challenge_data_service.dart';
 import 'package:financial_app/services/error_handler_service.dart';
 import 'package:financial_app/utils/design_tokens.dart';
@@ -16,7 +17,7 @@ class AddChallengeModal extends StatefulWidget {
 }
 
 class _AddChallengeModalState extends State<AddChallengeModal> {
-  final ChallengeDataService _challengeData = ChallengeDataService();
+  final ChallengeDataService _challengeData = getIt<ChallengeDataService>();
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _targetController = TextEditingController();

@@ -2,12 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:financial_app/l10n/app_localizations.dart';
+import 'package:financial_app/models/category_model.dart';
 import 'package:financial_app/utils/design_tokens.dart';
 
 class CategorySection extends StatelessWidget {
   final String selectedType;
   final String? selectedCategory; // Now stores category_id (UUID)
-  final List<Map<String, dynamic>> categories; // Categories from API
+  final List<CategoryModel> categories;
   final bool isLoading;
   final Function(String) onCategorySelected;
 
@@ -52,8 +53,8 @@ class CategorySection extends StatelessWidget {
     return Iconsax.receipt; // default icon
   }
 
-  Color _parseColor(String? colorStr) {
-    if (colorStr == null || colorStr.isEmpty) return Colors.grey;
+  Color _parseColor(String colorStr) {
+    if (colorStr.isEmpty) return Colors.grey;
     try {
       // Remove # if present and parse hex color
       final hex = colorStr.replaceAll('#', '');
@@ -68,12 +69,7 @@ class CategorySection extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
     // Filter categories by type
     final filteredCategories =
-        categories.where((cat) {
-          final type =
-              (cat['type_232143'] ?? cat['type'])?.toString().toLowerCase() ??
-              '';
-          return type == selectedType;
-        }).toList();
+        categories.where((cat) => cat.type == selectedType).toList();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -117,22 +113,11 @@ class CategorySection extends StatelessWidget {
             runSpacing: 8,
             children:
                 filteredCategories.map((category) {
-                  final categoryId =
-                      (category['category_id_232143'] ?? category['id'])
-                          ?.toString() ??
-                      '';
-                  final isSelected = selectedCategory == categoryId;
-                  final categoryName =
-                      (category['name_232143'] ?? category['name'])
-                          ?.toString() ??
-                      'Unknown';
-                  final categoryColor = _parseColor(
-                    (category['color_232143'] ?? category['color'])?.toString(),
-                  );
-                  final categoryIcon = _getCategoryIcon(categoryName);
+                  final isSelected = selectedCategory == category.id;
+                  final categoryColor = _parseColor(category.color);
 
                   return GestureDetector(
-                    onTap: () => onCategorySelected(categoryId),
+                    onTap: () => onCategorySelected(category.id),
                     child: Container(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 12,
@@ -152,14 +137,14 @@ class CategorySection extends StatelessWidget {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Icon(
-                            categoryIcon,
+                            _getCategoryIcon(category.name),
                             size: 16,
                             color:
                                 isSelected ? categoryColor : Colors.grey[500],
                           ),
                           const SizedBox(width: 6),
                           Text(
-                            categoryName,
+                            category.name,
                             style: GoogleFonts.poppins(
                               color:
                                   isSelected ? categoryColor : Colors.grey[500],

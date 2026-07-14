@@ -1,29 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:financial_app/features/budgets/domain/entities/budget_entity.dart';
-import 'package:financial_app/features/budgets/domain/use_cases/get_budgets_use_case.dart';
-import 'package:financial_app/features/budgets/domain/use_cases/create_budget_use_case.dart';
-import 'package:financial_app/features/budgets/domain/use_cases/delete_budget_use_case.dart';
-import 'package:financial_app/features/budgets/domain/use_cases/update_budget_use_case.dart';
+import 'package:financial_app/models/budget_model.dart';
+import 'package:financial_app/models/category_model.dart';
 import 'package:financial_app/features/budgets/data/repositories/budget_repository.dart';
 
 /// Budget Controller (Presentation Layer)
 class BudgetController extends ChangeNotifier {
-  final GetBudgetsUseCase _getBudgetsUseCase;
-  final CreateBudgetUseCase _createBudgetUseCase;
-  final DeleteBudgetUseCase _deleteBudgetUseCase;
-  final UpdateBudgetUseCase _updateBudgetUseCase;
   final BudgetRepository _repository;
 
-  BudgetController(
-    this._getBudgetsUseCase,
-    this._createBudgetUseCase,
-    this._deleteBudgetUseCase,
-    this._updateBudgetUseCase,
-    this._repository,
-  );
+  BudgetController(this._repository);
 
-  List<BudgetEntity> _budgets = [];
-  List<BudgetEntity> get budgets => _budgets;
+  List<BudgetModel> _budgets = [];
+  List<BudgetModel> get budgets => _budgets;
 
   Map<String, String> _categories = {};
   Map<String, String> get categories => _categories;
@@ -50,29 +37,24 @@ class BudgetController extends ChangeNotifier {
     try {
       final results = await Future.wait([
         _repository.getCategories(),
-        _getBudgetsUseCase(activeOnly: activeOnly),
+        _repository.getBudgets(activeOnly: activeOnly),
         _repository.getSummary(activeOnly: activeOnly),
       ]);
 
-      final rawCategories = results[0] as List<Map<String, dynamic>>;
-      final budgetEntities = results[1] as List<BudgetEntity>;
+      final rawCategories = results[0] as List<CategoryModel>;
+      final budgetModels = results[1] as List<BudgetModel>;
       final budgetSummary = results[2] as Map<String, dynamic>;
 
       // Map categories (expense only)
       final categoryMap = <String, String>{};
       for (final cat in rawCategories) {
-        final id = cat['category_id_232143'] ?? cat['id'];
-        final name = cat['name_232143'] ?? cat['name'];
-        final type = cat['type_232143'] ?? cat['type'];
-        if (id != null &&
-            name != null &&
-            type?.toString().toLowerCase() == 'expense') {
-          categoryMap[id.toString()] = name.toString();
+        if (cat.type?.toString().toLowerCase() == 'expense') {
+          categoryMap[cat.id] = cat.name;
         }
       }
 
       _categories = categoryMap;
-      _budgets = budgetEntities;
+      _budgets = budgetModels;
       _summary = budgetSummary;
       _error = null;
     } catch (e) {
@@ -91,7 +73,7 @@ class BudgetController extends ChangeNotifier {
   /// Delete a budget and refresh
   Future<void> deleteBudget(String id) async {
     try {
-      await _deleteBudgetUseCase(id);
+      await _repository.deleteBudget(id);
       await loadData(activeOnly: _activeOnly);
     } catch (e) {
       _error = e.toString();
@@ -99,10 +81,10 @@ class BudgetController extends ChangeNotifier {
     }
   }
 
-  /// Create a budget and refresh
-  Future<bool> createBudget(BudgetEntity budget) async {
+  /// Create a budget from a model and refresh
+  Future<bool> createBudget(BudgetModel budget) async {
     try {
-      await _createBudgetUseCase(budget);
+      await _repository.createBudget(budget);
       await loadData(activeOnly: _activeOnly);
       return true;
     } catch (e) {
@@ -116,8 +98,8 @@ class BudgetController extends ChangeNotifier {
   Future<bool> updateBudgetFromMap(String id, Map<String, dynamic> data) async {
     try {
       data['id'] = id;
-      final entity = BudgetEntity.fromJson(data);
-      await _updateBudgetUseCase(entity);
+      final model = BudgetModel.fromMap(data);
+      await _repository.updateBudget(model);
       await loadData(activeOnly: _activeOnly);
       return true;
     } catch (e) {

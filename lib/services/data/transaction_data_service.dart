@@ -1,5 +1,6 @@
 import 'package:uuid/uuid.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:financial_app/models/transaction_model.dart';
 import 'package:financial_app/services/local_database_service.dart';
 import 'package:financial_app/services/local_auth_service.dart';
 import 'package:financial_app/services/logger_service.dart';
@@ -105,209 +106,203 @@ class TransactionDataService {
   }
 
   /// Get single transaction
-  Future<Map<String, dynamic>?> getTransaction(String id) async {
-    try {
-      final userId = await getCurrentUserId();
-      if (userId == null) throw Exception('Not authenticated');
+  Future<TransactionModel?> getTransaction(String id) async {
+    final userId = await getCurrentUserId();
+    if (userId == null) throw Exception('Not authenticated');
 
-      final db = await _dbService.database;
-      final transactions = await db.rawQuery(
-        '''SELECT
-          t.*,
-          c.name_232143 AS category_name,
-          c.color_232143 AS category_color,
-          c.icon_232143 AS category_icon,
-          a.name_232143 AS account_name,
-          a.type_232143 AS account_type,
-          a.color_232143 AS account_color
-        FROM transactions_232143 t
-        LEFT JOIN categories_232143 c ON t.category_id_232143 = c.category_id_232143
-        LEFT JOIN accounts_232143 a ON t.account_id_232143 = a.account_id_232143
-        WHERE t.transaction_id_232143 = ? AND t.user_id_232143 = ?''',
-        [id, userId],
-      );
+    final db = await _dbService.database;
+    final transactions = await db.rawQuery(
+      '''SELECT
+        t.*,
+        c.name_232143 AS category_name,
+        c.color_232143 AS category_color,
+        c.icon_232143 AS category_icon,
+        a.name_232143 AS account_name,
+        a.type_232143 AS account_type,
+        a.color_232143 AS account_color
+      FROM transactions_232143 t
+      LEFT JOIN categories_232143 c ON t.category_id_232143 = c.category_id_232143
+      LEFT JOIN accounts_232143 a ON t.account_id_232143 = a.account_id_232143
+      WHERE t.transaction_id_232143 = ? AND t.user_id_232143 = ?''',
+      [id, userId],
+    );
 
-      return transactions.isNotEmpty ? transactions.first : null;
-    } catch (e) {
-      LoggerService.error('Error getting transaction', error: e);
-      rethrow;
-    }
+    return transactions.isNotEmpty ? TransactionModel.fromMap(transactions.first) : null;
   }
 
   /// Add transaction
-  Future<Map<String, dynamic>> addTransaction(
+  Future<TransactionModel> addTransaction(
     Map<String, dynamic> transactionData,
   ) async {
-    try {
-      final userId = await getCurrentUserId();
-      if (userId == null) throw Exception('Not authenticated');
+    final userId = await getCurrentUserId();
+    if (userId == null) throw Exception('Not authenticated');
 
-      final db = await _dbService.database;
-      final transactionId = _uuid.v4();
-      final now = DateTime.now().toIso8601String();
+    final db = await _dbService.database;
+    final transactionId = _uuid.v4();
+    final now = DateTime.now().toIso8601String();
 
-      // Prepare location data
-      String? locationDataJson;
-      if (transactionData['location_data'] != null) {
-        locationDataJson = json.encode(transactionData['location_data']);
-      }
-
-      final data = {
-        'transaction_id_232143': transactionId,
-        'user_id_232143': userId,
-        'account_id_232143': transactionData['account_id'],
-        'amount_232143': transactionData['amount'],
-        'type_232143': transactionData['type'],
-        'category_id_232143': transactionData['category_id'],
-        'description_232143': transactionData['description'] ?? '',
-        'location_name_232143': transactionData['location_name'],
-        'latitude_232143': transactionData['latitude'],
-        'longitude_232143': transactionData['longitude'],
-        'location_data_232143': locationDataJson,
-        'payment_method_232143': transactionData['payment_method'] ?? 'cash',
-        'receipt_image_url_232143': transactionData['receipt_image_url'],
-        'is_recurring_232143': transactionData['is_recurring'] == true ? 1 : 0,
-        'recurring_pattern_232143': transactionData['recurring_pattern'],
-        'tags_232143': transactionData['tags'],
-        'transaction_date_232143':
-            transactionData['transaction_date'] ??
-            DateTime.now().toIso8601String().split('T')[0],
-        'transaction_time_232143': transactionData['transaction_time'],
-        'created_at_232143': now,
-        'updated_at_232143': now,
-      };
-
-      await db.insert('transactions_232143', data);
-
-      // Sync account balance when transaction is linked to an account
-      if (transactionData['account_id'] != null) {
-        final accountId = transactionData['account_id'].toString();
-        final amount = (transactionData['amount'] as num).toDouble();
-        final type = transactionData['type'] as String;
-
-        double balanceChange = 0;
-        if (type == 'income') {
-          balanceChange = amount;
-        } else if (type == 'expense') {
-          balanceChange = -amount;
-        }
-
-        if (balanceChange != 0) {
-          await _adjustAccountBalance(db, accountId, balanceChange);
-        }
-      }
-
-      LoggerService.info('✅ Transaction added: $transactionId');
-      return {'transaction': data};
-    } catch (e) {
-      LoggerService.error('Error adding transaction', error: e);
-      rethrow;
+    // Prepare location data
+    String? locationDataJson;
+    if (transactionData['location_data'] != null) {
+      locationDataJson = json.encode(transactionData['location_data']);
     }
+
+    final data = {
+      'transaction_id_232143': transactionId,
+      'user_id_232143': userId,
+      'account_id_232143': transactionData['account_id'],
+      'amount_232143': transactionData['amount'],
+      'type_232143': transactionData['type'],
+      'category_id_232143': transactionData['category_id'],
+      'description_232143': transactionData['description'] ?? '',
+      'location_name_232143': transactionData['location_name'],
+      'latitude_232143': transactionData['latitude'],
+      'longitude_232143': transactionData['longitude'],
+      'location_data_232143': locationDataJson,
+      'payment_method_232143': transactionData['payment_method'] ?? 'cash',
+      'receipt_image_url_232143': transactionData['receipt_image_url'],
+      'is_recurring_232143': transactionData['is_recurring'] == true ? 1 : 0,
+      'recurring_pattern_232143': transactionData['recurring_pattern'],
+      'tags_232143': transactionData['tags'],
+      'transaction_date_232143':
+          transactionData['transaction_date'] ??
+          DateTime.now().toIso8601String().split('T')[0],
+      'transaction_time_232143': transactionData['transaction_time'],
+      'created_at_232143': now,
+      'updated_at_232143': now,
+    };
+
+    await db.insert('transactions_232143', data);
+
+    // Sync account balance when transaction is linked to an account
+    if (transactionData['account_id'] != null) {
+      final accountId = transactionData['account_id'].toString();
+      final amount = (transactionData['amount'] as num).toDouble();
+      final type = transactionData['type'] as String;
+
+      double balanceChange = 0;
+      if (type == 'income') {
+        balanceChange = amount;
+      } else if (type == 'expense') {
+        balanceChange = -amount;
+      }
+
+      if (balanceChange != 0) {
+        await _adjustAccountBalance(db, accountId, balanceChange);
+      }
+    }
+
+    LoggerService.info('✅ Transaction added: $transactionId');
+
+    // Build the full data map with joined fields for the model
+    final fullData = Map<String, dynamic>.from(data);
+    fullData['category_name'] = transactionData['category_name'];
+    fullData['category_color'] = transactionData['category_color'];
+    fullData['category_icon'] = transactionData['category_icon'];
+    fullData['account_name'] = transactionData['account_name'];
+    fullData['account_type'] = transactionData['account_type'];
+
+    return TransactionModel.fromMap(fullData);
   }
 
   /// Update transaction
-  Future<Map<String, dynamic>> updateTransaction(
+  Future<TransactionModel> updateTransaction(
     String id,
     Map<String, dynamic> transactionData,
   ) async {
-    try {
-      final userId = await getCurrentUserId();
-      if (userId == null) throw Exception('Not authenticated');
+    final userId = await getCurrentUserId();
+    if (userId == null) throw Exception('Not authenticated');
 
-      final db = await _dbService.database;
-      final now = DateTime.now().toIso8601String();
+    final db = await _dbService.database;
+    final now = DateTime.now().toIso8601String();
 
-      // Get old transaction to reverse its balance effect
-      final oldTxn = await db.query(
-        'transactions_232143',
-        where: 'transaction_id_232143 = ? AND user_id_232143 = ?',
-        whereArgs: [id, userId],
-        limit: 1,
-      );
+    // Get old transaction to reverse its balance effect
+    final oldTxn = await db.query(
+      'transactions_232143',
+      where: 'transaction_id_232143 = ? AND user_id_232143 = ?',
+      whereArgs: [id, userId],
+      limit: 1,
+    );
 
-      if (oldTxn.isNotEmpty) {
-        final oldAccountId = oldTxn.first['account_id_232143'] as String?;
-        final oldAmount =
-            (oldTxn.first['amount_232143'] as num?)?.toDouble() ?? 0.0;
-        final oldType = oldTxn.first['type_232143'] as String? ?? '';
+    if (oldTxn.isNotEmpty) {
+      final oldAccountId = oldTxn.first['account_id_232143'] as String?;
+      final oldAmount =
+          (oldTxn.first['amount_232143'] as num?)?.toDouble() ?? 0.0;
+      final oldType = oldTxn.first['type_232143'] as String? ?? '';
 
-        // Reverse old balance effect
-        if (oldAccountId != null && oldAccountId.isNotEmpty) {
-          double reverseChange = 0;
-          if (oldType == 'income') {
-            reverseChange = -oldAmount;
-          } else if (oldType == 'expense') {
-            reverseChange = oldAmount;
-          }
-          if (reverseChange != 0) {
-            await _adjustAccountBalance(db, oldAccountId, reverseChange);
-          }
+      // Reverse old balance effect
+      if (oldAccountId != null && oldAccountId.isNotEmpty) {
+        double reverseChange = 0;
+        if (oldType == 'income') {
+          reverseChange = -oldAmount;
+        } else if (oldType == 'expense') {
+          reverseChange = oldAmount;
+        }
+        if (reverseChange != 0) {
+          await _adjustAccountBalance(db, oldAccountId, reverseChange);
         }
       }
-
-      final updateData = <String, dynamic>{'updated_at_232143': now};
-
-      if (transactionData.containsKey('amount')) {
-        updateData['amount_232143'] = transactionData['amount'];
-      }
-      if (transactionData.containsKey('type')) {
-        updateData['type_232143'] = transactionData['type'];
-      }
-      if (transactionData.containsKey('category_id')) {
-        updateData['category_id_232143'] = transactionData['category_id'];
-      }
-      if (transactionData.containsKey('description')) {
-        updateData['description_232143'] = transactionData['description'];
-      }
-      if (transactionData.containsKey('location_data')) {
-        updateData['location_data_232143'] = json.encode(
-          transactionData['location_data'],
-        );
-      }
-      if (transactionData.containsKey('transaction_date')) {
-        updateData['transaction_date_232143'] =
-            transactionData['transaction_date'];
-      }
-      if (transactionData.containsKey('account_id')) {
-        updateData['account_id_232143'] = transactionData['account_id'];
-      }
-      if (transactionData.containsKey('is_recurring')) {
-        updateData['is_recurring_232143'] =
-            transactionData['is_recurring'] == true ? 1 : 0;
-      }
-
-      await db.update(
-        'transactions_232143',
-        updateData,
-        where: 'transaction_id_232143 = ? AND user_id_232143 = ?',
-        whereArgs: [id, userId],
-      );
-
-      // Apply new balance effect after update
-      final newAccountId = transactionData['account_id'] as String?;
-      final newAmount = (transactionData['amount'] as num?)?.toDouble();
-      final newType = transactionData['type'] as String?;
-      if (newAccountId != null &&
-          newAccountId.isNotEmpty &&
-          newAmount != null &&
-          newType != null) {
-        double newChange = 0;
-        if (newType == 'income') {
-          newChange = newAmount;
-        } else if (newType == 'expense') {
-          newChange = -newAmount;
-        }
-        if (newChange != 0) {
-          await _adjustAccountBalance(db, newAccountId, newChange);
-        }
-      }
-
-      final updated = await getTransaction(id);
-      return {'transaction': updated};
-    } catch (e) {
-      LoggerService.error('Error updating transaction', error: e);
-      rethrow;
     }
+
+    final updateData = <String, dynamic>{'updated_at_232143': now};
+
+    if (transactionData.containsKey('amount')) {
+      updateData['amount_232143'] = transactionData['amount'];
+    }
+    if (transactionData.containsKey('type')) {
+      updateData['type_232143'] = transactionData['type'];
+    }
+    if (transactionData.containsKey('category_id')) {
+      updateData['category_id_232143'] = transactionData['category_id'];
+    }
+    if (transactionData.containsKey('description')) {
+      updateData['description_232143'] = transactionData['description'];
+    }
+    if (transactionData.containsKey('location_data')) {
+      updateData['location_data_232143'] = json.encode(
+        transactionData['location_data'],
+      );
+    }
+    if (transactionData.containsKey('transaction_date')) {
+      updateData['transaction_date_232143'] =
+          transactionData['transaction_date'];
+    }
+    if (transactionData.containsKey('account_id')) {
+      updateData['account_id_232143'] = transactionData['account_id'];
+    }
+    if (transactionData.containsKey('is_recurring')) {
+      updateData['is_recurring_232143'] =
+          transactionData['is_recurring'] == true ? 1 : 0;
+    }
+
+    await db.update(
+      'transactions_232143',
+      updateData,
+      where: 'transaction_id_232143 = ? AND user_id_232143 = ?',
+      whereArgs: [id, userId],
+    );
+
+    // Apply new balance effect after update
+    final newAccountId = transactionData['account_id'] as String?;
+    final newAmount = (transactionData['amount'] as num?)?.toDouble();
+    final newType = transactionData['type'] as String?;
+    if (newAccountId != null &&
+        newAccountId.isNotEmpty &&
+        newAmount != null &&
+        newType != null) {
+      double newChange = 0;
+      if (newType == 'income') {
+        newChange = newAmount;
+      } else if (newType == 'expense') {
+        newChange = -newAmount;
+      }
+      if (newChange != 0) {
+        await _adjustAccountBalance(db, newAccountId, newChange);
+      }
+    }
+
+    final updated = await getTransaction(id);
+    return updated!;
   }
 
   /// Delete transaction

@@ -1,13 +1,13 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
-import 'package:financial_app/features/analytics/domain/repositories/analytics_repository_interface.dart';
+import 'package:financial_app/features/analytics/data/repositories/analytics_repository.dart';
 import 'package:financial_app/services/logger_service.dart';
 import 'package:financial_app/utils/key_normalizer.dart';
 
 class AnalyticsController extends ChangeNotifier {
-  final AnalyticsRepositoryInterface _r;
-  AnalyticsController({required AnalyticsRepositoryInterface repository})
+  final AnalyticsRepository _r;
+  AnalyticsController({required AnalyticsRepository repository})
     : _r = repository;
 
   String _selectedPeriod = '';

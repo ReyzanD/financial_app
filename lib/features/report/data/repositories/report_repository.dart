@@ -1,11 +1,10 @@
 import 'package:financial_app/services/data/transaction_data_service.dart';
-import 'package:financial_app/features/report/domain/repositories/report_repository_interface.dart';
+import 'package:financial_app/core/di/service_locator.dart';
 
-class ReportRepository implements ReportRepositoryInterface {
+class ReportRepository {
   final TransactionDataService _s;
   ReportRepository({TransactionDataService? service})
-    : _s = service ?? TransactionDataService();
-  @override
+    : _s = service ?? getIt<TransactionDataService>();
   Future<Map<String, dynamic>> generateReport({
     required DateTime start,
     required DateTime end,

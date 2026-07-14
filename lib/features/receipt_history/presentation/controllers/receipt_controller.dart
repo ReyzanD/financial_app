@@ -1,10 +1,10 @@
 import 'package:flutter/foundation.dart';
-import 'package:financial_app/features/receipt_history/domain/repositories/receipt_repository_interface.dart';
+import 'package:financial_app/features/receipt_history/data/repositories/receipt_repository.dart';
 import 'package:financial_app/services/logger_service.dart';
 
 class ReceiptController extends ChangeNotifier {
-  final ReceiptRepositoryInterface _r;
-  ReceiptController({required ReceiptRepositoryInterface repository})
+  final ReceiptRepository _r;
+  ReceiptController({required ReceiptRepository repository})
     : _r = repository;
 
   List<dynamic> _receipts = [];

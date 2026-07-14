@@ -24,7 +24,7 @@ class ContributeModal extends StatefulWidget {
 class _ContributeModalState extends State<ContributeModal> {
   final TextEditingController _amountController = TextEditingController();
   final TextEditingController _noteController = TextEditingController();
-  final GoalDataService _goalService = GoalDataService();
+  final GoalDataService _goalService = getIt<GoalDataService>();
   final AccountService _accountService = getIt<AccountService>();
   bool _isLoading = false;
 

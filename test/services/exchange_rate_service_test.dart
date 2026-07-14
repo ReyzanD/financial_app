@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:financial_app/models/currency_model.dart';
 import 'package:financial_app/services/exchange_rate_service.dart';
+import 'package:financial_app/services/data/exchange_rate_data_service.dart';
 
 void main() {
   group('CurrencyModel', () {
@@ -70,7 +71,7 @@ void main() {
     late ExchangeRateService service;
 
     setUp(() {
-      service = ExchangeRateService();
+      service = ExchangeRateService(exchangeRateData: ExchangeRateDataService());
     });
 
     test('should convert same currency to same amount', () async {

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:financial_app/core/di/service_locator.dart';
 import 'package:financial_app/l10n/app_localizations.dart';
 import 'package:financial_app/widgets/goals/goal_card.dart';
 import 'package:financial_app/services/data/goal_data_service.dart';
-import 'package:financial_app/services/logger_service.dart';
 import 'package:financial_app/widgets/common/shimmer_loading.dart';
 import 'package:financial_app/widgets/common/empty_state.dart';
 import 'package:financial_app/utils/page_transitions.dart';
@@ -19,7 +19,7 @@ class GoalsList extends StatefulWidget {
 }
 
 class _GoalsListState extends State<GoalsList> {
-  final GoalDataService _goalService = GoalDataService();
+  final GoalDataService _goalService = getIt<GoalDataService>();
   List<Map<String, dynamic>> goals = [];
   bool _isLoading = true;
   bool _hasError = false;
@@ -41,12 +41,11 @@ class _GoalsListState extends State<GoalsList> {
       final fetchedGoals = await _goalService.getGoals();
       if (mounted) {
         setState(() {
-          goals = List<Map<String, dynamic>>.from(fetchedGoals);
+          goals = fetchedGoals.map((g) => g.toMap()).toList();
           _isLoading = false;
         });
       }
     } catch (e) {
-      LoggerService.error('Error loading goals', error: e);
       if (mounted) {
         setState(() {
           _isLoading = false;

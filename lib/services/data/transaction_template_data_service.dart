@@ -1,7 +1,10 @@
 import 'package:uuid/uuid.dart';
+import 'package:financial_app/models/transaction_model.dart';
+import 'package:financial_app/models/transaction_template_model.dart';
 import 'package:financial_app/services/local_database_service.dart';
 import 'package:financial_app/services/local_auth_service.dart';
 import 'package:financial_app/services/logger_service.dart';
+import 'package:financial_app/core/di/service_locator.dart';
 import 'package:financial_app/services/data/transaction_data_service.dart';
 
 /// Data service for Transaction Template CRUD operations.
@@ -17,11 +20,11 @@ class TransactionTemplateDataService {
     TransactionDataService? transactionData,
   }) : _dbService = dbService ?? LocalDatabaseService(),
        _authService = authService ?? LocalAuthService(),
-       _transactionData = transactionData ?? TransactionDataService();
+       _transactionData = transactionData ?? getIt<TransactionDataService>();
 
   Future<String?> getCurrentUserId() async => _authService.getCurrentUserId();
 
-  Future<List<Map<String, dynamic>>> getTransactionTemplates() async {
+  Future<List<TransactionTemplateModel>> getTransactionTemplates() async {
     try {
       final userId = await getCurrentUserId();
       if (userId == null) throw Exception('Not authenticated');
@@ -33,14 +36,14 @@ class TransactionTemplateDataService {
         whereArgs: [userId],
         orderBy: 'name_232143 ASC',
       );
-      return List<Map<String, dynamic>>.from(templates);
+      return templates.map((m) => TransactionTemplateModel.fromMap(m)).toList();
     } catch (e) {
       LoggerService.error('Error getting transaction templates', error: e);
       rethrow;
     }
   }
 
-  Future<Map<String, dynamic>> addTransactionTemplate(
+  Future<TransactionTemplateModel> addTransactionTemplate(
     Map<String, dynamic> templateData,
   ) async {
     try {
@@ -70,14 +73,14 @@ class TransactionTemplateDataService {
 
       await db.insert('transaction_templates_232143', data);
       LoggerService.info('✅ Template added: $templateId');
-      return {'template': data};
+      return TransactionTemplateModel.fromMap(data);
     } catch (e) {
       LoggerService.error('Error adding template', error: e);
       rethrow;
     }
   }
 
-  Future<Map<String, dynamic>> deleteTransactionTemplate(
+  Future<bool> deleteTransactionTemplate(
     String templateId,
   ) async {
     try {
@@ -93,9 +96,9 @@ class TransactionTemplateDataService {
 
       if (rowsDeleted > 0) {
         LoggerService.info('✅ Template deleted: $templateId');
-        return {'success': true};
+        return true;
       } else {
-        return {'success': false, 'message': 'Template not found'};
+        return false;
       }
     } catch (e) {
       LoggerService.error('Error deleting template', error: e);
@@ -103,7 +106,7 @@ class TransactionTemplateDataService {
     }
   }
 
-  Future<Map<String, dynamic>> createTransactionFromTemplate(
+  Future<TransactionModel> createTransactionFromTemplate(
     String templateId,
   ) async {
     try {

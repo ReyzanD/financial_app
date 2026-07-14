@@ -33,6 +33,26 @@ class TransactionModel {
     this.accountType,
   });
 
+  factory TransactionModel.fromMap(Map<String, dynamic> map) =>
+      TransactionModel.fromJson(map);
+
+  Map<String, dynamic> toJson() => {
+    'id': id,
+    'amount': amount,
+    'type': type,
+    'description': description,
+    'category_id': categoryId,
+    'category_name': categoryName,
+    'category_color': categoryColor,
+    'payment_method': paymentMethod,
+    'transaction_date': transactionDate.toIso8601String().split('T')[0],
+    'created_at': createdAt.toIso8601String(),
+    'location_data': locationData,
+    'account_id': accountId,
+    'account_name': accountName,
+    'account_type': accountType,
+  };
+
   factory TransactionModel.fromJson(Map<String, dynamic> json) {
     // Map database field names to model fields
     final id = json['transaction_id_232143'] ?? json['id'] ?? '';

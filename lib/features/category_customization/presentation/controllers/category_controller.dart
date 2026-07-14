@@ -1,19 +1,19 @@
 import 'package:flutter/foundation.dart';
 import 'package:financial_app/services/category_customization_service.dart';
-import 'package:financial_app/services/logger_service.dart';
+import 'package:financial_app/models/category_model.dart';
 
 class CategoryController extends ChangeNotifier {
   final CategoryCustomizationService _s;
   CategoryController({CategoryCustomizationService? service})
     : _s = service ?? CategoryCustomizationService();
 
-  List<dynamic> _defaultCategories = [];
-  List<dynamic> _customCategories = [];
+  List<CategoryModel> _defaultCategories = [];
+  List<CategoryModel> _customCategories = [];
   bool _isLoading = false;
   String? _error;
 
-  List<dynamic> get defaultCategories => _defaultCategories;
-  List<dynamic> get customCategories => _customCategories;
+  List<CategoryModel> get defaultCategories => _defaultCategories;
+  List<CategoryModel> get customCategories => _customCategories;
   bool get isLoading => _isLoading;
   String? get error => _error;
 
@@ -22,24 +22,17 @@ class CategoryController extends ChangeNotifier {
     _error = null;
     notifyListeners();
     try {
-      final results = await Future.wait([
+      final results = await Future.wait<List<CategoryModel>>([
         _s.getAllCategoriesWithCustomizations(),
         _s.getCustomCategories(),
       ]);
-      final allCategories = results[0] as List<dynamic>;
-      _customCategories = results[1] as List<dynamic>;
+      final allCategories = results[0];
+      _customCategories = results[1];
       _defaultCategories =
           allCategories
-              .where(
-                (c) =>
-                    (c['is_system_default_232143'] ??
-                        c['is_system_default'] ??
-                        0) ==
-                    1,
-              )
+              .where((c) => c.isSystemDefault)
               .toList();
     } catch (e) {
-      LoggerService.error('Error loading categories', error: e);
       _error = e.toString();
     } finally {
       _isLoading = false;
@@ -47,13 +40,11 @@ class CategoryController extends ChangeNotifier {
     }
   }
 
-  Future<void> deleteCategory(dynamic category) async {
-    final categoryId = category['category_id_232143'] ?? category['id'] ?? '';
+  Future<void> deleteCategory(CategoryModel category) async {
     try {
-      await _s.deleteCustomCategory(categoryId);
+      await _s.deleteCustomCategory(category.id);
       await loadData();
     } catch (e) {
-      LoggerService.error('Error deleting category', error: e);
       rethrow;
     }
   }

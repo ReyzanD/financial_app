@@ -1,10 +1,10 @@
 import 'package:flutter/foundation.dart';
-import 'package:financial_app/features/cash_flow/domain/repositories/cash_flow_repository_interface.dart';
+import 'package:financial_app/features/cash_flow/data/repositories/cash_flow_repository.dart';
 import 'package:financial_app/services/logger_service.dart';
 
 class CashFlowController extends ChangeNotifier {
-  final CashFlowRepositoryInterface _r;
-  CashFlowController({required CashFlowRepositoryInterface repository})
+  final CashFlowRepository _r;
+  CashFlowController({required CashFlowRepository repository})
     : _r = repository;
 
   Map<String, dynamic> _summary = {};

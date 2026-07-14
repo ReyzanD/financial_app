@@ -14,7 +14,7 @@ import 'package:financial_app/utils/page_transitions.dart';
 import 'package:financial_app/utils/responsive_helper.dart';
 import 'package:financial_app/l10n/app_localizations.dart';
 import 'package:financial_app/features/budgets/presentation/controllers/budget_controller.dart';
-import 'package:financial_app/features/budgets/domain/entities/budget_entity.dart';
+import 'package:financial_app/models/budget_model.dart';
 import 'package:financial_app/utils/design_tokens.dart';
 
 class BudgetsScreen extends StatefulWidget {
@@ -230,18 +230,18 @@ class _BudgetsScreenState extends State<BudgetsScreen> {
     );
   }
 
-  /// Convert BudgetEntity to the Map format expected by existing UI code.
-  Map<String, dynamic> _budgetToMap(BudgetEntity b) {
+  /// Convert BudgetModel to the Map format expected by existing UI code.
+  Map<String, dynamic> _budgetToMap(BudgetModel b) {
     return {
       'budget_id_232143': b.id,
       'category_id_232143': b.categoryId,
       'amount_232143': b.amount,
       'spent_amount_232143': b.spent,
-      'period_start_232143': b.startDate.toIso8601String(),
-      'period_end_232143': b.endDate.toIso8601String(),
+      'period_start_232143': b.periodStart.toIso8601String(),
+      'period_end_232143': b.periodEnd.toIso8601String(),
       'is_active_232143': b.isActive ? 1 : 0,
       'period_232143':
-          '${b.startDate.day}/${b.startDate.month} - ${b.endDate.day}/${b.endDate.month}',
+          '${b.periodStart.day}/${b.periodStart.month} - ${b.periodEnd.day}/${b.periodEnd.month}',
       // Non-suffixed fallbacks for legacy code paths
       'id': b.id,
       'category_id': b.categoryId,
@@ -253,7 +253,7 @@ class _BudgetsScreenState extends State<BudgetsScreen> {
 
   Widget _buildBudgetItem(
     BuildContext context,
-    BudgetEntity budgetEntity,
+    BudgetModel budgetEntity,
     Map<String, String> categories,
   ) {
     final budget = _budgetToMap(budgetEntity);

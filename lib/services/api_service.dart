@@ -8,6 +8,9 @@ import 'package:financial_app/services/data/budget_data_service.dart';
 import 'package:financial_app/services/data/category_data_service.dart';
 import 'package:financial_app/services/data/goal_data_service.dart';
 import 'package:financial_app/services/data/obligation_data_service.dart';
+import 'package:financial_app/models/budget_model.dart';
+import 'package:financial_app/models/financial_obligation.dart';
+import 'package:financial_app/models/goal_model.dart';
 
 /// API Service - Main facade for all API operations
 ///
@@ -46,11 +49,11 @@ class ApiService {
     GoalDataService? goalData,
     ObligationDataService? obligationData,
   }) : _authService = authService ?? LocalAuthService(),
-       _transactionData = transactionData ?? TransactionDataService(),
-       _budgetData = budgetData ?? BudgetDataService(),
-       _categoryData = categoryData ?? CategoryDataService(),
-       _goalData = goalData ?? GoalDataService(),
-       _obligationData = obligationData ?? ObligationDataService();
+       _transactionData = transactionData ?? getIt<TransactionDataService>(),
+       _budgetData = budgetData ?? getIt<BudgetDataService>(),
+       _categoryData = categoryData ?? getIt<CategoryDataService>(),
+       _goalData = goalData ?? getIt<GoalDataService>(),
+       _obligationData = obligationData ?? getIt<ObligationDataService>();
 
   // Cache layer for frequently accessed data
   static final Map<String, dynamic> _cache = {};
@@ -178,34 +181,34 @@ class ApiService {
   }
 
   // Budgets - Using local database
-  Future<List<dynamic>> getBudgets({bool activeOnly = true}) async {
+  Future<List<BudgetModel>> getBudgets({bool activeOnly = true}) async {
     return await _budgetData.getBudgets(activeOnly: activeOnly);
   }
 
   Future<Map<String, dynamic>> getBudget(String budgetId) async {
     final budgets = await _budgetData.getBudgets(activeOnly: false);
-    final budget = budgets.firstWhere(
-      (b) => b['budget_id_232143'] == budgetId,
-      orElse: () => {},
-    );
-    return {'budget': budget};
+    final budget = budgets.where((b) => b.id == budgetId);
+    return {'budget': budget.isNotEmpty ? budget.first.toJson() : <String, dynamic>{}};
   }
 
   Future<Map<String, dynamic>> createBudget(
     Map<String, dynamic> budgetData,
   ) async {
-    return await _budgetData.addBudget(budgetData);
+    final result = await _budgetData.addBudget(budgetData);
+    return result.toJson();
   }
 
   Future<Map<String, dynamic>> updateBudget(
     String budgetId,
     Map<String, dynamic> budgetData,
   ) async {
-    return await _budgetData.updateBudget(budgetId, budgetData);
+    final result = await _budgetData.updateBudget(budgetId, budgetData);
+    return result?.toJson() ?? <String, dynamic>{};
   }
 
   Future<Map<String, dynamic>> deleteBudget(String budgetId) async {
-    return await _budgetData.deleteBudget(budgetId);
+    final success = await _budgetData.deleteBudget(budgetId);
+    return {'success': success, 'message': success ? 'Budget deleted successfully' : 'Budget not found'};
   }
 
   Future<Map<String, dynamic>> getBudgetsSummary() async {
@@ -234,29 +237,18 @@ class ApiService {
   }
 
   /// Calculate budgets summary from budgets list
-  Map<String, dynamic> _calculateBudgetsSummary(List<dynamic> budgets) {
+  Map<String, dynamic> _calculateBudgetsSummary(List<BudgetModel> budgets) {
     double totalAmount = 0.0;
     double totalSpent = 0.0;
     int overBudgetCount = 0;
     int activeBudgets = 0;
 
     for (var budget in budgets) {
-      final amount =
-          ((budget['amount_232143'] ?? budget['amount']) as num?)?.toDouble() ??
-          0.0;
-      final spent =
-          ((budget['spent_232143'] ?? budget['spent']) as num?)?.toDouble() ??
-          0.0;
-
-      final isActiveValue =
-          budget['is_active_232143'] ?? budget['is_active'] ?? 1;
-      final isActive = (isActiveValue as num).toInt() == 1;
-
-      if (isActive) {
+      if (budget.isActive) {
         activeBudgets++;
-        totalAmount += amount;
-        totalSpent += spent;
-        if (spent > amount) {
+        totalAmount += budget.amount;
+        totalSpent += budget.spent;
+        if (budget.isOverBudget) {
           overBudgetCount++;
         }
       }
@@ -344,7 +336,7 @@ class ApiService {
     LoggerService.debug('Clearing transaction caches after add...');
     _clearTransactionCaches();
     clearCache(); // Clear cache
-    return result;
+    return result.toJson();
   }
 
   // Update Transaction - Using local database
@@ -362,7 +354,7 @@ class ApiService {
       LoggerService.debug('Clearing transaction caches after update...');
       _clearTransactionCaches();
       clearCache();
-      return result;
+      return result.toJson();
     } catch (e) {
       LoggerService.error('Update error', error: e);
       rethrow;
@@ -410,31 +402,40 @@ class ApiService {
   }
 
   // Goals - Using local database
-  Future<List<dynamic>> getGoals({bool includeCompleted = false}) async {
+  Future<List<GoalModel>> getGoals({bool includeCompleted = false}) async {
     return await _goalData.getGoals();
   }
 
   Future<Map<String, dynamic>> getGoal(String goalId) async {
     final goals = await _goalData.getGoals();
     final goal = goals.firstWhere(
-      (g) => g['goal_id_232143'] == goalId,
-      orElse: () => {},
+      (g) => g.id == goalId,
+      orElse: () => GoalModel(
+        id: '',
+        userId: '',
+        name: '',
+        goalType: 'other',
+        targetAmount: 0.0,
+        startDate: DateTime.now(),
+        targetDate: DateTime.now(),
+        createdAt: DateTime.now(),
+      ),
     );
-    return {'goal': goal};
+    return {'goal': goal.toJson()};
   }
 
-  Future<Map<String, dynamic>> createGoal(Map<String, dynamic> goalData) async {
+  Future<GoalModel> createGoal(Map<String, dynamic> goalData) async {
     return await _goalData.addGoal(goalData);
   }
 
-  Future<Map<String, dynamic>> updateGoal(
+  Future<GoalModel> updateGoal(
     String goalId,
     Map<String, dynamic> goalData,
   ) async {
     return await _goalData.updateGoal(goalId, goalData);
   }
 
-  Future<Map<String, dynamic>> deleteGoal(String goalId) async {
+  Future<bool> deleteGoal(String goalId) async {
     return await _goalData.deleteGoal(goalId);
   }
 
@@ -463,11 +464,9 @@ class ApiService {
       int completedCount = 0;
 
       for (var goal in goals) {
-        totalTarget +=
-            (goal['target_amount_232143'] as num?)?.toDouble() ?? 0.0;
-        totalCurrent +=
-            (goal['current_amount_232143'] as num?)?.toDouble() ?? 0.0;
-        if (goal['is_completed_232143'] == 1) {
+        totalTarget += goal.targetAmount;
+        totalCurrent += goal.currentAmount;
+        if (goal.isCompleted) {
           completedCount++;
         }
       }
@@ -493,19 +492,19 @@ class ApiService {
   }
 
   // Obligations - Using local database
-  Future<List<dynamic>> getObligations({String? type}) async {
+  Future<List<FinancialObligation>> getObligations({String? type}) async {
     final userId = await _storage.read(key: 'auth_token');
     if (userId == null) throw Exception('User not authenticated');
     return await _obligationData.getObligations(type: type);
   }
 
-  Future<List<dynamic>> getUpcomingObligations({int days = 7}) async {
+  Future<List<FinancialObligation>> getUpcomingObligations({int days = 7}) async {
     final userId = await _storage.read(key: 'auth_token');
     if (userId == null) throw Exception('User not authenticated');
     return await _obligationData.getUpcomingObligations(days: days);
   }
 
-  Future<Map<String, dynamic>> createObligation(
+  Future<FinancialObligation> createObligation(
     Map<String, dynamic> obligationData,
   ) async {
     final userId = await _storage.read(key: 'auth_token');
@@ -515,7 +514,7 @@ class ApiService {
     return result;
   }
 
-  Future<Map<String, dynamic>> updateObligation(
+  Future<FinancialObligation> updateObligation(
     String obligationId,
     Map<String, dynamic> obligationData,
   ) async {
@@ -529,7 +528,7 @@ class ApiService {
     return result;
   }
 
-  Future<Map<String, dynamic>> deleteObligation(String obligationId) async {
+  Future<bool> deleteObligation(String obligationId) async {
     final userId = await _storage.read(key: 'auth_token');
     if (userId == null) throw Exception('User not authenticated');
     final result = await _obligationData.deleteObligation(obligationId);
@@ -574,7 +573,7 @@ class ApiService {
 
   Future<Map<String, dynamic>> getRecurringTransaction(String id) async {
     final transaction = await _transactionData.getTransaction(id);
-    return {'recurring_transaction': transaction ?? {}};
+    return {'recurring_transaction': transaction?.toJson() ?? <String, dynamic>{}};
   }
 
   Future<Map<String, dynamic>> createRecurringTransaction(

@@ -1,14 +1,14 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:financial_app/features/obligations/domain/repositories/obligation_repository_interface.dart';
+import 'package:financial_app/features/obligations/data/repositories/obligation_repository.dart';
 import 'package:financial_app/services/logger_service.dart';
 import 'package:financial_app/widgets/obligations/obligation_filters.dart';
 
 class ObligationController extends ChangeNotifier {
-  final ObligationRepositoryInterface _r;
+  final ObligationRepository _r;
   Timer? _debounceTimer;
 
-  ObligationController({required ObligationRepositoryInterface repository})
+  ObligationController({required ObligationRepository repository})
     : _r = repository {
     _searchController.addListener(_onSearchChanged);
   }

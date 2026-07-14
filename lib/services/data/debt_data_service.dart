@@ -1,4 +1,5 @@
 import 'package:uuid/uuid.dart';
+import 'package:financial_app/models/debt_model.dart';
 import 'package:financial_app/services/local_database_service.dart';
 import 'package:financial_app/services/local_auth_service.dart';
 import 'package:financial_app/services/logger_service.dart';
@@ -22,7 +23,7 @@ class DebtDataService {
   }
 
   /// Get debts
-  Future<List<Map<String, dynamic>>> getDebts({bool activeOnly = true}) async {
+  Future<List<DebtModel>> getDebts({bool activeOnly = true}) async {
     try {
       final userId = await getCurrentUserId();
       if (userId == null) throw Exception('Not authenticated');
@@ -42,7 +43,7 @@ class DebtDataService {
         orderBy: 'due_date_232143 ASC',
       );
 
-      return List<Map<String, dynamic>>.from(debts);
+      return debts.map((m) => DebtModel.fromMap(m)).toList();
     } catch (e) {
       LoggerService.error('Error getting debts', error: e);
       rethrow;
@@ -50,7 +51,7 @@ class DebtDataService {
   }
 
   /// Add debt
-  Future<Map<String, dynamic>> addDebt(Map<String, dynamic> debtData) async {
+  Future<DebtModel> addDebt(Map<String, dynamic> debtData) async {
     try {
       final userId = await getCurrentUserId();
       if (userId == null) throw Exception('Not authenticated');
@@ -78,7 +79,7 @@ class DebtDataService {
 
       await db.insert('debts_232143', data);
       LoggerService.info('✅ Debt added: $debtId');
-      return {'debt': data};
+      return DebtModel.fromMap(data);
     } catch (e) {
       LoggerService.error('Error adding debt', error: e);
       rethrow;
@@ -203,7 +204,7 @@ class DebtDataService {
   }
 
   /// Delete debt
-  Future<Map<String, dynamic>> deleteDebt(String debtId) async {
+  Future<bool> deleteDebt(String debtId) async {
     try {
       final userId = await getCurrentUserId();
       if (userId == null) throw Exception('Not authenticated');
@@ -217,10 +218,9 @@ class DebtDataService {
 
       if (rowsDeleted > 0) {
         LoggerService.info('✅ Debt deleted: $debtId');
-        return {'success': true};
-      } else {
-        return {'success': false, 'message': 'Debt not found'};
+        return true;
       }
+      return false;
     } catch (e) {
       LoggerService.error('Error deleting debt', error: e);
       rethrow;

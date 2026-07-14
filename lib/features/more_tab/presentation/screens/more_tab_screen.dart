@@ -121,6 +121,12 @@ class MoreTabScreen extends StatelessWidget {
             route: '/subscriptions',
           ),
           _MoreItem(
+            icon: Iconsax.repeat,
+            label: 'Trans. Berulang',
+            color: Colors.amber,
+            route: '/recurring-transactions',
+          ),
+          _MoreItem(
             icon: Iconsax.chart_1,
             label: 'Investasi',
             color: Colors.green,
@@ -131,12 +137,6 @@ class MoreTabScreen extends StatelessWidget {
             label: 'Tagihan',
             color: Colors.pink,
             route: '/financial-obligations',
-          ),
-          _MoreItem(
-            icon: Iconsax.repeat,
-            label: 'Trans. Berulang',
-            color: Colors.amber,
-            route: '/recurring-transactions',
           ),
           _MoreItem(
             icon: Iconsax.people,

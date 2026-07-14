@@ -21,7 +21,7 @@ import 'package:financial_app/features/profile/presentation/controllers/profile_
 import 'package:financial_app/features/budgets/presentation/screens/budgets_screen.dart';
 import 'package:financial_app/features/goals/presentation/screens/goals_screen.dart';
 import 'package:financial_app/features/goals/presentation/controllers/goal_controller.dart';
-import 'package:financial_app/features/analytics/presentation/screens/analytics_screen.dart';
+import 'package:financial_app/features/analytics/presentation/screens/analytics_hub_screen.dart';
 import 'package:financial_app/features/analytics/presentation/controllers/analytics_controller.dart';
 
 import 'package:financial_app/features/transactions/presentation/screens/add_transaction_screen.dart';
@@ -30,28 +30,19 @@ import 'package:financial_app/features/obligations/presentation/screens/financia
 import 'package:financial_app/features/obligations/presentation/controllers/obligation_controller.dart';
 import 'package:financial_app/features/forecast/presentation/screens/forecast_screen.dart';
 import 'package:financial_app/features/forecast/presentation/controllers/forecast_controller.dart';
-import 'package:financial_app/features/recurring_transactions/presentation/screens/recurring_transactions_screen.dart';
-import 'package:financial_app/features/recurring_transactions/presentation/controllers/recurring_transaction_controller.dart';
 import 'package:financial_app/features/transactions/presentation/screens/transaction_history_screen.dart';
 import 'package:financial_app/features/transactions/presentation/controllers/transaction_controller.dart';
 import 'package:financial_app/features/budgets/presentation/controllers/budget_controller.dart';
-import 'package:financial_app/features/insights/presentation/screens/financial_insights_screen.dart';
 import 'package:financial_app/features/insights/presentation/controllers/insights_controller.dart';
 import 'package:financial_app/features/accounts/presentation/screens/accounts_screen.dart';
 import 'package:financial_app/features/accounts/presentation/controllers/account_controller.dart';
-import 'package:financial_app/features/debts/presentation/screens/debts_screen.dart';
-import 'package:financial_app/features/debts/presentation/controllers/debt_controller.dart';
-import 'package:financial_app/features/subscriptions/presentation/screens/subscriptions_screen.dart';
-import 'package:financial_app/features/subscriptions/presentation/controllers/subscription_controller.dart';
 import 'package:financial_app/features/investments/presentation/screens/investments_screen.dart';
 import 'package:financial_app/features/investments/presentation/controllers/investment_controller.dart';
 import 'package:financial_app/features/splits/presentation/screens/splits_screen.dart';
 import 'package:financial_app/features/splits/presentation/controllers/split_controller.dart';
 import 'package:financial_app/features/challenges/presentation/screens/challenges_screen.dart';
 import 'package:financial_app/features/challenges/presentation/controllers/challenge_controller.dart';
-import 'package:financial_app/features/net_worth/presentation/screens/net_worth_screen.dart';
 import 'package:financial_app/features/net_worth/presentation/controllers/net_worth_controller.dart';
-import 'package:financial_app/features/cash_flow/presentation/screens/cash_flow_screen.dart';
 import 'package:financial_app/features/cash_flow/presentation/controllers/cash_flow_controller.dart';
 import 'package:financial_app/features/templates/presentation/screens/templates_screen.dart';
 import 'package:financial_app/features/templates/presentation/controllers/template_controller.dart';
@@ -67,7 +58,6 @@ import 'package:financial_app/features/settings/presentation/controllers/setting
 import 'package:financial_app/features/home/presentation/controllers/dashboard_controller.dart';
 import 'package:financial_app/features/receipt_history/presentation/screens/receipt_history_screen.dart';
 import 'package:financial_app/features/receipt_history/presentation/controllers/receipt_controller.dart';
-import 'package:financial_app/features/report/presentation/screens/report_screen.dart';
 import 'package:financial_app/features/report/presentation/controllers/report_controller.dart';
 import 'package:financial_app/services/data_service.dart';
 import 'package:financial_app/services/notification_service.dart';
@@ -140,12 +130,8 @@ void main() async {
         ChangeNotifierProvider(
           create: (context) => getIt<ChallengeController>(),
         ),
-        ChangeNotifierProvider(create: (context) => getIt<DebtController>()),
         ChangeNotifierProvider(
           create: (context) => getIt<InvestmentController>(),
-        ),
-        ChangeNotifierProvider(
-          create: (context) => getIt<SubscriptionController>(),
         ),
         ChangeNotifierProvider(create: (context) => getIt<SplitController>()),
         ChangeNotifierProvider(
@@ -156,9 +142,6 @@ void main() async {
         ),
         ChangeNotifierProvider(
           create: (context) => getIt<CashFlowController>(),
-        ),
-        ChangeNotifierProvider(
-          create: (context) => getIt<RecurringTransactionController>(),
         ),
         ChangeNotifierProvider(
           create: (context) => getIt<ObligationController>(),
@@ -273,33 +256,33 @@ class MyApp extends StatelessWidget {
             '/map': (context) => const MapScreen(),
             '/settings': (context) => const SettingsScreen(),
             '/budgets': (context) => const BudgetsScreen(),
-            '/analytics': (context) => const AnalyticsScreen(),
+            '/analytics': (context) => const AnalyticsHubScreen(initialTab: 'analytics'),
             '/goals': (context) => const GoalsScreen(),
             '/add-transaction': (context) => const AddTransactionScreen(),
             '/ai-budget-recommendation':
                 (context) => const AIBudgetRecommendationScreen(),
-            '/reports': (context) => const ReportScreen(),
+            '/reports': (context) => const AnalyticsHubScreen(initialTab: 'reports'),
             '/backup': (context) => const BackupScreen(),
             '/financial-obligations':
                 (context) => const FinancialObligationsScreen(),
             '/forecast': (context) => const ForecastScreen(),
             '/recurring-transactions':
-                (context) => const RecurringTransactionsScreen(),
+                (context) => const FinancialObligationsScreen(initialTab: 'recurring'),
             '/profile': (context) => const ProfileScreen(),
             '/transaction-history':
                 (context) => const TransactionHistoryScreen(),
             '/receipt-history': (context) => const ReceiptHistoryScreen(),
-            '/financial-insights': (context) => const FinancialInsightsScreen(),
+            '/financial-insights': (context) => const AnalyticsHubScreen(initialTab: 'insights'),
             '/accounts': (context) => const AccountsScreen(),
-            '/debts': (context) => const DebtsScreen(),
-            '/subscriptions': (context) => const SubscriptionsScreen(),
+            '/debts': (context) => const FinancialObligationsScreen(initialTab: 'debts'),
+            '/subscriptions': (context) => const FinancialObligationsScreen(initialTab: 'subscriptions'),
             '/investments': (context) => const InvestmentsScreen(),
             '/tags': (context) => const TagsScreen(),
             '/splits': (context) => const SplitsScreen(),
             '/challenges': (context) => const ChallengesScreen(),
             '/calendar': (context) => const FinancialCalendarScreen(),
-            '/net-worth': (context) => const NetWorthScreen(),
-            '/cash-flow': (context) => const CashFlowScreen(),
+            '/net-worth': (context) => const AnalyticsHubScreen(initialTab: 'networth'),
+            '/cash-flow': (context) => const AnalyticsHubScreen(initialTab: 'cashflow'),
             '/categories': (context) => const CategoryCustomizationScreen(),
             '/templates': (context) => const TemplatesScreen(),
           },

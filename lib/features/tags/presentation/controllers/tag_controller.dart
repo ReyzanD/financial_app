@@ -1,11 +1,11 @@
 import 'package:flutter/foundation.dart';
 import 'package:financial_app/models/transaction_tag_model.dart';
-import 'package:financial_app/features/tags/domain/repositories/tag_repository_interface.dart';
+import 'package:financial_app/features/tags/data/repositories/tag_repository.dart';
 import 'package:financial_app/services/logger_service.dart';
 
 class TagController extends ChangeNotifier {
-  final TagRepositoryInterface _r;
-  TagController({required TagRepositoryInterface repository}) : _r = repository;
+  final TagRepository _r;
+  TagController({required TagRepository repository}) : _r = repository;
 
   List<TransactionTagModel> _tags = [];
   bool _isLoading = false;

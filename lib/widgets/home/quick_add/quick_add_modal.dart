@@ -173,7 +173,7 @@ class _QuickAddModalState extends State<QuickAddModal> {
       // Update budget spending for expense transactions
       if (widget.type == 'expense' && _selectedCategoryId != null) {
         try {
-          await BudgetDataService().updateBudgetForExpense(
+          await getIt<BudgetDataService>().updateBudgetForExpense(
             categoryId: _selectedCategoryId!,
             amount: amount,
             transactionDate: DateTime.now(),

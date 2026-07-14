@@ -459,9 +459,8 @@ void main() {
         color: '#FF5722',
       );
 
-      // Keys have _232143 suffix matching the DB schema
-      expect(category['name_232143'], 'Custom Category');
-      expect(category['icon_232143'], 'star');
+      expect(category.name, 'Custom Category');
+      expect(category.icon, 'star');
     });
 
     test('should update custom category', () async {
@@ -471,11 +470,11 @@ void main() {
       );
 
       final updated = await service.updateCustomCategory(
-        category['category_id_232143'],
+        category.id,
         {'name': 'Updated Name'},
       );
 
-      expect(updated['name_232143'], 'Updated Name');
+      expect(updated.name, 'Updated Name');
     });
 
     test('should delete custom category', () async {
@@ -484,12 +483,10 @@ void main() {
         type: 'expense',
       );
 
-      await service.deleteCustomCategory(category['category_id_232143']);
+      await service.deleteCustomCategory(category.id);
       final categories = await service.getCustomCategories();
       expect(
-        categories.any(
-          (c) => c['category_id_232143'] == category['category_id_232143'],
-        ),
+        categories.any((c) => c.id == category.id),
         false,
       );
     });

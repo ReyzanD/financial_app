@@ -1,9 +1,13 @@
 import 'package:financial_app/services/logger_service.dart';
 import 'package:financial_app/services/data/exchange_rate_data_service.dart';
+import 'package:financial_app/core/di/service_locator.dart';
 import 'package:financial_app/models/currency_model.dart';
 
 class ExchangeRateService {
-  final ExchangeRateDataService _exchangeRateData = ExchangeRateDataService();
+  final ExchangeRateDataService _exchangeRateData;
+
+  ExchangeRateService({ExchangeRateDataService? exchangeRateData})
+      : _exchangeRateData = exchangeRateData ?? getIt<ExchangeRateDataService>();
 
   static const Map<String, double> _defaultRates = {
     'IDR': 1.0,

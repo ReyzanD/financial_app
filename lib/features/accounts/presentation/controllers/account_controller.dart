@@ -1,13 +1,13 @@
 import 'package:flutter/foundation.dart';
 import 'package:financial_app/models/account_model.dart';
-import 'package:financial_app/features/accounts/domain/repositories/account_repository_interface.dart';
+import 'package:financial_app/features/accounts/data/repositories/account_repository.dart';
 import 'package:financial_app/services/logger_service.dart';
 
 /// Controller for the Accounts feature.
 class AccountController extends ChangeNotifier {
-  final AccountRepositoryInterface _repository;
+  final AccountRepository _repository;
 
-  AccountController({required AccountRepositoryInterface repository})
+  AccountController({required AccountRepository repository})
     : _repository = repository;
 
   List<AccountModel> _accounts = [];

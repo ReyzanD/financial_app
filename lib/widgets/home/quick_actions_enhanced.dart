@@ -3,7 +3,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:financial_app/features/obligations/presentation/screens/financial_obligations_screen.dart';
 import 'package:financial_app/features/transactions/presentation/screens/transaction_history_screen.dart';
-import 'package:financial_app/features/recurring_transactions/presentation/screens/recurring_transactions_screen.dart';
 import 'package:financial_app/features/backup/presentation/screens/backup_screen.dart';
 import 'package:financial_app/features/ai_budget_recommendation/presentation/screens/ai_budget_recommendation_screen.dart';
 import 'package:financial_app/utils/responsive_helper.dart';
@@ -191,7 +190,7 @@ class _QuickActionsEnhancedState extends State<QuickActionsEnhanced> {
             () => Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => const RecurringTransactionsScreen(),
+                builder: (context) => const FinancialObligationsScreen(initialTab: 'recurring'),
               ),
             ),
       },

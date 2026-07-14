@@ -3,13 +3,14 @@ import 'package:image_picker/image_picker.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'package:financial_app/services/logger_service.dart';
 import 'package:financial_app/services/data/receipt_scan_data_service.dart';
+import 'package:financial_app/core/di/service_locator.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:uuid/uuid.dart';
 
 class ReceiptScanningService {
   final ImagePicker _imagePicker = ImagePicker();
   final TextRecognizer _textRecognizer = TextRecognizer();
-  final ReceiptScanDataService _receiptScanData = ReceiptScanDataService();
+  final ReceiptScanDataService _receiptScanData = getIt<ReceiptScanDataService>();
   final _uuid = const Uuid();
 
   Future<File?> pickImage({bool fromCamera = false}) async {

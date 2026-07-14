@@ -45,6 +45,7 @@ import 'package:financial_app/services/smart_categorization_service.dart';
 import 'package:financial_app/services/data/transaction_data_service.dart';
 import 'package:financial_app/services/data/budget_data_service.dart';
 import 'package:financial_app/services/data/category_data_service.dart';
+import 'package:financial_app/models/category_model.dart';
 import 'package:financial_app/utils/date_picker_helper.dart';
 import 'package:financial_app/utils/design_tokens.dart';
 import 'package:financial_app/utils/app_refresh.dart';
@@ -89,8 +90,8 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
   final _amountController = TextEditingController();
   final _descriptionController = TextEditingController();
   final _notesController = TextEditingController();
-  final TransactionDataService _transactionData = TransactionDataService();
-  final CategoryDataService _categoryData = CategoryDataService();
+  final TransactionDataService _transactionData = getIt<TransactionDataService>();
+  final CategoryDataService _categoryData = getIt<CategoryDataService>();
   final ReceiptScanningService _receiptService = getIt<ReceiptScanningService>();
   final SmartCategorizationService _categorizationService =
       getIt<SmartCategorizationService>();
@@ -114,7 +115,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
   String? _recurringFrequency;
 
   // Category data from API
-  List<Map<String, dynamic>> _categories = [];
+  List<CategoryModel> _categories = [];
   bool _isLoadingCategories = true;
 
   @override
@@ -176,42 +177,30 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
         const Duration(seconds: 10),
         onTimeout: () {
           LoggerService.warning('Category loading timed out');
-          return [];
+          return <CategoryModel>[];
         },
       );
       LoggerService.success('Categories loaded: ${categories.length}');
       if (mounted) {
         setState(() {
-          _categories = categories.whereType<Map<String, dynamic>>().toList();
+          _categories = categories;
           _isLoadingCategories = false;
 
           // Pre-select a default category if none is selected and not in edit mode
           if (!widget.isEditMode && _selectedCategory == null) {
-            final filtered = _categories.where((cat) {
-              final type =
-                  (cat['type_232143'] ?? cat['type'])
-                      ?.toString()
-                      .toLowerCase() ??
-                  '';
-              return type == _selectedType;
-            }).toList();
+            final filtered = _categories
+                .where((cat) => cat.type == _selectedType)
+                .toList();
             if (filtered.isNotEmpty) {
               // Prefer "Lainnya" or "Other" category as sensible default
               final defaultCat = filtered.firstWhere(
                 (cat) {
-                  final name =
-                      (cat['name_232143'] ?? cat['name'])
-                          ?.toString()
-                          .toLowerCase() ??
-                      '';
+                  final name = cat.name.toLowerCase();
                   return name == 'lainnya' || name == 'other';
                 },
                 orElse: () => filtered.first,
               );
-              _selectedCategory =
-                  (defaultCat['category_id_232143'] ?? defaultCat['id'])
-                      ?.toString() ??
-                  '';
+              _selectedCategory = defaultCat.id;
             }
           }
         });
@@ -261,14 +250,11 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
   }
 
   String? _findCategoryId(String categoryName) {
+    final normalizedName = categoryName.toLowerCase();
     for (final cat in _categories) {
-      final name =
-          (cat['name']?.toString() ?? cat['name_232143']?.toString() ?? '')
-              .toLowerCase();
-      if (name.contains(categoryName.toLowerCase()) ||
-          categoryName.toLowerCase().contains(name)) {
-        return cat['category_id']?.toString() ??
-            cat['category_id_232143']?.toString();
+      final name = cat.name.toLowerCase();
+      if (name.contains(normalizedName) || normalizedName.contains(name)) {
+        return cat.id;
       }
     }
     return null;
@@ -538,21 +524,13 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
 
     if (categoryName != null) {
       // Find the category ID from the loaded categories
-      final category = _categories.firstWhere(
-        (cat) {
-          final name =
-              cat['name']?.toString() ??
-              cat['name_232143']?.toString() ??
-              '';
-          return name.toLowerCase().contains(categoryName!);
-        },
-        orElse: () => {},
+      final matches = _categories.where(
+        (cat) => cat.name.toLowerCase().contains(categoryName!),
       );
 
-      final categoryId = category['category_id_232143'] ?? category['id'];
-      if (category.isNotEmpty && categoryId != null) {
+      if (matches.isNotEmpty) {
         setState(() {
-          _selectedCategory = categoryId.toString();
+          _selectedCategory = matches.first.id;
         });
       }
     }
@@ -743,8 +721,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
         // If it's an expense, update the budget spent amount
         if (_selectedType == 'expense') {
           try {
-            final budgetData = BudgetDataService();
-            await budgetData.updateBudgetForExpense(
+            await getIt<BudgetDataService>().updateBudgetForExpense(
               categoryId: _selectedCategory ?? '',
               amount: double.parse(_amountController.text),
               transactionDate: _selectedDate,

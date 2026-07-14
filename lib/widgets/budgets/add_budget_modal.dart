@@ -9,7 +9,7 @@ import 'package:financial_app/utils/design_tokens.dart';
 import 'package:financial_app/utils/dropdown_helper.dart';
 import 'package:financial_app/utils/date_picker_helper.dart';
 import 'package:financial_app/core/di/service_locator.dart';
-import 'package:financial_app/features/budgets/domain/entities/budget_entity.dart';
+import 'package:financial_app/models/budget_model.dart';
 import 'package:financial_app/features/budgets/presentation/controllers/budget_controller.dart';
 
 class AddBudgetModal extends StatefulWidget {
@@ -165,8 +165,8 @@ class _AddBudgetModalState extends State<AddBudgetModal> {
         await ctrl.updateBudgetFromMap(id, data);
       } else {
         data['id'] = '';
-        final entity = BudgetEntity.fromJson(data);
-        await ctrl.createBudget(entity);
+        final model = BudgetModel.fromMap(data);
+        await ctrl.createBudget(model);
       }
 
       if (!mounted) return;

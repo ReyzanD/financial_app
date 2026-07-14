@@ -5,6 +5,7 @@ import 'package:financial_app/services/local_auth_service.dart';
 import 'package:financial_app/services/local_database_service.dart';
 import 'package:financial_app/services/encryption_service.dart';
 import 'package:financial_app/services/logger_service.dart';
+import 'package:financial_app/core/di/service_locator.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// Authentication Service - Now uses local database (no backend server required)
@@ -128,7 +129,7 @@ class AuthService {
       );
 
       // Explicitly clear encryption keys since the account is being deleted
-      EncryptionService().clearKey();
+      getIt<EncryptionService>().clearKey();
 
       await logout();
       LoggerService.info('Account deleted successfully');

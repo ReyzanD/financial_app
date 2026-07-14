@@ -224,25 +224,16 @@ class BudgetForecastService {
         final budgets = await _apiService.getBudgets(activeOnly: false);
 
         // Find budget untuk category
-        final budget = budgets.firstWhere((b) {
-          final budgetMap = b as Map<String, dynamic>;
-          return budgetMap['category_id']?.toString() == categoryId;
-        }, orElse: () => <String, dynamic>{});
+        final budget = budgets.where((b) => b.categoryId == categoryId);
 
         if (budget.isNotEmpty) {
-          final budgetMap = budget as Map<String, dynamic>;
+          final b = budget.first;
           trends.add({
             'month': monthDate.month,
             'year': monthDate.year,
-            'spent': (budgetMap['spent'] as num?)?.toDouble() ?? 0.0,
-            'amount': (budgetMap['amount'] as num?)?.toDouble() ?? 0.0,
-            'percentage':
-                (budgetMap['amount'] as num?)?.toDouble() != null &&
-                        (budgetMap['amount'] as num?)!.toDouble() > 0
-                    ? (((budgetMap['spent'] as num?)?.toDouble() ?? 0.0) /
-                            (budgetMap['amount'] as num?)!.toDouble()) *
-                        100
-                    : 0.0,
+            'spent': b.spent,
+            'amount': b.amount,
+            'percentage': b.amount > 0 ? (b.spent / b.amount) * 100 : 0.0,
           });
         }
       }

@@ -1,10 +1,10 @@
 import 'package:flutter/foundation.dart';
-import 'package:financial_app/features/net_worth/domain/repositories/net_worth_repository_interface.dart';
+import 'package:financial_app/features/net_worth/data/repositories/net_worth_repository.dart';
 import 'package:financial_app/services/logger_service.dart';
 
 class NetWorthController extends ChangeNotifier {
-  final NetWorthRepositoryInterface _r;
-  NetWorthController({required NetWorthRepositoryInterface repository})
+  final NetWorthRepository _r;
+  NetWorthController({required NetWorthRepository repository})
     : _r = repository;
 
   Map<String, dynamic> _data = {};

@@ -54,15 +54,7 @@ class BudgetRecommendationService {
         final bills = await _apiService.getObligations();
         // Sum bills/obligations
         for (var bill in bills) {
-          if (bill['status_232143'] == 'active') {
-            final monthlyAmountRaw = bill['monthly_amount_232143'];
-            final amount =
-                monthlyAmountRaw is num
-                    ? monthlyAmountRaw.toDouble()
-                    : (double.tryParse(monthlyAmountRaw?.toString() ?? '0') ??
-                        0.0);
-            monthlyRecurringExpenses += amount;
-          }
+          monthlyRecurringExpenses += bill.monthlyAmount;
         }
       } catch (e) {
         LoggerService.warning('Could not fetch obligations', error: e);

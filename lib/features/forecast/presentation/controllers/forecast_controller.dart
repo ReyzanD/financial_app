@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:money2/money2.dart';
-import 'package:financial_app/features/forecast/domain/repositories/forecast_repository_interface.dart';
+import 'package:financial_app/features/forecast/data/repositories/forecast_repository.dart';
 import 'package:financial_app/services/expense_predictor.dart';
 import 'package:financial_app/services/spending_pattern_analyzer.dart';
 import 'package:financial_app/services/budget_predictor.dart';
@@ -8,13 +8,13 @@ import 'package:financial_app/services/logger_service.dart';
 import 'package:financial_app/utils/key_normalizer.dart';
 
 class ForecastController extends ChangeNotifier {
-  final ForecastRepositoryInterface _r;
+  final ForecastRepository _r;
   final ExpensePredictor _expensePredictor;
   final SpendingPatternAnalyzer _patternAnalyzer;
   final BudgetPredictor _budgetPredictor;
 
   ForecastController({
-    required ForecastRepositoryInterface repository,
+    required ForecastRepository repository,
     ExpensePredictor? expensePredictor,
     SpendingPatternAnalyzer? patternAnalyzer,
     BudgetPredictor? budgetPredictor,

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:financial_app/l10n/app_localizations.dart';
+import 'package:financial_app/core/di/service_locator.dart';
+import 'package:financial_app/models/account_model.dart';
 import 'package:financial_app/services/data/account_data_service.dart';
 import 'package:financial_app/utils/design_tokens.dart';
 
@@ -20,8 +22,8 @@ class AccountSection extends StatefulWidget {
 }
 
 class _AccountSectionState extends State<AccountSection> {
-  final AccountDataService _accountData = AccountDataService();
-  List<Map<String, dynamic>> _accounts = [];
+  final AccountDataService _accountData = getIt<AccountDataService>();
+  List<AccountModel> _accounts = [];
   bool _isLoading = true;
 
   @override
@@ -40,13 +42,11 @@ class _AccountSectionState extends State<AccountSection> {
         });
         // Auto-select default account if none selected
         if (widget.selectedAccountId == null && accounts.isNotEmpty) {
-          final defaultAccount = accounts
-              .cast<Map<String, dynamic>>()
-              .firstWhere(
-                (a) => a['is_default_232143'] == 1,
-                orElse: () => accounts.first,
-              );
-          widget.onAccountSelected(defaultAccount['account_id_232143']);
+          final defaultAccount = accounts.firstWhere(
+            (a) => a.isDefault,
+            orElse: () => accounts.first,
+          );
+          widget.onAccountSelected(defaultAccount.id);
         }
       }
     } catch (e) {
@@ -165,10 +165,10 @@ class _AccountSectionState extends State<AccountSection> {
             ),
             ..._accounts.map((account) {
               final isSelected =
-                  widget.selectedAccountId == account['account_id_232143'];
-              final type = account['type_232143'] ?? 'other';
-              final name = account['name_232143'] ?? 'Akun';
-              final colorHex = account['color_232143'] ?? '#8B5FBF';
+                  widget.selectedAccountId == account.id;
+              final type = account.type;
+              final name = account.name;
+              final colorHex = account.color ?? '#8B5FBF';
               final accountColor = Color(
                 int.parse(colorHex.replaceFirst('#', '0xFF')),
               );
@@ -176,7 +176,7 @@ class _AccountSectionState extends State<AccountSection> {
               return GestureDetector(
                 onTap:
                     () =>
-                        widget.onAccountSelected(account['account_id_232143']),
+                        widget.onAccountSelected(account.id),
                 child: Container(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 12,

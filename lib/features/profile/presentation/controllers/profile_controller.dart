@@ -1,11 +1,11 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:financial_app/features/profile/domain/repositories/profile_repository_interface.dart';
+import 'package:financial_app/features/profile/data/repositories/profile_repository.dart';
 import 'package:financial_app/services/logger_service.dart';
 
 class ProfileController extends ChangeNotifier {
-  final ProfileRepositoryInterface _r;
-  ProfileController({required ProfileRepositoryInterface repository})
+  final ProfileRepository _r;
+  ProfileController({required ProfileRepository repository})
     : _r = repository;
 
   bool _isLoading = false;

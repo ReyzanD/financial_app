@@ -1207,24 +1207,15 @@ class AIService {
       final today = DateTime(now.year, now.month, now.day);
 
       for (var obligation in obligations) {
-        if (obligation['status_232143'] != 'active') continue;
+        final dueDate = obligation.dueDate;
+        final daysUntilDue = dueDate.difference(today).inDays;
 
-        try {
-          final dueDateStr = obligation['due_date_232143']?.toString() ?? '';
-          if (dueDateStr.isEmpty) continue;
-
-          final dueDate = DateTime.parse(dueDateStr);
-          final daysUntilDue = dueDate.difference(today).inDays;
-
-          if (daysUntilDue >= 0 && daysUntilDue <= 7) {
-            upcomingBills.add({
-              'name': obligation['name_232143'] ?? 'Tagihan',
-              'amount': obligation['monthly_amount_232143'] ?? 0.0,
-              'days_until': daysUntilDue,
-            });
-          }
-        } catch (e) {
-          continue;
+        if (daysUntilDue >= 0 && daysUntilDue <= 7) {
+          upcomingBills.add({
+            'name': obligation.name,
+            'amount': obligation.monthlyAmount,
+            'days_until': daysUntilDue,
+          });
         }
       }
 

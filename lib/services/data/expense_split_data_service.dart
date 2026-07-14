@@ -2,6 +2,7 @@ import 'package:uuid/uuid.dart';
 import 'package:financial_app/services/local_database_service.dart';
 import 'package:financial_app/services/local_auth_service.dart';
 import 'package:financial_app/services/logger_service.dart';
+import 'package:financial_app/models/split_model.dart';
 
 /// Data service for Expense Split CRUD operations.
 class ExpenseSplitDataService {
@@ -17,7 +18,7 @@ class ExpenseSplitDataService {
 
   Future<String?> getCurrentUserId() async => _authService.getCurrentUserId();
 
-  Future<List<Map<String, dynamic>>> getSplits({
+  Future<List<SplitModel>> getSplits({
     String? transactionId,
     bool activeOnly = true,
   }) async {
@@ -43,14 +44,14 @@ class ExpenseSplitDataService {
         whereArgs: whereArgs,
         orderBy: 'created_at_232143 DESC',
       );
-      return List<Map<String, dynamic>>.from(splits);
+      return splits.map((m) => SplitModel.fromMap(m)).toList();
     } catch (e) {
       LoggerService.error('Error getting splits', error: e);
       rethrow;
     }
   }
 
-  Future<Map<String, dynamic>> addSplit(Map<String, dynamic> splitData) async {
+  Future<SplitModel> addSplit(Map<String, dynamic> splitData) async {
     try {
       final userId = await getCurrentUserId();
       if (userId == null) throw Exception('Not authenticated');
@@ -59,7 +60,7 @@ class ExpenseSplitDataService {
       final splitId = _uuid.v4();
       final now = DateTime.now().toIso8601String();
 
-      await db.insert('expense_splits_232143', {
+      final record = <String, dynamic>{
         'split_id_232143': splitId,
         'transaction_id_232143': splitData['transaction_id'],
         'user_id_232143': userId,
@@ -70,19 +71,19 @@ class ExpenseSplitDataService {
         'is_settled_232143': splitData['is_settled'] == true ? 1 : 0,
         'notes_232143': splitData['notes'],
         'created_at_232143': now,
-      });
+      };
+
+      await db.insert('expense_splits_232143', record);
 
       LoggerService.info('✅ Split added: $splitId');
-      return {
-        'split': {'split_id_232143': splitId, ...splitData},
-      };
+      return SplitModel.fromMap(record);
     } catch (e) {
       LoggerService.error('Error adding split', error: e);
       rethrow;
     }
   }
 
-  Future<Map<String, dynamic>> settleSplit(String splitId) async {
+  Future<void> settleSplit(String splitId) async {
     try {
       final userId = await getCurrentUserId();
       if (userId == null) throw Exception('Not authenticated');
@@ -98,14 +99,13 @@ class ExpenseSplitDataService {
       );
 
       LoggerService.info('✅ Split settled: $splitId');
-      return {'success': true};
     } catch (e) {
       LoggerService.error('Error settling split', error: e);
       rethrow;
     }
   }
 
-  Future<Map<String, dynamic>> deleteSplit(String splitId) async {
+  Future<bool> deleteSplit(String splitId) async {
     try {
       final userId = await getCurrentUserId();
       if (userId == null) throw Exception('Not authenticated');
@@ -119,10 +119,8 @@ class ExpenseSplitDataService {
 
       if (rowsDeleted > 0) {
         LoggerService.info('✅ Split deleted: $splitId');
-        return {'success': true};
-      } else {
-        return {'success': false, 'message': 'Split not found'};
       }
+      return rowsDeleted > 0;
     } catch (e) {
       LoggerService.error('Error deleting split', error: e);
       rethrow;

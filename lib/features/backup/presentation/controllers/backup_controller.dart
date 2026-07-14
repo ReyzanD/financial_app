@@ -1,11 +1,11 @@
 import 'dart:io';
 import 'package:flutter/foundation.dart';
-import 'package:financial_app/features/backup/domain/repositories/backup_repository_interface.dart';
+import 'package:financial_app/features/backup/data/repositories/backup_repository.dart';
 import 'package:financial_app/services/logger_service.dart';
 
 class BackupController extends ChangeNotifier {
-  final BackupRepositoryInterface _r;
-  BackupController({required BackupRepositoryInterface repository})
+  final BackupRepository _r;
+  BackupController({required BackupRepository repository})
     : _r = repository;
 
   List<File> _backups = [];

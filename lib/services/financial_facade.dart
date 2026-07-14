@@ -15,8 +15,8 @@ import 'package:financial_app/core/di/service_locator.dart';
 /// Provides a single entry point for financial calculations, AI recommendations, and forecasts
 /// Includes caching for performance (24h TTL)
 class FinancialFacade {
-  final FinancialCalculator _calculator = FinancialCalculator();
-  final AIService _aiService = AIService();
+  final FinancialCalculator _calculator = getIt<FinancialCalculator>();
+  final AIService _aiService = getIt<AIService>();
   final ApiService _apiService = getIt<ApiService>();
   final EncryptionService _encryptionService = getIt<EncryptionService>();
   final FlutterSecureStorage _secureStorage = const FlutterSecureStorage();
@@ -132,12 +132,7 @@ class FinancialFacade {
         if (budgets.isNotEmpty) {
           budgetStatus = {
             'totalBudgets': budgets.length,
-            'overBudget':
-                budgets.where((b) {
-                  final spent = (b['spent'] ?? 0).toDouble();
-                  final limit = (b['limit'] ?? 1).toDouble();
-                  return spent > limit;
-                }).length,
+            'overBudget': budgets.where((b) => b.isOverBudget).length,
           };
         }
       } catch (e) {

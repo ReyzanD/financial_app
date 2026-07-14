@@ -5,8 +5,16 @@ import 'package:financial_app/services/theme_service.dart';
 import 'package:financial_app/services/notification_service.dart';
 import 'package:financial_app/services/biometric_service.dart';
 import 'package:financial_app/services/encryption_service.dart';
+import 'package:financial_app/services/data/category_data_service.dart';
 import 'package:financial_app/services/data/budget_data_service.dart';
+import 'package:financial_app/services/data/debt_data_service.dart';
+import 'package:financial_app/services/data/subscription_data_service.dart';
+import 'package:financial_app/services/data/transaction_template_data_service.dart';
 import 'package:financial_app/services/data/goal_data_service.dart';
+import 'package:financial_app/services/data/transaction_data_service.dart';
+import 'package:financial_app/services/data/receipt_scan_data_service.dart';
+import 'package:financial_app/services/data/exchange_rate_data_service.dart';
+import 'package:financial_app/services/data/net_worth_data_service.dart';
 import 'package:financial_app/features/goals/data/repositories/goal_repository.dart';
 import 'package:financial_app/features/goals/domain/repositories/goal_repository_interface.dart';
 import 'package:financial_app/features/goals/domain/use_cases/get_goals_use_case.dart';
@@ -14,85 +22,47 @@ import 'package:financial_app/features/goals/domain/use_cases/create_goal_use_ca
 import 'package:financial_app/features/goals/domain/use_cases/delete_goal_use_case.dart';
 import 'package:financial_app/features/goals/presentation/controllers/goal_controller.dart';
 import 'package:financial_app/features/accounts/data/repositories/account_repository.dart';
-import 'package:financial_app/features/accounts/domain/repositories/account_repository_interface.dart';
-import 'package:financial_app/features/accounts/domain/use_cases/get_accounts_use_case.dart';
-import 'package:financial_app/features/accounts/domain/use_cases/create_account_use_case.dart';
-import 'package:financial_app/features/accounts/domain/use_cases/delete_account_use_case.dart';
 import 'package:financial_app/features/accounts/presentation/controllers/account_controller.dart';
 import 'package:financial_app/features/challenges/data/repositories/challenge_repository.dart';
-import 'package:financial_app/features/challenges/domain/repositories/challenge_repository_interface.dart';
-import 'package:financial_app/features/challenges/domain/use_cases/get_challenges_use_case.dart';
-import 'package:financial_app/features/challenges/domain/use_cases/create_challenge_use_case.dart';
-import 'package:financial_app/features/challenges/domain/use_cases/delete_challenge_use_case.dart';
 import 'package:financial_app/features/challenges/presentation/controllers/challenge_controller.dart';
-import 'package:financial_app/features/debts/data/repositories/debt_repository.dart';
-import 'package:financial_app/features/debts/domain/repositories/debt_repository_interface.dart';
-import 'package:financial_app/features/debts/domain/use_cases/get_debts_use_case.dart';
-import 'package:financial_app/features/debts/domain/use_cases/add_debt_use_case.dart';
-import 'package:financial_app/features/debts/domain/use_cases/delete_debt_use_case.dart';
-import 'package:financial_app/features/debts/presentation/controllers/debt_controller.dart';
 import 'package:financial_app/features/investments/data/repositories/investment_repository.dart';
-import 'package:financial_app/features/investments/domain/repositories/investment_repository_interface.dart';
-import 'package:financial_app/features/investments/domain/use_cases/get_investments_use_case.dart';
-import 'package:financial_app/features/investments/domain/use_cases/add_investment_use_case.dart';
-import 'package:financial_app/features/investments/domain/use_cases/delete_investment_use_case.dart';
 import 'package:financial_app/features/investments/presentation/controllers/investment_controller.dart';
-import 'package:financial_app/features/subscriptions/data/repositories/subscription_repository.dart';
-import 'package:financial_app/features/subscriptions/domain/repositories/subscription_repository_interface.dart';
-import 'package:financial_app/features/subscriptions/domain/use_cases/get_subscriptions_use_case.dart';
-import 'package:financial_app/features/subscriptions/domain/use_cases/add_subscription_use_case.dart';
-import 'package:financial_app/features/subscriptions/domain/use_cases/delete_subscription_use_case.dart';
-import 'package:financial_app/features/subscriptions/presentation/controllers/subscription_controller.dart';
 import 'package:financial_app/features/splits/data/repositories/split_repository.dart';
-import 'package:financial_app/features/splits/domain/repositories/split_repository_interface.dart';
-import 'package:financial_app/features/splits/domain/use_cases/get_splits_use_case.dart';
-import 'package:financial_app/features/splits/domain/use_cases/create_split_use_case.dart';
-import 'package:financial_app/features/splits/domain/use_cases/delete_split_use_case.dart';
 import 'package:financial_app/features/splits/presentation/controllers/split_controller.dart';
 import 'package:financial_app/features/net_worth/data/repositories/net_worth_repository.dart';
-import 'package:financial_app/features/net_worth/domain/repositories/net_worth_repository_interface.dart';
 import 'package:financial_app/features/net_worth/presentation/controllers/net_worth_controller.dart';
 import 'package:financial_app/features/analytics/data/repositories/analytics_repository.dart';
-import 'package:financial_app/features/analytics/domain/repositories/analytics_repository_interface.dart';
+
 import 'package:financial_app/features/analytics/presentation/controllers/analytics_controller.dart';
 import 'package:financial_app/features/cash_flow/data/repositories/cash_flow_repository.dart';
-import 'package:financial_app/features/cash_flow/domain/repositories/cash_flow_repository_interface.dart';
 import 'package:financial_app/features/cash_flow/presentation/controllers/cash_flow_controller.dart';
-import 'package:financial_app/features/recurring_transactions/data/repositories/recurring_transaction_repository.dart';
-import 'package:financial_app/features/recurring_transactions/domain/repositories/recurring_transaction_repository_interface.dart';
-import 'package:financial_app/features/recurring_transactions/presentation/controllers/recurring_transaction_controller.dart';
 import 'package:financial_app/features/obligations/data/repositories/obligation_repository.dart';
-import 'package:financial_app/features/obligations/domain/repositories/obligation_repository_interface.dart';
 import 'package:financial_app/features/obligations/presentation/controllers/obligation_controller.dart';
 import 'package:financial_app/features/insights/data/repositories/insights_repository.dart';
-import 'package:financial_app/features/insights/domain/repositories/insights_repository_interface.dart';
 import 'package:financial_app/features/insights/presentation/controllers/insights_controller.dart';
 import 'package:financial_app/features/forecast/data/repositories/forecast_repository.dart';
-import 'package:financial_app/features/forecast/domain/repositories/forecast_repository_interface.dart';
 import 'package:financial_app/features/forecast/presentation/controllers/forecast_controller.dart';
 import 'package:financial_app/features/auth/presentation/controllers/auth_controller.dart';
 import 'package:financial_app/features/backup/presentation/controllers/backup_controller.dart';
 import 'package:financial_app/features/backup/data/repositories/backup_repository.dart';
-import 'package:financial_app/features/backup/domain/repositories/backup_repository_interface.dart';
 import 'package:financial_app/services/data/tag_data_service.dart';
 import 'package:financial_app/services/data/investment_data_service.dart';
+import 'package:financial_app/services/data/account_data_service.dart';
+import 'package:financial_app/services/data/obligation_data_service.dart';
+
+import 'package:financial_app/services/data/challenge_data_service.dart';
 import 'package:financial_app/features/tags/presentation/controllers/tag_controller.dart';
 import 'package:financial_app/features/tags/data/repositories/tag_repository.dart';
-import 'package:financial_app/features/tags/domain/repositories/tag_repository_interface.dart';
 import 'package:financial_app/features/profile/presentation/controllers/profile_controller.dart';
 import 'package:financial_app/features/profile/data/repositories/profile_repository.dart';
-import 'package:financial_app/features/profile/domain/repositories/profile_repository_interface.dart';
+
 import 'package:financial_app/features/receipt_history/data/repositories/receipt_repository.dart';
-import 'package:financial_app/features/receipt_history/domain/repositories/receipt_repository_interface.dart';
 import 'package:financial_app/features/receipt_history/presentation/controllers/receipt_controller.dart';
 import 'package:financial_app/features/report/data/repositories/report_repository.dart';
-import 'package:financial_app/features/report/domain/repositories/report_repository_interface.dart';
 import 'package:financial_app/features/report/presentation/controllers/report_controller.dart';
 import 'package:financial_app/features/templates/data/repositories/template_repository.dart';
-import 'package:financial_app/features/templates/domain/repositories/template_repository_interface.dart';
 import 'package:financial_app/features/templates/presentation/controllers/template_controller.dart';
 import 'package:financial_app/features/notification_center/data/repositories/notification_repository.dart';
-import 'package:financial_app/features/notification_center/domain/repositories/notification_repository_interface.dart';
 import 'package:financial_app/features/notification_center/presentation/controllers/notification_center_controller.dart';
 import 'package:financial_app/features/category_customization/presentation/controllers/category_controller.dart';
 import 'package:financial_app/features/financial_calendar/presentation/controllers/calendar_controller.dart';
@@ -121,6 +91,10 @@ import 'package:financial_app/services/smart_categorization_service.dart';
 import 'package:financial_app/services/goal_forecasting_service.dart';
 import 'package:financial_app/services/network_service.dart';
 import 'package:financial_app/services/data_service.dart';
+import 'package:financial_app/services/backup_service.dart';
+import 'package:financial_app/services/payment_history_service.dart';
+import 'package:financial_app/services/ai_service.dart';
+import 'package:financial_app/services/net_worth_service.dart';
 import 'package:financial_app/services/obligation_service.dart';
 import 'package:financial_app/services/notification_history_service.dart';
 import 'package:financial_app/services/obligation_reminder_service.dart';
@@ -135,11 +109,6 @@ import 'package:financial_app/features/transactions/domain/use_cases/create_tran
 import 'package:financial_app/features/transactions/domain/use_cases/delete_transaction_use_case.dart';
 import 'package:financial_app/features/transactions/presentation/controllers/transaction_controller.dart';
 import 'package:financial_app/features/budgets/data/repositories/budget_repository.dart';
-import 'package:financial_app/features/budgets/domain/repositories/budget_repository_interface.dart';
-import 'package:financial_app/features/budgets/domain/use_cases/get_budgets_use_case.dart';
-import 'package:financial_app/features/budgets/domain/use_cases/create_budget_use_case.dart';
-import 'package:financial_app/features/budgets/domain/use_cases/update_budget_use_case.dart';
-import 'package:financial_app/features/budgets/domain/use_cases/delete_budget_use_case.dart';
 import 'package:financial_app/features/budgets/presentation/controllers/budget_controller.dart';
 
 import 'package:financial_app/services/account_service.dart';
@@ -158,6 +127,7 @@ Future<void> setupServiceLocator() async {
   // ========== Core Services ==========
   getIt.registerLazySingleton<LoggerService>(() => LoggerService());
   getIt.registerLazySingleton<ErrorHandlerService>(() => ErrorHandlerService());
+  getIt.registerLazySingleton<ObligationDataService>(() => ObligationDataService());
   getIt.registerLazySingleton<ApiService>(() => ApiService());
   getIt.registerLazySingleton<ThemeService>(() => ThemeService());
   getIt.registerLazySingleton<LocalizationService>(() => LocalizationService());
@@ -213,6 +183,12 @@ Future<void> setupServiceLocator() async {
   getIt.registerLazySingleton<ObligationService>(() => ObligationService());
   getIt.registerLazySingleton<BillTemplateService>(() => BillTemplateService());
 
+  // ========== Business Services ==========
+  getIt.registerLazySingleton<NetWorthService>(() => NetWorthService());
+  getIt.registerLazySingleton<BackupService>(() => BackupService());
+  getIt.registerLazySingleton<PaymentHistoryService>(() => PaymentHistoryService());
+  getIt.registerLazySingleton<AIService>(() => AIService());
+
   // ========== Feature Services ==========
   getIt.registerLazySingleton<ReceiptScanningService>(
     () => ReceiptScanningService(),
@@ -234,7 +210,7 @@ Future<void> setupServiceLocator() async {
   getIt.registerLazySingleton<TransactionRepositoryInterface>(
     () => TransactionRepository(
       getIt<TransactionRemoteDataSource>(),
-      BudgetDataService(),
+      getIt<BudgetDataService>(),
     ),
   );
 
@@ -256,37 +232,15 @@ Future<void> setupServiceLocator() async {
     ),
   );
 
-  // ========== Budgets Feature (Clean Architecture) ==========
-  getIt.registerLazySingleton<BudgetRepositoryInterface>(
-    () => BudgetRepository(),
-  );
-
-  getIt.registerLazySingleton<GetBudgetsUseCase>(
-    () => GetBudgetsUseCase(getIt<BudgetRepositoryInterface>()),
-  );
-  getIt.registerLazySingleton<CreateBudgetUseCase>(
-    () => CreateBudgetUseCase(getIt<BudgetRepositoryInterface>()),
-  );
-  getIt.registerLazySingleton<UpdateBudgetUseCase>(
-    () => UpdateBudgetUseCase(getIt<BudgetRepositoryInterface>()),
-  );
-  getIt.registerLazySingleton<DeleteBudgetUseCase>(
-    () => DeleteBudgetUseCase(getIt<BudgetRepositoryInterface>()),
-  );
-
+  // ========== Budgets Feature ==========
+  getIt.registerLazySingleton<BudgetRepository>(() => BudgetRepository());
   getIt.registerFactory<BudgetController>(
-    () => BudgetController(
-      getIt<GetBudgetsUseCase>(),
-      getIt<CreateBudgetUseCase>(),
-      getIt<DeleteBudgetUseCase>(),
-      getIt<UpdateBudgetUseCase>(),
-      getIt<BudgetRepositoryInterface>() as BudgetRepository,
-    ),
+    () => BudgetController(getIt<BudgetRepository>()),
   );
 
   // ========== Goals Feature (Clean Architecture) ==========
   getIt.registerLazySingleton<GoalRepositoryInterface>(
-    () => GoalRepository(goalData: GoalDataService()),
+    () => GoalRepository(goalData: getIt<GoalDataService>()),
   );
 
   getIt.registerLazySingleton<GetGoalsUseCase>(
@@ -304,234 +258,153 @@ Future<void> setupServiceLocator() async {
   );
 
   // ========== Accounts Feature (Clean Architecture) ==========
-  getIt.registerLazySingleton<AccountRepositoryInterface>(
-    () => AccountRepository(accountService: AccountService()),
-  );
-
-  getIt.registerLazySingleton<GetAccountsUseCase>(
-    () => GetAccountsUseCase(getIt<AccountRepositoryInterface>()),
-  );
-  getIt.registerLazySingleton<CreateAccountUseCase>(
-    () => CreateAccountUseCase(getIt<AccountRepositoryInterface>()),
-  );
-  getIt.registerLazySingleton<DeleteAccountUseCase>(
-    () => DeleteAccountUseCase(getIt<AccountRepositoryInterface>()),
+  getIt.registerLazySingleton<AccountRepository>(
+    () => AccountRepository(accountService: getIt<AccountService>()),
   );
 
   getIt.registerFactory<AccountController>(
-    () => AccountController(repository: getIt<AccountRepositoryInterface>()),
+    () => AccountController(repository: getIt<AccountRepository>()),
   );
 
   // ========== Challenges Feature (Clean Architecture) ==========
-  getIt.registerLazySingleton<ChallengeRepositoryInterface>(
-    () => ChallengeRepository(),
-  );
-
-  getIt.registerLazySingleton<GetChallengesUseCase>(
-    () => GetChallengesUseCase(getIt<ChallengeRepositoryInterface>()),
-  );
-  getIt.registerLazySingleton<CreateChallengeUseCase>(
-    () => CreateChallengeUseCase(getIt<ChallengeRepositoryInterface>()),
-  );
-  getIt.registerLazySingleton<DeleteChallengeUseCase>(
-    () => DeleteChallengeUseCase(getIt<ChallengeRepositoryInterface>()),
+  getIt.registerLazySingleton<ChallengeDataService>(() => ChallengeDataService());
+  getIt.registerLazySingleton<ChallengeRepository>(
+    () => ChallengeRepository(challengeData: getIt<ChallengeDataService>()),
   );
 
   getIt.registerFactory<ChallengeController>(
     () =>
-        ChallengeController(repository: getIt<ChallengeRepositoryInterface>()),
+        ChallengeController(repository: getIt<ChallengeRepository>()),
   );
 
-  // ========== Debts Feature (Clean Architecture) ==========
-  getIt.registerLazySingleton<DebtRepositoryInterface>(() => DebtRepository());
-
-  getIt.registerLazySingleton<GetDebtsUseCase>(
-    () => GetDebtsUseCase(getIt<DebtRepositoryInterface>()),
-  );
-  getIt.registerLazySingleton<AddDebtUseCase>(
-    () => AddDebtUseCase(getIt<DebtRepositoryInterface>()),
-  );
-  getIt.registerLazySingleton<DeleteDebtUseCase>(
-    () => DeleteDebtUseCase(getIt<DebtRepositoryInterface>()),
-  );
-
-  getIt.registerFactory<DebtController>(
-    () => DebtController(repository: getIt<DebtRepositoryInterface>()),
-  );
-
-  // ========== Investments Feature (Clean Architecture) ==========
-  getIt.registerLazySingleton<InvestmentRepositoryInterface>(
+  // ========== Investments Feature ==========
+  getIt.registerLazySingleton<InvestmentRepository>(
     () => InvestmentRepository(),
-  );
-  getIt.registerLazySingleton<GetInvestmentsUseCase>(
-    () => GetInvestmentsUseCase(getIt<InvestmentRepositoryInterface>()),
-  );
-  getIt.registerLazySingleton<AddInvestmentUseCase>(
-    () => AddInvestmentUseCase(getIt<InvestmentRepositoryInterface>()),
-  );
-  getIt.registerLazySingleton<DeleteInvestmentUseCase>(
-    () => DeleteInvestmentUseCase(getIt<InvestmentRepositoryInterface>()),
   );
   getIt.registerFactory<InvestmentController>(
     () => InvestmentController(
-      repository: getIt<InvestmentRepositoryInterface>(),
+      repository: getIt<InvestmentRepository>(),
     ),
   );
 
-  // ========== Subscriptions Feature (Clean Architecture) ==========
-  getIt.registerLazySingleton<SubscriptionRepositoryInterface>(
-    () => SubscriptionRepository(),
-  );
-  getIt.registerLazySingleton<GetSubscriptionsUseCase>(
-    () => GetSubscriptionsUseCase(getIt<SubscriptionRepositoryInterface>()),
-  );
-  getIt.registerLazySingleton<AddSubscriptionUseCase>(
-    () => AddSubscriptionUseCase(getIt<SubscriptionRepositoryInterface>()),
-  );
-  getIt.registerLazySingleton<DeleteSubscriptionUseCase>(
-    () => DeleteSubscriptionUseCase(getIt<SubscriptionRepositoryInterface>()),
-  );
-  getIt.registerFactory<SubscriptionController>(
-    () => SubscriptionController(
-      repository: getIt<SubscriptionRepositoryInterface>(),
-    ),
-  );
-
-  // ========== Splits Feature (Clean Architecture) ==========
-  getIt.registerLazySingleton<SplitRepositoryInterface>(
+  // ========== Splits Feature ==========
+  getIt.registerLazySingleton<SplitRepository>(
     () => SplitRepository(),
   );
-  getIt.registerLazySingleton<GetSplitsUseCase>(
-    () => GetSplitsUseCase(getIt<SplitRepositoryInterface>()),
-  );
-  getIt.registerLazySingleton<CreateSplitUseCase>(
-    () => CreateSplitUseCase(getIt<SplitRepositoryInterface>()),
-  );
-  getIt.registerLazySingleton<DeleteSplitUseCase>(
-    () => DeleteSplitUseCase(getIt<SplitRepositoryInterface>()),
-  );
   getIt.registerFactory<SplitController>(
-    () => SplitController(repository: getIt<SplitRepositoryInterface>()),
+    () => SplitController(repository: getIt<SplitRepository>()),
   );
 
-  // ========== Net Worth Feature (Clean Architecture) ==========
-  getIt.registerLazySingleton<NetWorthRepositoryInterface>(
+  // ========== Net Worth Feature ==========
+  getIt.registerLazySingleton<NetWorthRepository>(
     () => NetWorthRepository(),
   );
   getIt.registerFactory<NetWorthController>(
-    () => NetWorthController(repository: getIt<NetWorthRepositoryInterface>()),
+    () => NetWorthController(repository: getIt<NetWorthRepository>()),
   );
 
-  // ========== Analytics Feature (Clean Architecture) ==========
-  getIt.registerLazySingleton<AnalyticsRepositoryInterface>(
+  // ========== Analytics Feature ==========
+  getIt.registerLazySingleton<AnalyticsRepository>(
     () => AnalyticsRepository(),
   );
   getIt.registerFactory<AnalyticsController>(
-    () =>
-        AnalyticsController(repository: getIt<AnalyticsRepositoryInterface>()),
+    () => AnalyticsController(repository: getIt<AnalyticsRepository>()),
   );
 
-  // ========== Cash Flow Feature (Clean Architecture) ==========
-  getIt.registerLazySingleton<CashFlowRepositoryInterface>(
+  // ========== Cash Flow Feature ==========
+  getIt.registerLazySingleton<CashFlowRepository>(
     () => CashFlowRepository(service: getIt<CashFlowForecastService>()),
   );
   getIt.registerFactory<CashFlowController>(
-    () => CashFlowController(repository: getIt<CashFlowRepositoryInterface>()),
+    () => CashFlowController(repository: getIt<CashFlowRepository>()),
   );
 
-  // ========== Recurring Transactions Feature (Clean Architecture) ==========
-  getIt.registerLazySingleton<RecurringTransactionRepositoryInterface>(
-    () => RecurringTransactionRepository(),
-  );
-  getIt.registerFactory<RecurringTransactionController>(
-    () => RecurringTransactionController(
-      repository: getIt<RecurringTransactionRepositoryInterface>(),
-    ),
-  );
-
-  // ========== Obligations Feature (Clean Architecture) ==========
-  getIt.registerLazySingleton<ObligationRepositoryInterface>(
+  // ========== Obligations Feature ==========
+  getIt.registerLazySingleton<ObligationRepository>(
     () => ObligationRepository(service: getIt<ObligationService>()),
   );
   getIt.registerFactory<ObligationController>(
     () => ObligationController(
-      repository: getIt<ObligationRepositoryInterface>(),
+      repository: getIt<ObligationRepository>(),
     ),
   );
 
-  // ========== Insights Feature (Clean Architecture) ==========
-  getIt.registerLazySingleton<InsightsRepositoryInterface>(
+  // ========== Insights Feature ==========
+  getIt.registerLazySingleton<InsightsRepository>(
     () => InsightsRepository(),
   );
   getIt.registerFactory<InsightsController>(
-    () => InsightsController(repository: getIt<InsightsRepositoryInterface>()),
+    () => InsightsController(repository: getIt<InsightsRepository>()),
   );
 
-  // ========== Forecast Feature (Clean Architecture) ==========
-  getIt.registerLazySingleton<ForecastRepositoryInterface>(
+  // ========== Forecast Feature ==========
+  getIt.registerLazySingleton<ForecastRepository>(
     () => ForecastRepository(),
   );
   getIt.registerFactory<ForecastController>(
-    () => ForecastController(repository: getIt<ForecastRepositoryInterface>()),
+    () => ForecastController(repository: getIt<ForecastRepository>()),
   );
 
   // ========== Auth Feature (Clean Architecture) ==========
   getIt.registerFactory<AuthController>(() => AuthController());
 
-  // ========== Backup Feature (Clean Architecture) ==========
-  getIt.registerLazySingleton<BackupRepositoryInterface>(
+  // ========== Backup Feature ==========
+  getIt.registerLazySingleton<BackupRepository>(
     () => BackupRepository(),
   );
   getIt.registerFactory<BackupController>(
-    () => BackupController(repository: getIt<BackupRepositoryInterface>()),
+    () => BackupController(repository: getIt<BackupRepository>()),
   );
 
   // ========== Tags Feature (Clean Architecture) ==========
   getIt.registerLazySingleton<TagDataService>(() => TagDataService());
-  getIt.registerLazySingleton<TagRepositoryInterface>(() => TagRepository());
+  getIt.registerLazySingleton<TagRepository>(() => TagRepository());
   getIt.registerFactory<TagController>(
-    () => TagController(repository: getIt<TagRepositoryInterface>()),
+    () => TagController(repository: getIt<TagRepository>()),
   );
 
-  // ========== Profile Feature (Clean Architecture) ==========
-  getIt.registerLazySingleton<ProfileRepositoryInterface>(
+  // ========== Profile Feature ==========
+  getIt.registerLazySingleton<ProfileRepository>(
     () => ProfileRepository(),
   );
   getIt.registerFactory<ProfileController>(
-    () => ProfileController(repository: getIt<ProfileRepositoryInterface>()),
+    () => ProfileController(repository: getIt<ProfileRepository>()),
   );
 
-  // ========== Receipt History Feature (Clean Architecture) ==========
-  getIt.registerLazySingleton<ReceiptRepositoryInterface>(
+  // ========== Receipt History Feature ==========
+  getIt.registerLazySingleton<ReceiptRepository>(
     () => ReceiptRepository(),
   );
   getIt.registerFactory<ReceiptController>(
-    () => ReceiptController(repository: getIt<ReceiptRepositoryInterface>()),
+    () => ReceiptController(repository: getIt<ReceiptRepository>()),
   );
 
   // ========== Report Feature (Clean Architecture) ==========
-  getIt.registerLazySingleton<ReportRepositoryInterface>(
+  getIt.registerLazySingleton<ReportRepository>(
     () => ReportRepository(),
   );
   getIt.registerFactory<ReportController>(
-    () => ReportController(repository: getIt<ReportRepositoryInterface>()),
+    () => ReportController(repository: getIt<ReportRepository>()),
   );
 
   // ========== Templates Feature (Clean Architecture) ==========
-  getIt.registerLazySingleton<TemplateRepositoryInterface>(
-    () => TemplateRepository(),
+  getIt.registerLazySingleton<TransactionTemplateDataService>(
+    () => TransactionTemplateDataService(),
+  );
+  getIt.registerLazySingleton<TemplateRepository>(
+    () => TemplateRepository(service: getIt<TransactionTemplateDataService>()),
   );
   getIt.registerFactory<TemplateController>(
-    () => TemplateController(repository: getIt<TemplateRepositoryInterface>()),
+    () => TemplateController(repository: getIt<TemplateRepository>()),
   );
 
-  // ========== Notification Center Feature (Clean Architecture) ==========
-  getIt.registerLazySingleton<NotificationRepositoryInterface>(
+  // ========== Notification Center Feature ==========
+  getIt.registerLazySingleton<NotificationRepository>(
     () => NotificationRepository(),
   );
   getIt.registerFactory<NotificationCenterController>(
     () => NotificationCenterController(
-      repository: getIt<NotificationRepositoryInterface>(),
+      repository: getIt<NotificationRepository>(),
     ),
   );
 
@@ -559,6 +432,9 @@ Future<void> setupServiceLocator() async {
 
   // ========== Domain Services (CRUD operations via focused data services) ==========
   getIt.registerLazySingleton<AccountService>(() => AccountService());
+  getIt.registerLazySingleton<AccountDataService>(() => AccountDataService());
+  getIt.registerLazySingleton<DebtDataService>(() => DebtDataService());
+  getIt.registerLazySingleton<SubscriptionDataService>(() => SubscriptionDataService());
   getIt.registerLazySingleton<DebtService>(() => DebtService());
   getIt.registerLazySingleton<SubscriptionTrackerService>(
     () => SubscriptionTrackerService(),
@@ -566,6 +442,15 @@ Future<void> setupServiceLocator() async {
   getIt.registerLazySingleton<InvestmentDataService>(() => InvestmentDataService());
   getIt.registerLazySingleton<InvestmentService>(() => InvestmentService());
   getIt.registerLazySingleton<ExpenseSplitService>(() => ExpenseSplitService());
+
+  // ========== Data Services (CRUD operations) ==========
+  getIt.registerLazySingleton<CategoryDataService>(() => CategoryDataService());
+  getIt.registerLazySingleton<GoalDataService>(() => GoalDataService());
+  getIt.registerLazySingleton<TransactionDataService>(() => TransactionDataService());
+  getIt.registerLazySingleton<BudgetDataService>(() => BudgetDataService());
+  getIt.registerLazySingleton<ReceiptScanDataService>(() => ReceiptScanDataService());
+  getIt.registerLazySingleton<ExchangeRateDataService>(() => ExchangeRateDataService());
+  getIt.registerLazySingleton<NetWorthDataService>(() => NetWorthDataService());
 
   // ========== Composite Domain Services (wrap ApiService + other services) ==========
   getIt.registerLazySingleton<CashFlowForecastService>(

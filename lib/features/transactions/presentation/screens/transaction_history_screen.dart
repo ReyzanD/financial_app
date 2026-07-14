@@ -3,9 +3,10 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:financial_app/services/error_handler_service.dart';
+import 'package:financial_app/core/di/service_locator.dart';
 import 'package:financial_app/services/data/transaction_data_service.dart';
 import 'package:financial_app/services/logger_service.dart';
-import 'package:financial_app/features/report/presentation/screens/report_screen.dart';
+import 'package:financial_app/features/analytics/presentation/screens/analytics_hub_screen.dart';
 import 'package:financial_app/features/transactions/presentation/screens/add_transaction_screen.dart';
 import 'package:financial_app/l10n/app_localizations.dart';
 import 'package:financial_app/widgets/common/empty_state.dart';
@@ -22,7 +23,7 @@ class TransactionHistoryScreen extends StatefulWidget {
 }
 
 class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
-  final TransactionDataService _transactionData = TransactionDataService();
+  final TransactionDataService _transactionData = getIt<TransactionDataService>();
   final TextEditingController _searchController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
   List<Map<String, dynamic>> _transactions = [];
@@ -374,7 +375,7 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const ReportScreen()),
+                MaterialPageRoute(builder: (context) => const AnalyticsHubScreen(initialTab: 'reports')),
               );
             },
             tooltip: l10n?.create_report ?? 'Buat Laporan',

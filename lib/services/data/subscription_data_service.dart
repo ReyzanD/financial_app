@@ -2,6 +2,7 @@ import 'package:uuid/uuid.dart';
 import 'package:financial_app/services/local_database_service.dart';
 import 'package:financial_app/services/local_auth_service.dart';
 import 'package:financial_app/services/logger_service.dart';
+import 'package:financial_app/models/subscription_model.dart';
 
 /// Data service for Subscription CRUD operations.
 /// Extracted from the monolithic LocalDataService facade.
@@ -22,7 +23,7 @@ class SubscriptionDataService {
   }
 
   /// Get subscriptions
-  Future<List<Map<String, dynamic>>> getSubscriptions({
+  Future<List<SubscriptionModel>> getSubscriptions({
     bool activeOnly = true,
   }) async {
     try {
@@ -44,7 +45,7 @@ class SubscriptionDataService {
         orderBy: 'next_renewal_232143 ASC',
       );
 
-      return List<Map<String, dynamic>>.from(subs);
+      return subs.map((m) => SubscriptionModel.fromMap(m)).toList();
     } catch (e) {
       LoggerService.error('Error getting subscriptions', error: e);
       rethrow;
@@ -52,7 +53,7 @@ class SubscriptionDataService {
   }
 
   /// Add subscription
-  Future<Map<String, dynamic>> addSubscription(
+  Future<SubscriptionModel> addSubscription(
     Map<String, dynamic> subData,
   ) async {
     try {
@@ -81,7 +82,7 @@ class SubscriptionDataService {
 
       await db.insert('subscriptions_232143', data);
       LoggerService.info('✅ Subscription added: $subId');
-      return {'subscription': data};
+      return SubscriptionModel.fromMap(data);
     } catch (e) {
       LoggerService.error('Error adding subscription', error: e);
       rethrow;
@@ -89,7 +90,7 @@ class SubscriptionDataService {
   }
 
   /// Update subscription
-  Future<Map<String, dynamic>> updateSubscription(
+  Future<SubscriptionModel> updateSubscription(
     String subId,
     Map<String, dynamic> subData,
   ) async {
@@ -141,7 +142,10 @@ class SubscriptionDataService {
         whereArgs: [subId, userId],
         limit: 1,
       );
-      return {'subscription': updated.isNotEmpty ? updated.first : {}};
+      if (updated.isNotEmpty) {
+        return SubscriptionModel.fromMap(updated.first);
+      }
+      throw Exception('Subscription not found after update');
     } catch (e) {
       LoggerService.error('Error updating subscription', error: e);
       rethrow;
@@ -149,7 +153,7 @@ class SubscriptionDataService {
   }
 
   /// Delete subscription
-  Future<Map<String, dynamic>> deleteSubscription(String subId) async {
+  Future<bool> deleteSubscription(String subId) async {
     try {
       final userId = await getCurrentUserId();
       if (userId == null) throw Exception('Not authenticated');
@@ -163,10 +167,8 @@ class SubscriptionDataService {
 
       if (rowsDeleted > 0) {
         LoggerService.info('✅ Subscription deleted: $subId');
-        return {'success': true};
-      } else {
-        return {'success': false, 'message': 'Subscription not found'};
       }
+      return rowsDeleted > 0;
     } catch (e) {
       LoggerService.error('Error deleting subscription', error: e);
       rethrow;

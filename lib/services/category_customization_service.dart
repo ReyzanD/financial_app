@@ -1,125 +1,73 @@
-import 'package:financial_app/services/logger_service.dart';
+import 'package:financial_app/models/category_model.dart';
+import 'package:financial_app/core/di/service_locator.dart';
 import 'package:financial_app/services/data/category_data_service.dart';
 
 class CategoryCustomizationService {
   final CategoryDataService _categoryData;
 
   CategoryCustomizationService({CategoryDataService? categoryData})
-    : _categoryData = categoryData ?? CategoryDataService();
+    : _categoryData = categoryData ?? getIt<CategoryDataService>();
 
-  Future<List<Map<String, dynamic>>> getCustomCategories() async {
-    try {
-      final categories = await _categoryData.getCategories();
-      return categories
-          .where(
-            (c) =>
-                (c['is_system_default_232143'] as int? ??
-                    c['is_system_default'] as int? ??
-                    0) ==
-                0,
-          )
-          .toList();
-    } catch (e) {
-      LoggerService.error('Error getting custom categories', error: e);
-      return [];
-    }
+  Future<List<CategoryModel>> getCustomCategories() async {
+    final categories = await _categoryData.getCategories();
+    return categories.where((c) => c.isSystemDefault == false).toList();
   }
 
-  Future<Map<String, dynamic>> createCustomCategory({
+  Future<CategoryModel> createCustomCategory({
     required String name,
     required String type,
     String? icon,
     String? color,
     String? parentId,
   }) async {
-    try {
-      final categoryData = {
-        'name': name,
-        'type': type,
-        'icon': icon ?? 'category',
-        'color': color ?? '#8B5FBF',
-        'budget_period': 'monthly',
-        'display_order': 0,
-      };
+    final categoryData = {
+      'name': name,
+      'type': type,
+      'icon': icon ?? 'category',
+      'color': color ?? '#8B5FBF',
+      'budget_period': 'monthly',
+      'display_order': 0,
+    };
 
-      final result = await _categoryData.addCategory(categoryData);
-      LoggerService.success('Custom category created: $name');
-      return result['category'] as Map<String, dynamic>;
-    } catch (e) {
-      LoggerService.error('Error creating custom category', error: e);
-      rethrow;
-    }
+    return await _categoryData.addCategory(categoryData);
   }
 
-  Future<Map<String, dynamic>> updateCustomCategory(
+  Future<CategoryModel> updateCustomCategory(
     String categoryId,
     Map<String, dynamic> updates,
   ) async {
-    try {
-      final result = await _categoryData.updateCategory(categoryId, updates);
-      return result['category'] as Map<String, dynamic>;
-    } catch (e) {
-      LoggerService.error('Error updating custom category', error: e);
-      rethrow;
-    }
+    return await _categoryData.updateCategory(categoryId, updates);
   }
 
   Future<void> deleteCustomCategory(String categoryId) async {
-    try {
-      await _categoryData.deleteCategory(categoryId);
-      LoggerService.success('Custom category deleted');
-    } catch (e) {
-      LoggerService.error('Error deleting custom category', error: e);
-      rethrow;
-    }
+    await _categoryData.deleteCategory(categoryId);
   }
 
   Future<String> getCategoryIcon(String categoryId) async {
-    try {
-      final categories = await _categoryData.getCategories();
-      final category = categories.firstWhere(
-        (c) => (c['category_id_232143'] ?? c['id']) == categoryId,
-        orElse: () => {},
-      );
-      return (category['icon_232143'] ?? category['icon'])?.toString() ??
-          'category';
-    } catch (e) {
-      return 'category';
+    final categories = await _categoryData.getCategories();
+    for (final c in categories) {
+      if (c.id == categoryId) return c.icon;
     }
+    return 'category';
   }
 
   Future<void> setCategoryIcon(String categoryId, String icon) async {
-    try {
-      await _categoryData.updateCategory(categoryId, {'icon': icon});
-    } catch (e) {
-      LoggerService.error('Error setting category icon', error: e);
-    }
+    await _categoryData.updateCategory(categoryId, {'icon': icon});
   }
 
   Future<String> getCategoryColor(String categoryId) async {
-    try {
-      final categories = await _categoryData.getCategories();
-      final category = categories.firstWhere(
-        (c) => (c['category_id_232143'] ?? c['id']) == categoryId,
-        orElse: () => {},
-      );
-      return (category['color_232143'] ?? category['color'])?.toString() ??
-          '#8B5FBF';
-    } catch (e) {
-      return '#8B5FBF';
+    final categories = await _categoryData.getCategories();
+    for (final c in categories) {
+      if (c.id == categoryId) return c.color;
     }
+    return '#8B5FBF';
   }
 
   Future<void> setCategoryColor(String categoryId, String color) async {
-    try {
-      await _categoryData.updateCategory(categoryId, {'color': color});
-    } catch (e) {
-      LoggerService.error('Error setting category color', error: e);
-    }
+    await _categoryData.updateCategory(categoryId, {'color': color});
   }
 
-  Future<List<Map<String, dynamic>>>
-  getAllCategoriesWithCustomizations() async {
+  Future<List<CategoryModel>> getAllCategoriesWithCustomizations() async {
     return await _categoryData.getCategories();
   }
 

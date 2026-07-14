@@ -1,10 +1,10 @@
 import 'package:flutter/foundation.dart';
-import 'package:financial_app/features/report/domain/repositories/report_repository_interface.dart';
+import 'package:financial_app/features/report/data/repositories/report_repository.dart';
 import 'package:financial_app/services/logger_service.dart';
 
 class ReportController extends ChangeNotifier {
-  final ReportRepositoryInterface _r;
-  ReportController({required ReportRepositoryInterface repository})
+  final ReportRepository _r;
+  ReportController({required ReportRepository repository})
     : _r = repository;
 
   bool _isLoading = false;

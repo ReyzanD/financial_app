@@ -15,7 +15,7 @@ import 'package:financial_app/core/di/service_locator.dart';
 /// Service untuk export/import data dengan multiple formats
 class ExportService {
   final ApiService _apiService = getIt<ApiService>();
-  final TransactionDataService _transactionData = TransactionDataService();
+  final TransactionDataService _transactionData = getIt<TransactionDataService>();
   final DateFormat _dateTimeFormat = DateFormat('yyyy-MM-dd HH:mm:ss');
 
   /// Export transactions ke CSV

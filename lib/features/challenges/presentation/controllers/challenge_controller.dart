@@ -1,13 +1,13 @@
 import 'package:flutter/foundation.dart';
 import 'package:financial_app/models/challenge_model.dart';
-import 'package:financial_app/features/challenges/domain/repositories/challenge_repository_interface.dart';
+import 'package:financial_app/features/challenges/data/repositories/challenge_repository.dart';
 import 'package:financial_app/services/logger_service.dart';
 
 /// Controller for the Challenges feature.
 class ChallengeController extends ChangeNotifier {
-  final ChallengeRepositoryInterface _repository;
+  final ChallengeRepository _repository;
 
-  ChallengeController({required ChallengeRepositoryInterface repository})
+  ChallengeController({required ChallengeRepository repository})
     : _repository = repository;
 
   List<ChallengeModel> _challenges = [];

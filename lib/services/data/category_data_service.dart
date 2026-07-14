@@ -2,6 +2,7 @@ import 'package:uuid/uuid.dart';
 import 'package:financial_app/services/local_database_service.dart';
 import 'package:financial_app/services/local_auth_service.dart';
 import 'package:financial_app/services/logger_service.dart';
+import 'package:financial_app/models/category_model.dart';
 
 /// Data service for Category CRUD operations.
 /// Extracted from the monolithic LocalDataService facade.
@@ -22,7 +23,7 @@ class CategoryDataService {
   }
 
   /// Get categories
-  Future<List<Map<String, dynamic>>> getCategories() async {
+  Future<List<CategoryModel>> getCategories() async {
     try {
       final userId = await getCurrentUserId();
       if (userId == null) throw Exception('Not authenticated');
@@ -35,7 +36,9 @@ class CategoryDataService {
         orderBy: 'type_232143, display_order_232143',
       );
 
-      return List<Map<String, dynamic>>.from(categories);
+      return List<Map<String, dynamic>>.from(categories)
+          .map((m) => CategoryModel.fromMap(m))
+          .toList();
     } catch (e) {
       LoggerService.error('Error getting categories', error: e);
       rethrow;
@@ -43,7 +46,7 @@ class CategoryDataService {
   }
 
   /// Add category
-  Future<Map<String, dynamic>> addCategory(
+  Future<CategoryModel> addCategory(
     Map<String, dynamic> categoryData,
   ) async {
     try {
@@ -70,7 +73,7 @@ class CategoryDataService {
 
       await db.insert('categories_232143', data);
       LoggerService.info('✅ Category added: $categoryId');
-      return {'category': data};
+      return CategoryModel.fromMap(data);
     } catch (e) {
       LoggerService.error('Error adding category', error: e);
       rethrow;
@@ -78,7 +81,7 @@ class CategoryDataService {
   }
 
   /// Update category
-  Future<Map<String, dynamic>> updateCategory(
+  Future<CategoryModel> updateCategory(
     String id,
     Map<String, dynamic> categoryData,
   ) async {
@@ -117,7 +120,8 @@ class CategoryDataService {
         whereArgs: [id, userId],
       );
 
-      return {'category': categories.first};
+      if (categories.isEmpty) throw Exception('Category not found');
+      return CategoryModel.fromMap(categories.first);
     } catch (e) {
       LoggerService.error('Error updating category', error: e);
       rethrow;

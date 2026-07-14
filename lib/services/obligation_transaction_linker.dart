@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:financial_app/models/financial_obligation.dart';
 import 'package:financial_app/services/api_service.dart';
 import 'package:financial_app/services/payment_history_service.dart';
 import 'package:financial_app/services/logger_service.dart';
@@ -8,7 +9,7 @@ import 'package:financial_app/core/di/service_locator.dart';
 /// Service untuk menghubungkan obligations dengan transactions
 class ObligationTransactionLinker {
   final ApiService _apiService = getIt<ApiService>();
-  final PaymentHistoryService _paymentService = PaymentHistoryService();
+  final PaymentHistoryService _paymentService = getIt<PaymentHistoryService>();
 
   /// Auto-link transaction to obligation berdasarkan amount dan date
   Future<String?> autoLinkTransaction(
@@ -28,29 +29,26 @@ class ObligationTransactionLinker {
 
       // Find matching obligation
       for (var obligation in obligations) {
-        final obligationData = obligation as Map<String, dynamic>;
-        final monthlyAmount =
-            (obligationData['monthly_amount_232143'] as num?)?.toDouble() ??
-            0.0;
+        final monthlyAmount = obligation.monthlyAmount;
 
         // Match by amount (within 5% tolerance) and date (within 7 days)
         final amountMatch =
             (transactionAmount - monthlyAmount).abs() / monthlyAmount < 0.05;
-        final dateMatch = _isDateNearDueDate(transactionDate, obligationData);
+        final dateMatch = _isDateNearDueDate(transactionDate, obligation);
 
         if (amountMatch && dateMatch) {
           // Link transaction to obligation
           await linkTransactionToObligation(
-            obligationData['obligation_id_232143'].toString(),
+            obligation.id,
             transactionId,
             transaction,
           );
 
           LoggerService.success(
-            'Auto-linked transaction to ${obligationData['name_232143']}',
+            'Auto-linked transaction to ${obligation.name}',
           );
 
-          return obligationData['obligation_id_232143'].toString();
+          return obligation.id;
         }
       }
 
@@ -64,11 +62,10 @@ class ObligationTransactionLinker {
   /// Check if transaction date is near obligation due date
   bool _isDateNearDueDate(
     DateTime transactionDate,
-    Map<String, dynamic> obligation,
+    FinancialObligation obligation,
   ) {
     try {
-      final dueDayOfMonth =
-          int.tryParse(obligation['due_date_232143']?.toString() ?? '1') ?? 1;
+      final dueDayOfMonth = obligation.dueDate.day;
       final now = DateTime.now();
       final dueDate = DateTime(now.year, now.month, dueDayOfMonth);
 
@@ -120,14 +117,19 @@ class ObligationTransactionLinker {
           (transaction['amount'] as num?)?.toDouble() ?? 0.0;
       final obligations = await _apiService.getObligations();
       final obligation = obligations.firstWhere(
-        (o) =>
-            (o as Map<String, dynamic>)['obligation_id_232143'] == obligationId,
-        orElse: () => {},
+        (o) => o.id == obligationId,
+        orElse: () => FinancialObligation(
+          id: '',
+          name: '',
+          monthlyAmount: 0.0,
+          dueDate: DateTime.now(),
+          type: ObligationType.bill,
+          daysUntilDue: 0,
+        ),
       );
 
-      if (obligation.isNotEmpty) {
-        final monthlyAmount =
-            (obligation['monthly_amount_232143'] as num?)?.toDouble() ?? 0.0;
+      if (obligation.id.isNotEmpty) {
+        final monthlyAmount = obligation.monthlyAmount;
         if ((transactionAmount - monthlyAmount).abs() / monthlyAmount < 0.1) {
           // Amount matches, record as payment
           await _paymentService.recordPayment(obligationId, {
@@ -230,12 +232,18 @@ class ObligationTransactionLinker {
     try {
       final obligations = await _apiService.getObligations();
       final obligation = obligations.firstWhere(
-        (o) =>
-            (o as Map<String, dynamic>)['obligation_id_232143'] == obligationId,
-        orElse: () => {},
+        (o) => o.id == obligationId,
+        orElse: () => FinancialObligation(
+          id: '',
+          name: '',
+          monthlyAmount: 0.0,
+          dueDate: DateTime.now(),
+          type: ObligationType.bill,
+          daysUntilDue: 0,
+        ),
       );
 
-      if (obligation.isEmpty) {
+      if (obligation.id.isEmpty) {
         LoggerService.warning('Obligation not found for payment');
         return null;
       }
@@ -243,11 +251,10 @@ class ObligationTransactionLinker {
       // Create transaction data
       final transactionData = {
         'amount':
-            paymentData['amount_paid'] ?? obligation['monthly_amount_232143'],
+            paymentData['amount_paid'] ?? obligation.monthlyAmount,
         'type': 'expense',
         'category_id': _getCategoryIdForObligation(obligation),
-        'description':
-            '${obligation['name_232143']} - ${obligation['type_232143']}',
+        'description': '${obligation.name} - ${obligation.type.name}',
         'payment_method': paymentData['payment_method'] ?? 'manual',
         'transaction_date':
             paymentData['payment_date'] ??
@@ -276,9 +283,7 @@ class ObligationTransactionLinker {
   }
 
   /// Get category ID for obligation (helper method)
-  String? _getCategoryIdForObligation(Map<String, dynamic> obligation) {
-    // This would need to map obligation category to transaction category
-    // For now, return null and let the system handle it
+  String? _getCategoryIdForObligation(FinancialObligation obligation) {
     return null;
   }
 

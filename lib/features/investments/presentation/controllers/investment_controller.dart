@@ -1,11 +1,11 @@
 import 'package:flutter/foundation.dart';
 import 'package:financial_app/models/investment_model.dart';
-import 'package:financial_app/features/investments/domain/repositories/investment_repository_interface.dart';
+import 'package:financial_app/features/investments/data/repositories/investment_repository.dart';
 import 'package:financial_app/services/logger_service.dart';
 
 class InvestmentController extends ChangeNotifier {
-  final InvestmentRepositoryInterface _r;
-  InvestmentController({required InvestmentRepositoryInterface repository})
+  final InvestmentRepository _r;
+  InvestmentController({required InvestmentRepository repository})
     : _r = repository;
 
   List<InvestmentModel> _investments = [];

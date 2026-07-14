@@ -6,7 +6,7 @@ import 'package:financial_app/services/data/net_worth_data_service.dart';
 import 'package:financial_app/core/di/service_locator.dart';
 
 class NetWorthService {
-  final NetWorthDataService _netWorthData = NetWorthDataService();
+  final NetWorthDataService _netWorthData = getIt<NetWorthDataService>();
   final AccountService _accountService = getIt<AccountService>();
   final DebtService _debtService = getIt<DebtService>();
   final InvestmentService _investmentService = getIt<InvestmentService>();

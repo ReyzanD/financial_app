@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:financial_app/features/category_customization/presentation/controllers/category_controller.dart';
+import 'package:financial_app/models/category_model.dart';
 import 'package:financial_app/services/category_customization_service.dart';
 import 'package:financial_app/utils/design_tokens.dart';
 import 'package:financial_app/l10n/app_localizations.dart';
@@ -183,15 +184,11 @@ class _CategoryCustomizationScreenState
 
   Widget _buildCategoryCard(
     BuildContext context,
-    dynamic category,
+    CategoryModel category,
     AppLocalizations? l10n, {
     required bool isCustom,
     required CategoryController ctrl,
   }) {
-    final name = category['name_232143'] ?? category['name'] ?? '';
-    final type = category['type_232143'] ?? category['type'] ?? '';
-    final icon = category['icon_232143'] ?? category['icon'] ?? 'category';
-    final color = category['color_232143'] ?? category['color'] ?? '#8B5FBF';
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.all(12),
@@ -205,12 +202,12 @@ class _CategoryCustomizationScreenState
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: _getCategoryColor(color).withValues(alpha: 0.15),
+              color: _getCategoryColor(category.color).withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(DesignTokens.radiusSmall),
             ),
             child: Icon(
-              _getIconData(icon),
-              color: _getCategoryColor(color),
+              _getIconData(category.icon),
+              color: _getCategoryColor(category.color),
               size: 20,
             ),
           ),
@@ -220,7 +217,7 @@ class _CategoryCustomizationScreenState
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  name,
+                  category.name,
                   style: GoogleFonts.poppins(
                     color: DesignTokens.textPrimaryDark,
                     fontSize: 14,
@@ -228,7 +225,7 @@ class _CategoryCustomizationScreenState
                   ),
                 ),
                 Text(
-                  type == 'income' ? 'Income' : 'Expense',
+                  category.type == 'income' ? 'Income' : 'Expense',
                   style: GoogleFonts.poppins(
                     color: DesignTokens.textSecondaryDark,
                     fontSize: 11,
@@ -338,7 +335,7 @@ class _CategoryCustomizationScreenState
   }
 
   Future<void> _deleteCategory(
-    dynamic category,
+    CategoryModel category,
     CategoryController ctrl,
   ) async {
     final l10n = AppLocalizations.of(context);
@@ -398,7 +395,7 @@ class _CategoryCustomizationScreenState
 }
 
 class _CategoryListItem {
-  final dynamic category;
+  final CategoryModel category;
   final bool isCustom;
   const _CategoryListItem(this.category, {required this.isCustom});
 }

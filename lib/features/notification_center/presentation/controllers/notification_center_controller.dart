@@ -1,11 +1,11 @@
 import 'package:flutter/foundation.dart';
-import 'package:financial_app/features/notification_center/domain/repositories/notification_repository_interface.dart';
+import 'package:financial_app/features/notification_center/data/repositories/notification_repository.dart';
 import 'package:financial_app/services/logger_service.dart';
 
 class NotificationCenterController extends ChangeNotifier {
-  final NotificationRepositoryInterface _r;
+  final NotificationRepository _r;
   NotificationCenterController({
-    required NotificationRepositoryInterface repository,
+    required NotificationRepository repository,
   }) : _r = repository;
 
   List<dynamic> _notifications = [];

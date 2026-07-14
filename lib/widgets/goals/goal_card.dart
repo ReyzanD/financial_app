@@ -478,7 +478,7 @@ class _GoalCardState extends State<GoalCard> {
             TextButton(
               onPressed: () async {
                 try {
-                  final goalService = GoalDataService();
+                  final goalService = getIt<GoalDataService>();
                   await goalService.deleteGoal(
                     widget.goal['goal_id_232143'] ?? widget.goal['id'],
                   );

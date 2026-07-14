@@ -19,7 +19,12 @@ import 'package:financial_app/l10n/app_localizations.dart';
 import 'package:financial_app/features/obligations/presentation/controllers/obligation_controller.dart';
 
 class FinancialObligationsScreen extends StatefulWidget {
-  const FinancialObligationsScreen({super.key});
+  final String initialTab;
+
+  const FinancialObligationsScreen({
+    super.key,
+    this.initialTab = 'all',
+  });
 
   @override
   State<FinancialObligationsScreen> createState() =>
@@ -32,7 +37,11 @@ class _FinancialObligationsScreenState
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<ObligationController>().loadSummary();
+      final ctrl = context.read<ObligationController>();
+      ctrl.loadSummary();
+      if (widget.initialTab != 'all') {
+        ctrl.setView(widget.initialTab);
+      }
     });
   }
 

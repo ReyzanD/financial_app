@@ -1,11 +1,11 @@
 import 'package:flutter/foundation.dart';
 import 'package:financial_app/models/split_model.dart';
-import 'package:financial_app/features/splits/domain/repositories/split_repository_interface.dart';
+import 'package:financial_app/features/splits/data/repositories/split_repository.dart';
 import 'package:financial_app/services/logger_service.dart';
 
 class SplitController extends ChangeNotifier {
-  final SplitRepositoryInterface _r;
-  SplitController({required SplitRepositoryInterface repository})
+  final SplitRepository _r;
+  SplitController({required SplitRepository repository})
     : _r = repository;
 
   List<SplitModel> _splits = [];

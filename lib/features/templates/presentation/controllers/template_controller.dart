@@ -1,16 +1,17 @@
 import 'package:flutter/foundation.dart';
-import 'package:financial_app/features/templates/domain/repositories/template_repository_interface.dart';
+import 'package:financial_app/features/templates/data/repositories/template_repository.dart';
+import 'package:financial_app/models/transaction_template_model.dart';
 import 'package:financial_app/services/logger_service.dart';
 
 class TemplateController extends ChangeNotifier {
-  final TemplateRepositoryInterface _r;
-  TemplateController({required TemplateRepositoryInterface repository})
+  final TemplateRepository _r;
+  TemplateController({required TemplateRepository repository})
     : _r = repository;
 
-  List<dynamic> _templates = [];
+  List<TransactionTemplateModel> _templates = [];
   bool _isLoading = false;
   String? _error;
-  List<dynamic> get templates => _templates;
+  List<TransactionTemplateModel> get templates => _templates;
   bool get isLoading => _isLoading;
   String? get error => _error;
 

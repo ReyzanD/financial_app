@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:financial_app/core/di/service_locator.dart';
 import 'package:financial_app/services/data/goal_data_service.dart';
 import 'package:financial_app/services/error_handler_service.dart';
 import 'package:financial_app/services/logger_service.dart';
@@ -21,7 +22,7 @@ class AddGoalModal extends StatefulWidget {
 
 class _AddGoalModalState extends State<AddGoalModal> {
   final _formKey = GlobalKey<FormState>();
-  final GoalDataService _goalService = GoalDataService();
+  final GoalDataService _goalService = getIt<GoalDataService>();
 
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();

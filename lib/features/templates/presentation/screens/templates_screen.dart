@@ -8,6 +8,7 @@ import 'package:financial_app/models/feature_models.dart';
 import 'package:financial_app/utils/formatters.dart';
 import 'package:financial_app/utils/design_tokens.dart';
 import 'package:financial_app/l10n/app_localizations.dart';
+import 'package:financial_app/core/di/service_locator.dart';
 import 'package:financial_app/services/error_handler_service.dart';
 import 'package:financial_app/widgets/common/offline_indicator.dart';
 
@@ -149,30 +150,15 @@ class _TemplatesScreenState extends State<TemplatesScreen> {
 
   Widget _buildTemplateCard(
     BuildContext context,
-    dynamic template,
+    TransactionTemplateModel template,
     AppLocalizations? l10n,
     TemplateController ctrl,
   ) {
-    final name =
-        (template is TransactionTemplateModel)
-            ? template.name
-            : template['name'] ?? '';
-    final amount =
-        (template is TransactionTemplateModel)
-            ? template.amount
-            : (template['amount'] as num?)?.toDouble() ?? 0.0;
-    final type =
-        (template is TransactionTemplateModel)
-            ? template.type
-            : template['type'] ?? 'expense';
-    final categoryName =
-        (template is TransactionTemplateModel)
-            ? template.categoryName ?? ''
-            : template['category_name'] ?? '';
-    final usageCount =
-        (template is TransactionTemplateModel)
-            ? template.usageCount
-            : (template['usage_count'] as int?) ?? 0;
+    final name = template.name;
+    final amount = template.amount;
+    final type = template.type;
+    final categoryName = template.categoryName ?? '';
+    final usageCount = template.usageCount;
     final isIncome = type == 'income';
 
     return Container(
@@ -273,7 +259,7 @@ class _TemplatesScreenState extends State<TemplatesScreen> {
           ),
           const SizedBox(width: 8),
           InkWell(
-            onTap: () => _deleteTemplate(template, ctrl),
+            onTap: () => _deleteTemplate(template.id, ctrl),
             child: Icon(
               Iconsax.trash,
               size: 16,
@@ -386,19 +372,14 @@ class _TemplatesScreenState extends State<TemplatesScreen> {
     );
   }
 
-  Future<void> _quickAdd(dynamic template, TemplateController ctrl) async {
-    final templateId =
-        (template is TransactionTemplateModel) ? template.id : template['id'];
+  Future<void> _quickAdd(TransactionTemplateModel template, TemplateController ctrl) async {
     try {
-      await TransactionTemplateDataService().createTransactionFromTemplate(
-        templateId,
+      await getIt<TransactionTemplateDataService>().createTransactionFromTemplate(
+        template.id,
       );
       if (!mounted) return;
       final l10n = AppLocalizations.of(context);
-      final name =
-          (template is TransactionTemplateModel)
-              ? template.name
-              : template['name'];
+      final name = template.name;
       ErrorHandlerService.showSuccessSnackbar(
         context,
         '$name ${l10n?.added ?? 'added'}',
@@ -414,7 +395,7 @@ class _TemplatesScreenState extends State<TemplatesScreen> {
   }
 
   Future<void> _deleteTemplate(
-    dynamic template,
+    String templateId,
     TemplateController ctrl,
   ) async {
     final l10n = AppLocalizations.of(context);
@@ -455,10 +436,8 @@ class _TemplatesScreenState extends State<TemplatesScreen> {
           ),
     );
     if (confirmed == true) {
-      final templateId =
-          (template is TransactionTemplateModel) ? template.id : template['id'];
       try {
-        await TransactionTemplateDataService().deleteTransactionTemplate(
+        await getIt<TransactionTemplateDataService>().deleteTransactionTemplate(
           templateId,
         );
         if (mounted)
@@ -487,7 +466,7 @@ class _AddTemplateModal extends StatefulWidget {
 
 class _AddTemplateModalState extends State<_AddTemplateModal> {
   final TransactionTemplateDataService _templateData =
-      TransactionTemplateDataService();
+      getIt<TransactionTemplateDataService>();
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _amountController = TextEditingController();

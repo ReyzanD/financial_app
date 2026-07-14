@@ -1,4 +1,5 @@
 import 'package:uuid/uuid.dart';
+import 'package:financial_app/models/challenge_model.dart';
 import 'package:financial_app/services/local_database_service.dart';
 import 'package:financial_app/services/local_auth_service.dart';
 import 'package:financial_app/services/logger_service.dart';
@@ -17,7 +18,7 @@ class ChallengeDataService {
 
   Future<String?> getCurrentUserId() async => _authService.getCurrentUserId();
 
-  Future<List<Map<String, dynamic>>> getChallenges({
+  Future<List<ChallengeModel>> getChallenges({
     bool activeOnly = true,
   }) async {
     try {
@@ -38,14 +39,14 @@ class ChallengeDataService {
         whereArgs: whereArgs,
         orderBy: 'end_date_232143 ASC',
       );
-      return List<Map<String, dynamic>>.from(challenges);
+      return challenges.map((m) => ChallengeModel.fromMap(m)).toList();
     } catch (e) {
       LoggerService.error('Error getting challenges', error: e);
       rethrow;
     }
   }
 
-  Future<Map<String, dynamic>> addChallenge(
+  Future<ChallengeModel> addChallenge(
     Map<String, dynamic> challengeData,
   ) async {
     try {
@@ -75,14 +76,14 @@ class ChallengeDataService {
 
       await db.insert('challenges_232143', data);
       LoggerService.info('✅ Challenge added: $challengeId');
-      return {'challenge': data};
+      return ChallengeModel.fromMap(data);
     } catch (e) {
       LoggerService.error('Error adding challenge', error: e);
       rethrow;
     }
   }
 
-  Future<Map<String, dynamic>> updateChallenge(
+  Future<void> updateChallenge(
     String challengeId,
     Map<String, dynamic> challengeData,
   ) async {
@@ -129,14 +130,13 @@ class ChallengeDataService {
       );
 
       LoggerService.info('✅ Challenge updated: $challengeId');
-      return {'success': true};
     } catch (e) {
       LoggerService.error('Error updating challenge', error: e);
       rethrow;
     }
   }
 
-  Future<Map<String, dynamic>> deleteChallenge(String challengeId) async {
+  Future<bool> deleteChallenge(String challengeId) async {
     try {
       final userId = await getCurrentUserId();
       if (userId == null) throw Exception('Not authenticated');
@@ -150,10 +150,8 @@ class ChallengeDataService {
 
       if (rowsDeleted > 0) {
         LoggerService.info('✅ Challenge deleted: $challengeId');
-        return {'success': true};
-      } else {
-        return {'success': false, 'message': 'Challenge not found'};
       }
+      return rowsDeleted > 0;
     } catch (e) {
       LoggerService.error('Error deleting challenge', error: e);
       rethrow;

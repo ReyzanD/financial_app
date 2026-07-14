@@ -1,4 +1,5 @@
 import 'package:uuid/uuid.dart';
+import 'package:financial_app/models/budget_model.dart';
 import 'package:financial_app/services/local_database_service.dart';
 import 'package:financial_app/services/local_auth_service.dart';
 import 'package:financial_app/services/logger_service.dart';
@@ -22,7 +23,7 @@ class BudgetDataService {
   }
 
   /// Get budgets
-  Future<List<Map<String, dynamic>>> getBudgets({
+  Future<List<BudgetModel>> getBudgets({
     bool activeOnly = true,
   }) async {
     try {
@@ -44,7 +45,7 @@ class BudgetDataService {
         orderBy: 'period_start_232143 DESC',
       );
 
-      return List<Map<String, dynamic>>.from(budgets);
+      return budgets.map((b) => BudgetModel.fromMap(b)).toList();
     } catch (e) {
       LoggerService.error('Error getting budgets', error: e);
       rethrow;
@@ -52,7 +53,7 @@ class BudgetDataService {
   }
 
   /// Add budget
-  Future<Map<String, dynamic>> addBudget(
+  Future<BudgetModel> addBudget(
     Map<String, dynamic> budgetData,
   ) async {
     try {
@@ -83,7 +84,7 @@ class BudgetDataService {
 
       await db.insert('budgets_232143', data);
       LoggerService.info('✅ Budget added: $budgetId');
-      return {'budget': data};
+      return BudgetModel.fromMap(data);
     } catch (e) {
       LoggerService.error('Error adding budget', error: e);
       rethrow;
@@ -91,7 +92,7 @@ class BudgetDataService {
   }
 
   /// Delete budget
-  Future<Map<String, dynamic>> deleteBudget(String budgetId) async {
+  Future<bool> deleteBudget(String budgetId) async {
     try {
       final userId = await getCurrentUserId();
       if (userId == null) throw Exception('Not authenticated');
@@ -106,9 +107,9 @@ class BudgetDataService {
 
       if (rowsDeleted > 0) {
         LoggerService.info('✅ Budget deleted: $budgetId');
-        return {'success': true, 'message': 'Budget deleted successfully'};
+        return true;
       } else {
-        return {'success': false, 'message': 'Budget not found'};
+        return false;
       }
     } catch (e) {
       LoggerService.error('Error deleting budget', error: e);
@@ -117,7 +118,7 @@ class BudgetDataService {
   }
 
   /// Update budget
-  Future<Map<String, dynamic>> updateBudget(
+  Future<BudgetModel?> updateBudget(
     String budgetId,
     Map<String, dynamic> budgetData,
   ) async {
@@ -172,9 +173,16 @@ class BudgetDataService {
 
       if (rowsUpdated > 0) {
         LoggerService.info('✅ Budget updated: $budgetId');
-        return {'success': true, 'message': 'Budget updated successfully'};
+        // Fetch the updated budget to return
+        final updated = await db.query(
+          'budgets_232143',
+          where: 'budget_id_232143 = ?',
+          whereArgs: [budgetId],
+          limit: 1,
+        );
+        return updated.isNotEmpty ? BudgetModel.fromMap(updated.first) : null;
       } else {
-        return {'success': false, 'message': 'Budget not found'};
+        return null;
       }
     } catch (e) {
       LoggerService.error('Error updating budget', error: e);
@@ -183,7 +191,7 @@ class BudgetDataService {
   }
 
   /// Get budgets by category ID
-  Future<List<Map<String, dynamic>>> getBudgetsByCategory(
+  Future<List<BudgetModel>> getBudgetsByCategory(
     String categoryId,
   ) async {
     try {
@@ -205,7 +213,7 @@ class BudgetDataService {
       LoggerService.debug(
         'Found ${budgets.length} budgets for category: $categoryId',
       );
-      return budgets;
+      return budgets.map((b) => BudgetModel.fromMap(b)).toList();
     } catch (e) {
       LoggerService.error('Error getting budgets by category', error: e);
       return [];
@@ -225,28 +233,18 @@ class BudgetDataService {
       if (budgets.isEmpty) return false;
 
       // Find the budget whose period covers this transaction date
-      Map<String, dynamic>? matchingBudget;
+      BudgetModel? matchingBudget;
+      final txDate = DateTime(
+        transactionDate.year,
+        transactionDate.month,
+        transactionDate.day,
+      );
+
       for (final budget in budgets) {
-        final periodStartStr =
-            budget['period_start_232143']?.toString() ??
-            budget['period_start']?.toString();
-        final periodEndStr =
-            budget['period_end_232143']?.toString() ??
-            budget['period_end']?.toString();
-        if (periodStartStr == null || periodEndStr == null) continue;
-
-        final periodStart = DateTime.parse(periodStartStr);
-        final periodEnd = DateTime.parse(periodEndStr);
-        final txDate = DateTime(
-          transactionDate.year,
-          transactionDate.month,
-          transactionDate.day,
-        );
-
-        if ((txDate.isAfter(periodStart) ||
-                txDate.isAtSameMomentAs(periodStart)) &&
-            (txDate.isBefore(periodEnd) ||
-                txDate.isAtSameMomentAs(periodEnd))) {
+        if ((txDate.isAfter(budget.periodStart) ||
+                txDate.isAtSameMomentAs(budget.periodStart)) &&
+            (txDate.isBefore(budget.periodEnd) ||
+                txDate.isAtSameMomentAs(budget.periodEnd))) {
           matchingBudget = budget;
           break;
         }
@@ -254,22 +252,11 @@ class BudgetDataService {
 
       if (matchingBudget == null) return false;
 
-      final budgetId =
-          matchingBudget['budget_id_232143']?.toString() ??
-          matchingBudget['budget_id']?.toString() ??
-          '';
+      final budgetId = matchingBudget.id;
       if (budgetId.isEmpty) return false;
 
-      final currentSpent =
-          ((matchingBudget['spent_amount_232143'] ??
-                      matchingBudget['spent_amount'] ??
-                      0)
-                  as num)
-              .toDouble();
-      final budgetAmount =
-          ((matchingBudget['amount_232143'] ?? matchingBudget['amount'] ?? 0)
-                  as num)
-              .toDouble();
+      final currentSpent = matchingBudget.spent;
+      final budgetAmount = matchingBudget.amount;
 
       final newSpentAmount = currentSpent + amount;
       final newRemainingAmount = budgetAmount - newSpentAmount;

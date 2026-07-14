@@ -1,18 +1,14 @@
 import 'package:financial_app/services/net_worth_service.dart';
-import 'package:financial_app/features/net_worth/domain/repositories/net_worth_repository_interface.dart';
+import 'package:financial_app/core/di/service_locator.dart';
 
-class NetWorthRepository implements NetWorthRepositoryInterface {
+class NetWorthRepository {
   final NetWorthService _s;
   NetWorthRepository({NetWorthService? service})
-    : _s = service ?? NetWorthService();
+    : _s = service ?? getIt<NetWorthService>();
 
-  @override
   Future<Map<String, dynamic>> calculateNetWorth() => _s.calculateNetWorth();
-  @override
   Future<bool> recordSnapshot() => _s.recordSnapshot();
-  @override
   Future<List<Map<String, dynamic>>> getHistory({int limit = 30}) =>
       _s.getHistory(limit: limit);
-  @override
   Future<Map<String, dynamic>> getNetWorthTrend() => _s.getNetWorthTrend();
 }

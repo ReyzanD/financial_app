@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
-import 'package:financial_app/features/insights/domain/repositories/insights_repository_interface.dart';
+import 'package:financial_app/features/insights/data/repositories/insights_repository.dart';
 import 'package:financial_app/services/spending_pattern_analyzer.dart';
 import 'package:financial_app/services/logger_service.dart';
 import 'package:financial_app/utils/design_tokens.dart';
@@ -8,11 +8,11 @@ import 'package:financial_app/utils/key_normalizer.dart';
 import 'package:flutter/material.dart';
 
 class InsightsController extends ChangeNotifier {
-  final InsightsRepositoryInterface _r;
+  final InsightsRepository _r;
   final SpendingPatternAnalyzer _analyzer;
 
   InsightsController({
-    required InsightsRepositoryInterface repository,
+    required InsightsRepository repository,
     SpendingPatternAnalyzer? analyzer,
   }) : _r = repository,
        _analyzer = analyzer ?? SpendingPatternAnalyzer();
