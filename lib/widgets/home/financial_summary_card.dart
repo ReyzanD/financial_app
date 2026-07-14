@@ -621,8 +621,11 @@ class _FinancialSummaryCardState extends State<FinancialSummaryCard>
     required Color color,
     required IconData icon,
   }) {
-    return Container(
-      padding: ResponsiveHelper.padding(context, multiplier: 0.75),
+    return Semantics(
+      label: '$title: $amount',
+      excludeSemantics: true,
+      child: Container(
+        padding: ResponsiveHelper.padding(context, multiplier: 0.75),
       decoration: BoxDecoration(
         color: Colors.white.withValues(alpha: 0.08),
         borderRadius: BorderRadius.circular(
@@ -667,6 +670,8 @@ class _FinancialSummaryCardState extends State<FinancialSummaryCard>
           ),
         ],
       ),
+      ),
     );
   }
 }
+

@@ -135,21 +135,25 @@ class _TransactionCardState extends State<TransactionCard> {
         ),
         child: const Icon(Icons.delete, color: Colors.white, size: 32),
       ),
-      child: GestureDetector(
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder:
-                  (context) => TransactionDetailScreen(
-                    transaction: widget.transaction,
-                    onDeleted: widget.onDeleted,
-                    onUpdated: widget.onUpdated,
-                  ),
-            ),
-          );
-        },
-        child: Container(
+      child: Semantics(
+        label: '${widget.transaction['description'] ?? widget.transaction['category'] ?? 'Transaksi'}, ${CurrencyFormatter.formatRupiah(amount.abs())}',
+        hint: 'Ketuk untuk detail',
+        button: true,
+        child: GestureDetector(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder:
+                    (context) => TransactionDetailScreen(
+                      transaction: widget.transaction,
+                      onDeleted: widget.onDeleted,
+                      onUpdated: widget.onUpdated,
+                    ),
+              ),
+            );
+          },
+          child: Container(
           margin: EdgeInsets.only(
             bottom: ResponsiveHelper.verticalSpacing(context, 12),
           ),
@@ -304,6 +308,7 @@ class _TransactionCardState extends State<TransactionCard> {
             ],
           ),
         ),
+      ),
       ),
     );
   }
