@@ -7,7 +7,9 @@ import 'package:financial_app/widgets/common/offline_indicator.dart';
 import 'package:financial_app/features/tags/presentation/controllers/tag_controller.dart';
 
 class TagsScreen extends StatefulWidget {
-  const TagsScreen({super.key});
+  final bool showAppBar;
+
+  const TagsScreen({super.key, this.showAppBar = true});
 
   @override
   State<TagsScreen> createState() => _TagsScreenState();
@@ -26,21 +28,23 @@ class _TagsScreenState extends State<TagsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: DesignTokens.backgroundDark,
-      appBar: AppBar(
-        backgroundColor: DesignTokens.backgroundDark,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Iconsax.arrow_left, color: Colors.white),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: Text(
-          'Tags',
-          style: GoogleFonts.poppins(
-            color: Colors.white,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-      ),
+      appBar: widget.showAppBar
+          ? AppBar(
+              backgroundColor: DesignTokens.backgroundDark,
+              elevation: 0,
+              leading: IconButton(
+                icon: const Icon(Iconsax.arrow_left, color: Colors.white),
+                onPressed: () => Navigator.pop(context),
+              ),
+              title: Text(
+                'Tags',
+                style: GoogleFonts.poppins(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            )
+          : null,
       body: Column(
         children: [
           const OfflineIndicator(),

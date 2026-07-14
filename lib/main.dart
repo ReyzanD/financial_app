@@ -14,7 +14,6 @@ import 'package:financial_app/features/auth/presentation/screens/auth_gate_scree
 import 'package:financial_app/features/auth/presentation/controllers/auth_controller.dart';
 import 'package:financial_app/features/backup/presentation/screens/backup_screen.dart';
 import 'package:financial_app/features/backup/presentation/controllers/backup_controller.dart';
-import 'package:financial_app/features/tags/presentation/screens/tags_screen.dart';
 import 'package:financial_app/features/tags/presentation/controllers/tag_controller.dart';
 import 'package:financial_app/features/profile/presentation/screens/profile_screen.dart';
 import 'package:financial_app/features/profile/presentation/controllers/profile_controller.dart';
@@ -48,7 +47,7 @@ import 'package:financial_app/features/templates/presentation/screens/templates_
 import 'package:financial_app/features/templates/presentation/controllers/template_controller.dart';
 import 'package:financial_app/features/notification_center/presentation/screens/notification_center_screen.dart';
 import 'package:financial_app/features/notification_center/presentation/controllers/notification_center_controller.dart';
-import 'package:financial_app/features/category_customization/presentation/screens/category_customization_screen.dart';
+import 'package:financial_app/features/category_customization/presentation/screens/category_tags_screen.dart';
 import 'package:financial_app/features/category_customization/presentation/controllers/category_controller.dart';
 import 'package:financial_app/features/financial_calendar/presentation/screens/financial_calendar_screen.dart';
 import 'package:financial_app/features/financial_calendar/presentation/controllers/calendar_controller.dart';
@@ -277,13 +276,13 @@ class MyApp extends StatelessWidget {
             '/debts': (context) => const FinancialObligationsScreen(initialTab: 'debts'),
             '/subscriptions': (context) => const FinancialObligationsScreen(initialTab: 'subscriptions'),
             '/investments': (context) => const InvestmentsScreen(),
-            '/tags': (context) => const TagsScreen(),
+            '/tags': (context) => const CategoryTagsScreen(initialMode: 'tags'),
             '/splits': (context) => const SplitsScreen(),
             '/challenges': (context) => const ChallengesScreen(),
             '/calendar': (context) => const FinancialCalendarScreen(),
             '/net-worth': (context) => const AnalyticsHubScreen(initialTab: 'networth'),
             '/cash-flow': (context) => const AnalyticsHubScreen(initialTab: 'cashflow'),
-            '/categories': (context) => const CategoryCustomizationScreen(),
+            '/categories': (context) => const CategoryTagsScreen(initialMode: 'categories'),
             '/templates': (context) => const TemplatesScreen(),
           },
         );
