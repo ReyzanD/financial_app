@@ -88,7 +88,7 @@ class MoreTabScreen extends StatelessWidget {
   List<_MoreSection> _buildSections() {
     return [
       _MoreSection(
-        title: 'MANAJEMEN KEUANGAN',
+        title: 'KEUANGAN',
         items: [
           _MoreItem(
             icon: Iconsax.wallet,
@@ -109,22 +109,10 @@ class MoreTabScreen extends StatelessWidget {
             route: '/accounts',
           ),
           _MoreItem(
-            icon: Iconsax.wallet_1,
-            label: 'Hutang',
-            color: Colors.red,
-            route: '/debts',
-          ),
-          _MoreItem(
             icon: Iconsax.receipt_1,
-            label: 'Langganan',
-            color: Colors.orange,
-            route: '/subscriptions',
-          ),
-          _MoreItem(
-            icon: Iconsax.repeat,
-            label: 'Trans. Berulang',
-            color: Colors.amber,
-            route: '/recurring-transactions',
+            label: 'Kewajiban',
+            color: Colors.red,
+            route: '/financial-obligations',
           ),
           _MoreItem(
             icon: Iconsax.chart_1,
@@ -133,63 +121,27 @@ class MoreTabScreen extends StatelessWidget {
             route: '/investments',
           ),
           _MoreItem(
-            icon: Iconsax.calendar,
-            label: 'Tagihan',
-            color: Colors.pink,
-            route: '/financial-obligations',
-          ),
-          _MoreItem(
             icon: Iconsax.people,
             label: 'Patungan',
             color: Colors.teal,
             route: '/splits',
           ),
-          _MoreItem(
-            icon: Iconsax.copy,
-            label: 'Template',
-            color: Colors.deepOrange,
-            route: '/templates',
-          ),
         ],
       ),
       _MoreSection(
-        title: 'ANALISIS & LAPORAN',
+        title: 'ANALISIS',
         items: [
           _MoreItem(
-            icon: Iconsax.graph,
-            label: 'Forecast',
-            color: Colors.cyan,
-            route: '/forecast',
-          ),
-          _MoreItem(
             icon: Iconsax.chart,
-            label: 'Analytics',
+            label: 'Analitik',
             color: Colors.orange,
             route: '/analytics',
           ),
           _MoreItem(
-            icon: Iconsax.lamp_charge,
-            label: 'Wawasan',
-            color: DesignTokens.primaryColor,
-            route: '/financial-insights',
-          ),
-          _MoreItem(
-            icon: Iconsax.trend_up,
-            label: 'Kekayaan Bersih',
-            color: Colors.indigo,
-            route: '/net-worth',
-          ),
-          _MoreItem(
-            icon: Iconsax.arrow_swap_horizontal,
-            label: 'Arus Kas',
-            color: Colors.lime,
-            route: '/cash-flow',
-          ),
-          _MoreItem(
-            icon: Iconsax.document_text,
-            label: 'Laporan',
-            color: Colors.deepPurple,
-            route: '/reports',
+            icon: Iconsax.graph,
+            label: 'Perkiraan',
+            color: Colors.cyan,
+            route: '/forecast',
           ),
           _MoreItem(
             icon: Iconsax.calendar,
@@ -198,16 +150,21 @@ class MoreTabScreen extends StatelessWidget {
             route: '/calendar',
           ),
           _MoreItem(
-            icon: Iconsax.tag,
-            label: 'Tag',
-            color: Colors.purple,
-            route: '/tags',
-          ),
-          _MoreItem(
             icon: Iconsax.receipt,
             label: 'Riwayat Resi',
             color: Colors.cyan,
             route: '/receipt-history',
+          ),
+        ],
+      ),
+      _MoreSection(
+        title: 'ALAT',
+        items: [
+          _MoreItem(
+            icon: Iconsax.copy,
+            label: 'Template',
+            color: Colors.deepOrange,
+            route: '/templates',
           ),
           _MoreItem(
             icon: Iconsax.flag,
@@ -222,7 +179,7 @@ class MoreTabScreen extends StatelessWidget {
         items: [
           _MoreItem(
             icon: Iconsax.category,
-            label: 'Kategori',
+            label: 'Kategori & Tag',
             color: Colors.pink,
             route: '/categories',
           ),
