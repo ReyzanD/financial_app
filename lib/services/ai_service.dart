@@ -1,12 +1,19 @@
-import 'package:financial_app/services/api_service.dart';
 import 'package:financial_app/services/logger_service.dart';
 import 'package:financial_app/services/expense_predictor.dart';
 import 'package:financial_app/services/spending_pattern_analyzer.dart';
 import 'package:financial_app/services/recommendation_personalizer.dart';
+import 'package:financial_app/services/budget_recommendation_service.dart';
+import 'package:financial_app/services/data/transaction_data_service.dart';
+import 'package:financial_app/services/data/budget_data_service.dart';
+import 'package:financial_app/services/data/goal_data_service.dart';
+import 'package:financial_app/services/data/obligation_data_service.dart';
 import 'package:financial_app/core/di/service_locator.dart';
 
 class AIService {
-  final ApiService _apiService = getIt<ApiService>();
+  final TransactionDataService _transactionData = getIt<TransactionDataService>();
+  final BudgetDataService _budgetData = getIt<BudgetDataService>();
+  final GoalDataService _goalData = getIt<GoalDataService>();
+  final ObligationDataService _obligationData = getIt<ObligationDataService>();
   final ExpensePredictor _expensePredictor = ExpensePredictor();
   final SpendingPatternAnalyzer _patternAnalyzer = SpendingPatternAnalyzer();
   final RecommendationPersonalizer _personalizer = RecommendationPersonalizer();
@@ -17,12 +24,14 @@ class AIService {
   }) async {
     try {
       // Get user's recent data
-      final transactionsData = await _apiService.getTransactions(limit: 500);
-      final transactions = List<dynamic>.from(
+      final transactionsData = await _transactionData.getTransactions(limit: 500);
+      final transactions = List<Map<String, dynamic>>.from(
         transactionsData['transactions'] ?? [],
       );
-      final budgets = await _apiService.getBudgets();
-      final goals = await _apiService.getGoals();
+      final budgetModels = await _budgetData.getBudgets();
+      final budgets = budgetModels.map((b) => b.toJson()).toList();
+      final goalModels = await _goalData.getGoals();
+      final goals = goalModels.map((g) => g.toJson()).toList();
 
       // Enhanced multi-period analysis
       final multiPeriodAnalysis = _patternAnalyzer.analyzeMultiPeriod(
@@ -84,28 +93,18 @@ class AIService {
   /// Generate intelligent financial recommendations based on user data (single, for backward compatibility)
   Future<Map<String, dynamic>> generateRecommendations() async {
     try {
-      // Get backend AI recommendations if available
-      final backendResponse = await _apiService.getAIRecommendations();
+      // Get local budget recommendation service
+      final recService = getIt<BudgetRecommendationService>();
+      final recommendation = await recService.generateRecommendation();
+      final backendResponse = {
+        'recommendation': recommendation,
+        'generated_at': DateTime.now().toIso8601String(),
+        'source': 'local_budget_recommendation_service',
+      };
 
-      // Handle different response formats from backend
-      Map<String, dynamic>? backendRecs;
-
-      if (backendResponse is Map<String, dynamic>) {
-        backendRecs = backendResponse;
-      } else if (backendResponse is List && backendResponse.isNotEmpty) {
-        // If backend returns a list, take the first recommendation
-        final firstItem = backendResponse[0];
-        if (firstItem is Map) {
-          backendRecs = Map<String, dynamic>.from(
-            firstItem.map((key, value) => MapEntry(key.toString(), value)),
-          );
-        }
-      }
-
-      if (backendRecs != null &&
-          backendRecs.isNotEmpty &&
-          backendRecs['recommendation'] != null) {
-        return backendRecs;
+      // Check if recommendation was generated
+      if (backendResponse['recommendation'] != null) {
+        return Map<String, dynamic>.from(backendResponse);
       }
     } catch (e) {
       LoggerService.warning(
@@ -122,12 +121,14 @@ class AIService {
   Future<Map<String, dynamic>> _generateLocalRecommendations() async {
     try {
       // Get user's recent data - increased limit for multi-period analysis
-      final transactionsData = await _apiService.getTransactions(limit: 500);
-      final transactions = List<dynamic>.from(
+      final transactionsData = await _transactionData.getTransactions(limit: 500);
+      final transactions = List<Map<String, dynamic>>.from(
         transactionsData['transactions'] ?? [],
       );
-      final budgets = await _apiService.getBudgets();
-      final goals = await _apiService.getGoals();
+      final budgetModels = await _budgetData.getBudgets();
+      final budgets = budgetModels.map((b) => b.toJson()).toList();
+      final goalModels = await _goalData.getGoals();
+      final goals = goalModels.map((g) => g.toJson()).toList();
 
       // Enhanced multi-period analysis
       final multiPeriodAnalysis = _patternAnalyzer.analyzeMultiPeriod(
@@ -932,8 +933,8 @@ class AIService {
       }
 
       // Get current balance
-      final transactionsData = await _apiService.getTransactions(limit: 100);
-      final transactions = List<dynamic>.from(
+      final transactionsData = await _transactionData.getTransactions(limit: 100);
+      final transactions = List<Map<String, dynamic>>.from(
         transactionsData['transactions'] ?? [],
       );
       final now = DateTime.now();
@@ -964,10 +965,7 @@ class AIService {
 
       // Get forecast for next 30 days
       final forecast = await _expensePredictor.predictNext30Days(
-        transactions:
-            thisMonthTransactions
-                .map((t) => t as Map<String, dynamic>)
-                .toList(),
+        transactions: thisMonthTransactions,
       );
       final forecastAmount =
           (forecast['forecastAmount'] as num?)?.toDouble() ?? 0.0;
@@ -1007,13 +1005,12 @@ class AIService {
   /// Get expense forecast for next 30 days
   Future<Map<String, dynamic>> getExpenseForecast() async {
     try {
-      final transactionsData = await _apiService.getTransactions(limit: 100);
-      final transactions = List<dynamic>.from(
+      final transactionsData = await _transactionData.getTransactions(limit: 100);
+      final transactions = List<Map<String, dynamic>>.from(
         transactionsData['transactions'] ?? [],
       );
       return await _expensePredictor.predictNext30Days(
-        transactions:
-            transactions.map((t) => t as Map<String, dynamic>).toList(),
+        transactions: transactions,
       );
     } catch (e) {
       LoggerService.error('Error getting expense forecast', error: e);
@@ -1030,13 +1027,13 @@ class AIService {
   /// Get spending insights for a specific period
   Future<Map<String, dynamic>> getSpendingInsights(String period) async {
     try {
-      final transactionsData = await _apiService.getTransactions(limit: 200);
-      final transactions = List<dynamic>.from(
+      final transactionsData = await _transactionData.getTransactions(limit: 200);
+      final transactions = List<Map<String, dynamic>>.from(
         transactionsData['transactions'] ?? [],
       );
       final now = DateTime.now();
 
-      List<dynamic> periodTransactions;
+      List<Map<String, dynamic>> periodTransactions;
 
       switch (period) {
         case 'week':
@@ -1202,7 +1199,7 @@ class AIService {
 
     // Obligation-aware suggestions (upcoming bills)
     try {
-      final obligations = await _apiService.getObligations();
+      final obligations = await _obligationData.getObligations();
       final upcomingBills = <Map<String, dynamic>>[];
       final today = DateTime(now.year, now.month, now.day);
 

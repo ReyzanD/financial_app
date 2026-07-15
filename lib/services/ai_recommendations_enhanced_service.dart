@@ -1,41 +1,47 @@
-import 'package:financial_app/services/api_service.dart';
+import 'package:financial_app/services/data/transaction_data_service.dart';
+import 'package:financial_app/services/data/budget_data_service.dart';
+import 'package:financial_app/services/data/goal_data_service.dart';
 import 'package:financial_app/services/logger_service.dart';
 import 'package:financial_app/core/di/service_locator.dart';
 
 /// Enhanced AI Recommendations Service dengan personalization, pattern analysis, dan savings opportunities
 class AIRecommendationsEnhancedService {
-  final ApiService _apiService = getIt<ApiService>();
+  final TransactionDataService _transactionData = getIt<TransactionDataService>();
+  final BudgetDataService _budgetData = getIt<BudgetDataService>();
+  final GoalDataService _goalData = getIt<GoalDataService>();
 
   /// Generate personalized recommendations
   Future<List<Map<String, dynamic>>>
   generatePersonalizedRecommendations() async {
     try {
-      final transactions = await _apiService.getTransactions(limit: 200);
-      final budgets = await _apiService.getBudgets();
-      final goals = await _apiService.getGoals();
+      final txData = await _transactionData.getTransactions(limit: 200);
+      final transactions = List<Map<String, dynamic>>.from(
+        txData['transactions'] ?? [],
+      );
+      final budgetModels = await _budgetData.getBudgets();
+      final budgets = budgetModels.map((b) => b.toJson()).toList();
+      final goals = await _goalData.getGoals();
 
       final recommendations = <Map<String, dynamic>>[];
 
       // 1. Spending pattern analysis
-      final patternAnalysis = _analyzeSpendingPatterns(
-        transactions as List<dynamic>,
-      );
+      final patternAnalysis = _analyzeSpendingPatterns(transactions);
       recommendations.addAll(_generatePatternRecommendations(patternAnalysis));
 
       // 2. Savings opportunities
       final savingsOps = _identifySavingsOpportunities(
-        transactions as List<dynamic>,
+        transactions,
         budgets,
       );
       recommendations.addAll(savingsOps);
 
       // 3. Bill optimization
-      final billOpts = _suggestBillOptimizations(transactions as List<dynamic>);
+      final billOpts = _suggestBillOptimizations(transactions);
       recommendations.addAll(billOpts);
 
       // 4. Financial goal recommendations
       final goalRecs = _recommendFinancialGoals(
-        transactions as List<dynamic>,
+        transactions,
         goals,
       );
       recommendations.addAll(goalRecs);
