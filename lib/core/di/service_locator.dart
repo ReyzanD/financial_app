@@ -148,9 +148,7 @@ Future<void> setupServiceLocator() async {
 
   // ========== Network & Data Services ==========
   getIt.registerLazySingleton<NetworkService>(() => NetworkService());
-  getIt.registerLazySingleton<DataService>(
-    () => DataService(getIt<ApiService>()),
-  );
+  getIt.registerLazySingleton<DataService>(() => DataService());
   getIt.registerLazySingleton<CacheService>(() => CacheService());
   getIt.registerLazySingleton<SearchService>(() => SearchService());
   getIt.registerLazySingleton<ExportService>(() => ExportService());

@@ -6,16 +6,16 @@ import 'package:csv/csv.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:intl/intl.dart';
-import 'package:financial_app/services/api_service.dart';
 import 'package:financial_app/services/logger_service.dart';
 import 'package:financial_app/services/data/transaction_data_service.dart';
+import 'package:financial_app/services/data/category_data_service.dart';
 import 'package:financial_app/utils/formatters.dart';
 import 'package:financial_app/core/di/service_locator.dart';
 
 /// Service untuk export/import data dengan multiple formats
 class ExportService {
-  final ApiService _apiService = getIt<ApiService>();
   final TransactionDataService _transactionData = getIt<TransactionDataService>();
+  final CategoryDataService _categoryData = getIt<CategoryDataService>();
   final DateFormat _dateTimeFormat = DateFormat('yyyy-MM-dd HH:mm:ss');
 
   /// Export transactions ke CSV
@@ -26,52 +26,49 @@ class ExportService {
     String? type,
   }) async {
     try {
-      final transactionsData = await _apiService.getTransactions();
-      final transactions = List<dynamic>.from(
+      final transactionsData = await _transactionData.getTransactions();
+      final transactions = List<Map<String, dynamic>>.from(
         transactionsData['transactions'] ?? [],
       );
 
       // Filter transactions
-      List<dynamic> filtered = transactions;
+      List<Map<String, dynamic>> filtered = transactions;
       if (startDate != null ||
           endDate != null ||
           categoryId != null ||
           type != null) {
-        filtered =
-            transactions.where((t) {
-              final transaction = t as Map<String, dynamic>;
-
-              if (startDate != null || endDate != null) {
-                final tDateStr = transaction['transaction_date']?.toString();
-                if (tDateStr != null) {
-                  try {
-                    final tDate = DateTime.parse(tDateStr);
-                    if (startDate != null && tDate.isBefore(startDate)) {
-                      return false;
-                    }
-                    if (endDate != null && tDate.isAfter(endDate)) {
-                      return false;
-                    }
-                  } catch (e) {
-                    return false;
-                  }
-                }
-              }
-
-              if (categoryId != null) {
-                if (transaction['category_id']?.toString() != categoryId) {
+        filtered = transactions.where((transaction) {
+          if (startDate != null || endDate != null) {
+            final tDateStr = transaction['transaction_date']?.toString();
+            if (tDateStr != null) {
+              try {
+                final tDate = DateTime.parse(tDateStr);
+                if (startDate != null && tDate.isBefore(startDate)) {
                   return false;
                 }
-              }
-
-              if (type != null) {
-                if (transaction['type']?.toString() != type) {
+                if (endDate != null && tDate.isAfter(endDate)) {
                   return false;
                 }
+              } catch (e) {
+                return false;
               }
+            }
+          }
 
-              return true;
-            }).toList();
+          if (categoryId != null) {
+            if (transaction['category_id']?.toString() != categoryId) {
+              return false;
+            }
+          }
+
+          if (type != null) {
+            if (transaction['type']?.toString() != type) {
+              return false;
+            }
+          }
+
+          return true;
+        }).toList();
       }
 
       // Create CSV data
@@ -79,8 +76,7 @@ class ExportService {
         ['Date', 'Type', 'Category', 'Description', 'Amount', 'Location'],
       ];
 
-      for (var t in filtered) {
-        final transaction = t as Map<String, dynamic>;
+      for (var transaction in filtered) {
         csvData.add([
           transaction['transaction_date'] ?? '',
           transaction['type'] ?? '',
@@ -119,52 +115,49 @@ class ExportService {
     String? type,
   }) async {
     try {
-      final transactionsData = await _apiService.getTransactions();
-      final transactions = List<dynamic>.from(
+      final transactionsData = await _transactionData.getTransactions();
+      final transactions = List<Map<String, dynamic>>.from(
         transactionsData['transactions'] ?? [],
       );
 
       // Filter transactions (same logic as CSV)
-      List<dynamic> filtered = transactions;
+      List<Map<String, dynamic>> filtered = transactions;
       if (startDate != null ||
           endDate != null ||
           categoryId != null ||
           type != null) {
-        filtered =
-            transactions.where((t) {
-              final transaction = t as Map<String, dynamic>;
-
-              if (startDate != null || endDate != null) {
-                final tDateStr = transaction['transaction_date']?.toString();
-                if (tDateStr != null) {
-                  try {
-                    final tDate = DateTime.parse(tDateStr);
-                    if (startDate != null && tDate.isBefore(startDate)) {
-                      return false;
-                    }
-                    if (endDate != null && tDate.isAfter(endDate)) {
-                      return false;
-                    }
-                  } catch (e) {
-                    return false;
-                  }
-                }
-              }
-
-              if (categoryId != null) {
-                if (transaction['category_id']?.toString() != categoryId) {
+        filtered = transactions.where((transaction) {
+          if (startDate != null || endDate != null) {
+            final tDateStr = transaction['transaction_date']?.toString();
+            if (tDateStr != null) {
+              try {
+                final tDate = DateTime.parse(tDateStr);
+                if (startDate != null && tDate.isBefore(startDate)) {
                   return false;
                 }
-              }
-
-              if (type != null) {
-                if (transaction['type']?.toString() != type) {
+                if (endDate != null && tDate.isAfter(endDate)) {
                   return false;
                 }
+              } catch (e) {
+                return false;
               }
+            }
+          }
 
-              return true;
-            }).toList();
+          if (categoryId != null) {
+            if (transaction['category_id']?.toString() != categoryId) {
+              return false;
+            }
+          }
+
+          if (type != null) {
+            if (transaction['type']?.toString() != type) {
+              return false;
+            }
+          }
+
+          return true;
+        }).toList();
       }
 
       // Convert to JSON
@@ -199,52 +192,49 @@ class ExportService {
     String? type,
   }) async {
     try {
-      final transactionsData = await _apiService.getTransactions();
-      final transactions = List<dynamic>.from(
+      final transactionsData = await _transactionData.getTransactions();
+      final transactions = List<Map<String, dynamic>>.from(
         transactionsData['transactions'] ?? [],
       );
 
       // Filter transactions (same logic)
-      List<dynamic> filtered = transactions;
+      List<Map<String, dynamic>> filtered = transactions;
       if (startDate != null ||
           endDate != null ||
           categoryId != null ||
           type != null) {
-        filtered =
-            transactions.where((t) {
-              final transaction = t as Map<String, dynamic>;
-
-              if (startDate != null || endDate != null) {
-                final tDateStr = transaction['transaction_date']?.toString();
-                if (tDateStr != null) {
-                  try {
-                    final tDate = DateTime.parse(tDateStr);
-                    if (startDate != null && tDate.isBefore(startDate)) {
-                      return false;
-                    }
-                    if (endDate != null && tDate.isAfter(endDate)) {
-                      return false;
-                    }
-                  } catch (e) {
-                    return false;
-                  }
-                }
-              }
-
-              if (categoryId != null) {
-                if (transaction['category_id']?.toString() != categoryId) {
+        filtered = transactions.where((transaction) {
+          if (startDate != null || endDate != null) {
+            final tDateStr = transaction['transaction_date']?.toString();
+            if (tDateStr != null) {
+              try {
+                final tDate = DateTime.parse(tDateStr);
+                if (startDate != null && tDate.isBefore(startDate)) {
                   return false;
                 }
-              }
-
-              if (type != null) {
-                if (transaction['type']?.toString() != type) {
+                if (endDate != null && tDate.isAfter(endDate)) {
                   return false;
                 }
+              } catch (e) {
+                return false;
               }
+            }
+          }
 
-              return true;
-            }).toList();
+          if (categoryId != null) {
+            if (transaction['category_id']?.toString() != categoryId) {
+              return false;
+            }
+          }
+
+          if (type != null) {
+            if (transaction['type']?.toString() != type) {
+              return false;
+            }
+          }
+
+          return true;
+        }).toList();
       }
 
       // Create PDF
@@ -317,8 +307,7 @@ class ExportService {
                       ),
                     ],
                   ),
-                  ...filtered.map((t) {
-                    final transaction = t as Map<String, dynamic>;
+                  ...filtered.map((transaction) {
                     return pw.TableRow(
                       children: [
                         pw.Padding(
@@ -446,18 +435,12 @@ class ExportService {
 
           String? categoryId;
           if (category.isNotEmpty) {
-            final categories = await _apiService.getCategories();
+            final categories = await _categoryData.getCategories();
             for (final cat in categories) {
-              final catName =
-                  (cat['name']?.toString() ??
-                          cat['name_232143']?.toString() ??
-                          '')
-                      .toLowerCase();
+              final catName = cat.name.toLowerCase();
               if (catName.contains(category.toLowerCase()) ||
                   category.toLowerCase().contains(catName)) {
-                categoryId =
-                    cat['category_id']?.toString() ??
-                    cat['category_id_232143']?.toString();
+                categoryId = cat.id;
                 break;
               }
             }

@@ -1,9 +1,12 @@
 import 'dart:async';
-import 'package:financial_app/services/api_service.dart';
 import 'package:financial_app/services/logger_service.dart';
+import 'package:financial_app/services/data/transaction_data_service.dart';
+import 'package:financial_app/services/data/category_data_service.dart';
+import 'package:financial_app/core/di/service_locator.dart';
 
 class DataService {
-  final ApiService _apiService;
+  final TransactionDataService _transactionData = getIt<TransactionDataService>();
+  final CategoryDataService _categoryData = getIt<CategoryDataService>();
 
   // Stream controllers for real-time data
   final _transactionsController = StreamController<List<dynamic>>.broadcast();
@@ -20,7 +23,7 @@ class DataService {
   // Timer for periodic updates
   Timer? _updateTimer;
 
-  DataService(this._apiService) {
+  DataService() {
     // Don't start periodic updates immediately
     // Wait for explicit data load after authentication
     LoggerService.info(
@@ -80,7 +83,7 @@ class DataService {
 
       // Clear API cache on force refresh to get fresh data
       if (forceRefresh) {
-        ApiService.clearCache();
+      // No API cache to clear — using direct data services now
       }
 
       // Fetch all data types in parallel
@@ -100,7 +103,7 @@ class DataService {
   Future<void> refreshTransactions() async {
     try {
       LoggerService.info('[DataService] Fetching transactions from API...');
-      final transactionsData = await _apiService.getTransactions();
+      final transactionsData = await _transactionData.getTransactions();
       final transactionsList = transactionsData['transactions'] ?? [];
       final transactions = List<Map<String, dynamic>>.from(
         transactionsList.map((t) => Map<String, dynamic>.from(t as Map)),
@@ -125,7 +128,8 @@ class DataService {
 
   Future<void> refreshCategories() async {
     try {
-      final categories = await _apiService.getCategories();
+      final categoryModels = await _categoryData.getCategories();
+      final categories = categoryModels.map((c) => c.toMap()).toList();
       if (!_categoriesController.isClosed) {
         _categoriesController.add(categories);
       }
@@ -139,7 +143,7 @@ class DataService {
 
   Future<void> refreshFinancialSummary() async {
     try {
-      final summary = await _apiService.getFinancialSummary();
+      final summary = await _transactionData.getFinancialSummary();
       if (!_financialSummaryController.isClosed) {
         _financialSummaryController.add(summary);
       }
