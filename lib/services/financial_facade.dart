@@ -3,7 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:money2/money2.dart';
 import 'package:financial_app/services/financial_calculator.dart';
 import 'package:financial_app/services/ai_service.dart';
-import 'package:financial_app/services/api_service.dart';
+import 'package:financial_app/services/data/budget_data_service.dart';
 import 'package:financial_app/services/encryption_service.dart';
 import 'package:financial_app/models/financial_overview.dart';
 import 'package:financial_app/services/logger_service.dart';
@@ -17,7 +17,7 @@ import 'package:financial_app/core/di/service_locator.dart';
 class FinancialFacade {
   final FinancialCalculator _calculator = getIt<FinancialCalculator>();
   final AIService _aiService = getIt<AIService>();
-  final ApiService _apiService = getIt<ApiService>();
+  final BudgetDataService _budgetData = getIt<BudgetDataService>();
   final EncryptionService _encryptionService = getIt<EncryptionService>();
   final FlutterSecureStorage _secureStorage = const FlutterSecureStorage();
 
@@ -128,7 +128,7 @@ class FinancialFacade {
       // Get budget status
       Map<String, dynamic>? budgetStatus;
       try {
-        final budgets = await _apiService.getBudgets();
+        final budgets = await _budgetData.getBudgets();
         if (budgets.isNotEmpty) {
           budgetStatus = {
             'totalBudgets': budgets.length,

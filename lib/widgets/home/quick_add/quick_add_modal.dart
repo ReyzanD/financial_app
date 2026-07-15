@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
-import 'package:financial_app/services/api_service.dart';
+import 'package:financial_app/services/data/transaction_data_service.dart';
+import 'package:financial_app/services/data/category_data_service.dart';
 import 'package:financial_app/services/logger_service.dart';
 import 'package:financial_app/utils/form_validators.dart';
 import 'package:financial_app/utils/app_refresh.dart';
@@ -37,7 +38,8 @@ class QuickAddModal extends StatefulWidget {
 }
 
 class _QuickAddModalState extends State<QuickAddModal> {
-  final ApiService _apiService = getIt<ApiService>();
+  final TransactionDataService _transactionData = getIt<TransactionDataService>();
+  final CategoryDataService _categoryData = getIt<CategoryDataService>();
   final TextEditingController _amountController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
 
@@ -68,7 +70,8 @@ class _QuickAddModalState extends State<QuickAddModal> {
 
   Future<void> _loadCategories() async {
     try {
-      final categories = await _apiService.getCategories();
+      final categoryModels = await _categoryData.getCategories();
+      final categories = categoryModels.map((c) => c.toMap()).toList();
       if (mounted) {
         setState(() {
           _categories =
@@ -98,7 +101,7 @@ class _QuickAddModalState extends State<QuickAddModal> {
 
   Future<bool> _checkBalanceBeforeExpense(double expenseAmount) async {
     try {
-      final summary = await _apiService.getFinancialSummary();
+      final summary = await _transactionData.getFinancialSummary();
       return await BalanceCheckHelper.checkBalanceBeforeExpense(
         context: context,
         expenseAmount: expenseAmount,

@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
-import 'package:financial_app/services/api_service.dart';
+import 'package:financial_app/services/local_auth_service.dart';
 import 'package:financial_app/utils/design_tokens.dart';
-import 'package:financial_app/core/di/service_locator.dart';
 import 'package:financial_app/widgets/home/global_search_sheet.dart';
 
 class HomeHeader extends StatefulWidget {
@@ -14,7 +13,7 @@ class HomeHeader extends StatefulWidget {
 }
 
 class _HomeHeaderState extends State<HomeHeader> {
-  final ApiService _apiService = getIt<ApiService>();
+  final LocalAuthService _authService = LocalAuthService();
   Map<String, dynamic>? _userProfile;
   bool _isLoading = true;
 
@@ -26,10 +25,10 @@ class _HomeHeaderState extends State<HomeHeader> {
 
   Future<void> _loadUserProfile() async {
     try {
-      final profile = await _apiService.getUserProfile();
+      final profile = await _authService.getCurrentUser();
       if (mounted) {
         setState(() {
-          _userProfile = profile['user'];
+          _userProfile = profile;
           _isLoading = false;
         });
       }

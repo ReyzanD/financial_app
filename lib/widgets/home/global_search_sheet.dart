@@ -2,7 +2,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
-import 'package:financial_app/services/api_service.dart';
+import 'package:financial_app/services/data/transaction_data_service.dart';
+import 'package:financial_app/services/data/budget_data_service.dart';
+import 'package:financial_app/services/data/goal_data_service.dart';
 import 'package:financial_app/core/di/service_locator.dart';
 import 'package:financial_app/utils/design_tokens.dart';
 import 'package:financial_app/utils/formatters.dart';
@@ -19,7 +21,9 @@ class GlobalSearchSheet extends StatefulWidget {
 
 class _GlobalSearchSheetState extends State<GlobalSearchSheet> {
   final TextEditingController _searchController = TextEditingController();
-  final ApiService _apiService = getIt<ApiService>();
+  final TransactionDataService _transactionData = getIt<TransactionDataService>();
+  final BudgetDataService _budgetData = getIt<BudgetDataService>();
+  final GoalDataService _goalData = getIt<GoalDataService>();
   Timer? _debounceTimer;
 
   List<Map<String, dynamic>> _transactions = [];
@@ -63,9 +67,9 @@ class _GlobalSearchSheetState extends State<GlobalSearchSheet> {
     setState(() => _isLoading = true);
     try {
       final results = await Future.wait([
-        _apiService.getTransactions(limit: 200),
-        _apiService.getBudgets(),
-        _apiService.getGoals(),
+        _transactionData.getTransactions(limit: 200),
+        _budgetData.getBudgets().then((m) => m.map((b) => b.toJson()).toList()),
+        _goalData.getGoals().then((m) => m.map((g) => g.toJson()).toList()),
       ]);
       if (!mounted) return;
       setState(() {

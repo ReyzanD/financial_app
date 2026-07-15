@@ -3,14 +3,15 @@ import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:financial_app/services/location_service.dart';
-import 'package:financial_app/services/api_service.dart';
+import 'package:financial_app/services/data/transaction_data_service.dart';
 import 'package:financial_app/services/logger_service.dart';
 import 'package:financial_app/utils/design_tokens.dart';
 
 class MapScreenController extends ChangeNotifier {
-  final ApiService _api;
+  final TransactionDataService _transactionData;
 
-  MapScreenController({required ApiService api}) : _api = api;
+  MapScreenController({required TransactionDataService transactionData})
+      : _transactionData = transactionData;
 
   final MapController mapController = MapController();
   LatLng? _currentPosition;
@@ -47,7 +48,7 @@ class MapScreenController extends ChangeNotifier {
   Future<void> _loadMapData() async {
     if (_currentPosition == null) return;
     try {
-      final data = await _api.getTransactions(limit: 100);
+      final data = await _transactionData.getTransactions(limit: 100);
       _markers.clear();
       for (final item in data['transactions'] as List<dynamic>? ?? []) {
         final loc =

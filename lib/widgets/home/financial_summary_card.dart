@@ -3,7 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:financial_app/l10n/app_localizations.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:financial_app/utils/formatters.dart';
-import 'package:financial_app/services/api_service.dart';
+import 'package:financial_app/services/data/transaction_data_service.dart';
 import 'package:financial_app/services/logger_service.dart';
 import 'package:financial_app/services/financial_calculator.dart';
 import 'package:financial_app/utils/app_refresh.dart';
@@ -29,7 +29,7 @@ class FinancialSummaryCard extends StatefulWidget {
 
 class _FinancialSummaryCardState extends State<FinancialSummaryCard>
     with SingleTickerProviderStateMixin {
-  final ApiService _apiService = getIt<ApiService>();
+  final TransactionDataService _transactionData = getIt<TransactionDataService>();
   final FinancialCalculator _calculator = FinancialCalculator();
   Map<String, dynamic>? _summary;
   bool _isLoading = true;
@@ -83,7 +83,7 @@ class _FinancialSummaryCardState extends State<FinancialSummaryCard>
     }
 
     try {
-      final summary = await _apiService.getFinancialSummary(
+      final summary = await _transactionData.getFinancialSummary(
         year: _selectedDate.year,
         month: _selectedDate.month,
       );

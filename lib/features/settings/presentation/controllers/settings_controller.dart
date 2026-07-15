@@ -1,12 +1,16 @@
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:financial_app/services/auth_service.dart';
-import 'package:financial_app/services/api_service.dart';
 import 'package:financial_app/core/di/service_locator.dart';
+import 'package:financial_app/services/data/transaction_data_service.dart';
+import 'package:financial_app/services/data/budget_data_service.dart';
+import 'package:financial_app/services/data/goal_data_service.dart';
 
 class SettingsController extends ChangeNotifier {
   final AuthService _auth = getIt<AuthService>();
-  final ApiService _api = getIt<ApiService>();
+  final TransactionDataService _transactionData = getIt<TransactionDataService>();
+  final BudgetDataService _budgetData = getIt<BudgetDataService>();
+  final GoalDataService _goalData = getIt<GoalDataService>();
 
   bool _aiRecommendationsEnabled = true;
   bool _locationServicesEnabled = true;
@@ -81,9 +85,9 @@ class SettingsController extends ChangeNotifier {
   }
 
   Future<Map<String, dynamic>> exportData({int limit = 10000}) async {
-    final transactions = await _api.getTransactions(limit: limit);
-    final budgets = await _api.getBudgets();
-    final goals = await _api.getGoals();
+    final transactions = await _transactionData.getTransactions(limit: limit);
+    final budgets = await _budgetData.getBudgets();
+    final goals = await _goalData.getGoals();
     return {
       'exported_at': DateTime.now().toIso8601String(),
       'stats': {

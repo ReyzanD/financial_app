@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:financial_app/l10n/app_localizations.dart';
 import 'package:financial_app/utils/formatters.dart';
-import 'package:financial_app/services/api_service.dart';
+import 'package:financial_app/services/data/budget_data_service.dart';
+import 'package:financial_app/services/data/category_data_service.dart';
 import 'package:financial_app/services/budget_recommendation_service.dart';
 import 'package:financial_app/services/logger_service.dart';
 import 'package:financial_app/features/budgets/presentation/screens/budgets_screen.dart';
@@ -19,7 +20,8 @@ class BudgetProgress extends StatefulWidget {
 
 class _BudgetProgressState extends State<BudgetProgress>
     with SingleTickerProviderStateMixin {
-  final ApiService _apiService = getIt<ApiService>();
+  final BudgetDataService _budgetData = getIt<BudgetDataService>();
+  final CategoryDataService _categoryData = getIt<CategoryDataService>();
   final BudgetRecommendationService _recommendationService =
       BudgetRecommendationService();
   List<Map<String, dynamic>> _budgets = [];
@@ -72,8 +74,8 @@ class _BudgetProgressState extends State<BudgetProgress>
       // Load categories and budgets in parallel for better performance
       // Only get active budgets for home screen
       final results = await Future.wait([
-        _apiService.getCategories(),
-        _apiService.getBudgets(activeOnly: true),
+        _categoryData.getCategories().then((m) => m.map((c) => c.toMap()).toList()),
+        _budgetData.getBudgets(activeOnly: true).then((m) => m.map((b) => b.toMap()).toList()),
       ]).timeout(
         const Duration(seconds: 10),
         onTimeout: () => throw Exception('Request timeout'),
@@ -99,8 +101,7 @@ class _BudgetProgressState extends State<BudgetProgress>
       if (mounted) {
         setState(() {
           _categories = categoryMap;
-          final budgetsList =
-              budgets.map((b) => b as Map<String, dynamic>).toList();
+          final budgetsList = budgets;
           budgetsList.sort((a, b) {
             final spentA =
                 (a['spent_amount_232143'] ?? a['spent'] as num?)?.toDouble() ??

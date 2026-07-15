@@ -25,10 +25,20 @@ class _MockApiService extends ApiService {
 }
 
 void main() {
-  // Ensure ApiService is registered in GetIt before any tests run
+  // Ensure required services are registered in GetIt before any tests run
   setUpAll(() {
     if (!GetIt.instance.isRegistered<ApiService>()) {
       GetIt.instance.registerLazySingleton<ApiService>(() => _MockApiService());
+    }
+    if (!GetIt.instance.isRegistered<TransactionDataService>()) {
+      GetIt.instance.registerLazySingleton<TransactionDataService>(
+        () => TransactionDataService(),
+      );
+    }
+    if (!GetIt.instance.isRegistered<CategoryDataService>()) {
+      GetIt.instance.registerLazySingleton<CategoryDataService>(
+        () => CategoryDataService(),
+      );
     }
   });
 

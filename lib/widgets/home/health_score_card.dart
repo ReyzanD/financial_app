@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:financial_app/l10n/app_localizations.dart';
-import 'package:financial_app/services/api_service.dart';
+import 'package:financial_app/services/data/transaction_data_service.dart';
 import 'package:financial_app/services/financial_calculator.dart';
 import 'package:financial_app/services/logger_service.dart';
 import 'package:financial_app/utils/design_tokens.dart';
@@ -19,7 +19,7 @@ class HealthScoreCard extends StatefulWidget {
 }
 
 class _HealthScoreCardState extends State<HealthScoreCard> {
-  final ApiService _apiService = getIt<ApiService>();
+  final TransactionDataService _transactionData = getIt<TransactionDataService>();
   final FinancialCalculator _calculator = FinancialCalculator();
 
   Map<String, dynamic>? _healthScoreData;
@@ -51,7 +51,7 @@ class _HealthScoreCardState extends State<HealthScoreCard> {
 
     try {
       final now = DateTime.now();
-      final summary = await _apiService.getFinancialSummary(
+      final summary = await _transactionData.getFinancialSummary(
         year: now.year,
         month: now.month,
       );
