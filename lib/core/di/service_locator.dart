@@ -511,6 +511,15 @@ Future<void> setupServiceLocator() async {
   await getIt<NetworkService>().initialize();
   getIt<PerformanceService>().startMemoryMonitoring();
   getIt<PerformanceService>().startSession();
+
+  // ========== Phase 2 startup sync: transactions → PlaceVisits ==========
+  try {
+    await getIt<PlaceVisitDataService>().syncFromTransactions(
+      getIt<TransactionDataService>(),
+    );
+  } catch (e) {
+    LoggerService.error('PlaceVisit startup sync failed (non-fatal)', error: e);
+  }
 }
 
 /// Dispose semua services

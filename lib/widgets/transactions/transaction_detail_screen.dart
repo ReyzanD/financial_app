@@ -6,9 +6,20 @@ import 'package:financial_app/l10n/app_localizations.dart';
 import 'package:financial_app/utils/formatters.dart';
 import 'package:financial_app/widgets/transactions/transaction_helpers.dart';
 import 'package:financial_app/widgets/transactions/alternative_recommendation_card.dart';
+import 'package:financial_app/widgets/transactions/alternative_suggestion_card.dart';
+import 'package:financial_app/widgets/transactions/alternatives_screen.dart';
 import 'package:financial_app/widgets/transactions/location_insight_card.dart';
 import 'package:financial_app/models/location_recommendation.dart';
+import 'package:financial_app/models/alternative_suggestion.dart';
+import 'package:financial_app/models/place_visit.dart';
+import 'package:financial_app/models/transaction_model.dart';
 import 'package:financial_app/services/logger_service.dart';
+import 'package:financial_app/services/data/place_visit_data_service.dart';
+import 'package:financial_app/services/data/price_observation_data_service.dart';
+import 'package:financial_app/services/alternative_recommendation_engine.dart';
+import 'package:financial_app/services/error_handler_service.dart';
+import 'package:financial_app/services/location_intelligence_service.dart';
+import 'package:financial_app/core/di/service_locator.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:financial_app/features/transactions/presentation/screens/add_transaction_screen.dart';
 import 'package:financial_app/utils/design_tokens.dart';
@@ -34,14 +45,25 @@ class TransactionDetailScreen extends StatefulWidget {
 class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
   LatLng? _transactionLocation;
   List<LocationRecommendation>? _alternativeRecommendations;
+  List<AlternativeSuggestion>? _engineSuggestions;
   bool _isLoadingRecommendations = false;
+  bool _isLoadingEngine = false;
   AppLocalizations? _l10n;
+  final AlternativeRecommendationEngine _engine =
+      getIt<AlternativeRecommendationEngine>();
+  final PlaceVisitDataService _placeVisitDataService =
+      getIt<PlaceVisitDataService>();
+  final PriceObservationDataService _priceObservationDataService =
+      getIt<PriceObservationDataService>();
+  bool _isPriceTagged = false;
+  bool _isTaggingPrice = false;
 
   @override
   void initState() {
     super.initState();
     _loadLocationData();
     _loadAlternativeRecommendations();
+    _loadEngineSuggestions();
   }
 
   Future<void> _loadLocationData() async {
@@ -63,8 +85,8 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
     setState(() => _isLoadingRecommendations = true);
 
     try {
-      final recommendations = await LocationRecommendationService()
-          .getCategoryBasedAlternatives(category, _decodedLocationData);
+      final recommendations = await getIt<LocationIntelligenceService>()
+          .getCategoryLocationAdvice(category);
 
       if (mounted)
         setState(() => _alternativeRecommendations = recommendations);
@@ -75,6 +97,130 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
       );
     } finally {
       if (mounted) setState(() => _isLoadingRecommendations = false);
+    }
+  }
+
+  Future<void> _loadEngineSuggestions() async {
+    try {
+      final lat = widget.transaction['latitude'] as double?;
+      final lng = widget.transaction['longitude'] as double?;
+      final category = widget.transaction['category'] ?? 'Uncategorized';
+
+      if (lat == null || lng == null) return;
+
+      setState(() => _isLoadingEngine = true);
+
+      // Build TransactionModel from the raw map
+      final txModel = TransactionModel.fromJson(widget.transaction);
+
+      // Upsert PlaceVisit — creates or updates from this transaction
+      PlaceVisit placeVisit;
+      if (txModel.locationData != null) {
+        placeVisit = await _placeVisitDataService.upsertFromTransaction(txModel);
+
+        // Auto-create a PriceObservation from this transaction's amount
+        try {
+          await _priceObservationDataService.createFromTransaction(
+            placeVisitId: placeVisit.id,
+            transaction: txModel,
+          );
+          _isPriceTagged = true;
+          LoggerService.info(
+            '✅ PriceObservation auto-created for ${placeVisit.placeName}',
+          );
+        } catch (e) {
+          LoggerService.error('Error auto-creating PriceObservation', error: e);
+        }
+      } else {
+        // No structured location data — use a synthetic PlaceVisit
+        placeVisit = PlaceVisit(
+          id: widget.transaction['id']?.toString() ?? '',
+          placeName:
+              widget.transaction['location']?.toString() ?? category,
+          latitude: lat,
+          longitude: lng,
+          category: category,
+          firstVisit: DateTime.now(),
+          lastVisit: DateTime.now(),
+        );
+      }
+
+      // Get alternative suggestions from the engine
+      final results = await _engine.getAlternativesForPlace(placeVisit);
+
+      if (mounted) {
+        setState(() => _engineSuggestions = results);
+      }
+    } catch (e) {
+      LoggerService.error('Error loading engine suggestions', error: e);
+    } finally {
+      if (mounted) setState(() => _isLoadingEngine = false);
+    }
+  }
+
+  /// Manually tag the current transaction's price as a PriceObservation.
+  Future<void> _tagCurrentPrice() async {
+    try {
+      setState(() => _isTaggingPrice = true);
+
+      final lat = widget.transaction['latitude'] as double?;
+      final lng = widget.transaction['longitude'] as double?;
+      if (lat == null || lng == null) {
+        ErrorHandlerService.showWarningSnackbar(
+          context,
+          'Transaksi ini tidak memiliki data lokasi',
+        );
+        return;
+      }
+
+      final txModel = TransactionModel.fromJson(widget.transaction);
+      PlaceVisit pv;
+      try {
+        pv = await _placeVisitDataService.upsertFromTransaction(txModel);
+      } catch (_) {
+        // If upsert fails (e.g. no location_data), find or create a basic one
+        final existing = await _placeVisitDataService.findByApproximateLocation(
+          lat, lng,
+        );
+        if (existing != null) {
+          pv = existing;
+        } else {
+          final fallbackId =
+              'pv_${lat}_${lng}_${DateTime.now().millisecondsSinceEpoch}';
+          pv = PlaceVisit(
+            id: fallbackId,
+            placeName:
+                widget.transaction['location']?.toString() ?? 'Unknown',
+            latitude: lat,
+            longitude: lng,
+            category: widget.transaction['category'] ?? 'Uncategorized',
+            firstVisit: DateTime.now(),
+            lastVisit: DateTime.now(),
+          );
+        }
+      }
+
+      await _priceObservationDataService.createFromTransaction(
+        placeVisitId: pv.id,
+        transaction: txModel,
+        source: 'self_reported',
+      );
+
+      if (mounted) {
+        setState(() => _isPriceTagged = true);
+        ErrorHandlerService.showSuccessSnackbar(
+          context,
+          'Harga tercatat: ${CurrencyFormatter.formatRupiah(txModel.amount)}',
+        );
+      }
+    } catch (e) {
+      LoggerService.error('Error tagging price', error: e);
+      ErrorHandlerService.showErrorSnackbar(
+        context,
+        'Gagal mencatat harga',
+      );
+    } finally {
+      if (mounted) setState(() => _isTaggingPrice = false);
     }
   }
 
@@ -158,6 +304,9 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
                   // Location Insight Section
                   if (widget.transaction['location'] != '') ...[
                     _buildLocationInsightSection(),
+                    const SizedBox(height: 12),
+                    // Price tagging button
+                    _buildPriceTagButton(),
                     const SizedBox(height: 20),
                   ],
 
@@ -323,33 +472,187 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
     );
   }
 
+  Widget _buildPriceTagButton() {
+    final amount =
+        double.tryParse(widget.transaction['amount']?.toString() ?? '0') ?? 0.0;
+    final hasLocation = widget.transaction['latitude'] != null;
+
+    if (_isPriceTagged) {
+      return Container(
+        padding: const EdgeInsets.symmetric(
+          vertical: 10,
+          horizontal: DesignTokens.spacing4,
+        ),
+        decoration: BoxDecoration(
+          color: DesignTokens.successColor.withValues(alpha: 0.1),
+          borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+          border: Border.all(
+            color: DesignTokens.successColor.withValues(alpha: 0.3),
+          ),
+        ),
+        child: Row(
+          children: [
+            Icon(
+              Iconsax.tick_circle,
+              color: DesignTokens.successColor,
+              size: 18,
+            ),
+            const SizedBox(width: 8),
+            Text(
+              'Harga tercatat: ${CurrencyFormatter.formatRupiah(amount)}',
+              style: GoogleFonts.poppins(
+                color: DesignTokens.successColor,
+                fontSize: 13,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    if (!hasLocation) return const SizedBox.shrink();
+
+    return SizedBox(
+      width: double.infinity,
+      child: OutlinedButton.icon(
+        onPressed: _isTaggingPrice ? null : _tagCurrentPrice,
+        icon: _isTaggingPrice
+            ? SizedBox(
+                width: 16,
+                height: 16,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  color: DesignTokens.primaryColor,
+                ),
+              )
+            : Icon(Iconsax.dollar_square, size: 18),
+        label: Text(
+          _isTaggingPrice
+              ? 'Menyimpan...'
+              : 'Catat Harga (${CurrencyFormatter.formatRupiah(amount)})',
+          style: GoogleFonts.poppins(fontSize: 13),
+        ),
+        style: OutlinedButton.styleFrom(
+          foregroundColor: DesignTokens.primaryColor,
+          side: BorderSide(color: DesignTokens.primaryColor.withValues(alpha: 0.5)),
+          padding: const EdgeInsets.symmetric(vertical: 12),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+          ),
+        ),
+      ),
+    );
+  }
+
   // Removed unused methods _buildLoadingInsight and _buildNoInsightAvailable
 
   Widget _buildAlternativeRecommendationsSection() {
+    final lat = widget.transaction['latitude'] as double?;
+    final lng = widget.transaction['longitude'] as double?;
+    final category = widget.transaction['category'] ?? 'Uncategorized';
+    final locationName = widget.transaction['location']?.toString();
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'Rekomendasi Alternatif',
-          style: GoogleFonts.poppins(
-            color: Colors.white,
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-          ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'Rekomendasi Alternatif',
+              style: GoogleFonts.poppins(
+                color: Colors.white,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            if (_engineSuggestions != null && _engineSuggestions!.isNotEmpty)
+              TextButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => AlternativesScreen(
+                        transactionId:
+                            widget.transaction['id']?.toString() ?? '',
+                        category: category,
+                        latitude: lat,
+                        longitude: lng,
+                        locationName: locationName,
+                      ),
+                    ),
+                  );
+                },
+                child: Text(
+                  'Lihat Semua (${_engineSuggestions!.length})',
+                  style: GoogleFonts.poppins(
+                    color: DesignTokens.primaryColor,
+                    fontSize: 12,
+                  ),
+                ),
+              ),
+          ],
         ),
         const SizedBox(height: 12),
 
-        if (_isLoadingRecommendations)
-          _buildLoadingRecommendations()
-        else if (_alternativeRecommendations != null &&
-            _alternativeRecommendations!.isNotEmpty)
-          ..._alternativeRecommendations!.map(
-            (recommendation) =>
-                AlternativeRecommendationCard(recommendation: recommendation),
-          )
-        else
-          _buildNoRecommendationsAvailable(),
+        // New engine-based results (top 3)
+        if (_isLoadingEngine)
+          _buildLoadingEngine()
+        else if (_engineSuggestions != null &&
+            _engineSuggestions!.isNotEmpty) ...[
+          ..._engineSuggestions!.take(3).map(
+            (s) => AlternativeSuggestionCard(
+              suggestion: s,
+              isCompact: true,
+            ),
+          ),
+          const SizedBox(height: 8),
+        ],
+
+        // Fallback: old recommendation service
+        if (_engineSuggestions == null || _engineSuggestions!.isEmpty) ...[
+          if (_isLoadingRecommendations)
+            _buildLoadingRecommendations()
+          else if (_alternativeRecommendations != null &&
+              _alternativeRecommendations!.isNotEmpty)
+            ..._alternativeRecommendations!.take(2).map(
+              (recommendation) =>
+                  AlternativeRecommendationCard(recommendation: recommendation),
+            )
+          else
+            _buildNoRecommendationsAvailable(),
+        ],
       ],
+    );
+  }
+
+  Widget _buildLoadingEngine() {
+    return Container(
+      padding: const EdgeInsets.all(DesignTokens.spacing4),
+      decoration: BoxDecoration(
+        color: DesignTokens.surfaceDark,
+        borderRadius: BorderRadius.circular(DesignTokens.radiusLarge),
+      ),
+      child: Row(
+        children: [
+          SizedBox(
+            width: 16,
+            height: 16,
+            child: CircularProgressIndicator(
+              strokeWidth: 2,
+              color: DesignTokens.primaryColor,
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              'Mencari alternatif dari OpenStreetMap...',
+              style: GoogleFonts.poppins(color: Colors.grey[500], fontSize: 12),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
