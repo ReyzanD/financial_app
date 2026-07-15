@@ -223,8 +223,14 @@ class FinancialAdvisorService {
     final wantsMap = <String, double>{};
 
     for (final tx in transactions) {
-      final amount = (tx['amount'] as num?)?.toDouble() ?? 0.0;
-      final type = tx['type']?.toString() ?? 'expense';
+      final amount =
+          (tx['amount_232143'] as num?)?.toDouble() ??
+          (tx['amount'] as num?)?.toDouble() ??
+          0.0;
+      final type =
+          tx['type_232143']?.toString() ??
+          tx['type']?.toString() ??
+          'expense';
       final category = tx['category_name']?.toString() ??
           tx['category']?.toString() ??
           'Lainnya';
