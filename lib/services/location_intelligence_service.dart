@@ -1,17 +1,19 @@
-import 'package:financial_app/services/api_service.dart';
 import 'package:financial_app/services/logger_service.dart';
 import 'package:financial_app/models/location_recommendation.dart';
 import 'package:financial_app/core/di/service_locator.dart';
+import 'package:financial_app/services/data/transaction_data_service.dart';
 
 class LocationIntelligenceService {
-  final ApiService _apiService = getIt<ApiService>();
+  final TransactionDataService _transactionDataService =
+      getIt<TransactionDataService>();
 
   /// Generate intelligent location-based recommendations
   Future<List<LocationRecommendation>> generateLocationInsights() async {
     try {
       LoggerService.debug('LocationIntelligence: Fetching transactions...');
       // Analyze user's transaction locations
-      final transactionsData = await _apiService.getTransactions(limit: 200);
+      final transactionsData =
+          await _transactionDataService.getTransactions(limit: 200);
       final transactions = List<dynamic>.from(
         transactionsData['transactions'] ?? [],
       );
@@ -379,7 +381,8 @@ class LocationIntelligenceService {
     String category,
   ) async {
     try {
-      final transactionsData = await _apiService.getTransactions(limit: 100);
+      final transactionsData =
+          await _transactionDataService.getTransactions(limit: 100);
       final transactions = List<dynamic>.from(
         transactionsData['transactions'] ?? [],
       );

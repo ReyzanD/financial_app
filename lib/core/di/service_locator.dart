@@ -49,6 +49,16 @@ import 'package:financial_app/services/data/tag_data_service.dart';
 import 'package:financial_app/services/data/investment_data_service.dart';
 import 'package:financial_app/services/data/account_data_service.dart';
 import 'package:financial_app/services/data/obligation_data_service.dart';
+import 'package:financial_app/services/data/place_visit_data_service.dart';
+import 'package:financial_app/services/data/price_observation_data_service.dart';
+import 'package:financial_app/services/data/alternative_suggestion_data_service.dart';
+import 'package:financial_app/services/osm_category_mapping_service.dart';
+import 'package:financial_app/services/overpass_api_service.dart';
+import 'package:financial_app/services/alternative_recommendation_engine.dart';
+import 'package:financial_app/services/location_intelligence_service.dart';
+import 'package:financial_app/services/location_recommendations_enhanced_service.dart';
+import 'package:financial_app/services/financial_advisor_service.dart';
+
 
 import 'package:financial_app/services/data/challenge_data_service.dart';
 import 'package:financial_app/features/tags/presentation/controllers/tag_controller.dart';
@@ -451,6 +461,35 @@ Future<void> setupServiceLocator() async {
   getIt.registerLazySingleton<ReceiptScanDataService>(() => ReceiptScanDataService());
   getIt.registerLazySingleton<ExchangeRateDataService>(() => ExchangeRateDataService());
   getIt.registerLazySingleton<NetWorthDataService>(() => NetWorthDataService());
+
+  // ========== Phase 2: Alternative Recommendation Services ==========
+  getIt.registerLazySingleton<PlaceVisitDataService>(() => PlaceVisitDataService());
+  getIt.registerLazySingleton<PriceObservationDataService>(
+    () => PriceObservationDataService(),
+  );
+  getIt.registerLazySingleton<AlternativeSuggestionDataService>(
+    () => AlternativeSuggestionDataService(),
+  );
+  getIt.registerLazySingleton<OsmCategoryMappingService>(
+    () => OsmCategoryMappingService(),
+  );
+  getIt.registerLazySingleton<OverpassApiService>(
+    () => OverpassApiService(),
+  );
+  getIt.registerLazySingleton<AlternativeRecommendationEngine>(
+    () => AlternativeRecommendationEngine(),
+  );
+  getIt.registerLazySingleton<LocationIntelligenceService>(
+    () => LocationIntelligenceService(),
+  );
+  getIt.registerLazySingleton<LocationRecommendationsEnhancedService>(
+    () => LocationRecommendationsEnhancedService(),
+  );
+
+  // ========== Phase 3: Financial Advisor Service ==========
+  getIt.registerLazySingleton<FinancialAdvisorService>(
+    () => FinancialAdvisorService(),
+  );
 
   // ========== Composite Domain Services (wrap ApiService + other services) ==========
   getIt.registerLazySingleton<CashFlowForecastService>(

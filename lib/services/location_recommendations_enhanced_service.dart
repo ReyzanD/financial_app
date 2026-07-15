@@ -1,13 +1,14 @@
-import 'package:financial_app/services/api_service.dart';
 import 'package:financial_app/services/location_intelligence_service.dart';
 import 'package:financial_app/services/logger_service.dart';
 import 'package:financial_app/core/di/service_locator.dart';
+import 'package:financial_app/services/data/transaction_data_service.dart';
 
 /// Enhanced Location Recommendations Service dengan price comparisons, alternative suggestions, dan analytics
 class LocationRecommendationsEnhancedService {
-  final ApiService _apiService = getIt<ApiService>();
+  final TransactionDataService _transactionDataService =
+      getIt<TransactionDataService>();
   final LocationIntelligenceService _locationService =
-      LocationIntelligenceService();
+      getIt<LocationIntelligenceService>();
 
   /// Get location recommendations dengan price comparisons
   Future<List<Map<String, dynamic>>>
@@ -16,12 +17,14 @@ class LocationRecommendationsEnhancedService {
       final recommendations = await _locationService.generateLocationInsights();
 
       // Get transactions untuk price analysis
-      final transactions = await _apiService.getTransactions(limit: 200);
+      final transactionsData =
+          await _transactionDataService.getTransactions(limit: 200);
+      final transactions = List<Map<String, dynamic>>.from(
+        transactionsData['transactions'] ?? [],
+      );
 
       // Analyze prices per location
-      final priceAnalysis = _analyzeLocationPrices(
-        transactions as List<dynamic>,
-      );
+      final priceAnalysis = _analyzeLocationPrices(transactions);
 
       // Enhance recommendations dengan price data
       final enhanced = <Map<String, dynamic>>[];
@@ -39,10 +42,7 @@ class LocationRecommendationsEnhancedService {
             locationName,
             priceAnalysis,
           ),
-          'analytics': _getLocationAnalytics(
-            locationName,
-            transactions as List<dynamic>,
-          ),
+          'analytics': _getLocationAnalytics(locationName, transactions),
         });
       }
 
@@ -66,9 +66,15 @@ class LocationRecommendationsEnhancedService {
       final locationName =
           t['location_name_232143']?.toString() ??
           t['location_name']?.toString();
-      final amount = (t['amount'] as num?)?.toDouble() ?? 0.0;
+      final amount =
+          (t['amount_232143'] as num?)?.toDouble() ??
+          (t['amount'] as num?)?.toDouble() ??
+          0.0;
       final category = t['category_name']?.toString() ?? 'Lainnya';
-      final type = t['type']?.toString().toLowerCase() ?? 'expense';
+      final type =
+          t['type_232143']?.toString().toLowerCase() ??
+          t['type']?.toString().toLowerCase() ??
+          'expense';
 
       if (locationName != null && type == 'expense' && amount > 0) {
         locationPrices[locationName] ??= [];
@@ -163,12 +169,17 @@ class LocationRecommendationsEnhancedService {
     DateTime? lastVisit;
 
     for (var t in locationTransactions) {
-      final amount = (t['amount'] as num?)?.toDouble() ?? 0.0;
+      final amount =
+          (t['amount_232143'] as num?)?.toDouble() ??
+          (t['amount'] as num?)?.toDouble() ??
+          0.0;
       totalSpent += amount;
 
       try {
         final dateStr =
-            t['transaction_date']?.toString() ?? t['date']?.toString();
+            t['transaction_date_232143']?.toString() ??
+            t['transaction_date']?.toString() ??
+            t['date']?.toString();
         if (dateStr != null) {
           final date = DateTime.parse(dateStr);
           if (lastVisit == null || date.isAfter(lastVisit)) {
@@ -191,20 +202,30 @@ class LocationRecommendationsEnhancedService {
   /// Get spending pattern analysis per location
   Future<Map<String, dynamic>> getLocationSpendingPatterns() async {
     try {
-      final transactions = await _apiService.getTransactions(limit: 500);
+      final transactionsData =
+          await _transactionDataService.getTransactions(limit: 500);
+      final transactions = List<Map<String, dynamic>>.from(
+        transactionsData['transactions'] ?? [],
+      );
       final patterns = <String, Map<String, dynamic>>{};
 
       // Group by location
       final locationGroups = <String, List<Map<String, dynamic>>>{};
-      for (var t in transactions as List<dynamic>) {
+      for (var t in transactions) {
         final locationName =
             t['location_name_232143']?.toString() ??
             t['location_name']?.toString();
         if (locationName != null) {
           locationGroups[locationName] ??= [];
           locationGroups[locationName]!.add({
-            'amount': (t['amount'] as num?)?.toDouble() ?? 0.0,
-            'date': t['transaction_date'] ?? t['date'],
+            'amount':
+                (t['amount_232143'] as num?)?.toDouble() ??
+                (t['amount'] as num?)?.toDouble() ??
+                0.0,
+            'date':
+                t['transaction_date_232143']?.toString() ??
+                t['transaction_date']?.toString() ??
+                t['date']?.toString(),
             'category': t['category_name'] ?? 'Lainnya',
           });
         }
