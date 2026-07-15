@@ -88,11 +88,13 @@ class _HomeHeaderState extends State<HomeHeader> {
             children: [
               _buildIconButton(
                 icon: Iconsax.search_normal_1,
+                label: 'Pencarian Global',
                 onPressed: () => _showGlobalSearch(context),
               ),
               const SizedBox(width: 8),
               _buildIconButton(
                 icon: Iconsax.notification,
+                label: 'Notifikasi',
                 onPressed: () {
                   try {
                     Navigator.pushNamed(context, '/notifications');
@@ -107,6 +109,7 @@ class _HomeHeaderState extends State<HomeHeader> {
               const SizedBox(width: 8),
               _buildIconButton(
                 icon: Iconsax.setting,
+                label: 'Pengaturan',
                 onPressed: () {
                   try {
                     Navigator.pushNamed(context, '/settings');
@@ -135,10 +138,14 @@ class _HomeHeaderState extends State<HomeHeader> {
 
   Widget _buildIconButton({
     required IconData icon,
+    required String label,
     required VoidCallback onPressed,
     bool hasNotification = false,
   }) {
-    return Stack(
+    return Semantics(
+      label: label,
+      button: true,
+      child: Stack(
       children: [
         Container(
           width: 48,
@@ -164,9 +171,10 @@ class _HomeHeaderState extends State<HomeHeader> {
                 color: DesignTokens.primaryColor,
                 shape: BoxShape.circle,
               ),
-            ),
           ),
+        ),
       ],
+    ),
     );
   }
 }

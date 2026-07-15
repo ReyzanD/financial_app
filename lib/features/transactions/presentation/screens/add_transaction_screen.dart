@@ -45,6 +45,8 @@ import 'package:financial_app/services/smart_categorization_service.dart';
 import 'package:financial_app/services/data/transaction_data_service.dart';
 import 'package:financial_app/services/data/budget_data_service.dart';
 import 'package:financial_app/services/data/category_data_service.dart';
+import 'package:financial_app/services/data/place_visit_data_service.dart';
+import 'package:financial_app/services/data/price_observation_data_service.dart';
 import 'package:financial_app/models/category_model.dart';
 import 'package:financial_app/utils/date_picker_helper.dart';
 import 'package:financial_app/utils/design_tokens.dart';
@@ -715,8 +717,28 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
         }
 
         // Call API to add transaction
-        await _transactionData.addTransaction(transactionData);
+        final savedTx = await _transactionData.addTransaction(transactionData);
         LoggerService.success('Transaction saved successfully');
+
+        // Auto-create PlaceVisit + PriceObservation for location-based features
+        if (savedTx.locationData != null) {
+          try {
+            final pvService = getIt<PlaceVisitDataService>();
+            final poService = getIt<PriceObservationDataService>();
+            final placeVisit = await pvService.upsertFromTransaction(savedTx);
+            await poService.createFromTransaction(
+              placeVisitId: placeVisit.id,
+              transaction: savedTx,
+            );
+            LoggerService.info(
+              '✅ PlaceVisit + PriceObservation created for ${placeVisit.placeName}',
+            );
+          } catch (e) {
+            LoggerService.warning(
+              'Non-critical: could not create place visit', error: e,
+            );
+          }
+        }
 
         // If it's an expense, update the budget spent amount
         if (_selectedType == 'expense') {

@@ -519,11 +519,86 @@ class LocalDatabaseService {
       'CREATE INDEX IF NOT EXISTS idx_goal_contributions_account ON goal_contributions_232143(account_id_232143)',
     );
 
+    // === Phase 2: Alternative Recommendation Engine Tables ===
+
+    // Place visits table — deduplicated places from transaction location data
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS place_visits_232143 (
+        place_visit_id_232143 TEXT PRIMARY KEY,
+        osm_node_id_232143 TEXT,
+        place_name_232143 TEXT NOT NULL,
+        latitude_232143 REAL NOT NULL,
+        longitude_232143 REAL NOT NULL,
+        address_232143 TEXT,
+        category_232143 TEXT NOT NULL,
+        osm_tag_232143 TEXT,
+        visit_count_232143 INTEGER DEFAULT 1,
+        total_spent_232143 REAL DEFAULT 0.0,
+        first_visit_232143 TEXT NOT NULL,
+        last_visit_232143 TEXT NOT NULL,
+        created_at_232143 TEXT DEFAULT CURRENT_TIMESTAMP
+      )
+    ''');
+
+    // Price observations table — prices at specific places per category
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS price_observations_232143 (
+        price_observation_id_232143 TEXT PRIMARY KEY,
+        place_visit_id_232143 TEXT NOT NULL,
+        category_232143 TEXT NOT NULL,
+        price_232143 REAL NOT NULL,
+        currency_232143 TEXT DEFAULT 'IDR',
+        observed_at_232143 TEXT NOT NULL,
+        source_232143 TEXT DEFAULT 'auto_extracted' CHECK (source_232143 IN ('self_reported','auto_extracted')),
+        transaction_id_232143 TEXT,
+        created_at_232143 TEXT DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (place_visit_id_232143) REFERENCES place_visits_232143(place_visit_id_232143) ON DELETE CASCADE,
+        FOREIGN KEY (transaction_id_232143) REFERENCES transactions_232143(transaction_id_232143) ON DELETE SET NULL
+      )
+    ''');
+
+    // Alternative suggestions table — cached Overpass + price-based suggestions
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS alternative_suggestions_232143 (
+        alternative_suggestion_id_232143 TEXT PRIMARY KEY,
+        origin_place_visit_id_232143 TEXT NOT NULL,
+        suggested_place_name_232143 TEXT NOT NULL,
+        suggested_osm_node_id_232143 TEXT NOT NULL,
+        suggested_latitude_232143 REAL NOT NULL,
+        suggested_longitude_232143 REAL NOT NULL,
+        distance_meters_232143 REAL NOT NULL,
+        estimated_savings_232143 REAL,
+        basis_232143 TEXT DEFAULT 'distance_only' CHECK (basis_232143 IN ('price','distance_only')),
+        category_232143 TEXT NOT NULL,
+        confidence_level_232143 INTEGER DEFAULT 0,
+        generated_at_232143 TEXT NOT NULL,
+        created_at_232143 TEXT DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (origin_place_visit_id_232143) REFERENCES place_visits_232143(place_visit_id_232143) ON DELETE CASCADE
+      )
+    ''');
+
+    // Indexes for the new tables
+    await db.execute(
+      'CREATE INDEX IF NOT EXISTS idx_place_visits_category ON place_visits_232143(category_232143)',
+    );
+    await db.execute(
+      'CREATE INDEX IF NOT EXISTS idx_place_visits_osm ON place_visits_232143(osm_node_id_232143)',
+    );
+    await db.execute(
+      'CREATE INDEX IF NOT EXISTS idx_price_observations_place ON price_observations_232143(place_visit_id_232143)',
+    );
+    await db.execute(
+      'CREATE INDEX IF NOT EXISTS idx_price_observations_category ON price_observations_232143(category_232143)',
+    );
+    await db.execute(
+      'CREATE INDEX IF NOT EXISTS idx_alternative_suggestions_origin ON alternative_suggestions_232143(origin_place_visit_id_232143)',
+    );
+
     LoggerService.info('✅ Database schema created successfully');
   }
 
   /// Get current database version
-  static int get currentVersion => 5;
+  static int get currentVersion => 6;
 
   /// Upgrade database schema
   Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
@@ -825,6 +900,81 @@ class LocalDatabaseService {
 
         LoggerService.info(
           '✅ Migrated to version 5: added goal_contributions table',
+        );
+      }
+
+      if (oldVersion < 6) {
+        await db.execute('''
+          CREATE TABLE IF NOT EXISTS place_visits_232143 (
+            place_visit_id_232143 TEXT PRIMARY KEY,
+            osm_node_id_232143 TEXT,
+            place_name_232143 TEXT NOT NULL,
+            latitude_232143 REAL NOT NULL,
+            longitude_232143 REAL NOT NULL,
+            address_232143 TEXT,
+            category_232143 TEXT NOT NULL,
+            osm_tag_232143 TEXT,
+            visit_count_232143 INTEGER DEFAULT 1,
+            total_spent_232143 REAL DEFAULT 0.0,
+            first_visit_232143 TEXT NOT NULL,
+            last_visit_232143 TEXT NOT NULL,
+            created_at_232143 TEXT DEFAULT CURRENT_TIMESTAMP
+          )
+        ''');
+
+        await db.execute('''
+          CREATE TABLE IF NOT EXISTS price_observations_232143 (
+            price_observation_id_232143 TEXT PRIMARY KEY,
+            place_visit_id_232143 TEXT NOT NULL,
+            category_232143 TEXT NOT NULL,
+            price_232143 REAL NOT NULL,
+            currency_232143 TEXT DEFAULT 'IDR',
+            observed_at_232143 TEXT NOT NULL,
+            source_232143 TEXT DEFAULT 'auto_extracted' CHECK (source_232143 IN ('self_reported','auto_extracted')),
+            transaction_id_232143 TEXT,
+            created_at_232143 TEXT DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (place_visit_id_232143) REFERENCES place_visits_232143(place_visit_id_232143) ON DELETE CASCADE,
+            FOREIGN KEY (transaction_id_232143) REFERENCES transactions_232143(transaction_id_232143) ON DELETE SET NULL
+          )
+        ''');
+
+        await db.execute('''
+          CREATE TABLE IF NOT EXISTS alternative_suggestions_232143 (
+            alternative_suggestion_id_232143 TEXT PRIMARY KEY,
+            origin_place_visit_id_232143 TEXT NOT NULL,
+            suggested_place_name_232143 TEXT NOT NULL,
+            suggested_osm_node_id_232143 TEXT NOT NULL,
+            suggested_latitude_232143 REAL NOT NULL,
+            suggested_longitude_232143 REAL NOT NULL,
+            distance_meters_232143 REAL NOT NULL,
+            estimated_savings_232143 REAL,
+            basis_232143 TEXT DEFAULT 'distance_only' CHECK (basis_232143 IN ('price','distance_only')),
+            category_232143 TEXT NOT NULL,
+            confidence_level_232143 INTEGER DEFAULT 0,
+            generated_at_232143 TEXT NOT NULL,
+            created_at_232143 TEXT DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (origin_place_visit_id_232143) REFERENCES place_visits_232143(place_visit_id_232143) ON DELETE CASCADE
+          )
+        ''');
+
+        await db.execute(
+          'CREATE INDEX IF NOT EXISTS idx_place_visits_category ON place_visits_232143(category_232143)',
+        );
+        await db.execute(
+          'CREATE INDEX IF NOT EXISTS idx_place_visits_osm ON place_visits_232143(osm_node_id_232143)',
+        );
+        await db.execute(
+          'CREATE INDEX IF NOT EXISTS idx_price_observations_place ON price_observations_232143(place_visit_id_232143)',
+        );
+        await db.execute(
+          'CREATE INDEX IF NOT EXISTS idx_price_observations_category ON price_observations_232143(category_232143)',
+        );
+        await db.execute(
+          'CREATE INDEX IF NOT EXISTS idx_alternative_suggestions_origin ON alternative_suggestions_232143(origin_place_visit_id_232143)',
+        );
+
+        LoggerService.info(
+          '✅ Migrated to version 6: added place_visits, price_observations, alternative_suggestions tables',
         );
       }
     });

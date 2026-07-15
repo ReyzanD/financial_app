@@ -218,21 +218,27 @@ class _AddAccountModalState extends State<AddAccountModal> {
                               _selectedColor = color;
                             });
                           },
-                          child: Container(
-                            width: 36,
-                            height: 36,
-                            decoration: BoxDecoration(
-                              color: Color(
-                                int.parse(color.replaceFirst('#', '0xFF')),
+                          child: SizedBox(
+                            width: 48,
+                            height: 48,
+                            child: Center(
+                              child: Container(
+                                width: 36,
+                                height: 36,
+                                decoration: BoxDecoration(
+                                  color: Color(
+                                    int.parse(color.replaceFirst('#', '0xFF')),
+                                  ),
+                                  shape: BoxShape.circle,
+                                  border:
+                                      isSelected
+                                          ? Border.all(
+                                            color: Colors.white,
+                                            width: 3,
+                                          )
+                                          : null,
+                                ),
                               ),
-                              shape: BoxShape.circle,
-                              border:
-                                  isSelected
-                                      ? Border.all(
-                                        color: Colors.white,
-                                        width: 3,
-                                      )
-                                      : null,
                             ),
                           ),
                         ),

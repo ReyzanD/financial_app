@@ -93,7 +93,11 @@ class _ExpandableSectionState extends State<ExpandableSection>
       child: Column(
         children: [
           // Header — always visible
-          InkWell(
+          Semantics(
+            label: widget.title,
+            hint: _isExpanded ? 'Tutup' : 'Buka',
+            button: true,
+            child: InkWell(
             onTap: _toggle,
             borderRadius: BorderRadius.circular(DesignTokens.radiusLarge),
             child: Padding(
@@ -130,6 +134,7 @@ class _ExpandableSectionState extends State<ExpandableSection>
                 ],
               ),
             ),
+          ),
           ),
 
           // Content — expandable with animation

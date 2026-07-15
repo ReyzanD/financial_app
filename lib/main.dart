@@ -21,6 +21,7 @@ import 'package:financial_app/features/budgets/presentation/screens/budgets_scre
 import 'package:financial_app/features/goals/presentation/screens/goals_screen.dart';
 import 'package:financial_app/features/goals/presentation/controllers/goal_controller.dart';
 import 'package:financial_app/features/analytics/presentation/screens/analytics_hub_screen.dart';
+import 'package:financial_app/features/financial_advisor/presentation/screens/financial_advisor_screen.dart';
 import 'package:financial_app/features/analytics/presentation/controllers/analytics_controller.dart';
 
 import 'package:financial_app/features/transactions/presentation/screens/add_transaction_screen.dart';
@@ -51,6 +52,7 @@ import 'package:financial_app/features/category_customization/presentation/scree
 import 'package:financial_app/features/category_customization/presentation/controllers/category_controller.dart';
 import 'package:financial_app/features/financial_calendar/presentation/screens/financial_calendar_screen.dart';
 import 'package:financial_app/features/financial_calendar/presentation/controllers/calendar_controller.dart';
+import 'package:financial_app/features/daad/presentation/screens/german_finance_screen.dart';
 import 'package:financial_app/features/onboarding/presentation/controllers/onboarding_controller.dart';
 import 'package:financial_app/features/ai_budget_recommendation/presentation/controllers/ai_budget_controller.dart';
 import 'package:financial_app/features/settings/presentation/controllers/settings_controller.dart';
@@ -260,28 +262,21 @@ class MyApp extends StatelessWidget {
             '/add-transaction': (context) => const AddTransactionScreen(),
             '/ai-budget-recommendation':
                 (context) => const AIBudgetRecommendationScreen(),
-            '/reports': (context) => const AnalyticsHubScreen(initialTab: 'reports'),
             '/backup': (context) => const BackupScreen(),
-            '/financial-obligations':
+            '/obligations':
                 (context) => const FinancialObligationsScreen(),
             '/forecast': (context) => const ForecastScreen(),
-            '/recurring-transactions':
-                (context) => const FinancialObligationsScreen(initialTab: 'recurring'),
             '/profile': (context) => const ProfileScreen(),
             '/transaction-history':
                 (context) => const TransactionHistoryScreen(),
             '/receipt-history': (context) => const ReceiptHistoryScreen(),
-            '/financial-insights': (context) => const AnalyticsHubScreen(initialTab: 'insights'),
+            '/financial-advisor': (context) => const FinancialAdvisorScreen(),
+            '/german-finance': (context) => const GermanFinanceScreen(),
             '/accounts': (context) => const AccountsScreen(),
-            '/debts': (context) => const FinancialObligationsScreen(initialTab: 'debts'),
-            '/subscriptions': (context) => const FinancialObligationsScreen(initialTab: 'subscriptions'),
             '/investments': (context) => const InvestmentsScreen(),
-            '/tags': (context) => const CategoryTagsScreen(initialMode: 'tags'),
             '/splits': (context) => const SplitsScreen(),
             '/challenges': (context) => const ChallengesScreen(),
             '/calendar': (context) => const FinancialCalendarScreen(),
-            '/net-worth': (context) => const AnalyticsHubScreen(initialTab: 'networth'),
-            '/cash-flow': (context) => const AnalyticsHubScreen(initialTab: 'cashflow'),
             '/categories': (context) => const CategoryTagsScreen(initialMode: 'categories'),
             '/templates': (context) => const TemplatesScreen(),
           },

@@ -1,7 +1,12 @@
 import 'package:uuid/uuid.dart';
+import 'package:financial_app/core/di/service_locator.dart';
 import 'package:financial_app/services/local_database_service.dart';
 import 'package:financial_app/services/local_auth_service.dart';
+import 'package:financial_app/services/data/debt_data_service.dart';
+import 'package:financial_app/services/data/subscription_data_service.dart';
 import 'package:financial_app/models/financial_obligation.dart';
+import 'package:financial_app/models/debt_model.dart';
+import 'package:financial_app/models/subscription_model.dart';
 
 /// Data service for Obligation CRUD operations.
 /// Extracted from the monolithic LocalDataService facade.
@@ -9,6 +14,9 @@ class ObligationDataService {
   final LocalDatabaseService _dbService;
   final LocalAuthService _authService;
   final _uuid = const Uuid();
+
+  DebtDataService get _debtService => getIt<DebtDataService>();
+  SubscriptionDataService get _subscriptionService => getIt<SubscriptionDataService>();
 
   ObligationDataService({
     LocalDatabaseService? dbService,
@@ -250,4 +258,62 @@ class ObligationDataService {
       'total_count': obligations.length,
     };
   }
+
+  // ====================================================================
+  // Debt delegation methods (backed by DebtDataService internally)
+  // ====================================================================
+
+  /// Get debts
+  Future<List<DebtModel>> getDebts({bool activeOnly = true}) =>
+      _debtService.getDebts(activeOnly: activeOnly);
+
+  /// Add debt
+  Future<DebtModel> addDebt(Map<String, dynamic> debtData) =>
+      _debtService.addDebt(debtData);
+
+  /// Record debt payment
+  Future<Map<String, dynamic>> recordDebtPayment(
+    String debtId,
+    double amount, {
+    String? notes,
+  }) => _debtService.recordDebtPayment(debtId, amount, notes: notes);
+
+  /// Get debt payments
+  Future<List<Map<String, dynamic>>> getDebtPayments(String debtId) =>
+      _debtService.getDebtPayments(debtId);
+
+  /// Get debt summary
+  Future<Map<String, dynamic>> getDebtSummary() =>
+      _debtService.getDebtSummary();
+
+  /// Delete debt
+  Future<bool> deleteDebt(String debtId) =>
+      _debtService.deleteDebt(debtId);
+
+  // ====================================================================
+  // Subscription delegation methods (backed by SubscriptionDataService internally)
+  // ====================================================================
+
+  /// Get subscriptions
+  Future<List<SubscriptionModel>> getSubscriptions({bool activeOnly = true}) =>
+      _subscriptionService.getSubscriptions(activeOnly: activeOnly);
+
+  /// Add subscription
+  Future<SubscriptionModel> addSubscription(
+    Map<String, dynamic> subData,
+  ) => _subscriptionService.addSubscription(subData);
+
+  /// Update subscription
+  Future<SubscriptionModel> updateSubscription(
+    String subId,
+    Map<String, dynamic> subData,
+  ) => _subscriptionService.updateSubscription(subId, subData);
+
+  /// Delete subscription
+  Future<bool> deleteSubscription(String subId) =>
+      _subscriptionService.deleteSubscription(subId);
+
+  /// Get subscription summary
+  Future<Map<String, dynamic>> getSubscriptionSummary() =>
+      _subscriptionService.getSubscriptionSummary();
 }

@@ -1,19 +1,19 @@
 import 'package:financial_app/core/di/service_locator.dart';
-import 'package:financial_app/services/data/debt_data_service.dart';
+import 'package:financial_app/services/data/obligation_data_service.dart';
 import 'package:financial_app/models/debt_model.dart';
 
 class DebtService {
-  final DebtDataService _debtData;
+  final ObligationDataService _obligationData;
 
-  DebtService({DebtDataService? debtData})
-      : _debtData = debtData ?? getIt<DebtDataService>();
+  DebtService({ObligationDataService? obligationData})
+      : _obligationData = obligationData ?? getIt<ObligationDataService>();
 
   Future<List<DebtModel>> getDebts({bool activeOnly = true}) async {
-    return _debtData.getDebts(activeOnly: activeOnly);
+    return _obligationData.getDebts(activeOnly: activeOnly);
   }
 
   Future<DebtModel> addDebt(DebtModel debt) async {
-    final created = await _debtData.addDebt(debt.toMap());
+    final created = await _obligationData.addDebt(debt.toMap());
     return created;
   }
 
@@ -22,20 +22,20 @@ class DebtService {
     double amount, {
     String? notes,
   }) async {
-    await _debtData.recordDebtPayment(debtId, amount, notes: notes);
+    await _obligationData.recordDebtPayment(debtId, amount, notes: notes);
   }
 
   Future<List<Map<String, dynamic>>> getPaymentHistory(String debtId) async {
-    return _debtData.getDebtPayments(debtId);
+    return _obligationData.getDebtPayments(debtId);
   }
 
   Future<double> getTotalDebt() async {
-    final summary = await _debtData.getDebtSummary();
+    final summary = await _obligationData.getDebtSummary();
     return (summary['total_debt'] as num?)?.toDouble() ?? 0.0;
   }
 
   Future<Map<String, dynamic>> getDebtSummary() async {
-    final summary = await _debtData.getDebtSummary();
+    final summary = await _obligationData.getDebtSummary();
     final debts = await getDebts();
     final debtsByType = <String, double>{};
 
@@ -55,6 +55,6 @@ class DebtService {
   }
 
   Future<void> deleteDebt(String debtId) async {
-    await _debtData.deleteDebt(debtId);
+    await _obligationData.deleteDebt(debtId);
   }
 }

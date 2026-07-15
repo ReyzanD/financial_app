@@ -59,9 +59,24 @@ Manages UI state and user interactions for a feature.
 
 Single-repository use case classes that just call one method and return the result add no value — the controller can call the repository directly. Use cases are only retained when they orchestrate more than one repository call.
 
-### Business Services That Duplicate Data Services (to be merged)
+### Business Services That Duplicate Data Services (partially merged)
 
-Services like `AccountService`, `DebtService`, `SubscriptionTrackerService` exist as thin wrappers that call a data service and convert raw maps to typed models. Once data services return typed models directly, these wrappers become unnecessary and are merged into the repository layer.
+Services like `AccountService`, `DebtService`, `SubscriptionTrackerService` existed as thin wrappers. As of Phase 1.5:
+- **DebtService** and **SubscriptionTrackerService** now delegate to the unified `ObligationDataService` instead of separate `DebtDataService`/`SubscriptionDataService`.
+- The old `DebtDataService` and `SubscriptionDataService` remain as internal implementation details of `ObligationDataService`.
+- `AccountService` still wraps `AccountDataService` — a future pass should consolidate similarly.
+
+### Redundant Routes Removed
+
+Phase 1.5 removed 8 route definitions from `main.dart` that all pointed to the same screen with a different initial tab:
+
+| Removed Route | Unified Into |
+|---------------|-------------|
+| `/debts`, `/subscriptions`, `/recurring-transactions` | `/obligations` |
+| `/reports`, `/financial-insights`, `/net-worth`, `/cash-flow` | `/analytics` |
+| `/tags` | `/categories` |
+
+These were only registered in `main.dart` and never navigated to from anywhere — they were dead routes left over from before the UI was unified into tabbed hub screens.
 
 ---
 
@@ -102,10 +117,16 @@ All services, repositories, and controllers are registered in `lib/core/di/servi
 
 ## Feature Status (Architecture Coverage)
 
-| Layer | Full Pattern | Partial Pattern | Presentation Only |
-|-------|-------------|-----------------|-------------------|
-| Count | 3 (budgets, transactions, goals) | 14 | 8 |
-| Notes | These have real domain entities + repositories + controllers | Have repository + controller, but no domain entity | UI over existing services; need controllers for testability |
+Accurate as of July 2026 (34 feature directories):
+
+| Layer | Count | Description |
+|-------|-------|-------------|
+| **Full Clean Architecture** (domain/ + data/ + presentation/) | **2** | `goals`, `transactions` — the only features with domain entities, use cases, and repository interfaces |
+| **Simplified 2-layer** (data/repositories/ + presentation/) | **18** | Concrete repository + controller, no domain layer. Repository wraps a DataService directly. |
+| **Presentation only** | **11** | Screen + optional controller, backed by existing services. No dedicated data layer. |
+| **Skeleton** (empty directories) | **3** | `debts`, `recurring_transactions`, `subscriptions` — directory scaffolding from initial clean-architecture setup that was never populated (widget modals exist elsewhere). |
+
+Features with no dedicated controller (screen uses services directly): `daad`, `financial_advisor`, `more_tab`.
 
 **Target:** Every feature should have at least a Controller + Repository + Data Service. Features that are pure UI over existing services (auth, home, settings, onboarding) may omit the data service if they don't own a database table.
 
@@ -133,3 +154,4 @@ Raw SQLite via `sqflite` gives full control over queries, migrations, and perfor
 ## Document History
 
 - **2026-07-13** — Initial version, documenting the collapsed 3-layer pattern after auditing the original 4-layer implementation for inconsistencies.
+- **2026-07-15** — Updated feature counts after full survey (34 features, 2 full-CA, 18 simplified, 11 presentation-only, 3 skeletons). Added Phase 1.5 route consolidation and obligations data-layer unification.

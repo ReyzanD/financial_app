@@ -81,24 +81,28 @@ class EmptyState extends StatelessWidget {
             // Action button (if provided)
             if (actionText != null && onAction != null) ...[
               const SizedBox(height: 24),
-              ElevatedButton.icon(
-                onPressed: onAction,
-                icon: Icon(Iconsax.add, color: Colors.white),
-                label: Text(
-                  actionText!,
-                  style: GoogleFonts.poppins(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w600,
+              Semantics(
+                label: actionText,
+                button: true,
+                child: ElevatedButton.icon(
+                  onPressed: onAction,
+                  icon: Icon(Iconsax.add, color: Colors.white),
+                  label: Text(
+                    actionText!,
+                    style: GoogleFonts.poppins(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
-                ),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: iconColor ?? DesignTokens.primaryColor,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 24,
-                    vertical: 12,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: iconColor ?? DesignTokens.primaryColor,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 24,
+                      vertical: 12,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                    ),
                   ),
                 ),
               ),

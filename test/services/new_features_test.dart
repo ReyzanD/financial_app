@@ -17,8 +17,7 @@ import '../helpers/fake_data_services.dart';
 void main() {
   late FakeAccountDataService fakeAccountData;
   late FakeGoalDataService fakeGoalData;
-  late FakeDebtDataService fakeDebtData;
-  late FakeSubscriptionDataService fakeSubData;
+  late FakeObligationDataService fakeObligationData;
   late FakeExpenseSplitDataService fakeSplitData;
   late FakeInvestmentDataService fakeInvData;
   late FakeCategoryDataService fakeCategoryData;
@@ -28,8 +27,7 @@ void main() {
     SharedPreferences.setMockInitialValues({});
     fakeAccountData = FakeAccountDataService();
     fakeGoalData = FakeGoalDataService();
-    fakeDebtData = FakeDebtDataService();
-    fakeSubData = FakeSubscriptionDataService();
+    fakeObligationData = FakeObligationDataService();
     fakeSplitData = FakeExpenseSplitDataService();
     fakeInvData = FakeInvestmentDataService();
     fakeCategoryData = FakeCategoryDataService();
@@ -103,7 +101,7 @@ void main() {
     late DebtService service;
 
     setUp(() {
-      service = DebtService(debtData: fakeDebtData);
+      service = DebtService(obligationData: fakeObligationData);
     });
 
     test('should start with no debts', () async {
@@ -159,7 +157,7 @@ void main() {
     late SubscriptionTrackerService service;
 
     setUp(() {
-      service = SubscriptionTrackerService(subscriptionData: fakeSubData);
+      service = SubscriptionTrackerService(obligationData: fakeObligationData);
     });
 
     test('should start with no subscriptions', () async {

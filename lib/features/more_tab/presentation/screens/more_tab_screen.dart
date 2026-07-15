@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:financial_app/utils/design_tokens.dart';
 import 'package:financial_app/widgets/common/offline_indicator.dart';
+import 'package:financial_app/widgets/common/responsive_content.dart';
 
 class MoreTabScreen extends StatelessWidget {
   const MoreTabScreen({super.key});
@@ -13,12 +14,13 @@ class MoreTabScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: DesignTokens.backgroundDark,
-      body: Column(
-        children: [
-          const OfflineIndicator(),
-          Expanded(
-            child: SafeArea(
-              child: CustomScrollView(
+      body: ResponsiveContent(
+        child: Column(
+          children: [
+            const OfflineIndicator(),
+            Expanded(
+              child: SafeArea(
+                child: CustomScrollView(
                 slivers: [
                   SliverToBoxAdapter(
                     child: Padding(
@@ -82,7 +84,8 @@ class MoreTabScreen extends StatelessWidget {
           ),
         ],
       ),
-    );
+    ),
+  );
   }
 
   List<_MoreSection> _buildSections() {
@@ -112,7 +115,7 @@ class MoreTabScreen extends StatelessWidget {
             icon: Iconsax.receipt_1,
             label: 'Kewajiban',
             color: Colors.red,
-            route: '/financial-obligations',
+            route: '/obligations',
           ),
           _MoreItem(
             icon: Iconsax.chart_1,
@@ -154,6 +157,18 @@ class MoreTabScreen extends StatelessWidget {
             label: 'Riwayat Resi',
             color: Colors.cyan,
             route: '/receipt-history',
+          ),
+          _MoreItem(
+            icon: Iconsax.diagram,
+            label: 'Penasihat',
+            color: DesignTokens.primaryColor,
+            route: '/financial-advisor',
+          ),
+          _MoreItem(
+            icon: Iconsax.global,
+            label: 'Studi Jerman',
+            color: const Color(0xFFFFCD00),
+            route: '/german-finance',
           ),
         ],
       ),

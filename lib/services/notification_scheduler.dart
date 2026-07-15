@@ -1,15 +1,13 @@
 import 'package:financial_app/core/di/service_locator.dart';
 import 'package:financial_app/services/notification_service.dart';
-import 'package:financial_app/services/data/subscription_data_service.dart';
+import 'package:financial_app/services/data/obligation_data_service.dart';
 import 'package:financial_app/services/data/challenge_data_service.dart';
-import 'package:financial_app/services/data/debt_data_service.dart';
 import 'package:financial_app/services/data/expense_split_data_service.dart';
 import 'package:financial_app/services/logger_service.dart';
 
 class NotificationScheduler {
-  final SubscriptionDataService _subscriptionData = getIt<SubscriptionDataService>();
+  final ObligationDataService _obligationData = getIt<ObligationDataService>();
   final ChallengeDataService _challengeData = getIt<ChallengeDataService>();
-  final DebtDataService _debtData = getIt<DebtDataService>();
   final ExpenseSplitDataService _splitData = getIt<ExpenseSplitDataService>();
   final NotificationService _notifications = getIt<NotificationService>();
 
@@ -26,7 +24,7 @@ class NotificationScheduler {
 
   Future<void> scheduleSubscriptionNotifications() async {
     try {
-      final subscriptions = await _subscriptionData.getSubscriptions(
+      final subscriptions = await _obligationData.getSubscriptions(
         activeOnly: true,
       );
 
@@ -77,7 +75,7 @@ class NotificationScheduler {
 
   Future<void> scheduleDebtNotifications() async {
     try {
-      final debts = await _debtData.getDebts();
+      final debts = await _obligationData.getDebts();
 
       for (final debt in debts) {
         final name = debt.name;

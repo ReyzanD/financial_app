@@ -1,23 +1,23 @@
 import 'package:financial_app/core/di/service_locator.dart';
-import 'package:financial_app/services/data/subscription_data_service.dart';
+import 'package:financial_app/services/data/obligation_data_service.dart';
 import 'package:financial_app/models/subscription_model.dart';
 
 class SubscriptionTrackerService {
-  final SubscriptionDataService _subscriptionData;
+  final ObligationDataService _obligationData;
 
-  SubscriptionTrackerService({SubscriptionDataService? subscriptionData})
-    : _subscriptionData = subscriptionData ?? getIt<SubscriptionDataService>();
+  SubscriptionTrackerService({ObligationDataService? obligationData})
+    : _obligationData = obligationData ?? getIt<ObligationDataService>();
 
   Future<List<SubscriptionModel>> getSubscriptions({
     bool activeOnly = true,
   }) async {
-    return _subscriptionData.getSubscriptions(activeOnly: activeOnly);
+    return _obligationData.getSubscriptions(activeOnly: activeOnly);
   }
 
   Future<SubscriptionModel> addSubscription(
     SubscriptionModel subscription,
   ) async {
-    return _subscriptionData.addSubscription(subscription.toMap());
+    return _obligationData.addSubscription(subscription.toMap());
   }
 
   Future<SubscriptionModel> updateSubscription(
@@ -28,7 +28,7 @@ class SubscriptionTrackerService {
       updates['next_renewal'] =
           (updates['next_renewal'] as DateTime).toIso8601String();
     }
-    return _subscriptionData.updateSubscription(id, updates);
+    return _obligationData.updateSubscription(id, updates);
   }
 
   Future<void> cancelSubscription(String id) async {
@@ -44,7 +44,7 @@ class SubscriptionTrackerService {
   }
 
   Future<Map<String, dynamic>> getSubscriptionSummary() async {
-    return _subscriptionData.getSubscriptionSummary();
+    return _obligationData.getSubscriptionSummary();
   }
 
   Future<double> calculateCostPerUse(String subscriptionId, int uses) async {
