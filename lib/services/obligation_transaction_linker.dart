@@ -1,14 +1,16 @@
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:financial_app/models/financial_obligation.dart';
-import 'package:financial_app/services/api_service.dart';
+import 'package:financial_app/services/data/obligation_data_service.dart';
+import 'package:financial_app/services/data/transaction_data_service.dart';
 import 'package:financial_app/services/payment_history_service.dart';
 import 'package:financial_app/services/logger_service.dart';
 import 'package:financial_app/core/di/service_locator.dart';
 
 /// Service untuk menghubungkan obligations dengan transactions
 class ObligationTransactionLinker {
-  final ApiService _apiService = getIt<ApiService>();
+  final ObligationDataService _obligationData = getIt<ObligationDataService>();
+  final TransactionDataService _transactionData = getIt<TransactionDataService>();
   final PaymentHistoryService _paymentService = getIt<PaymentHistoryService>();
 
   /// Auto-link transaction to obligation berdasarkan amount dan date
@@ -25,7 +27,7 @@ class ObligationTransactionLinker {
               : DateTime.now();
 
       // Get all obligations
-      final obligations = await _apiService.getObligations();
+      final obligations = await _obligationData.getObligations();
 
       // Find matching obligation
       for (var obligation in obligations) {
@@ -115,7 +117,7 @@ class ObligationTransactionLinker {
       // If transaction amount matches obligation amount, record as payment
       final transactionAmount =
           (transaction['amount'] as num?)?.toDouble() ?? 0.0;
-      final obligations = await _apiService.getObligations();
+      final obligations = await _obligationData.getObligations();
       final obligation = obligations.firstWhere(
         (o) => o.id == obligationId,
         orElse: () => FinancialObligation(
@@ -230,7 +232,7 @@ class ObligationTransactionLinker {
     Map<String, dynamic> paymentData,
   ) async {
     try {
-      final obligations = await _apiService.getObligations();
+      final obligations = await _obligationData.getObligations();
       final obligation = obligations.firstWhere(
         (o) => o.id == obligationId,
         orElse: () => FinancialObligation(
@@ -262,18 +264,17 @@ class ObligationTransactionLinker {
         'time': DateTime.now().toString().split(' ')[1].substring(0, 5),
       };
 
-      // Create transaction via API
-      final response = await _apiService.addTransaction(transactionData);
-      final transactionId = response['transaction_id']?.toString();
+      // Create transaction via data service
+      final transactionModel =
+          await _transactionData.addTransaction(transactionData);
+      final transactionId = transactionModel.id;
 
-      if (transactionId != null) {
-        // Link transaction to obligation
-        await linkTransactionToObligation(
-          obligationId,
-          transactionId,
-          transactionData,
-        );
-      }
+      // Link transaction to obligation
+      await linkTransactionToObligation(
+        obligationId,
+        transactionId,
+        transactionData,
+      );
 
       return transactionId;
     } catch (e) {

@@ -1,12 +1,12 @@
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:financial_app/services/api_service.dart';
+import 'package:financial_app/services/data/obligation_data_service.dart';
 import 'package:financial_app/services/logger_service.dart';
 import 'package:financial_app/core/di/service_locator.dart';
 
 /// Service untuk tracking payment history untuk obligations
 class PaymentHistoryService {
-  final ApiService _apiService = getIt<ApiService>();
+  final ObligationDataService _obligationData = getIt<ObligationDataService>();
 
   /// Get payment history untuk obligation
   Future<List<Map<String, dynamic>>> getPaymentHistory(
@@ -47,7 +47,7 @@ class PaymentHistoryService {
   ) async {
     try {
       // Record in API
-      await _apiService.recordObligationPayment(obligationId, paymentData);
+      await _obligationData.recordObligationPayment(obligationId, paymentData);
 
       // Also save locally for history
       await _saveLocalPayment(obligationId, paymentData);

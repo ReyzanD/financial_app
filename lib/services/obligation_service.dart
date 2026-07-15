@@ -1,15 +1,26 @@
 import 'package:financial_app/core/di/service_locator.dart';
 import 'package:financial_app/models/financial_obligation.dart';
-import 'package:financial_app/services/api_service.dart';
+import 'package:financial_app/services/data/obligation_data_service.dart';
 
 class ObligationService {
-  final ApiService _apiService;
-  ObligationService({ApiService? apiService})
-    : _apiService = apiService ?? getIt<ApiService>();
+  final ObligationDataService _obligationData;
+  ObligationService({ObligationDataService? obligationData})
+    : _obligationData = obligationData ?? getIt<ObligationDataService>();
 
   Future<Map<String, dynamic>> getObligationsSummary() async {
     try {
-      return await _apiService.getObligationsSummary();
+      final obligations = await _obligationData.getObligations();
+      double totalMonthly = 0.0;
+      double totalDebt = 0.0;
+      for (final o in obligations) {
+        totalMonthly += o.monthlyAmount;
+        totalDebt += o.currentBalance ?? o.monthlyAmount;
+      }
+      return {
+        'monthlyTotal': totalMonthly,
+        'totalDebt': totalDebt,
+        'obligationsCount': obligations.length,
+      };
     } catch (e) {
       return {'monthlyTotal': 0.0, 'totalDebt': 0.0, 'obligationsCount': 0};
     }
@@ -19,7 +30,7 @@ class ObligationService {
     int days = 7,
   }) async {
     try {
-      return await _apiService.getUpcomingObligations(days: days);
+      return await _obligationData.getUpcomingObligations(days: days);
     } catch (e) {
       return [];
     }
@@ -27,7 +38,7 @@ class ObligationService {
 
   Future<List<FinancialObligation>> getObligations({String? type}) async {
     try {
-      return await _apiService.getObligations(type: type);
+      return await _obligationData.getObligations(type: type);
     } catch (e) {
       return [];
     }
@@ -35,7 +46,7 @@ class ObligationService {
 
   Future<DebtSummary> getDebtSummary() async {
     try {
-      final debts = await _apiService.getObligations(type: 'debt');
+      final debts = await _obligationData.getObligations(type: 'debt');
 
       double totalDebt = 0.0;
       double monthlyPayments = 0.0;
@@ -57,14 +68,14 @@ class ObligationService {
 
   Future<List<FinancialObligation>> getSubscriptions() async {
     try {
-      return await _apiService.getObligations(type: 'subscription');
+      return await _obligationData.getObligations(type: 'subscription');
     } catch (e) {
       return [];
     }
   }
 
   Future<String> createObligation(Map<String, dynamic> obligationData) async {
-    final response = await _apiService.createObligation(obligationData);
+    final response = await _obligationData.addObligation(obligationData);
     return response.id;
   }
 
@@ -72,17 +83,17 @@ class ObligationService {
     String obligationId,
     Map<String, dynamic> obligationData,
   ) async {
-    await _apiService.updateObligation(obligationId, obligationData);
+    await _obligationData.updateObligation(obligationId, obligationData);
   }
 
   Future<void> deleteObligation(String obligationId) async {
-    await _apiService.deleteObligation(obligationId);
+    await _obligationData.deleteObligation(obligationId);
   }
 
   Future<void> recordPayment(
     String obligationId,
     Map<String, dynamic> paymentData,
   ) async {
-    await _apiService.recordObligationPayment(obligationId, paymentData);
+    await _obligationData.recordObligationPayment(obligationId, paymentData);
   }
 }
