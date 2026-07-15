@@ -1,11 +1,13 @@
-import 'package:financial_app/services/api_service.dart';
+import 'package:financial_app/services/data/transaction_data_service.dart';
+import 'package:financial_app/services/data/budget_data_service.dart';
 import 'package:financial_app/services/logger_service.dart';
 import 'package:financial_app/services/notification_service.dart';
 import 'package:financial_app/core/di/service_locator.dart';
 
 /// Service untuk budget forecasting dan analytics
 class BudgetForecastService {
-  final ApiService _apiService = getIt<ApiService>();
+  final TransactionDataService _transactionData = getIt<TransactionDataService>();
+  final BudgetDataService _budgetData = getIt<BudgetDataService>();
   final NotificationService _notificationService = getIt<NotificationService>();
 
   /// Calculate budget forecast berdasarkan spending pattern
@@ -84,17 +86,16 @@ class BudgetForecastService {
       final startDate = endDate.subtract(Duration(days: days));
 
       // Get transactions untuk budget category
-      final transactionsData = await _apiService.getTransactions(
-        startDate: startDate,
-        endDate: endDate,
+      final transactionsData = await _transactionData.getTransactions(
+        startDate: startDate.toIso8601String().split('T')[0],
+        endDate: endDate.toIso8601String().split('T')[0],
         limit: 1000,
       );
-      final transactions = List<dynamic>.from(
+      final transactions = List<Map<String, dynamic>>.from(
         transactionsData['transactions'] ?? [],
       );
 
       // Filter by budget category dan sum
-      // Note: Ini perlu disesuaikan dengan struktur data budget
       double total = 0.0;
       for (var transaction in transactions) {
         if (transaction['type'] == 'expense') {
@@ -117,12 +118,12 @@ class BudgetForecastService {
       final startDate = endDate.subtract(Duration(days: days));
 
       if (startDate.isBefore(endDate)) {
-        final transactionsData = await _apiService.getTransactions(
-          startDate: startDate,
-          endDate: endDate,
+        final transactionsData = await _transactionData.getTransactions(
+          startDate: startDate.toIso8601String().split('T')[0],
+          endDate: endDate.toIso8601String().split('T')[0],
           limit: 1000,
         );
-        final transactions = List<dynamic>.from(
+        final transactions = List<Map<String, dynamic>>.from(
           transactionsData['transactions'] ?? [],
         );
 
@@ -146,12 +147,12 @@ class BudgetForecastService {
   /// Check dan send budget alerts
   Future<void> checkAndSendBudgetAlerts() async {
     try {
-      final budgets = await _apiService.getBudgets(activeOnly: true);
+      final budgetModels = await _budgetData.getBudgets(activeOnly: true);
 
-      for (var budget in budgets) {
-        final budgetMap = budget as Map<String, dynamic>;
-        final spent = (budgetMap['spent'] as num?)?.toDouble() ?? 0.0;
-        final amount = (budgetMap['amount'] as num?)?.toDouble() ?? 0.0;
+      for (var budget in budgetModels) {
+        final budgetMap = budget.toJson();
+        final spent = budget.spent;
+        final amount = budget.amount;
         final percentage = amount > 0 ? (spent / amount) * 100 : 0.0;
 
         // Alert at 80%
@@ -221,10 +222,10 @@ class BudgetForecastService {
         final monthDate = DateTime(now.year, now.month - i, 1);
 
         // Get budget untuk bulan ini
-        final budgets = await _apiService.getBudgets(activeOnly: false);
+        final budgetModels = await _budgetData.getBudgets(activeOnly: false);
 
         // Find budget untuk category
-        final budget = budgets.where((b) => b.categoryId == categoryId);
+        final budget = budgetModels.where((b) => b.categoryId == categoryId);
 
         if (budget.isNotEmpty) {
           final b = budget.first;

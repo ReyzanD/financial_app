@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:financial_app/services/api_service.dart';
+import 'package:financial_app/services/data/transaction_data_service.dart';
+import 'package:financial_app/services/data/goal_data_service.dart';
+import 'package:financial_app/services/data/obligation_data_service.dart';
 import 'package:financial_app/services/logger_service.dart';
 import 'package:financial_app/services/budget_predictor.dart';
 import 'package:financial_app/services/spending_pattern_analyzer.dart';
@@ -9,7 +11,9 @@ import 'package:financial_app/utils/design_tokens.dart';
 
 /// Service untuk generate AI budget recommendations with dynamic allocation
 class BudgetRecommendationService {
-  final ApiService _apiService = getIt<ApiService>();
+  final TransactionDataService _transactionData = getIt<TransactionDataService>();
+  final GoalDataService _goalData = getIt<GoalDataService>();
+  final ObligationDataService _obligationData = getIt<ObligationDataService>();
   final BudgetPredictor _budgetPredictor = getIt<BudgetPredictor>();
   final SpendingPatternAnalyzer _patternAnalyzer =
       getIt<SpendingPatternAnalyzer>();
@@ -18,7 +22,7 @@ class BudgetRecommendationService {
   Future<Map<String, dynamic>> generateRecommendation() async {
     try {
       // Get financial summary
-      final summary = await _apiService.getFinancialSummary();
+      final summary = await _transactionData.getFinancialSummary();
       final summaries = summary['summary'] as Map<String, dynamic>?;
 
       if (summaries == null) {
@@ -33,13 +37,17 @@ class BudgetRecommendationService {
       double monthlyRecurringExpenses = 0.0;
 
       try {
+        final allTransactions = await _transactionData.getTransactions(limit: 1000);
+        final allTxList = List<Map<String, dynamic>>.from(
+          allTransactions['transactions'] ?? [],
+        );
         final recurringTransactions =
-            await _apiService.getRecurringTransactions();
+            allTxList.where((t) => (t['is_recurring_232143'] as int? ?? 0) == 1);
         // Sum recurring transactions
         for (var recurring in recurringTransactions) {
-          if (recurring['type'] == 'expense' &&
-              recurring['is_active'] == true) {
-            final amount = (recurring['amount'] ?? 0.0).toDouble();
+          if (recurring['type_232143']?.toString() == 'expense' &&
+              (recurring['is_active_232143'] as int? ?? 0) == 1) {
+            final amount = (recurring['amount_232143'] as num?)?.toDouble() ?? 0.0;
             monthlyRecurringExpenses += amount;
           }
         }
@@ -51,7 +59,7 @@ class BudgetRecommendationService {
       }
 
       try {
-        final bills = await _apiService.getObligations();
+        final bills = await _obligationData.getObligations();
         // Sum bills/obligations
         for (var bill in bills) {
           monthlyRecurringExpenses += bill.monthlyAmount;
@@ -61,12 +69,15 @@ class BudgetRecommendationService {
       }
 
       // Get historical spending data for dynamic allocation
-      final transactionsData = await _apiService.getTransactions(limit: 500);
+      final transactionsData = await _transactionData.getTransactions(limit: 500);
       final transactions =
-          transactionsData['transactions'] as List<dynamic>? ?? [];
+          List<Map<String, dynamic>>.from(
+            transactionsData['transactions'] ?? [],
+          );
 
       // Get goals for goal-aligned allocation
-      final goals = await _apiService.getGoals();
+      final goalModels = await _goalData.getGoals();
+      final goals = goalModels.map((g) => g.toJson()).toList();
 
       // Generate dynamic budget recommendation based on historical data
       return await _generateDynamicBudgetRecommendation(
@@ -85,8 +96,8 @@ class BudgetRecommendationService {
   Future<Map<String, dynamic>> _generateDynamicBudgetRecommendation(
     double income,
     double monthlyRecurringExpenses,
-    List<dynamic> transactions,
-    List<dynamic> goals,
+    List<Map<String, dynamic>> transactions,
+    List<Map<String, dynamic>> goals,
   ) async {
     // Check if user is new (no transactions or very few transactions)
     final isNewUser = transactions.isEmpty;
@@ -508,7 +519,7 @@ class BudgetRecommendationService {
   Future<Map<String, dynamic>> _generateTemplateBudgetRecommendation(
     double income,
     double monthlyRecurringExpenses,
-    List<dynamic> goals,
+    List<Map<String, dynamic>> goals,
   ) async {
     final recommendedCategories = <Map<String, dynamic>>[];
     final availableIncome =

@@ -1,11 +1,13 @@
-import 'package:financial_app/services/api_service.dart';
+import 'package:financial_app/services/data/transaction_data_service.dart';
+import 'package:financial_app/services/data/budget_data_service.dart';
 import 'package:financial_app/services/logger_service.dart';
 import 'package:financial_app/services/expense_predictor.dart';
 import 'package:financial_app/core/di/service_locator.dart';
 
 /// Service for predicting budget exhaustion and assessing overspending risk
 class BudgetPredictor {
-  final ApiService _apiService = getIt<ApiService>();
+  final TransactionDataService _transactionData = getIt<TransactionDataService>();
+  final BudgetDataService _budgetData = getIt<BudgetDataService>();
   final ExpensePredictor _expensePredictor = ExpensePredictor();
 
   /// Predict when a budget will be exhausted
@@ -16,14 +18,12 @@ class BudgetPredictor {
   }) async {
     try {
       // Get recent transactions for this budget category
-      final transactionsData = await _apiService.getTransactions(limit: 200);
-      final transactions = List<dynamic>.from(
+      final transactionsData = await _transactionData.getTransactions(limit: 200);
+      final transactions = List<Map<String, dynamic>>.from(
         transactionsData['transactions'] ?? [],
       );
 
       // Filter transactions for this budget's category
-      // Note: This assumes we can match budget to category
-      // You may need to adjust based on your budget model structure
       final categoryTransactions =
           transactions.where((t) {
             final type = t['type']?.toString().toLowerCase() ?? 'expense';
@@ -41,8 +41,7 @@ class BudgetPredictor {
 
       // Get expense forecast for next 30 days
       final forecast = await _expensePredictor.predictNext30Days(
-        transactions:
-            categoryTransactions.map((t) => t as Map<String, dynamic>).toList(),
+        transactions: categoryTransactions,
       );
 
       final dailyForecast = (forecast['forecastAmount'] as double? ?? 0.0) / 30;
@@ -104,25 +103,14 @@ class BudgetPredictor {
   /// Assess overspending risk for all budgets
   Future<List<Map<String, dynamic>>> assessOverspendingRisk() async {
     try {
-      final budgets = await _apiService.getBudgets();
+      final budgetModels = await _budgetData.getBudgets();
       final riskAssessments = <Map<String, dynamic>>[];
 
-      for (var budget in budgets) {
-        final budgetMap = budget as Map<String, dynamic>;
-        final budgetId =
-            budgetMap['budget_id_232143']?.toString() ??
-            budgetMap['id']?.toString() ??
-            '';
-        final budgetLimit =
-            (budgetMap['amount_232143'] ?? budgetMap['amount'] as num?)
-                ?.toDouble() ??
-            0.0;
-        final currentSpent =
-            (budgetMap['spent_amount_232143'] ?? budgetMap['spent'] as num?)
-                ?.toDouble() ??
-            0.0;
-        final categoryName =
-            budgetMap['category_name']?.toString() ?? 'Unknown';
+      for (var budget in budgetModels) {
+        final budgetId = budget.id;
+        final budgetLimit = budget.amount;
+        final currentSpent = budget.spent;
+        final categoryName = budget.categoryId;
 
         if (budgetLimit <= 0) continue;
 
@@ -220,8 +208,8 @@ class BudgetPredictor {
     int monthsToAnalyze = 3,
   }) async {
     try {
-      final transactionsData = await _apiService.getTransactions(limit: 500);
-      final transactions = List<dynamic>.from(
+      final transactionsData = await _transactionData.getTransactions(limit: 500);
+      final transactions = List<Map<String, dynamic>>.from(
         transactionsData['transactions'] ?? [],
       );
 
