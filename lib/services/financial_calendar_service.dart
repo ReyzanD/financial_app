@@ -1,18 +1,18 @@
-import 'package:financial_app/services/api_service.dart';
 import 'package:financial_app/services/logger_service.dart';
 import 'package:financial_app/services/subscription_tracker_service.dart';
+import 'package:financial_app/services/data/transaction_data_service.dart';
 import 'package:financial_app/core/di/service_locator.dart';
 
 class FinancialCalendarService {
-  final ApiService _apiService;
+  final TransactionDataService _transactionData;
   final SubscriptionTrackerService _subscriptionService;
 
   FinancialCalendarService({
-    ApiService? apiService,
+    TransactionDataService? transactionData,
     SubscriptionTrackerService? subscriptionService,
-  }) : _apiService = apiService ?? getIt<ApiService>(),
+  }) : _transactionData = transactionData ?? getIt<TransactionDataService>(),
        _subscriptionService =
-           subscriptionService ?? getIt<SubscriptionTrackerService>();
+            subscriptionService ?? getIt<SubscriptionTrackerService>();
 
   Future<List<Map<String, dynamic>>> getMonthEvents(int year, int month) async {
     final events = <Map<String, dynamic>>[];
@@ -23,26 +23,39 @@ class FinancialCalendarService {
       final startDate = DateTime.utc(year, month, 1);
       final endDate = DateTime.utc(year, month + 1, 0);
 
-      final transactionsData = await _apiService.getTransactions(
-        startDate: startDate,
-        endDate: endDate,
+      final transactionsData = await _transactionData.getTransactions(
+        startDate: startDate.toIso8601String().split('T')[0],
+        endDate: endDate.toIso8601String().split('T')[0],
       );
 
       final transactions =
-          transactionsData['transactions'] as List<dynamic>? ?? [];
-      for (var t in transactions) {
-        final transaction = t as Map<String, dynamic>;
-        final dateStr = transaction['transaction_date']?.toString() ?? '';
+          List<Map<String, dynamic>>.from(
+            transactionsData['transactions'] ?? [],
+          );
+      for (final transaction in transactions) {
+        final dateStr =
+            transaction['transaction_date_232143']?.toString() ??
+            transaction['transaction_date']?.toString() ??
+            '';
         if (dateStr.isNotEmpty) {
           try {
             final date = DateTime.parse(dateStr);
             events.add({
               'date': date,
               'type': 'transaction',
-              'title': transaction['description'] ?? 'Transaction',
-              'amount': (transaction['amount'] as num?)?.toDouble() ?? 0.0,
-              'transaction_type': transaction['type'] ?? 'expense',
-              'category': transaction['category_name'] ?? '',
+              'title':
+                  transaction['description_232143']?.toString() ??
+                  transaction['description']?.toString() ??
+                  'Transaction',
+              'amount':
+                  (transaction['amount_232143'] as num?)?.toDouble() ??
+                  (transaction['amount'] as num?)?.toDouble() ??
+                  0.0,
+              'transaction_type':
+                  transaction['type_232143']?.toString() ??
+                  transaction['type']?.toString() ??
+                  'expense',
+              'category': transaction['category_name']?.toString() ?? '',
             });
           } catch (e) {
             // Skip invalid dates

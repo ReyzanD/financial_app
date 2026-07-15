@@ -494,13 +494,13 @@ Future<void> setupServiceLocator() async {
   // ========== Composite Domain Services (wrap ApiService + other services) ==========
   getIt.registerLazySingleton<CashFlowForecastService>(
     () => CashFlowForecastService(
-      apiService: getIt<ApiService>(),
+      transactionData: getIt<TransactionDataService>(),
       accountService: getIt<AccountService>(),
     ),
   );
   getIt.registerLazySingleton<FinancialCalendarService>(
     () => FinancialCalendarService(
-      apiService: getIt<ApiService>(),
+      transactionData: getIt<TransactionDataService>(),
       subscriptionService: getIt<SubscriptionTrackerService>(),
     ),
   );

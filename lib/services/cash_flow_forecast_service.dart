@@ -1,17 +1,17 @@
 import 'dart:math' as math;
-import 'package:financial_app/services/api_service.dart';
 import 'package:financial_app/services/logger_service.dart';
 import 'package:financial_app/services/account_service.dart';
+import 'package:financial_app/services/data/transaction_data_service.dart';
 import 'package:financial_app/core/di/service_locator.dart';
 
 class CashFlowForecastService {
-  final ApiService _apiService;
+  final TransactionDataService _transactionData;
   final AccountService _accountService;
 
   CashFlowForecastService({
-    ApiService? apiService,
+    TransactionDataService? transactionData,
     AccountService? accountService,
-  }) : _apiService = apiService ?? getIt<ApiService>(),
+  }) : _transactionData = transactionData ?? getIt<TransactionDataService>(),
        _accountService = accountService ?? getIt<AccountService>();
 
   Future<List<Map<String, dynamic>>> forecastDailyCashFlow({
@@ -19,9 +19,9 @@ class CashFlowForecastService {
   }) async {
     try {
       final now = DateTime.now();
-      final transactionsData = await _apiService.getTransactions(limit: 5000);
+      final txData = await _transactionData.getTransactions(limit: 5000);
       final transactions =
-          transactionsData['transactions'] as List<dynamic>? ?? [];
+          List<Map<String, dynamic>>.from(txData['transactions'] ?? []);
 
       final dailyData = _analyzeDailyPatterns(transactions);
       final forecast = <Map<String, dynamic>>[];
@@ -61,9 +61,9 @@ class CashFlowForecastService {
   }) async {
     try {
       final now = DateTime.now();
-      final transactionsData = await _apiService.getTransactions(limit: 5000);
+      final txData = await _transactionData.getTransactions(limit: 5000);
       final transactions =
-          transactionsData['transactions'] as List<dynamic>? ?? [];
+          List<Map<String, dynamic>>.from(txData['transactions'] ?? []);
 
       final weeklyData = _analyzeWeeklyPatterns(transactions);
       double runningBalance = await _accountService.getTotalBalance();
@@ -117,9 +117,9 @@ class CashFlowForecastService {
 
   Future<Map<String, dynamic>> getCashFlowSummary() async {
     try {
-      final transactionsData = await _apiService.getTransactions(limit: 1000);
+      final txData = await _transactionData.getTransactions(limit: 1000);
       final transactions =
-          transactionsData['transactions'] as List<dynamic>? ?? [];
+          List<Map<String, dynamic>>.from(txData['transactions'] ?? []);
       final now = DateTime.now();
 
       double currentIncome = 0;
@@ -128,13 +128,20 @@ class CashFlowForecastService {
       double previousExpense = 0;
 
       for (var t in transactions) {
-        final transaction = t as Map<String, dynamic>;
-        final dateStr = transaction['transaction_date']?.toString() ?? '';
+        final dateStr =
+            t['transaction_date_232143']?.toString() ??
+            t['transaction_date']?.toString() ?? '';
         if (dateStr.isEmpty) continue;
 
         final date = DateTime.parse(dateStr);
-        final type = transaction['type']?.toString() ?? '';
-        final amount = (transaction['amount'] as num?)?.toDouble() ?? 0.0;
+        final type =
+            t['type_232143']?.toString() ??
+            t['type']?.toString() ??
+            '';
+        final amount =
+            (t['amount_232143'] as num?)?.toDouble() ??
+            (t['amount'] as num?)?.toDouble() ??
+            0.0;
 
         final isCurrentMonth = date.year == now.year && date.month == now.month;
         final prevMonth = DateTime(now.year, now.month - 1, 1);
@@ -172,21 +179,28 @@ class CashFlowForecastService {
     }
   }
 
-  Map<String, dynamic> _analyzeDailyPatterns(List<dynamic> transactions) {
+  Map<String, dynamic> _analyzeDailyPatterns(List<Map<String, dynamic>> transactions) {
     final incomeByWeekday = <int, double>{};
     final expenseByWeekday = <int, double>{};
     final weekdayCounts = <int, int>{};
 
-    for (var t in transactions) {
-      final transaction = t as Map<String, dynamic>;
-      final dateStr = transaction['transaction_date']?.toString() ?? '';
+    for (final transaction in transactions) {
+      final dateStr =
+          transaction['transaction_date_232143']?.toString() ??
+          transaction['transaction_date']?.toString() ?? '';
       if (dateStr.isEmpty) continue;
 
       try {
         final date = DateTime.parse(dateStr);
         final weekday = date.weekday;
-        final amount = (transaction['amount'] as num?)?.toDouble() ?? 0.0;
-        final type = transaction['type']?.toString() ?? '';
+        final amount =
+            (transaction['amount_232143'] as num?)?.toDouble() ??
+            (transaction['amount'] as num?)?.toDouble() ??
+            0.0;
+        final type =
+            transaction['type_232143']?.toString() ??
+            transaction['type']?.toString() ??
+            '';
 
         weekdayCounts[weekday] = (weekdayCounts[weekday] ?? 0) + 1;
 
@@ -215,7 +229,7 @@ class CashFlowForecastService {
     };
   }
 
-  Map<String, dynamic> _analyzeWeeklyPatterns(List<dynamic> transactions) {
+  Map<String, dynamic> _analyzeWeeklyPatterns(List<Map<String, dynamic>> transactions) {
     final now = DateTime.now();
     final weeklyIncome = <double>[];
     final weeklyExpense = <double>[];
@@ -227,16 +241,23 @@ class CashFlowForecastService {
       double weekIncome = 0;
       double weekExpense = 0;
 
-      for (var t in transactions) {
-        final transaction = t as Map<String, dynamic>;
-        final dateStr = transaction['transaction_date']?.toString() ?? '';
+      for (final transaction in transactions) {
+        final dateStr =
+            transaction['transaction_date_232143']?.toString() ??
+            transaction['transaction_date']?.toString() ?? '';
         if (dateStr.isEmpty) continue;
 
         try {
           final date = DateTime.parse(dateStr);
           if (date.isAfter(weekStart) && date.isBefore(weekEnd)) {
-            final amount = (transaction['amount'] as num?)?.toDouble() ?? 0.0;
-            final type = transaction['type']?.toString() ?? '';
+            final amount =
+                (transaction['amount_232143'] as num?)?.toDouble() ??
+                (transaction['amount'] as num?)?.toDouble() ??
+                0.0;
+            final type =
+                transaction['type_232143']?.toString() ??
+                transaction['type']?.toString() ??
+                '';
 
             if (type == 'income') weekIncome += amount;
             if (type == 'expense') weekExpense += amount;

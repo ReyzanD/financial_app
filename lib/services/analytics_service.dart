@@ -1,9 +1,10 @@
-import 'package:financial_app/services/api_service.dart';
 import 'package:financial_app/services/logger_service.dart';
+import 'package:financial_app/services/data/transaction_data_service.dart';
 import 'package:financial_app/core/di/service_locator.dart';
 
 class AnalyticsService {
-  final ApiService _apiService = getIt<ApiService>();
+  final TransactionDataService _transactionData =
+      getIt<TransactionDataService>();
 
   /// Get analytics data for a specific period
   Future<Map<String, dynamic>> getAnalytics({
@@ -11,15 +12,14 @@ class AnalyticsService {
   }) async {
     try {
       // Get transactions for the period
-      final transactions = await _apiService.getTransactions(limit: 1000);
+      final txData = await _transactionData.getTransactions(limit: 1000);
+      final transactions = List<Map<String, dynamic>>.from(
+        txData['transactions'] ?? [],
+      );
 
       // Filter by period
       final now = DateTime.now();
-      final filteredTransactions = _filterByPeriod(
-        transactions as List<dynamic>,
-        period,
-        now,
-      );
+      final filteredTransactions = _filterByPeriod(transactions, period, now);
 
       // Calculate analytics
       return _calculateAnalytics(filteredTransactions, period, now);
@@ -29,14 +29,19 @@ class AnalyticsService {
     }
   }
 
-  List<dynamic> _filterByPeriod(
-    List<dynamic> transactions,
+  List<Map<String, dynamic>> _filterByPeriod(
+    List<Map<String, dynamic>> transactions,
     String period,
     DateTime now,
   ) {
     return transactions.where((t) {
       try {
-        final date = DateTime.parse(t['date'] ?? '');
+        final dateStr =
+            t['transaction_date_232143']?.toString() ??
+            t['transaction_date']?.toString() ??
+            t['date']?.toString() ??
+            '';
+        final date = DateTime.parse(dateStr);
 
         switch (period) {
           case 'week':
@@ -56,7 +61,7 @@ class AnalyticsService {
   }
 
   Map<String, dynamic> _calculateAnalytics(
-    List<dynamic> transactions,
+    List<Map<String, dynamic>> transactions,
     String period,
     DateTime now,
   ) {
@@ -68,8 +73,14 @@ class AnalyticsService {
 
     // Process transactions
     for (var transaction in transactions) {
-      final amount = (transaction['amount'] ?? 0).toDouble();
-      final type = transaction['type']?.toString().toLowerCase() ?? 'expense';
+      final amount =
+          (transaction['amount_232143'] as num?)?.toDouble() ??
+          (transaction['amount'] as num?)?.toDouble() ??
+          0.0;
+      final type =
+          transaction['type_232143']?.toString().toLowerCase() ??
+          transaction['type']?.toString().toLowerCase() ??
+          'expense';
       final category = transaction['category_name']?.toString() ?? 'Lainnya';
 
       if (type == 'income') {
@@ -118,7 +129,7 @@ class AnalyticsService {
   }
 
   List<Map<String, dynamic>> _calculateTrendData(
-    List<dynamic> transactions,
+    List<Map<String, dynamic>> transactions,
     String period,
     DateTime now,
   ) {
@@ -126,9 +137,20 @@ class AnalyticsService {
 
     for (var transaction in transactions) {
       try {
-        final date = DateTime.parse(transaction['date'] ?? '');
-        final amount = (transaction['amount'] ?? 0).toDouble();
-        final type = transaction['type']?.toString().toLowerCase() ?? 'expense';
+        final dateStr =
+            transaction['transaction_date_232143']?.toString() ??
+            transaction['transaction_date']?.toString() ??
+            transaction['date']?.toString() ??
+            '';
+        final date = DateTime.parse(dateStr);
+        final amount =
+            (transaction['amount_232143'] as num?)?.toDouble() ??
+            (transaction['amount'] as num?)?.toDouble() ??
+            0.0;
+        final type =
+            transaction['type_232143']?.toString().toLowerCase() ??
+            transaction['type']?.toString().toLowerCase() ??
+            'expense';
 
         String key;
         if (period == 'week' || period == 'month') {
@@ -181,7 +203,7 @@ class AnalyticsService {
   }
 
   Map<String, dynamic> _getPreviousPeriodComparison(
-    List<dynamic> allTransactions,
+    List<Map<String, dynamic>> allTransactions,
     String period,
     DateTime now,
   ) {
@@ -213,7 +235,12 @@ class AnalyticsService {
     final previousTransactions =
         allTransactions.where((t) {
           try {
-            final date = DateTime.parse(t['date'] ?? '');
+            final dateStr =
+                t['transaction_date_232143']?.toString() ??
+                t['transaction_date']?.toString() ??
+                t['date']?.toString() ??
+                '';
+            final date = DateTime.parse(dateStr);
             return date.isAfter(startDate) &&
                 date.isBefore(endDate.add(const Duration(days: 1)));
           } catch (e) {
@@ -225,8 +252,14 @@ class AnalyticsService {
     double totalExpense = 0;
 
     for (var transaction in previousTransactions) {
-      final amount = (transaction['amount'] ?? 0).toDouble();
-      final type = transaction['type']?.toString().toLowerCase() ?? 'expense';
+      final amount =
+          (transaction['amount_232143'] as num?)?.toDouble() ??
+          (transaction['amount'] as num?)?.toDouble() ??
+          0.0;
+      final type =
+          transaction['type_232143']?.toString().toLowerCase() ??
+          transaction['type']?.toString().toLowerCase() ??
+          'expense';
 
       if (type == 'income') {
         totalIncome += amount;
