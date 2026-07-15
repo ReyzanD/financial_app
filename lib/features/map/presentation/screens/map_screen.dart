@@ -2,10 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:financial_app/services/location_service.dart';
-import 'package:financial_app/services/api_service.dart';
 import 'package:financial_app/services/map_provider_service.dart';
 import 'package:financial_app/services/logger_service.dart';
 import 'package:financial_app/services/error_handler_service.dart';
+import 'package:financial_app/services/data/place_visit_data_service.dart';
+import 'package:financial_app/services/data/alternative_suggestion_data_service.dart';
+import 'package:financial_app/services/data/transaction_data_service.dart';
+import 'package:financial_app/services/overpass_api_service.dart';
 import 'package:financial_app/widgets/common/offline_indicator.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
@@ -24,14 +27,221 @@ class _MapScreenState extends State<MapScreen> {
   LatLng? _currentPosition;
   final List<Marker> _markers = [];
   bool _isLoading = true;
+  bool _showAlternatives = false;
+  bool _isLoadingAlternatives = false;
   String? _errorMessage;
-  final ApiService _apiService = getIt<ApiService>();
+  final TransactionDataService _transactionDataService =
+      getIt<TransactionDataService>();
+  final OverpassApiService _overpassApiService =
+      getIt<OverpassApiService>();
+  final PlaceVisitDataService _placeVisitDataService =
+      getIt<PlaceVisitDataService>();
+  final AlternativeSuggestionDataService _alternativeDataService =
+      getIt<AlternativeSuggestionDataService>();
 
   @override
   void initState() {
     super.initState();
     _initializeLocation();
     _loadTransactionMarkers();
+  }
+
+  Future<void> _toggleAlternatives() async {
+    setState(() => _showAlternatives = !_showAlternatives);
+
+    if (_showAlternatives) {
+      await _loadAlternativeMarkers();
+    } else {
+      // Remove alternative markers (keep transaction markers + user location)
+      setState(() {
+        _markers.removeWhere(
+          (m) => _isAlternativeMarker(m),
+        );
+      });
+    }
+  }
+
+  bool _isAlternativeMarker(Marker m) {
+    // Alternative markers have width 36 (distinct from 45/80 transaction/pin)
+    return m.width == 36;
+  }
+
+  Future<void> _loadAlternativeMarkers() async {
+    setState(() => _isLoadingAlternatives = true);
+    try {
+      final placeVisits = await _placeVisitDataService.getPlaceVisits();
+      int totalMarkers = 0;
+
+      for (final pv in placeVisits.take(10)) {
+        // Check cached suggestions first
+        final cached = await _alternativeDataService.getForOriginPlace(pv.id);
+
+        List<_SuggestionPoint> points;
+        if (cached.isNotEmpty) {
+          points = cached
+              .map((s) => _SuggestionPoint(
+                    name: s.suggestedPlaceName,
+                    lat: s.suggestedLatitude,
+                    lng: s.suggestedLongitude,
+                    distance: s.distanceMeters,
+                    savings: s.estimatedSavings,
+                    confidence: s.confidenceLevel,
+                  ))
+              .toList();
+        } else {
+          // Query Overpass on-the-fly
+          try {
+            final pois = await _overpassApiService.findNearbyPois(
+              latitude: pv.latitude,
+              longitude: pv.longitude,
+              categoryName: pv.category,
+              radiusMeters: 1000,
+              maxResults: 5,
+            );
+            points = pois
+                .map((poi) => _SuggestionPoint(
+                      name: poi.name,
+                      lat: poi.latitude,
+                      lng: poi.longitude,
+                      distance: LocationService.calculateDistance(
+                        pv.latitude, pv.longitude, poi.latitude, poi.longitude,
+                      ),
+                    ))
+                .toList();
+          } catch (_) {
+            continue;
+          }
+        }
+
+        for (final pt in points) {
+          _addAlternativeMarker(pt);
+          totalMarkers++;
+        }
+      }
+
+      if (mounted) {
+        ErrorHandlerService.showInfoSnackbar(
+          context,
+          '$totalMarkers tempat alternatif ditampilkan',
+        );
+      }
+    } catch (e) {
+      LoggerService.error('Error loading alternative markers', error: e);
+    } finally {
+      if (mounted) setState(() => _isLoadingAlternatives = false);
+    }
+  }
+
+  void _addAlternativeMarker(_SuggestionPoint pt) {
+    setState(() {
+      _markers.add(
+        Marker(
+          point: LatLng(pt.lat, pt.lng),
+          width: 36,
+          height: 36,
+          child: GestureDetector(
+            onTap: () => _showAlternativeInfo(pt),
+            child: Container(
+              decoration: BoxDecoration(
+                color: DesignTokens.primaryColor,
+                shape: BoxShape.circle,
+                border: Border.all(color: Colors.white, width: 2),
+                boxShadow: [
+                  BoxShadow(
+                    color: DesignTokens.primaryColor.withValues(alpha: 0.4),
+                    blurRadius: 8,
+                    spreadRadius: 1,
+                  ),
+                ],
+              ),
+              child: const Icon(
+                Iconsax.shop,
+                color: Colors.white,
+                size: 18,
+              ),
+            ),
+          ),
+        ),
+      );
+    });
+  }
+
+  void _showAlternativeInfo(_SuggestionPoint pt) {
+    final distanceText = pt.distance != null
+        ? pt.distance! < 1000
+            ? '${pt.distance!.round()} m'
+            : '${(pt.distance! / 1000).toStringAsFixed(1)} km'
+        : '?';
+    showDialog(
+      context: context,
+      builder: (c) => AlertDialog(
+        backgroundColor: DesignTokens.surfaceDark,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(DesignTokens.radiusLarge),
+        ),
+        title: Row(
+          children: [
+            Icon(Iconsax.shop, color: DesignTokens.primaryColor, size: 24),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                pt.name,
+                style: GoogleFonts.poppins(
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildInfoRow('Jarak', distanceText, Colors.grey),
+            if (pt.confidence != null)
+              _buildInfoRow(
+                'Confidence', '${pt.confidence}%', DesignTokens.successColor,
+              ),
+            if (pt.savings != null && pt.savings! > 0)
+              _buildInfoRow(
+                'Estimasi Hemat',
+                'Rp ${pt.savings!.toStringAsFixed(0)}',
+                DesignTokens.successColor,
+              ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(c),
+            child: Text(
+              'Tutup',
+              style: GoogleFonts.poppins(color: DesignTokens.primaryColor),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildInfoRow(String label, String value, Color color) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(label,
+              style: GoogleFonts.poppins(color: Colors.grey[400], fontSize: 13)),
+          Text(value,
+              style: GoogleFonts.poppins(
+                color: color,
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+              )),
+        ],
+      ),
+    );
   }
 
   Future<void> _initializeLocation() async {
@@ -135,29 +345,22 @@ class _MapScreenState extends State<MapScreen> {
   Future<void> _loadTransactionMarkers() async {
     final l10n = AppLocalizations.of(context);
     try {
-      final transactionsData = await _apiService.getTransactions(limit: 100);
-      final transactions = List<dynamic>.from(
+      final transactionsData =
+          await _transactionDataService.getTransactions(limit: 100);
+      final transactions = List<Map<String, dynamic>>.from(
         transactionsData['transactions'] ?? [],
       );
       for (var tx in transactions) {
-        final loc = tx['location'];
-        if (loc != null &&
-            loc['latitude'] != null &&
-            loc['longitude'] != null) {
-          final lat =
-              loc['latitude'] is String
-                  ? double.parse(loc['latitude'])
-                  : loc['latitude'].toDouble();
-          final lng =
-              loc['longitude'] is String
-                  ? double.parse(loc['longitude'])
-                  : loc['longitude'].toDouble();
+        final lat = (tx['latitude_232143'] as num?)?.toDouble();
+        final lng = (tx['longitude_232143'] as num?)?.toDouble();
+        if (lat != null && lng != null) {
           _addTransactionMarker(
             LatLng(lat, lng),
-            tx['description']?.toString() ?? (l10n?.transaction ?? 'Transaksi'),
-            tx['type']?.toString() ?? 'expense',
-            (tx['amount'] ?? 0).toDouble(),
-            tx['date']?.toString() ?? '',
+            tx['description_232143']?.toString() ??
+                (l10n?.transaction ?? 'Transaksi'),
+            tx['type_232143']?.toString() ?? 'expense',
+            (tx['amount_232143'] ?? 0).toDouble(),
+            tx['transaction_date_232143']?.toString() ?? '',
           );
         }
       }
@@ -331,26 +534,6 @@ class _MapScreenState extends State<MapScreen> {
     );
   }
 
-  Widget _buildInfoRow(String label, String value, Color color) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(
-          label,
-          style: GoogleFonts.poppins(color: Colors.grey[400], fontSize: 14),
-        ),
-        Text(
-          value,
-          style: GoogleFonts.poppins(
-            color: color,
-            fontSize: 14,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-      ],
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -369,6 +552,33 @@ class _MapScreenState extends State<MapScreen> {
           onPressed: () => Navigator.of(context).pop(),
         ),
         actions: [
+          if (_isLoadingAlternatives)
+            const Padding(
+              padding: EdgeInsets.all(16),
+              child: SizedBox(
+                width: 18,
+                height: 18,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  color: Colors.white,
+                ),
+              ),
+            )
+          else
+            IconButton(
+              icon: Icon(
+                _showAlternatives
+                    ? Iconsax.shop
+                    : Iconsax.shop_add,
+                color: _showAlternatives
+                    ? DesignTokens.primaryColor
+                    : Colors.white,
+              ),
+              onPressed: _toggleAlternatives,
+              tooltip: _showAlternatives
+                  ? 'Sembunyikan alternatif'
+                  : 'Tampilkan alternatif',
+            ),
           IconButton(
             icon: const Icon(Iconsax.refresh, color: Colors.white),
             onPressed: () {
@@ -421,4 +631,23 @@ class _MapScreenState extends State<MapScreen> {
       ),
     );
   }
+}
+
+/// Internal helper for alternative place marker data.
+class _SuggestionPoint {
+  final String name;
+  final double lat;
+  final double lng;
+  final double? distance;
+  final double? savings;
+  final int? confidence;
+
+  _SuggestionPoint({
+    required this.name,
+    required this.lat,
+    required this.lng,
+    this.distance,
+    this.savings,
+    this.confidence,
+  });
 }
