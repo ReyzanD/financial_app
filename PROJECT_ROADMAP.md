@@ -55,9 +55,9 @@ Verified finding from before, still relevant: only 8 of 30 features have full cl
 
 Kill parallel model systems (one typed model per domain concept, no shim entities). Drop standalone "use case" classes unless they orchestrate more than one repository call. Document this as a deliberate scoping decision in `docs/ARCHITECTURE.md`: recognizing four-layer clean architecture was inconsistently applied and choosing a lighter, consistently-applied pattern instead — a stronger interview story than claiming full clean architecture everywhere.
 
-- [ ] Re-audit which features are "full" vs "partial" vs "none" post-refactor (the obligations merge likely changed this for that feature).
-- [ ] Apply the 3-layer pattern to the 8 currently presentation-only features (auth, home, settings, onboarding, map, etc.) — consistency across all 30 is the goal, not depth on a subset.
-- [ ] Write the root-cause doc: the pattern behind the original CRITICAL bugs (suffixed-key mismatches at layer boundaries) and how the new pattern prevents them structurally.
+- [x] Re-audit which features are "full" vs "partial" vs "none" post-refactor (the obligations merge likely changed this for that feature). (30 features: 2 full, 18 simplified, 3 screen-only, 1 empty)
+- [x] Apply the 3-layer pattern to the 8 currently presentation-only features (auth, home, settings, onboarding, map, etc.) — consistency across all 30 is the goal, not depth on a subset. (8 thin repositories added)
+- [x] Write the root-cause doc: the pattern behind the original CRITICAL bugs (suffixed-key mismatches at layer boundaries) and how the new pattern prevents them structurally. (docs/ARCHITECTURE_ROOT_CAUSE.md)
 
 ---
 

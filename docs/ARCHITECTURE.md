@@ -132,10 +132,17 @@ Accurate as of July 16, 2026 (30 feature directories after the obligations merge
 |-------|-------|-------------|
 | **Full Clean Architecture** (domain/ + data/ + presentation/) | **2** | `goals`, `transactions` — the only features with domain entities, use cases, and repository interfaces |
 | **Simplified 2-layer** (data/repositories/ + presentation/) | **18** | Concrete repository + controller, no domain layer. Repository wraps a DataService directly. |
-| **Presentation only** | **11** | Screen + optional controller, backed by existing services. No dedicated data layer. |
+| **Presentation only** | **3** | Screen-only, no controller (uses services directly): `daad`, `financial_advisor`, `more_tab`. These are pure UI over existing services — no repository needed. |
 | **Empty** (directory, no files) | **1** | `recurring_transactions` — directory scaffolding from initial setup, never populated. Widgets for recurring transactions live in `lib/widgets/transactions/`. |
 
 Features with no dedicated controller (screen uses services directly): `daad`, `financial_advisor`, `more_tab`.
+
+**Post-Phase-B update:** the 8 presentation-only features that *did* have
+controllers (`auth`, `home`, `settings`, `onboarding`, `map`,
+`category_customization`, `financial_calendar`, `ai_budget_recommendation`) now
+have thin repositories following the `BudgetRepository` delegation pattern. They
+moved from "presentation only" to "simplified 2-layer" — leaving only the
+3 screen-only features above as presentation-only.
 
 **Note on the obligations merge (Phase 4):** the old `debts` and `subscriptions`
 feature directories were removed. Their UI now lives under `lib/widgets/obligations/`
