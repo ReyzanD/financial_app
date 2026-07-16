@@ -35,7 +35,7 @@ Nice work — this is a genuinely strong batch of fixes, not just documentation.
 
 ## Phase A — Close out the remaining rigor items (~1–2 weeks)
 
-- [ ] Fix the 22 hardcoded-color files, then correct `CODEBASE_AUDIT.md` to match reality.
+- [x] Fix the 22 hardcoded-color files, then correct `CODEBASE_AUDIT.md` to match reality. (82 instances across 23 files → all via `DesignTokens.*`; 0 remaining)
 - [ ] Unify the spacing convention across the app.
 - [ ] Prune/consolidate the docs folder to the 6 files above (or a clearly organized `docs/archive/` if you want to keep history, gitignored or clearly labeled as such).
 - [ ] Add a lint rule or simple test that fails if `ApiService()` is constructed outside `get_it`, so the 2 remaining bypasses (and any regression) get caught automatically.
