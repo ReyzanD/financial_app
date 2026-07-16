@@ -278,7 +278,9 @@ class _ContributeModalState extends State<ContributeModal> {
                 padding: const EdgeInsets.symmetric(horizontal: 12),
                 decoration: BoxDecoration(
                   color: DesignTokens.surfaceDark,
-                  borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                  borderRadius: BorderRadius.circular(
+                    DesignTokens.radiusMedium,
+                  ),
                   border: Border.all(color: DesignTokens.borderDark),
                 ),
                 child: DropdownButtonHideUnderline(
@@ -437,7 +439,9 @@ class _ContributeModalState extends State<ContributeModal> {
                           ),
                           borderRadius: BorderRadius.circular(20),
                           border: Border.all(
-                            color: DesignTokens.primaryColor.withValues(alpha: 0.5),
+                            color: DesignTokens.primaryColor.withValues(
+                              alpha: 0.5,
+                            ),
                           ),
                         ),
                         child: Text(
@@ -474,15 +478,21 @@ class _ContributeModalState extends State<ContributeModal> {
                 filled: true,
                 fillColor: DesignTokens.surfaceDark,
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                  borderRadius: BorderRadius.circular(
+                    DesignTokens.radiusMedium,
+                  ),
                   borderSide: BorderSide(color: DesignTokens.borderDark),
                 ),
                 enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                  borderRadius: BorderRadius.circular(
+                    DesignTokens.radiusMedium,
+                  ),
                   borderSide: BorderSide(color: DesignTokens.borderDark),
                 ),
                 focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                  borderRadius: BorderRadius.circular(
+                    DesignTokens.radiusMedium,
+                  ),
                   borderSide: const BorderSide(
                     color: DesignTokens.primaryColor,
                     width: 2,
@@ -517,15 +527,21 @@ class _ContributeModalState extends State<ContributeModal> {
                 filled: true,
                 fillColor: DesignTokens.surfaceDark,
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                  borderRadius: BorderRadius.circular(
+                    DesignTokens.radiusMedium,
+                  ),
                   borderSide: BorderSide(color: DesignTokens.borderDark),
                 ),
                 enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                  borderRadius: BorderRadius.circular(
+                    DesignTokens.radiusMedium,
+                  ),
                   borderSide: BorderSide(color: DesignTokens.borderDark),
                 ),
                 focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                  borderRadius: BorderRadius.circular(
+                    DesignTokens.radiusMedium,
+                  ),
                   borderSide: const BorderSide(
                     color: DesignTokens.primaryColor,
                     width: 2,
@@ -544,7 +560,9 @@ class _ContributeModalState extends State<ContributeModal> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: DesignTokens.primaryColor,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                    borderRadius: BorderRadius.circular(
+                      DesignTokens.radiusMedium,
+                    ),
                   ),
                 ),
                 child:

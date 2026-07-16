@@ -3,6 +3,7 @@ import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:financial_app/models/financial_obligation.dart';
 import 'package:financial_app/widgets/obligations/add_obligation_modal.dart';
 import 'package:financial_app/widgets/obligations/obligation_details_modal.dart';
+import 'package:financial_app/utils/design_tokens.dart';
 
 class ObligationHelpers {
   static Color getObligationColor(FinancialObligation obligation) {
@@ -31,7 +32,7 @@ class ObligationHelpers {
     final result = await showModalBottomSheet<bool>(
       context: context,
       isScrollControlled: true,
-      backgroundColor: const Color(0xFF0D0D0D),
+      backgroundColor: DesignTokens.surfaceModal,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
@@ -48,7 +49,7 @@ class ObligationHelpers {
     await showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: const Color(0xFF0D0D0D),
+      backgroundColor: DesignTokens.surfaceModal,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),

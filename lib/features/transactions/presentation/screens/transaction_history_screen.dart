@@ -24,7 +24,8 @@ class TransactionHistoryScreen extends StatefulWidget {
 }
 
 class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
-  final TransactionDataService _transactionData = getIt<TransactionDataService>();
+  final TransactionDataService _transactionData =
+      getIt<TransactionDataService>();
   final TextEditingController _searchController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
   List<Map<String, dynamic>> _transactions = [];
@@ -377,7 +378,11 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const AnalyticsHubScreen(initialTab: 'reports')),
+                MaterialPageRoute(
+                  builder:
+                      (context) =>
+                          const AnalyticsHubScreen(initialTab: 'reports'),
+                ),
               );
             },
             tooltip: l10n?.create_report ?? 'Buat Laporan',
@@ -393,24 +398,24 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
         child: Column(
           children: [
             const OfflineIndicator(),
-          Expanded(
-            child:
-                _isLoading
-                    ? const Center(
-                      child: CircularProgressIndicator(
-                        color: DesignTokens.primaryColor,
+            Expanded(
+              child:
+                  _isLoading
+                      ? const Center(
+                        child: CircularProgressIndicator(
+                          color: DesignTokens.primaryColor,
+                        ),
+                      )
+                      : Column(
+                        children: [
+                          _buildSummaryCard(),
+                          _buildFiltersAndSort(),
+                          Expanded(child: _buildTransactionsList()),
+                        ],
                       ),
-                    )
-                    : Column(
-                      children: [
-                        _buildSummaryCard(),
-                        _buildFiltersAndSort(),
-                        Expanded(child: _buildTransactionsList()),
-                      ],
-                    ),
-          ),
-        ],
-      ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -430,7 +435,7 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
-          colors: [DesignTokens.primaryColor, Color(0xFF6A3093)],
+          colors: [DesignTokens.primaryColor, DesignTokens.secondaryColor],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -665,27 +670,19 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
                       items: [
                         DropdownMenuItem(
                           value: 'date_desc',
-                          child: Text(
-                            l10n?.newest_date ?? 'Newest Date',
-                          ),
+                          child: Text(l10n?.newest_date ?? 'Newest Date'),
                         ),
                         DropdownMenuItem(
                           value: 'date_asc',
-                          child: Text(
-                            l10n?.oldest_date ?? 'Oldest Date',
-                          ),
+                          child: Text(l10n?.oldest_date ?? 'Oldest Date'),
                         ),
                         DropdownMenuItem(
                           value: 'amount_desc',
-                          child: Text(
-                            l10n?.highest_amount ?? 'Highest Amount',
-                          ),
+                          child: Text(l10n?.highest_amount ?? 'Highest Amount'),
                         ),
                         DropdownMenuItem(
                           value: 'amount_asc',
-                          child: Text(
-                            l10n?.lowest_amount ?? 'Lowest Amount',
-                          ),
+                          child: Text(l10n?.lowest_amount ?? 'Lowest Amount'),
                         ),
                       ],
                     ),

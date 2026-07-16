@@ -10,9 +10,8 @@ import 'package:financial_app/l10n/app_localizations.dart';
 /// Minimal mock that extends FinancialAdvisorService but overrides every
 /// method that touches the database — returns canned data instead.
 class _MockFinancialAdvisorService extends FinancialAdvisorService {
-  _MockFinancialAdvisorService() : super(
-    transactionData: TransactionDataService(),
-  );
+  _MockFinancialAdvisorService()
+    : super(transactionData: TransactionDataService());
 
   @override
   Future<FiftyThirtyTwentyAnalysis> analyzeForPeriod({
@@ -102,7 +101,9 @@ Widget _buildTestApp() {
 void main() {
   setUp(() {
     if (!GetIt.instance.isRegistered<NetworkService>()) {
-      GetIt.instance.registerLazySingleton<NetworkService>(() => NetworkService());
+      GetIt.instance.registerLazySingleton<NetworkService>(
+        () => NetworkService(),
+      );
     }
     if (!GetIt.instance.isRegistered<FinancialAdvisorService>()) {
       GetIt.instance.registerLazySingleton<FinancialAdvisorService>(

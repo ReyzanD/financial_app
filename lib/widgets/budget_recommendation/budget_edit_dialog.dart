@@ -47,7 +47,9 @@ class BudgetEditDialog extends StatelessWidget {
 
     return AlertDialog(
       backgroundColor: DesignTokens.surfaceDark,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(DesignTokens.radiusLarge)),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(DesignTokens.radiusLarge),
+      ),
       title: Text(
         l10n?.edit_percentage ?? 'Edit Persentase',
         style: GoogleFonts.poppins(color: Colors.white),

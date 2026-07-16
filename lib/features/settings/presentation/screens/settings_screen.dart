@@ -183,7 +183,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         backgroundColor: Colors.red[900],
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                          borderRadius: BorderRadius.circular(
+                            DesignTokens.radiusMedium,
+                          ),
                         ),
                       ),
                       child: Text(
@@ -243,7 +245,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
       ),
       trailing: const Icon(Iconsax.arrow_right_3, color: Colors.grey, size: 20),
       onTap: onTap,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(DesignTokens.radiusMedium)),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+      ),
     ),
   );
   Widget _switchTile({
@@ -279,7 +283,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
         activeThumbColor: DesignTokens.primaryColor,
         activeTrackColor: DesignTokens.primaryColor.withValues(alpha: 0.3),
       ),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(DesignTokens.radiusMedium)),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+      ),
     ),
   );
 
@@ -765,9 +771,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
             ),
       );
-      final importResult = await getIt<ExportService>().importTransactionsFromCSV(
-        filePath,
-      );
+      final importResult = await getIt<ExportService>()
+          .importTransactionsFromCSV(filePath);
       if (!mounted) return;
       Navigator.pop(context);
       final imported = importResult['imported'] as int;
@@ -960,13 +965,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               filled: true,
                               fillColor: DesignTokens.surfaceDark,
                               border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                                borderRadius: BorderRadius.circular(
+                                  DesignTokens.radiusMedium,
+                                ),
                                 borderSide: BorderSide(
                                   color: Colors.grey[700]!,
                                 ),
                               ),
                               enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                                borderRadius: BorderRadius.circular(
+                                  DesignTokens.radiusMedium,
+                                ),
                                 borderSide: BorderSide(
                                   color: Colors.grey[700]!,
                                 ),
@@ -999,13 +1008,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               filled: true,
                               fillColor: DesignTokens.surfaceDark,
                               border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                                borderRadius: BorderRadius.circular(
+                                  DesignTokens.radiusMedium,
+                                ),
                                 borderSide: BorderSide(
                                   color: Colors.grey[700]!,
                                 ),
                               ),
                               enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                                borderRadius: BorderRadius.circular(
+                                  DesignTokens.radiusMedium,
+                                ),
                                 borderSide: BorderSide(
                                   color: Colors.grey[700]!,
                                 ),
@@ -1040,13 +1053,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               filled: true,
                               fillColor: DesignTokens.surfaceDark,
                               border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                                borderRadius: BorderRadius.circular(
+                                  DesignTokens.radiusMedium,
+                                ),
                                 borderSide: BorderSide(
                                   color: Colors.grey[700]!,
                                 ),
                               ),
                               enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                                borderRadius: BorderRadius.circular(
+                                  DesignTokens.radiusMedium,
+                                ),
                                 borderSide: BorderSide(
                                   color: Colors.grey[700]!,
                                 ),

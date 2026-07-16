@@ -161,7 +161,9 @@ class _AIRecommendationsState extends State<AIRecommendations> {
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
                   color: priorityColor.withValues(alpha: 0.15),
-                  borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                  borderRadius: BorderRadius.circular(
+                    DesignTokens.radiusMedium,
+                  ),
                   border: Border.all(
                     color: priorityColor.withValues(alpha: 0.3),
                     width: 1,
@@ -201,7 +203,9 @@ class _AIRecommendationsState extends State<AIRecommendations> {
                   ),
                   decoration: BoxDecoration(
                     color: priorityColor.withValues(alpha: 0.2),
-                    borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                    borderRadius: BorderRadius.circular(
+                      DesignTokens.radiusMedium,
+                    ),
                   ),
                   child: Text(
                     priority == 'high'
@@ -324,7 +328,9 @@ class _AIRecommendationsState extends State<AIRecommendations> {
                   backgroundColor: priorityColor,
                   padding: const EdgeInsets.symmetric(vertical: 12),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                    borderRadius: BorderRadius.circular(
+                      DesignTokens.radiusMedium,
+                    ),
                   ),
                 ),
                 child: Text(

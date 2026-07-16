@@ -93,8 +93,7 @@ class GoalDataService {
         'current_amount_232143': goalData['current_amount'],
       if (goalData['target_date'] != null)
         'target_date_232143': goalData['target_date'],
-      if (goalData['priority'] != null)
-        'priority_232143': goalData['priority'],
+      if (goalData['priority'] != null) 'priority_232143': goalData['priority'],
       if (goalData['monthly_target'] != null)
         'monthly_target_232143': goalData['monthly_target'],
       if (goalData['is_completed'] != null)
@@ -184,8 +183,7 @@ class GoalDataService {
 
       if (accountResult.isNotEmpty) {
         final currentBalance =
-            (accountResult.first['balance_232143'] as num?)?.toDouble() ??
-            0.0;
+            (accountResult.first['balance_232143'] as num?)?.toDouble() ?? 0.0;
         if (currentBalance < amount) {
           throw Exception('Saldo tidak mencukupi');
         }

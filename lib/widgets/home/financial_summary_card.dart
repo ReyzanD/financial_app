@@ -29,7 +29,8 @@ class FinancialSummaryCard extends StatefulWidget {
 
 class _FinancialSummaryCardState extends State<FinancialSummaryCard>
     with SingleTickerProviderStateMixin {
-  final TransactionDataService _transactionData = getIt<TransactionDataService>();
+  final TransactionDataService _transactionData =
+      getIt<TransactionDataService>();
   final FinancialCalculator _calculator = FinancialCalculator();
   Map<String, dynamic>? _summary;
   bool _isLoading = true;
@@ -136,7 +137,7 @@ class _FinancialSummaryCardState extends State<FinancialSummaryCard>
       padding: ResponsiveHelper.padding(context, multiplier: 1.25),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
-          colors: [DesignTokens.primaryColor, Color(0xFF6A3093)],
+          colors: [DesignTokens.primaryColor, DesignTokens.secondaryColor],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -253,7 +254,7 @@ class _FinancialSummaryCardState extends State<FinancialSummaryCard>
           padding: ResponsiveHelper.padding(context, multiplier: 1.25),
           decoration: BoxDecoration(
             gradient: const LinearGradient(
-              colors: [DesignTokens.primaryColor, Color(0xFF6A3093)],
+              colors: [DesignTokens.primaryColor, DesignTokens.secondaryColor],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
@@ -354,7 +355,7 @@ class _FinancialSummaryCardState extends State<FinancialSummaryCard>
         padding: ResponsiveHelper.padding(context, multiplier: 1.25),
         decoration: BoxDecoration(
           gradient: const LinearGradient(
-            colors: [DesignTokens.primaryColor, Color(0xFF6A3093)],
+            colors: [DesignTokens.primaryColor, DesignTokens.secondaryColor],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
@@ -629,52 +630,51 @@ class _FinancialSummaryCardState extends State<FinancialSummaryCard>
       excludeSemantics: true,
       child: Container(
         padding: ResponsiveHelper.padding(context, multiplier: 0.75),
-      decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.08),
-        borderRadius: BorderRadius.circular(
-          ResponsiveHelper.borderRadius(context, 12),
+        decoration: BoxDecoration(
+          color: Colors.white.withValues(alpha: 0.08),
+          borderRadius: BorderRadius.circular(
+            ResponsiveHelper.borderRadius(context, 12),
+          ),
+          border: Border.all(color: color.withValues(alpha: 0.3), width: 1),
         ),
-        border: Border.all(color: color.withValues(alpha: 0.3), width: 1),
-      ),
-      child: Column(
-        children: [
-          Container(
-            padding: ResponsiveHelper.padding(context, multiplier: 0.625),
-            decoration: BoxDecoration(
-              color: color.withValues(alpha: 0.15),
-              shape: BoxShape.circle,
+        child: Column(
+          children: [
+            Container(
+              padding: ResponsiveHelper.padding(context, multiplier: 0.625),
+              decoration: BoxDecoration(
+                color: color.withValues(alpha: 0.15),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                icon,
+                color: color,
+                size: ResponsiveHelper.iconSize(context, 22),
+              ),
             ),
-            child: Icon(
-              icon,
-              color: color,
-              size: ResponsiveHelper.iconSize(context, 22),
+            SizedBox(height: ResponsiveHelper.verticalSpacing(context, 10)),
+            Text(
+              title,
+              style: GoogleFonts.poppins(
+                color: Colors.white70,
+                fontSize: ResponsiveHelper.fontSize(context, 11),
+                fontWeight: FontWeight.w500,
+              ),
             ),
-          ),
-          SizedBox(height: ResponsiveHelper.verticalSpacing(context, 10)),
-          Text(
-            title,
-            style: GoogleFonts.poppins(
-              color: Colors.white70,
-              fontSize: ResponsiveHelper.fontSize(context, 11),
-              fontWeight: FontWeight.w500,
+            SizedBox(height: ResponsiveHelper.verticalSpacing(context, 6)),
+            Text(
+              amount,
+              style: GoogleFonts.poppins(
+                color: Colors.white,
+                fontSize: ResponsiveHelper.fontSize(context, 13),
+                fontWeight: FontWeight.bold,
+              ),
+              textAlign: TextAlign.center,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
-          ),
-          SizedBox(height: ResponsiveHelper.verticalSpacing(context, 6)),
-          Text(
-            amount,
-            style: GoogleFonts.poppins(
-              color: Colors.white,
-              fontSize: ResponsiveHelper.fontSize(context, 13),
-              fontWeight: FontWeight.bold,
-            ),
-            textAlign: TextAlign.center,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
-        ],
-      ),
+          ],
+        ),
       ),
     );
   }
 }
-

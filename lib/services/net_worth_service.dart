@@ -67,7 +67,8 @@ class NetWorthService {
 
     for (var debt in debts) {
       final subtype = debt.debtType ?? debt.category ?? 'other';
-      breakdown[subtype] = (breakdown[subtype] ?? 0) +
+      breakdown[subtype] =
+          (breakdown[subtype] ?? 0) +
           (debt.currentBalance ?? debt.monthlyAmount);
     }
 

@@ -277,7 +277,7 @@ class _GoalCardState extends State<GoalCard> {
                     shrinkWrap: true,
                     itemCount: _contributions.length,
                     separatorBuilder:
-                        (_, __) => const Divider(color: Color(0xFF2A2A2A)),
+                        (_, __) => Divider(color: DesignTokens.borderDark),
                     itemBuilder: (_, i) {
                       final c = _contributions[i];
                       final amt =
@@ -291,7 +291,9 @@ class _GoalCardState extends State<GoalCard> {
                         leading: Container(
                           padding: const EdgeInsets.all(8),
                           decoration: BoxDecoration(
-                            color: DesignTokens.primaryColor.withValues(alpha: 0.2),
+                            color: DesignTokens.primaryColor.withValues(
+                              alpha: 0.2,
+                            ),
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: const Icon(

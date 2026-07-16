@@ -100,7 +100,7 @@ class _ObligationDetailsModalState extends State<ObligationDetailsModal> {
     final result = await showModalBottomSheet<bool>(
       context: context,
       isScrollControlled: true,
-      backgroundColor: const Color(0xFF0D0D0D),
+      backgroundColor: DesignTokens.surfaceModal,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
@@ -180,7 +180,9 @@ class _ObligationDetailsModalState extends State<ObligationDetailsModal> {
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     color: color.withValues(alpha: 0.2),
-                    borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                    borderRadius: BorderRadius.circular(
+                      DesignTokens.radiusMedium,
+                    ),
                   ),
                   child: Icon(_getObligationIcon(), color: color, size: 24),
                 ),
@@ -213,7 +215,7 @@ class _ObligationDetailsModalState extends State<ObligationDetailsModal> {
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [const Color(0xFF1F1F1F), DesignTokens.surfaceDark],
+                  colors: [DesignTokens.surfaceCard, DesignTokens.surfaceDark],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
@@ -349,7 +351,9 @@ class _ObligationDetailsModalState extends State<ObligationDetailsModal> {
                       foregroundColor: Colors.red,
                       side: const BorderSide(color: Colors.red),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                        borderRadius: BorderRadius.circular(
+                          DesignTokens.radiusMedium,
+                        ),
                       ),
                       padding: const EdgeInsets.symmetric(vertical: 14),
                     ),
@@ -365,7 +369,9 @@ class _ObligationDetailsModalState extends State<ObligationDetailsModal> {
                       backgroundColor: DesignTokens.primaryColor,
                       foregroundColor: Colors.white,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                        borderRadius: BorderRadius.circular(
+                          DesignTokens.radiusMedium,
+                        ),
                       ),
                       padding: const EdgeInsets.symmetric(vertical: 14),
                     ),

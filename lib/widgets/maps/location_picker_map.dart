@@ -352,7 +352,9 @@ class _LocationPickerMapState extends State<LocationPickerMap> {
                       ),
                       decoration: BoxDecoration(
                         color: DesignTokens.surfaceDark,
-                        borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                        borderRadius: BorderRadius.circular(
+                          DesignTokens.radiusMedium,
+                        ),
                         boxShadow: [
                           BoxShadow(
                             color: Colors.black.withValues(alpha: 0.3),
@@ -467,7 +469,9 @@ class _LocationPickerMapState extends State<LocationPickerMap> {
                         constraints: const BoxConstraints(maxHeight: 300),
                         decoration: BoxDecoration(
                           color: DesignTokens.surfaceDark,
-                          borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                          borderRadius: BorderRadius.circular(
+                            DesignTokens.radiusMedium,
+                          ),
                           boxShadow: [
                             BoxShadow(
                               color: Colors.black.withValues(alpha: 0.5),
@@ -485,7 +489,7 @@ class _LocationPickerMapState extends State<LocationPickerMap> {
                               decoration: const BoxDecoration(
                                 border: Border(
                                   bottom: BorderSide(
-                                    color: Color(0xFF2A2A2A),
+                                    color: DesignTokens.borderDark,
                                     width: 1,
                                   ),
                                 ),
@@ -574,7 +578,8 @@ class _LocationPickerMapState extends State<LocationPickerMap> {
                                           Container(
                                             padding: const EdgeInsets.all(8),
                                             decoration: BoxDecoration(
-                                              color: DesignTokens.primaryColor.withValues(alpha: 0.2),
+                                              color: DesignTokens.primaryColor
+                                                  .withValues(alpha: 0.2),
                                               borderRadius:
                                                   BorderRadius.circular(8),
                                             ),
@@ -644,7 +649,9 @@ class _LocationPickerMapState extends State<LocationPickerMap> {
                         padding: const EdgeInsets.all(DesignTokens.spacing4),
                         decoration: BoxDecoration(
                           color: DesignTokens.surfaceDark,
-                          borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                          borderRadius: BorderRadius.circular(
+                            DesignTokens.radiusMedium,
+                          ),
                           boxShadow: [
                             BoxShadow(
                               color: Colors.black.withValues(alpha: 0.3),

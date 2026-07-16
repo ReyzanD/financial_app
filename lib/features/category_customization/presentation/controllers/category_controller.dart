@@ -29,9 +29,7 @@ class CategoryController extends ChangeNotifier {
       final allCategories = results[0];
       _customCategories = results[1];
       _defaultCategories =
-          allCategories
-              .where((c) => c.isSystemDefault)
-              .toList();
+          allCategories.where((c) => c.isSystemDefault).toList();
     } catch (e) {
       _error = e.toString();
     } finally {

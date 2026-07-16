@@ -10,10 +10,7 @@ import 'package:financial_app/utils/design_tokens.dart';
 class CategoryTagsScreen extends StatefulWidget {
   final String initialMode;
 
-  const CategoryTagsScreen({
-    super.key,
-    this.initialMode = 'categories',
-  });
+  const CategoryTagsScreen({super.key, this.initialMode = 'categories'});
 
   @override
   State<CategoryTagsScreen> createState() => _CategoryTagsScreenState();
@@ -93,10 +90,7 @@ class _CategoryTagsScreenState extends State<CategoryTagsScreen>
                 fontWeight: FontWeight.w400,
               ),
               indicatorSize: TabBarIndicatorSize.label,
-              tabs: const [
-                Tab(text: 'Kategori'),
-                Tab(text: 'Tag'),
-              ],
+              tabs: const [Tab(text: 'Kategori'), Tab(text: 'Tag')],
             ),
           ),
         ),

@@ -10,7 +10,8 @@ import 'package:uuid/uuid.dart';
 class ReceiptScanningService {
   final ImagePicker _imagePicker = ImagePicker();
   final TextRecognizer _textRecognizer = TextRecognizer();
-  final ReceiptScanDataService _receiptScanData = getIt<ReceiptScanDataService>();
+  final ReceiptScanDataService _receiptScanData =
+      getIt<ReceiptScanDataService>();
   final _uuid = const Uuid();
 
   Future<File?> pickImage({bool fromCamera = false}) async {

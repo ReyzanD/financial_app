@@ -420,7 +420,8 @@ class _NetWorthScreenState extends State<NetWorthScreen> {
                 ),
                 const SizedBox(height: 12),
                 Text(
-                  l10n?.chart_placeholder ?? 'Grafik akan tersedia setelah beberapa periode',
+                  l10n?.chart_placeholder ??
+                      'Grafik akan tersedia setelah beberapa periode',
                   textAlign: TextAlign.center,
                   style: GoogleFonts.poppins(
                     color: DesignTokens.textSecondaryDark,

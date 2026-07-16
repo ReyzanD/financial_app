@@ -11,7 +11,7 @@ class MapScreenController extends ChangeNotifier {
   final TransactionDataService _transactionData;
 
   MapScreenController({required TransactionDataService transactionData})
-      : _transactionData = transactionData;
+    : _transactionData = transactionData;
 
   final MapController mapController = MapController();
   LatLng? _currentPosition;

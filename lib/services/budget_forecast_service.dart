@@ -6,7 +6,8 @@ import 'package:financial_app/core/di/service_locator.dart';
 
 /// Service untuk budget forecasting dan analytics
 class BudgetForecastService {
-  final TransactionDataService _transactionData = getIt<TransactionDataService>();
+  final TransactionDataService _transactionData =
+      getIt<TransactionDataService>();
   final BudgetDataService _budgetData = getIt<BudgetDataService>();
   final NotificationService _notificationService = getIt<NotificationService>();
 

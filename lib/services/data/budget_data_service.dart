@@ -23,9 +23,7 @@ class BudgetDataService {
   }
 
   /// Get budgets
-  Future<List<BudgetModel>> getBudgets({
-    bool activeOnly = true,
-  }) async {
+  Future<List<BudgetModel>> getBudgets({bool activeOnly = true}) async {
     try {
       final userId = await getCurrentUserId();
       if (userId == null) throw Exception('Not authenticated');
@@ -53,9 +51,7 @@ class BudgetDataService {
   }
 
   /// Add budget
-  Future<BudgetModel> addBudget(
-    Map<String, dynamic> budgetData,
-  ) async {
+  Future<BudgetModel> addBudget(Map<String, dynamic> budgetData) async {
     try {
       final userId = await getCurrentUserId();
       if (userId == null) throw Exception('Not authenticated');
@@ -142,8 +138,8 @@ class BudgetDataService {
         if (currentBudget.isNotEmpty) {
           final currentSpent =
               (currentBudget.first['spent_amount_232143'] as num?)
-                      ?.toDouble() ??
-                  0.0;
+                  ?.toDouble() ??
+              0.0;
           final newAmount = (budgetData['amount'] as num).toDouble();
           newRemaining = newAmount - currentSpent;
         }
@@ -191,9 +187,7 @@ class BudgetDataService {
   }
 
   /// Get budgets by category ID
-  Future<List<BudgetModel>> getBudgetsByCategory(
-    String categoryId,
-  ) async {
+  Future<List<BudgetModel>> getBudgetsByCategory(String categoryId) async {
     try {
       final db = await _dbService.database;
       final userId = await getCurrentUserId();

@@ -21,7 +21,8 @@ class GlobalSearchSheet extends StatefulWidget {
 
 class _GlobalSearchSheetState extends State<GlobalSearchSheet> {
   final TextEditingController _searchController = TextEditingController();
-  final TransactionDataService _transactionData = getIt<TransactionDataService>();
+  final TransactionDataService _transactionData =
+      getIt<TransactionDataService>();
   final BudgetDataService _budgetData = getIt<BudgetDataService>();
   final GoalDataService _goalData = getIt<GoalDataService>();
   Timer? _debounceTimer;
@@ -76,8 +77,8 @@ class _GlobalSearchSheetState extends State<GlobalSearchSheet> {
         final txnData = results[0] as Map<String, dynamic>? ?? {};
         _transactions =
             (txnData['transactions'] as List<dynamic>?)
-                    ?.cast<Map<String, dynamic>>() ??
-                [];
+                ?.cast<Map<String, dynamic>>() ??
+            [];
         _budgets =
             (results[1] as List<dynamic>?)?.cast<Map<String, dynamic>>() ?? [];
         _goals =
@@ -98,29 +99,32 @@ class _GlobalSearchSheetState extends State<GlobalSearchSheet> {
       return;
     }
 
-    _filteredTransactions = _transactions.where((t) {
-      final desc = (t['description'] as String? ?? '').toLowerCase();
-      final cat = (t['category_name'] as String? ?? '').toLowerCase();
-      final amount = (t['amount'] as num?)?.toDouble() ?? 0;
-      return desc.contains(_query) ||
-          cat.contains(_query) ||
-          amount.toString().contains(_query);
-    }).toList();
+    _filteredTransactions =
+        _transactions.where((t) {
+          final desc = (t['description'] as String? ?? '').toLowerCase();
+          final cat = (t['category_name'] as String? ?? '').toLowerCase();
+          final amount = (t['amount'] as num?)?.toDouble() ?? 0;
+          return desc.contains(_query) ||
+              cat.contains(_query) ||
+              amount.toString().contains(_query);
+        }).toList();
 
-    _filteredBudgets = _budgets.where((b) {
-      final name = (b['category_name'] as String? ?? '').toLowerCase();
-      final amount = (b['amount'] as num?)?.toDouble() ?? 0;
-      return name.contains(_query) || amount.toString().contains(_query);
-    }).toList();
+    _filteredBudgets =
+        _budgets.where((b) {
+          final name = (b['category_name'] as String? ?? '').toLowerCase();
+          final amount = (b['amount'] as num?)?.toDouble() ?? 0;
+          return name.contains(_query) || amount.toString().contains(_query);
+        }).toList();
 
-    _filteredGoals = _goals.where((g) {
-      final name = (g['name'] as String? ?? '').toLowerCase();
-      final desc = (g['description'] as String? ?? '').toLowerCase();
-      final target = (g['target_amount'] as num?)?.toDouble() ?? 0;
-      return name.contains(_query) ||
-          desc.contains(_query) ||
-          target.toString().contains(_query);
-    }).toList();
+    _filteredGoals =
+        _goals.where((g) {
+          final name = (g['name'] as String? ?? '').toLowerCase();
+          final desc = (g['description'] as String? ?? '').toLowerCase();
+          final target = (g['target_amount'] as num?)?.toDouble() ?? 0;
+          return name.contains(_query) ||
+              desc.contains(_query) ||
+              target.toString().contains(_query);
+        }).toList();
   }
 
   int get _totalResults =>
@@ -159,21 +163,28 @@ class _GlobalSearchSheetState extends State<GlobalSearchSheet> {
               decoration: InputDecoration(
                 hintText: 'Cari transaksi, anggaran, tujuan...',
                 hintStyle: GoogleFonts.poppins(color: Colors.grey[600]),
-                prefixIcon: const Icon(Iconsax.search_normal_1,
-                    color: Colors.grey),
-                suffixIcon: _searchController.text.isNotEmpty
-                    ? IconButton(
-                        icon: const Icon(Iconsax.close_circle,
-                            color: Colors.grey),
-                        onPressed: () {
-                          _searchController.clear();
-                        },
-                      )
-                    : null,
+                prefixIcon: const Icon(
+                  Iconsax.search_normal_1,
+                  color: Colors.grey,
+                ),
+                suffixIcon:
+                    _searchController.text.isNotEmpty
+                        ? IconButton(
+                          icon: const Icon(
+                            Iconsax.close_circle,
+                            color: Colors.grey,
+                          ),
+                          onPressed: () {
+                            _searchController.clear();
+                          },
+                        )
+                        : null,
                 filled: true,
                 fillColor: DesignTokens.surfaceDark,
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                  borderRadius: BorderRadius.circular(
+                    DesignTokens.radiusMedium,
+                  ),
                   borderSide: BorderSide.none,
                 ),
                 contentPadding: const EdgeInsets.symmetric(vertical: 14),
@@ -183,16 +194,18 @@ class _GlobalSearchSheetState extends State<GlobalSearchSheet> {
           const SizedBox(height: 8),
           // Results
           Expanded(
-            child: _isLoading
-                ? const Center(
-                    child: CircularProgressIndicator(
-                        color: DesignTokens.primaryColor),
-                  )
-                : _query.isEmpty
+            child:
+                _isLoading
+                    ? const Center(
+                      child: CircularProgressIndicator(
+                        color: DesignTokens.primaryColor,
+                      ),
+                    )
+                    : _query.isEmpty
                     ? _buildEmptyHint()
                     : _totalResults == 0
-                        ? _buildNoResults()
-                        : _buildResultsList(),
+                    ? _buildNoResults()
+                    : _buildResultsList(),
           ),
         ],
       ),
@@ -204,15 +217,11 @@ class _GlobalSearchSheetState extends State<GlobalSearchSheet> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Iconsax.search_normal_1,
-              size: 48, color: Colors.grey[600]),
+          Icon(Iconsax.search_normal_1, size: 48, color: Colors.grey[600]),
           const SizedBox(height: 12),
           Text(
             'Cari transaksi, anggaran, atau tujuan',
-            style: GoogleFonts.poppins(
-              color: Colors.grey[600],
-              fontSize: 14,
-            ),
+            style: GoogleFonts.poppins(color: Colors.grey[600], fontSize: 14),
           ),
         ],
       ),
@@ -228,10 +237,7 @@ class _GlobalSearchSheetState extends State<GlobalSearchSheet> {
           const SizedBox(height: 12),
           Text(
             'Tidak ditemukan untuk "$_query"',
-            style: GoogleFonts.poppins(
-              color: Colors.grey[600],
-              fontSize: 14,
-            ),
+            style: GoogleFonts.poppins(color: Colors.grey[600], fontSize: 14),
           ),
         ],
       ),
@@ -247,10 +253,7 @@ class _GlobalSearchSheetState extends State<GlobalSearchSheet> {
           padding: const EdgeInsets.only(bottom: 8),
           child: Text(
             '$_totalResults hasil untuk "$_query"',
-            style: GoogleFonts.poppins(
-              color: Colors.grey[500],
-              fontSize: 12,
-            ),
+            style: GoogleFonts.poppins(color: Colors.grey[500], fontSize: 12),
           ),
         ),
         // Transactions
@@ -281,9 +284,7 @@ class _GlobalSearchSheetState extends State<GlobalSearchSheet> {
             Iconsax.wallet,
             'Anggaran (${_filteredBudgets.length})',
           ),
-          ..._filteredBudgets
-              .take(10)
-              .map((b) => _buildBudgetTile(b)),
+          ..._filteredBudgets.take(10).map((b) => _buildBudgetTile(b)),
           if (_filteredBudgets.length > 10)
             Padding(
               padding: const EdgeInsets.only(top: 4, bottom: 8),
@@ -303,9 +304,7 @@ class _GlobalSearchSheetState extends State<GlobalSearchSheet> {
             Iconsax.flag,
             'Tujuan (${_filteredGoals.length})',
           ),
-          ..._filteredGoals
-              .take(10)
-              .map((g) => _buildGoalTile(g)),
+          ..._filteredGoals.take(10).map((g) => _buildGoalTile(g)),
           if (_filteredGoals.length > 10)
             Padding(
               padding: const EdgeInsets.only(top: 4, bottom: 8),
@@ -467,20 +466,23 @@ class _GlobalSearchSheetState extends State<GlobalSearchSheet> {
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
         ),
-        subtitle: subtitle != null
-            ? Text(
-                subtitle,
-                style: GoogleFonts.poppins(
-                  color: Colors.grey[500],
-                  fontSize: 11,
-                ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              )
-            : null,
+        subtitle:
+            subtitle != null
+                ? Text(
+                  subtitle,
+                  style: GoogleFonts.poppins(
+                    color: Colors.grey[500],
+                    fontSize: 11,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                )
+                : null,
         trailing: trailing,
         onTap: onTap,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(DesignTokens.radiusMedium)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+        ),
         contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
       ),
     );

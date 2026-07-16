@@ -7,7 +7,8 @@ import 'package:financial_app/core/di/service_locator.dart';
 
 /// Service untuk global search functionality
 class SearchService {
-  final TransactionDataService _transactionData = getIt<TransactionDataService>();
+  final TransactionDataService _transactionData =
+      getIt<TransactionDataService>();
   final BudgetDataService _budgetData = getIt<BudgetDataService>();
   final GoalDataService _goalData = getIt<GoalDataService>();
 
@@ -29,58 +30,59 @@ class SearchService {
       );
 
       // Filter transactions
-      final filtered = transactions.where((transaction) {
-        // Text search
-        if (query.isNotEmpty) {
-          final description =
-              (transaction['description'] ?? '').toString().toLowerCase();
-          final categoryName =
-              (transaction['category_name'] ?? '').toString().toLowerCase();
-          final searchQuery = query.toLowerCase();
+      final filtered =
+          transactions.where((transaction) {
+            // Text search
+            if (query.isNotEmpty) {
+              final description =
+                  (transaction['description'] ?? '').toString().toLowerCase();
+              final categoryName =
+                  (transaction['category_name'] ?? '').toString().toLowerCase();
+              final searchQuery = query.toLowerCase();
 
-          if (!description.contains(searchQuery) &&
-              !categoryName.contains(searchQuery)) {
-            return false;
-          }
-        }
-
-        // Category filter
-        if (categoryId != null) {
-          final tCategoryId = transaction['category_id']?.toString();
-          if (tCategoryId != categoryId) return false;
-        }
-
-        // Type filter
-        if (type != null) {
-          final tType = transaction['type']?.toString();
-          if (tType != type) return false;
-        }
-
-        // Date range filter
-        if (startDate != null || endDate != null) {
-          final tDateStr = transaction['transaction_date']?.toString();
-          if (tDateStr != null) {
-            try {
-              final tDate = DateTime.parse(tDateStr);
-              if (startDate != null && tDate.isBefore(startDate)) {
+              if (!description.contains(searchQuery) &&
+                  !categoryName.contains(searchQuery)) {
                 return false;
               }
-              if (endDate != null && tDate.isAfter(endDate)) return false;
-            } catch (e) {
-              LoggerService.error('Error parsing date', error: e);
             }
-          }
-        }
 
-        // Amount range filter
-        if (minAmount != null || maxAmount != null) {
-          final amount = (transaction['amount'] as num?)?.toDouble() ?? 0.0;
-          if (minAmount != null && amount < minAmount) return false;
-          if (maxAmount != null && amount > maxAmount) return false;
-        }
+            // Category filter
+            if (categoryId != null) {
+              final tCategoryId = transaction['category_id']?.toString();
+              if (tCategoryId != categoryId) return false;
+            }
 
-        return true;
-      }).toList();
+            // Type filter
+            if (type != null) {
+              final tType = transaction['type']?.toString();
+              if (tType != type) return false;
+            }
+
+            // Date range filter
+            if (startDate != null || endDate != null) {
+              final tDateStr = transaction['transaction_date']?.toString();
+              if (tDateStr != null) {
+                try {
+                  final tDate = DateTime.parse(tDateStr);
+                  if (startDate != null && tDate.isBefore(startDate)) {
+                    return false;
+                  }
+                  if (endDate != null && tDate.isAfter(endDate)) return false;
+                } catch (e) {
+                  LoggerService.error('Error parsing date', error: e);
+                }
+              }
+            }
+
+            // Amount range filter
+            if (minAmount != null || maxAmount != null) {
+              final amount = (transaction['amount'] as num?)?.toDouble() ?? 0.0;
+              if (minAmount != null && amount < minAmount) return false;
+              if (maxAmount != null && amount > maxAmount) return false;
+            }
+
+            return true;
+          }).toList();
 
       // Convert to TransactionModel
       return filtered
@@ -115,14 +117,12 @@ class SearchService {
         return budgets;
       }
 
-      return budgets
-          .where((budget) {
-            final categoryName =
-                (budget['category_name'] ?? '').toString().toLowerCase();
-            final searchQuery = query.toLowerCase();
-            return categoryName.contains(searchQuery);
-          })
-          .toList();
+      return budgets.where((budget) {
+        final categoryName =
+            (budget['category_name'] ?? '').toString().toLowerCase();
+        final searchQuery = query.toLowerCase();
+        return categoryName.contains(searchQuery);
+      }).toList();
     } catch (e) {
       LoggerService.error('Error searching budgets', error: e);
       return [];
@@ -141,13 +141,11 @@ class SearchService {
         return goals;
       }
 
-      return goals
-          .where((goal) {
-            final name = (goal['name'] ?? '').toString().toLowerCase();
-            final searchQuery = query.toLowerCase();
-            return name.contains(searchQuery);
-          })
-          .toList();
+      return goals.where((goal) {
+        final name = (goal['name'] ?? '').toString().toLowerCase();
+        final searchQuery = query.toLowerCase();
+        return name.contains(searchQuery);
+      }).toList();
     } catch (e) {
       LoggerService.error('Error searching goals', error: e);
       return [];

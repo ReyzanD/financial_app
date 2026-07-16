@@ -55,7 +55,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
         description:
             'Tetapkan batas anggaran dan tujuan keuangan. Dapatkan notifikasi serta rekomendasi untuk mencapai target Anda.',
         icon: Iconsax.chart_square,
-        color: const Color(0xFFFF6B6B),
+        color: DesignTokens.errorColor,
         features: [
           'Budget & spending insights real-time',
           'Lacak progress tujuan keuangan',
@@ -379,7 +379,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                 'Terima notifikasi untuk budget alerts, pengingat tagihan, dan rekomendasi keuangan',
             benefit: 'Jangan lewatkan pengingat penting tentang keuangan Anda',
             icon: Iconsax.notification,
-            iconColor: const Color(0xFFFF6B6B),
+            iconColor: DesignTokens.errorColor,
             onPermissionGranted:
                 () => LoggerService.success('Notification permission granted'),
           ),
@@ -390,7 +390,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                 'Gunakan kamera untuk scan struk dan extract informasi transaksi secara otomatis',
             benefit: 'Scan struk dengan mudah untuk input transaksi cepat',
             icon: Iconsax.camera,
-            iconColor: const Color(0xFFFFEAA7),
+            iconColor: DesignTokens.warningColor,
             onPermissionGranted:
                 () => LoggerService.success('Camera permission granted'),
           ),

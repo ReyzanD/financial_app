@@ -4,8 +4,7 @@ import 'package:financial_app/services/logger_service.dart';
 
 class ReportController extends ChangeNotifier {
   final ReportRepository _r;
-  ReportController({required ReportRepository repository})
-    : _r = repository;
+  ReportController({required ReportRepository repository}) : _r = repository;
 
   bool _isLoading = false;
   String? _error;

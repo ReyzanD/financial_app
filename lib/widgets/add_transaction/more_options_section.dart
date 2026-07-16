@@ -293,9 +293,10 @@ class _MoreOptionsSectionState extends State<MoreOptionsSection>
                     vertical: 10,
                   ),
                   decoration: BoxDecoration(
-                    color: isSelected
-                        ? DesignTokens.primaryColor.withValues(alpha: 0.1)
-                        : Colors.transparent,
+                    color:
+                        isSelected
+                            ? DesignTokens.primaryColor.withValues(alpha: 0.1)
+                            : Colors.transparent,
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Row(
@@ -303,9 +304,10 @@ class _MoreOptionsSectionState extends State<MoreOptionsSection>
                       Icon(
                         icon,
                         size: 18,
-                        color: isSelected
-                            ? DesignTokens.primaryColor
-                            : Colors.grey[500],
+                        color:
+                            isSelected
+                                ? DesignTokens.primaryColor
+                                : Colors.grey[500],
                       ),
                       const SizedBox(width: 12),
                       Expanded(
@@ -315,7 +317,9 @@ class _MoreOptionsSectionState extends State<MoreOptionsSection>
                             color: isSelected ? Colors.white : Colors.grey[400],
                             fontSize: 13,
                             fontWeight:
-                                isSelected ? FontWeight.w600 : FontWeight.normal,
+                                isSelected
+                                    ? FontWeight.w600
+                                    : FontWeight.normal,
                           ),
                         ),
                       ),
@@ -325,22 +329,25 @@ class _MoreOptionsSectionState extends State<MoreOptionsSection>
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           border: Border.all(
-                            color: isSelected
-                                ? DesignTokens.primaryColor
-                                : Colors.grey[600]!,
+                            color:
+                                isSelected
+                                    ? DesignTokens.primaryColor
+                                    : Colors.grey[600]!,
                             width: 2,
                           ),
-                          color: isSelected
-                              ? DesignTokens.primaryColor
-                              : Colors.transparent,
+                          color:
+                              isSelected
+                                  ? DesignTokens.primaryColor
+                                  : Colors.transparent,
                         ),
-                        child: isSelected
-                            ? const Icon(
-                                Icons.check,
-                                size: 12,
-                                color: Colors.white,
-                              )
-                            : null,
+                        child:
+                            isSelected
+                                ? const Icon(
+                                  Icons.check,
+                                  size: 12,
+                                  color: Colors.white,
+                                )
+                                : null,
                       ),
                     ],
                   ),

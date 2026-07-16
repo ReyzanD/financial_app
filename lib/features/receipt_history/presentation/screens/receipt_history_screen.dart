@@ -336,7 +336,9 @@ class _ReceiptHistoryScreenState extends State<ReceiptHistoryScreen> {
                                   isProcessed
                                       ? Colors.green[50]
                                       : Colors.orange[50],
-                              borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                              borderRadius: BorderRadius.circular(
+                                DesignTokens.radiusMedium,
+                              ),
                             ),
                             child: Text(
                               isProcessed
@@ -492,7 +494,9 @@ class _ReceiptHistoryScreenState extends State<ReceiptHistoryScreen> {
                       const SizedBox(height: 20),
                       if (imagePath != null && File(imagePath).existsSync())
                         ClipRRect(
-                          borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                          borderRadius: BorderRadius.circular(
+                            DesignTokens.radiusMedium,
+                          ),
                           child: Image.file(
                             File(imagePath),
                             height: 200,

@@ -231,10 +231,7 @@ void main() {
         'target_date': '2026-12-01',
       });
 
-      final result = await dataService.addGoalContribution(
-        created.id,
-        500000,
-      );
+      final result = await dataService.addGoalContribution(created.id, 500000);
 
       expect(result['success'], true);
       expect(result['new_amount'], 500000);
@@ -250,50 +247,52 @@ void main() {
       expect(contributions.first['amount_232143'], 500000);
     });
 
-    test('addGoalContribution with account deducts balance and creates transaction',
-        () async {
-      // Insert an account with sufficient balance
-      await db.insert('accounts_232143', {
-        'account_id_232143': 'acc-savings-001',
-        'user_id_232143': 'test-user-001',
-        'name_232143': 'Tabungan',
-        'type_232143': 'bank',
-        'balance_232143': 2000000,
-        'color_232143': '#4CAF50',
-        'created_at_232143': DateTime.now().toIso8601String(),
-      });
+    test(
+      'addGoalContribution with account deducts balance and creates transaction',
+      () async {
+        // Insert an account with sufficient balance
+        await db.insert('accounts_232143', {
+          'account_id_232143': 'acc-savings-001',
+          'user_id_232143': 'test-user-001',
+          'name_232143': 'Tabungan',
+          'type_232143': 'bank',
+          'balance_232143': 2000000,
+          'color_232143': '#4CAF50',
+          'created_at_232143': DateTime.now().toIso8601String(),
+        });
 
-      final created = await dataService.addGoal({
-        'name': 'Renovasi Rumah',
-        'goal_type': 'other',
-        'target_amount': 50000000,
-        'target_date': '2027-06-01',
-      });
+        final created = await dataService.addGoal({
+          'name': 'Renovasi Rumah',
+          'goal_type': 'other',
+          'target_amount': 50000000,
+          'target_date': '2027-06-01',
+        });
 
-      final result = await dataService.addGoalContribution(
-        created.id,
-        1000000,
-        accountId: 'acc-savings-001',
-        note: 'Transfer dari tabungan',
-      );
+        final result = await dataService.addGoalContribution(
+          created.id,
+          1000000,
+          accountId: 'acc-savings-001',
+          note: 'Transfer dari tabungan',
+        );
 
-      expect(result['success'], true);
-      expect(result['new_amount'], 1000000);
+        expect(result['success'], true);
+        expect(result['new_amount'], 1000000);
 
-      // Verify account balance deducted
-      final accountResult = await db.query(
-        'accounts_232143',
-        where: 'account_id_232143 = ?',
-        whereArgs: ['acc-savings-001'],
-      );
-      expect(accountResult.first['balance_232143'], 1000000);
+        // Verify account balance deducted
+        final accountResult = await db.query(
+          'accounts_232143',
+          where: 'account_id_232143 = ?',
+          whereArgs: ['acc-savings-001'],
+        );
+        expect(accountResult.first['balance_232143'], 1000000);
 
-      // Verify transaction recorded
-      final txResult = await db.query('transactions_232143');
-      expect(txResult.length, 1);
-      expect(txResult.first['amount_232143'], 1000000);
-      expect(txResult.first['type_232143'], 'expense');
-    });
+        // Verify transaction recorded
+        final txResult = await db.query('transactions_232143');
+        expect(txResult.length, 1);
+        expect(txResult.first['amount_232143'], 1000000);
+        expect(txResult.first['type_232143'], 'expense');
+      },
+    );
 
     test('getTotalGoalContributions sums across goals', () async {
       await dataService.addGoal({

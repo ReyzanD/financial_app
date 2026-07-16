@@ -28,24 +28,25 @@ class _TagsScreenState extends State<TagsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: DesignTokens.backgroundDark,
-      appBar: widget.showAppBar
-          ? AppBar(
-              backgroundColor: DesignTokens.backgroundDark,
-              elevation: 0,
-              leading: IconButton(
-                icon: const Icon(Iconsax.arrow_left, color: Colors.white),
-                tooltip: 'Kembali',
-                onPressed: () => Navigator.pop(context),
-              ),
-              title: Text(
-                'Tags',
-                style: GoogleFonts.poppins(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w600,
+      appBar:
+          widget.showAppBar
+              ? AppBar(
+                backgroundColor: DesignTokens.backgroundDark,
+                elevation: 0,
+                leading: IconButton(
+                  icon: const Icon(Iconsax.arrow_left, color: Colors.white),
+                  tooltip: 'Kembali',
+                  onPressed: () => Navigator.pop(context),
                 ),
-              ),
-            )
-          : null,
+                title: Text(
+                  'Tags',
+                  style: GoogleFonts.poppins(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              )
+              : null,
       body: Column(
         children: [
           const OfflineIndicator(),
@@ -131,7 +132,9 @@ class _TagsScreenState extends State<TagsScreen> {
                       ),
                       decoration: BoxDecoration(
                         color: DesignTokens.surfaceDark,
-                        borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                        borderRadius: BorderRadius.circular(
+                          DesignTokens.radiusMedium,
+                        ),
                         border: Border.all(color: DesignTokens.borderDark),
                       ),
                       child: Row(

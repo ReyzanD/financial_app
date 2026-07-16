@@ -64,8 +64,7 @@ class _HomeFloatingActionButtonState extends State<HomeFloatingActionButton>
     final result = await Navigator.push(
       context,
       MaterialPageRoute(
-        builder:
-            (context) => AddTransactionScreen(defaultType: defaultType),
+        builder: (context) => AddTransactionScreen(defaultType: defaultType),
       ),
     );
     if (!context.mounted) return;
@@ -122,9 +121,10 @@ class _HomeFloatingActionButtonState extends State<HomeFloatingActionButton>
           // Main FAB
           Semantics(
             label: _isOpen ? 'Tutup menu' : 'Tambah Transaksi',
-            hint: _isOpen
-                ? 'Ketuk untuk menutup'
-                : 'Ketuk untuk membuka menu tambah',
+            hint:
+                _isOpen
+                    ? 'Ketuk untuk menutup'
+                    : 'Ketuk untuk membuka menu tambah',
             child: FloatingActionButton(
               heroTag: 'home_fab',
               onPressed: _toggle,

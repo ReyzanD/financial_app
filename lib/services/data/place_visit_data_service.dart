@@ -107,7 +107,10 @@ class PlaceVisitDataService {
       for (final row in rows) {
         final visit = PlaceVisit.fromMap(row);
         final dist = LocationService.calculateDistance(
-          latitude, longitude, visit.latitude, visit.longitude,
+          latitude,
+          longitude,
+          visit.latitude,
+          visit.longitude,
         );
         if (dist < maxDistanceMeters && dist < closestDist) {
           closest = visit;
@@ -126,9 +129,7 @@ class PlaceVisitDataService {
 
   /// Upsert a place visit from a transaction's location data.
   /// Returns the (possibly existing) PlaceVisit.
-  Future<PlaceVisit> upsertFromTransaction(
-    TransactionModel transaction,
-  ) async {
+  Future<PlaceVisit> upsertFromTransaction(TransactionModel transaction) async {
     try {
       final ldata = transaction.locationData;
       if (ldata == null) {
@@ -271,7 +272,8 @@ class PlaceVisitDataService {
             txn['location_data_232143'] = json.encode({
               'latitude': lat,
               'longitude': lng,
-              'place_name': locationName ??
+              'place_name':
+                  locationName ??
                   txn['description_232143']?.toString() ??
                   'Unknown Location',
               'address': locationName,

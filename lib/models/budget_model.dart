@@ -32,52 +32,71 @@ class BudgetModel {
     this.recommendationReason,
     DateTime? createdAt,
     DateTime? updatedAt,
-  })  : createdAt = createdAt ?? DateTime.now(),
-        updatedAt = updatedAt ?? DateTime.now();
+  }) : createdAt = createdAt ?? DateTime.now(),
+       updatedAt = updatedAt ?? DateTime.now();
 
   /// From DB map (suffixed keys)
   factory BudgetModel.fromMap(Map<String, dynamic> map) {
     return BudgetModel(
-      id: (map['budget_id_232143'] ?? map['budget_id'] ?? map['id'] ?? '').toString(),
+      id:
+          (map['budget_id_232143'] ?? map['budget_id'] ?? map['id'] ?? '')
+              .toString(),
       userId: (map['user_id_232143'] ?? map['user_id'] ?? '').toString(),
-      categoryId: (map['category_id_232143'] ?? map['category_id'] ?? '').toString(),
-      amount: (map['amount_232143'] as num?)?.toDouble() ??
+      categoryId:
+          (map['category_id_232143'] ?? map['category_id'] ?? '').toString(),
+      amount:
+          (map['amount_232143'] as num?)?.toDouble() ??
           (map['amount'] as num?)?.toDouble() ??
           0.0,
-      spent: (map['spent_amount_232143'] as num?)?.toDouble() ??
+      spent:
+          (map['spent_amount_232143'] as num?)?.toDouble() ??
           (map['spent_amount'] as num?)?.toDouble() ??
           (map['spent'] as num?)?.toDouble() ??
           0.0,
-      remaining: (map['remaining_amount_232143'] as num?)?.toDouble() ??
+      remaining:
+          (map['remaining_amount_232143'] as num?)?.toDouble() ??
           (map['remaining_amount'] as num?)?.toDouble() ??
           (map['remaining'] as num?)?.toDouble() ??
           0.0,
       period: (map['period_232143'] ?? map['period'] ?? 'monthly').toString(),
-      periodStart: map['period_start_232143'] != null
-          ? DateTime.parse(map['period_start_232143'].toString())
-          : map['period_start'] != null
+      periodStart:
+          map['period_start_232143'] != null
+              ? DateTime.parse(map['period_start_232143'].toString())
+              : map['period_start'] != null
               ? DateTime.parse(map['period_start'].toString())
               : DateTime.now(),
-      periodEnd: map['period_end_232143'] != null
-          ? DateTime.parse(map['period_end_232143'].toString())
-          : map['period_end'] != null
+      periodEnd:
+          map['period_end_232143'] != null
+              ? DateTime.parse(map['period_end_232143'].toString())
+              : map['period_end'] != null
               ? DateTime.parse(map['period_end'].toString())
               : DateTime.now(),
-      rolloverEnabled: (map['rollover_enabled_232143'] ?? map['rollover_enabled'] ?? 0) == 1 ||
-          (map['rollover_enabled_232143'] ?? map['rollover_enabled'] ?? false) == true,
-      alertThreshold: (map['alert_threshold_232143'] as num?)?.toInt() ??
+      rolloverEnabled:
+          (map['rollover_enabled_232143'] ?? map['rollover_enabled'] ?? 0) ==
+              1 ||
+          (map['rollover_enabled_232143'] ??
+                  map['rollover_enabled'] ??
+                  false) ==
+              true,
+      alertThreshold:
+          (map['alert_threshold_232143'] as num?)?.toInt() ??
           (map['alert_threshold'] as num?)?.toInt() ??
           80,
-      isActive: map['is_active_232143'] != null
-          ? map['is_active_232143'] == 1
-          : (map['is_active'] as bool?) ?? true,
-      recommendationReason: (map['recommendation_reason_232143'] ?? map['recommendation_reason'])?.toString(),
-      createdAt: map['created_at_232143'] != null
-          ? DateTime.parse(map['created_at_232143'].toString())
-          : DateTime.now(),
-      updatedAt: map['updated_at_232143'] != null
-          ? DateTime.parse(map['updated_at_232143'].toString())
-          : DateTime.now(),
+      isActive:
+          map['is_active_232143'] != null
+              ? map['is_active_232143'] == 1
+              : (map['is_active'] as bool?) ?? true,
+      recommendationReason:
+          (map['recommendation_reason_232143'] ?? map['recommendation_reason'])
+              ?.toString(),
+      createdAt:
+          map['created_at_232143'] != null
+              ? DateTime.parse(map['created_at_232143'].toString())
+              : DateTime.now(),
+      updatedAt:
+          map['updated_at_232143'] != null
+              ? DateTime.parse(map['updated_at_232143'].toString())
+              : DateTime.now(),
     );
   }
 

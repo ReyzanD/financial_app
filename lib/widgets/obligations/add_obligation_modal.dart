@@ -226,7 +226,9 @@ class _AddObligationModalState extends State<AddObligationModal> {
                   filled: true,
                   fillColor: DesignTokens.surfaceDark,
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                    borderRadius: BorderRadius.circular(
+                      DesignTokens.radiusMedium,
+                    ),
                     borderSide: BorderSide.none,
                   ),
                 ),
@@ -345,7 +347,9 @@ class _AddObligationModalState extends State<AddObligationModal> {
                   filled: true,
                   fillColor: DesignTokens.surfaceDark,
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                    borderRadius: BorderRadius.circular(
+                      DesignTokens.radiusMedium,
+                    ),
                     borderSide: BorderSide.none,
                   ),
                 ),
@@ -393,7 +397,9 @@ class _AddObligationModalState extends State<AddObligationModal> {
                     filled: true,
                     fillColor: DesignTokens.surfaceDark,
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                      borderRadius: BorderRadius.circular(
+                        DesignTokens.radiusMedium,
+                      ),
                       borderSide: BorderSide.none,
                     ),
                   ),
@@ -410,7 +416,9 @@ class _AddObligationModalState extends State<AddObligationModal> {
                     filled: true,
                     fillColor: DesignTokens.surfaceDark,
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                      borderRadius: BorderRadius.circular(
+                        DesignTokens.radiusMedium,
+                      ),
                       borderSide: BorderSide.none,
                     ),
                   ),
@@ -429,7 +437,9 @@ class _AddObligationModalState extends State<AddObligationModal> {
                     filled: true,
                     fillColor: DesignTokens.surfaceDark,
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                      borderRadius: BorderRadius.circular(
+                        DesignTokens.radiusMedium,
+                      ),
                       borderSide: BorderSide.none,
                     ),
                   ),
@@ -446,7 +456,9 @@ class _AddObligationModalState extends State<AddObligationModal> {
                     filled: true,
                     fillColor: DesignTokens.surfaceDark,
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                      borderRadius: BorderRadius.circular(
+                        DesignTokens.radiusMedium,
+                      ),
                       borderSide: BorderSide.none,
                     ),
                   ),
@@ -461,7 +473,8 @@ class _AddObligationModalState extends State<AddObligationModal> {
                   dropdownColor: DesignTokens.surfaceDark,
                   style: const TextStyle(color: Colors.white),
                   decoration: DropdownHelper.darkDropdownDecoration(
-                    labelText: AppLocalizations.of(context)!.subscription_cycle_label,
+                    labelText:
+                        AppLocalizations.of(context)!.subscription_cycle_label,
                   ),
                   items: [
                     DropdownMenuItem(
@@ -494,7 +507,9 @@ class _AddObligationModalState extends State<AddObligationModal> {
                   foregroundColor: Colors.white,
                   disabledBackgroundColor: Colors.grey[800],
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                    borderRadius: BorderRadius.circular(
+                      DesignTokens.radiusMedium,
+                    ),
                   ),
                   minimumSize: const Size(double.infinity, 50),
                 ),

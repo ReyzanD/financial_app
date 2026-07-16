@@ -32,8 +32,7 @@ class _MapScreenState extends State<MapScreen> {
   String? _errorMessage;
   final TransactionDataService _transactionDataService =
       getIt<TransactionDataService>();
-  final OverpassApiService _overpassApiService =
-      getIt<OverpassApiService>();
+  final OverpassApiService _overpassApiService = getIt<OverpassApiService>();
   final PlaceVisitDataService _placeVisitDataService =
       getIt<PlaceVisitDataService>();
   final AlternativeSuggestionDataService _alternativeDataService =
@@ -54,9 +53,7 @@ class _MapScreenState extends State<MapScreen> {
     } else {
       // Remove alternative markers (keep transaction markers + user location)
       setState(() {
-        _markers.removeWhere(
-          (m) => _isAlternativeMarker(m),
-        );
+        _markers.removeWhere((m) => _isAlternativeMarker(m));
       });
     }
   }
@@ -78,16 +75,19 @@ class _MapScreenState extends State<MapScreen> {
 
         List<_SuggestionPoint> points;
         if (cached.isNotEmpty) {
-          points = cached
-              .map((s) => _SuggestionPoint(
-                    name: s.suggestedPlaceName,
-                    lat: s.suggestedLatitude,
-                    lng: s.suggestedLongitude,
-                    distance: s.distanceMeters,
-                    savings: s.estimatedSavings,
-                    confidence: s.confidenceLevel,
-                  ))
-              .toList();
+          points =
+              cached
+                  .map(
+                    (s) => _SuggestionPoint(
+                      name: s.suggestedPlaceName,
+                      lat: s.suggestedLatitude,
+                      lng: s.suggestedLongitude,
+                      distance: s.distanceMeters,
+                      savings: s.estimatedSavings,
+                      confidence: s.confidenceLevel,
+                    ),
+                  )
+                  .toList();
         } else {
           // Query Overpass on-the-fly
           try {
@@ -98,16 +98,22 @@ class _MapScreenState extends State<MapScreen> {
               radiusMeters: 1000,
               maxResults: 5,
             );
-            points = pois
-                .map((poi) => _SuggestionPoint(
-                      name: poi.name,
-                      lat: poi.latitude,
-                      lng: poi.longitude,
-                      distance: LocationService.calculateDistance(
-                        pv.latitude, pv.longitude, poi.latitude, poi.longitude,
+            points =
+                pois
+                    .map(
+                      (poi) => _SuggestionPoint(
+                        name: poi.name,
+                        lat: poi.latitude,
+                        lng: poi.longitude,
+                        distance: LocationService.calculateDistance(
+                          pv.latitude,
+                          pv.longitude,
+                          poi.latitude,
+                          poi.longitude,
+                        ),
                       ),
-                    ))
-                .toList();
+                    )
+                    .toList();
           } catch (_) {
             continue;
           }
@@ -154,11 +160,7 @@ class _MapScreenState extends State<MapScreen> {
                   ),
                 ],
               ),
-              child: const Icon(
-                Iconsax.shop,
-                color: Colors.white,
-                size: 18,
-              ),
+              child: const Icon(Iconsax.shop, color: Colors.white, size: 18),
             ),
           ),
         ),
@@ -167,61 +169,65 @@ class _MapScreenState extends State<MapScreen> {
   }
 
   void _showAlternativeInfo(_SuggestionPoint pt) {
-    final distanceText = pt.distance != null
-        ? pt.distance! < 1000
-            ? '${pt.distance!.round()} m'
-            : '${(pt.distance! / 1000).toStringAsFixed(1)} km'
-        : '?';
+    final distanceText =
+        pt.distance != null
+            ? pt.distance! < 1000
+                ? '${pt.distance!.round()} m'
+                : '${(pt.distance! / 1000).toStringAsFixed(1)} km'
+            : '?';
     showDialog(
       context: context,
-      builder: (c) => AlertDialog(
-        backgroundColor: DesignTokens.surfaceDark,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(DesignTokens.radiusLarge),
-        ),
-        title: Row(
-          children: [
-            Icon(Iconsax.shop, color: DesignTokens.primaryColor, size: 24),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Text(
-                pt.name,
-                style: GoogleFonts.poppins(
-                  color: Colors.white,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
+      builder:
+          (c) => AlertDialog(
+            backgroundColor: DesignTokens.surfaceDark,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(DesignTokens.radiusLarge),
+            ),
+            title: Row(
+              children: [
+                Icon(Iconsax.shop, color: DesignTokens.primaryColor, size: 24),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    pt.name,
+                    style: GoogleFonts.poppins(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildInfoRow('Jarak', distanceText, Colors.grey),
+                if (pt.confidence != null)
+                  _buildInfoRow(
+                    'Confidence',
+                    '${pt.confidence}%',
+                    DesignTokens.successColor,
+                  ),
+                if (pt.savings != null && pt.savings! > 0)
+                  _buildInfoRow(
+                    'Estimasi Hemat',
+                    'Rp ${pt.savings!.toStringAsFixed(0)}',
+                    DesignTokens.successColor,
+                  ),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(c),
+                child: Text(
+                  'Tutup',
+                  style: GoogleFonts.poppins(color: DesignTokens.primaryColor),
                 ),
               ),
-            ),
-          ],
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildInfoRow('Jarak', distanceText, Colors.grey),
-            if (pt.confidence != null)
-              _buildInfoRow(
-                'Confidence', '${pt.confidence}%', DesignTokens.successColor,
-              ),
-            if (pt.savings != null && pt.savings! > 0)
-              _buildInfoRow(
-                'Estimasi Hemat',
-                'Rp ${pt.savings!.toStringAsFixed(0)}',
-                DesignTokens.successColor,
-              ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(c),
-            child: Text(
-              'Tutup',
-              style: GoogleFonts.poppins(color: DesignTokens.primaryColor),
-            ),
+            ],
           ),
-        ],
-      ),
     );
   }
 
@@ -231,14 +237,18 @@ class _MapScreenState extends State<MapScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label,
-              style: GoogleFonts.poppins(color: Colors.grey[400], fontSize: 13)),
-          Text(value,
-              style: GoogleFonts.poppins(
-                color: color,
-                fontSize: 13,
-                fontWeight: FontWeight.w600,
-              )),
+          Text(
+            label,
+            style: GoogleFonts.poppins(color: Colors.grey[400], fontSize: 13),
+          ),
+          Text(
+            value,
+            style: GoogleFonts.poppins(
+              color: color,
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
         ],
       ),
     );
@@ -345,8 +355,9 @@ class _MapScreenState extends State<MapScreen> {
   Future<void> _loadTransactionMarkers() async {
     final l10n = AppLocalizations.of(context);
     try {
-      final transactionsData =
-          await _transactionDataService.getTransactions(limit: 100);
+      final transactionsData = await _transactionDataService.getTransactions(
+        limit: 100,
+      );
       final transactions = List<Map<String, dynamic>>.from(
         transactionsData['transactions'] ?? [],
       );
@@ -567,17 +578,17 @@ class _MapScreenState extends State<MapScreen> {
           else
             IconButton(
               icon: Icon(
-                _showAlternatives
-                    ? Iconsax.shop
-                    : Iconsax.shop_add,
-                color: _showAlternatives
-                    ? DesignTokens.primaryColor
-                    : Colors.white,
+                _showAlternatives ? Iconsax.shop : Iconsax.shop_add,
+                color:
+                    _showAlternatives
+                        ? DesignTokens.primaryColor
+                        : Colors.white,
               ),
               onPressed: _toggleAlternatives,
-              tooltip: _showAlternatives
-                  ? 'Sembunyikan alternatif'
-                  : 'Tampilkan alternatif',
+              tooltip:
+                  _showAlternatives
+                      ? 'Sembunyikan alternatif'
+                      : 'Tampilkan alternatif',
             ),
           IconButton(
             icon: const Icon(Iconsax.refresh, color: Colors.white),

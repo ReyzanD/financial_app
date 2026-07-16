@@ -10,7 +10,8 @@ import 'package:financial_app/core/di/service_locator.dart';
 /// Service untuk menghubungkan obligations dengan transactions
 class ObligationTransactionLinker {
   final ObligationDataService _obligationData = getIt<ObligationDataService>();
-  final TransactionDataService _transactionData = getIt<TransactionDataService>();
+  final TransactionDataService _transactionData =
+      getIt<TransactionDataService>();
   final PaymentHistoryService _paymentService = getIt<PaymentHistoryService>();
 
   /// Auto-link transaction to obligation berdasarkan amount dan date
@@ -120,14 +121,15 @@ class ObligationTransactionLinker {
       final obligations = await _obligationData.getObligations();
       final obligation = obligations.firstWhere(
         (o) => o.id == obligationId,
-        orElse: () => FinancialObligation(
-          id: '',
-          name: '',
-          monthlyAmount: 0.0,
-          dueDate: DateTime.now(),
-          type: ObligationType.bill,
-          daysUntilDue: 0,
-        ),
+        orElse:
+            () => FinancialObligation(
+              id: '',
+              name: '',
+              monthlyAmount: 0.0,
+              dueDate: DateTime.now(),
+              type: ObligationType.bill,
+              daysUntilDue: 0,
+            ),
       );
 
       if (obligation.id.isNotEmpty) {
@@ -235,14 +237,15 @@ class ObligationTransactionLinker {
       final obligations = await _obligationData.getObligations();
       final obligation = obligations.firstWhere(
         (o) => o.id == obligationId,
-        orElse: () => FinancialObligation(
-          id: '',
-          name: '',
-          monthlyAmount: 0.0,
-          dueDate: DateTime.now(),
-          type: ObligationType.bill,
-          daysUntilDue: 0,
-        ),
+        orElse:
+            () => FinancialObligation(
+              id: '',
+              name: '',
+              monthlyAmount: 0.0,
+              dueDate: DateTime.now(),
+              type: ObligationType.bill,
+              daysUntilDue: 0,
+            ),
       );
 
       if (obligation.id.isEmpty) {
@@ -252,8 +255,7 @@ class ObligationTransactionLinker {
 
       // Create transaction data
       final transactionData = {
-        'amount':
-            paymentData['amount_paid'] ?? obligation.monthlyAmount,
+        'amount': paymentData['amount_paid'] ?? obligation.monthlyAmount,
         'type': 'expense',
         'category_id': _getCategoryIdForObligation(obligation),
         'description': '${obligation.name} - ${obligation.type.name}',
@@ -265,8 +267,9 @@ class ObligationTransactionLinker {
       };
 
       // Create transaction via data service
-      final transactionModel =
-          await _transactionData.addTransaction(transactionData);
+      final transactionModel = await _transactionData.addTransaction(
+        transactionData,
+      );
       final transactionId = transactionModel.id;
 
       // Link transaction to obligation

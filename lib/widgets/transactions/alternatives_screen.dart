@@ -58,10 +58,8 @@ class _AlternativesScreenState extends State<AlternativesScreen> {
       // First, check if we already have one by approximate location
       List<AlternativeSuggestion> results = [];
       if (widget.latitude != null && widget.longitude != null) {
-        final existingPV = await _placeVisitDataService.findByApproximateLocation(
-          widget.latitude!,
-          widget.longitude!,
-        );
+        final existingPV = await _placeVisitDataService
+            .findByApproximateLocation(widget.latitude!, widget.longitude!);
 
         if (existingPV != null) {
           results = await _engine.getAlternativesForPlace(
@@ -150,16 +148,18 @@ class _AlternativesScreenState extends State<AlternativesScreen> {
       padding: const EdgeInsets.all(DesignTokens.spacing4),
       decoration: BoxDecoration(
         color: DesignTokens.surfaceDark,
-        border: Border(
-          bottom: BorderSide(color: DesignTokens.borderDark),
-        ),
+        border: Border(bottom: BorderSide(color: DesignTokens.borderDark)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Icon(Iconsax.location, color: DesignTokens.primaryColor, size: 20),
+              Icon(
+                Iconsax.location,
+                color: DesignTokens.primaryColor,
+                size: 20,
+              ),
               const SizedBox(width: 8),
               Text(
                 widget.locationName ?? 'Lokasi',
@@ -208,8 +208,9 @@ class _AlternativesScreenState extends State<AlternativesScreen> {
       child: ListView.builder(
         padding: const EdgeInsets.all(DesignTokens.spacing4),
         itemCount: _suggestions.length,
-        itemBuilder: (context, index) =>
-            AlternativeSuggestionCard(suggestion: _suggestions[index]),
+        itemBuilder:
+            (context, index) =>
+                AlternativeSuggestionCard(suggestion: _suggestions[index]),
       ),
     );
   }

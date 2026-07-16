@@ -82,53 +82,136 @@ class OsmCategoryMappingService {
   /// Matched in order (first match wins).
   static const List<_KeywordMapping> _keywordMappings = [
     // Food keywords
-    _KeywordMapping('makan', [['amenity', 'restaurant'], ['amenity', 'cafe'], ['amenity', 'fast_food']]),
-    _KeywordMapping('restoran', [['amenity', 'restaurant']]),
-    _KeywordMapping('kopi', [['amenity', 'cafe']]),
-    _KeywordMapping('cafe', [['amenity', 'cafe']]),
-    _KeywordMapping('warung', [['amenity', 'restaurant'], ['shop', 'convenience']]),
-    _KeywordMapping('jajan', [['amenity', 'cafe'], ['amenity', 'fast_food']]),
+    _KeywordMapping('makan', [
+      ['amenity', 'restaurant'],
+      ['amenity', 'cafe'],
+      ['amenity', 'fast_food'],
+    ]),
+    _KeywordMapping('restoran', [
+      ['amenity', 'restaurant'],
+    ]),
+    _KeywordMapping('kopi', [
+      ['amenity', 'cafe'],
+    ]),
+    _KeywordMapping('cafe', [
+      ['amenity', 'cafe'],
+    ]),
+    _KeywordMapping('warung', [
+      ['amenity', 'restaurant'],
+      ['shop', 'convenience'],
+    ]),
+    _KeywordMapping('jajan', [
+      ['amenity', 'cafe'],
+      ['amenity', 'fast_food'],
+    ]),
 
     // Transport keywords
-    _KeywordMapping('bensin', [['amenity', 'fuel']]),
-    _KeywordMapping('bbm', [['amenity', 'fuel']]),
-    _KeywordMapping('parkir', [['amenity', 'parking']]),
-    _KeywordMapping('transport', [['amenity', 'fuel'], ['amenity', 'bus_station']]),
-    _KeywordMapping('gojek', [['amenity', 'fuel']]),
-    _KeywordMapping('grab', [['amenity', 'fuel']]),
+    _KeywordMapping('bensin', [
+      ['amenity', 'fuel'],
+    ]),
+    _KeywordMapping('bbm', [
+      ['amenity', 'fuel'],
+    ]),
+    _KeywordMapping('parkir', [
+      ['amenity', 'parking'],
+    ]),
+    _KeywordMapping('transport', [
+      ['amenity', 'fuel'],
+      ['amenity', 'bus_station'],
+    ]),
+    _KeywordMapping('gojek', [
+      ['amenity', 'fuel'],
+    ]),
+    _KeywordMapping('grab', [
+      ['amenity', 'fuel'],
+    ]),
 
     // Shopping keywords
-    _KeywordMapping('belanja', [['shop', 'supermarket'], ['shop', 'convenience'], ['shop', 'mall']]),
-    _KeywordMapping('toko', [['shop', 'convenience'], ['shop', 'mall']]),
-    _KeywordMapping('supermarket', [['shop', 'supermarket']]),
-    _KeywordMapping('pasar', [['shop', 'supermarket'], ['shop', 'convenience']]),
+    _KeywordMapping('belanja', [
+      ['shop', 'supermarket'],
+      ['shop', 'convenience'],
+      ['shop', 'mall'],
+    ]),
+    _KeywordMapping('toko', [
+      ['shop', 'convenience'],
+      ['shop', 'mall'],
+    ]),
+    _KeywordMapping('supermarket', [
+      ['shop', 'supermarket'],
+    ]),
+    _KeywordMapping('pasar', [
+      ['shop', 'supermarket'],
+      ['shop', 'convenience'],
+    ]),
 
     // Health keywords
-    _KeywordMapping('obat', [['amenity', 'pharmacy']]),
-    _KeywordMapping('apotek', [['amenity', 'pharmacy']]),
-    _KeywordMapping('dokter', [['amenity', 'clinic']]),
-    _KeywordMapping('rumah sakit', [['amenity', 'hospital']]),
-    _KeywordMapping('sehat', [['amenity', 'pharmacy'], ['amenity', 'clinic']]),
+    _KeywordMapping('obat', [
+      ['amenity', 'pharmacy'],
+    ]),
+    _KeywordMapping('apotek', [
+      ['amenity', 'pharmacy'],
+    ]),
+    _KeywordMapping('dokter', [
+      ['amenity', 'clinic'],
+    ]),
+    _KeywordMapping('rumah sakit', [
+      ['amenity', 'hospital'],
+    ]),
+    _KeywordMapping('sehat', [
+      ['amenity', 'pharmacy'],
+      ['amenity', 'clinic'],
+    ]),
 
     // Education
-    _KeywordMapping('sekolah', [['amenity', 'school']]),
-    _KeywordMapping('kuliah', [['amenity', 'university'], ['amenity', 'college']]),
-    _KeywordMapping('kursus', [['amenity', 'language_school']]),
-    _KeywordMapping('belajar', [['amenity', 'school'], ['amenity', 'library']]),
+    _KeywordMapping('sekolah', [
+      ['amenity', 'school'],
+    ]),
+    _KeywordMapping('kuliah', [
+      ['amenity', 'university'],
+      ['amenity', 'college'],
+    ]),
+    _KeywordMapping('kursus', [
+      ['amenity', 'language_school'],
+    ]),
+    _KeywordMapping('belajar', [
+      ['amenity', 'school'],
+      ['amenity', 'library'],
+    ]),
 
     // Entertainment
-    _KeywordMapping('nonton', [['amenity', 'cinema']]),
-    _KeywordMapping('film', [['amenity', 'cinema']]),
-    _KeywordMapping('game', [['leisure', 'sports_centre']]),
-    _KeywordMapping('olahraga', [['leisure', 'sports_centre']]),
-    _KeywordMapping('liburan', [['tourism', 'attraction']]),
+    _KeywordMapping('nonton', [
+      ['amenity', 'cinema'],
+    ]),
+    _KeywordMapping('film', [
+      ['amenity', 'cinema'],
+    ]),
+    _KeywordMapping('game', [
+      ['leisure', 'sports_centre'],
+    ]),
+    _KeywordMapping('olahraga', [
+      ['leisure', 'sports_centre'],
+    ]),
+    _KeywordMapping('liburan', [
+      ['tourism', 'attraction'],
+    ]),
 
     // General/bills
-    _KeywordMapping('tagihan', [['office', 'government']]),
-    _KeywordMapping('listrik', [['office', 'government']]),
-    _KeywordMapping('air', [['office', 'government']]),
-    _KeywordMapping('pulsa', [['shop', 'mobile_phone']]),
-    _KeywordMapping('bank', [['amenity', 'bank'], ['amenity', 'atm']]),
+    _KeywordMapping('tagihan', [
+      ['office', 'government'],
+    ]),
+    _KeywordMapping('listrik', [
+      ['office', 'government'],
+    ]),
+    _KeywordMapping('air', [
+      ['office', 'government'],
+    ]),
+    _KeywordMapping('pulsa', [
+      ['shop', 'mobile_phone'],
+    ]),
+    _KeywordMapping('bank', [
+      ['amenity', 'bank'],
+      ['amenity', 'atm'],
+    ]),
   ];
 
   /// Get OSM Overpass QL tag filters for a given category name.

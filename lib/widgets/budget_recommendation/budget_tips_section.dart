@@ -21,7 +21,11 @@ class BudgetTipsSection extends StatelessWidget {
         children: [
           Row(
             children: [
-              const Icon(Iconsax.lamp, color: DesignTokens.warningColor, size: 20),
+              const Icon(
+                Iconsax.lamp,
+                color: DesignTokens.warningColor,
+                size: 20,
+              ),
               const SizedBox(width: 8),
               Text(
                 'Tips Mengelola Budget',
@@ -60,7 +64,11 @@ class BudgetTipsSection extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Icon(Iconsax.tick_circle, color: DesignTokens.successColor, size: 16),
+          const Icon(
+            Iconsax.tick_circle,
+            color: DesignTokens.successColor,
+            size: 16,
+          ),
           const SizedBox(width: 12),
           Expanded(
             child: Text(

@@ -10,11 +10,7 @@ class ResponsiveContent extends StatelessWidget {
   final Widget child;
   final double? maxWidth;
 
-  const ResponsiveContent({
-    super.key,
-    required this.child,
-    this.maxWidth,
-  });
+  const ResponsiveContent({super.key, required this.child, this.maxWidth});
 
   @override
   Widget build(BuildContext context) {
@@ -23,11 +19,6 @@ class ResponsiveContent extends StatelessWidget {
     // Phone — use full width, no constraint.
     if (ResponsiveHelper.isPhone(context)) return child;
 
-    return Center(
-      child: SizedBox(
-        width: mw,
-        child: child,
-      ),
-    );
+    return Center(child: SizedBox(width: mw, child: child));
   }
 }

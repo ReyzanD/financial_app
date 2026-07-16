@@ -16,13 +16,13 @@ import 'package:financial_app/models/transaction_model.dart';
 import 'package:financial_app/services/logger_service.dart';
 import 'package:financial_app/services/data/place_visit_data_service.dart';
 import 'package:financial_app/services/data/price_observation_data_service.dart';
+import 'package:financial_app/utils/design_tokens.dart';
 import 'package:financial_app/services/alternative_recommendation_engine.dart';
 import 'package:financial_app/services/error_handler_service.dart';
 import 'package:financial_app/services/location_intelligence_service.dart';
 import 'package:financial_app/core/di/service_locator.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:financial_app/features/transactions/presentation/screens/add_transaction_screen.dart';
-import 'package:financial_app/utils/design_tokens.dart';
 import 'package:financial_app/widgets/common/offline_indicator.dart';
 
 class TransactionDetailScreen extends StatefulWidget {
@@ -116,7 +116,9 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
       // Upsert PlaceVisit — creates or updates from this transaction
       PlaceVisit placeVisit;
       if (txModel.locationData != null) {
-        placeVisit = await _placeVisitDataService.upsertFromTransaction(txModel);
+        placeVisit = await _placeVisitDataService.upsertFromTransaction(
+          txModel,
+        );
 
         // Auto-create a PriceObservation from this transaction's amount
         try {
@@ -135,8 +137,7 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
         // No structured location data — use a synthetic PlaceVisit
         placeVisit = PlaceVisit(
           id: widget.transaction['id']?.toString() ?? '',
-          placeName:
-              widget.transaction['location']?.toString() ?? category,
+          placeName: widget.transaction['location']?.toString() ?? category,
           latitude: lat,
           longitude: lng,
           category: category,
@@ -180,7 +181,8 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
       } catch (_) {
         // If upsert fails (e.g. no location_data), find or create a basic one
         final existing = await _placeVisitDataService.findByApproximateLocation(
-          lat, lng,
+          lat,
+          lng,
         );
         if (existing != null) {
           pv = existing;
@@ -189,8 +191,7 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
               'pv_${lat}_${lng}_${DateTime.now().millisecondsSinceEpoch}';
           pv = PlaceVisit(
             id: fallbackId,
-            placeName:
-                widget.transaction['location']?.toString() ?? 'Unknown',
+            placeName: widget.transaction['location']?.toString() ?? 'Unknown',
             latitude: lat,
             longitude: lng,
             category: widget.transaction['category'] ?? 'Uncategorized',
@@ -215,10 +216,7 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
       }
     } catch (e) {
       LoggerService.error('Error tagging price', error: e);
-      ErrorHandlerService.showErrorSnackbar(
-        context,
-        'Gagal mencatat harga',
-      );
+      ErrorHandlerService.showErrorSnackbar(context, 'Gagal mencatat harga');
     } finally {
       if (mounted) setState(() => _isTaggingPrice = false);
     }
@@ -243,7 +241,7 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
     final notes = widget.transaction['description'] as String?;
 
     return Scaffold(
-      backgroundColor: const Color(0xFF0A0A0A),
+      backgroundColor: DesignTokens.surfaceModalAlt,
       appBar: AppBar(
         title: Text(
           'Detail Transaksi',
@@ -252,7 +250,7 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
             fontWeight: FontWeight.w600,
           ),
         ),
-        backgroundColor: const Color(0xFF0A0A0A),
+        backgroundColor: DesignTokens.surfaceModalAlt,
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Iconsax.arrow_left, color: Colors.white),
@@ -406,7 +404,9 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
                           isIncome
                               ? Colors.green.withValues(alpha: 0.2)
                               : Colors.red.withValues(alpha: 0.2),
-                      borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                      borderRadius: BorderRadius.circular(
+                        DesignTokens.radiusMedium,
+                      ),
                     ),
                     child: Text(
                       isIncome ? 'PEMASUKAN' : 'PENGELUARAN',
@@ -519,16 +519,17 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
       width: double.infinity,
       child: OutlinedButton.icon(
         onPressed: _isTaggingPrice ? null : _tagCurrentPrice,
-        icon: _isTaggingPrice
-            ? SizedBox(
-                width: 16,
-                height: 16,
-                child: CircularProgressIndicator(
-                  strokeWidth: 2,
-                  color: DesignTokens.primaryColor,
-                ),
-              )
-            : Icon(Iconsax.dollar_square, size: 18),
+        icon:
+            _isTaggingPrice
+                ? SizedBox(
+                  width: 16,
+                  height: 16,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: DesignTokens.primaryColor,
+                  ),
+                )
+                : Icon(Iconsax.dollar_square, size: 18),
         label: Text(
           _isTaggingPrice
               ? 'Menyimpan...'
@@ -537,7 +538,9 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
         ),
         style: OutlinedButton.styleFrom(
           foregroundColor: DesignTokens.primaryColor,
-          side: BorderSide(color: DesignTokens.primaryColor.withValues(alpha: 0.5)),
+          side: BorderSide(
+            color: DesignTokens.primaryColor.withValues(alpha: 0.5),
+          ),
           padding: const EdgeInsets.symmetric(vertical: 12),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
@@ -575,14 +578,15 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (_) => AlternativesScreen(
-                        transactionId:
-                            widget.transaction['id']?.toString() ?? '',
-                        category: category,
-                        latitude: lat,
-                        longitude: lng,
-                        locationName: locationName,
-                      ),
+                      builder:
+                          (_) => AlternativesScreen(
+                            transactionId:
+                                widget.transaction['id']?.toString() ?? '',
+                            category: category,
+                            latitude: lat,
+                            longitude: lng,
+                            locationName: locationName,
+                          ),
                     ),
                   );
                 },
@@ -603,12 +607,12 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
           _buildLoadingEngine()
         else if (_engineSuggestions != null &&
             _engineSuggestions!.isNotEmpty) ...[
-          ..._engineSuggestions!.take(3).map(
-            (s) => AlternativeSuggestionCard(
-              suggestion: s,
-              isCompact: true,
-            ),
-          ),
+          ..._engineSuggestions!
+              .take(3)
+              .map(
+                (s) =>
+                    AlternativeSuggestionCard(suggestion: s, isCompact: true),
+              ),
           const SizedBox(height: 8),
         ],
 
@@ -618,10 +622,13 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
             _buildLoadingRecommendations()
           else if (_alternativeRecommendations != null &&
               _alternativeRecommendations!.isNotEmpty)
-            ..._alternativeRecommendations!.take(2).map(
-              (recommendation) =>
-                  AlternativeRecommendationCard(recommendation: recommendation),
-            )
+            ..._alternativeRecommendations!
+                .take(2)
+                .map(
+                  (recommendation) => AlternativeRecommendationCard(
+                    recommendation: recommendation,
+                  ),
+                )
           else
             _buildNoRecommendationsAvailable(),
         ],

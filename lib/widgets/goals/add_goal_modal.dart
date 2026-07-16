@@ -302,7 +302,9 @@ class _AddGoalModalState extends State<AddGoalModal> {
                   filled: true,
                   fillColor: DesignTokens.surfaceDark,
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                    borderRadius: BorderRadius.circular(
+                      DesignTokens.radiusMedium,
+                    ),
                     borderSide: BorderSide.none,
                   ),
                 ),
@@ -360,7 +362,9 @@ class _AddGoalModalState extends State<AddGoalModal> {
                   filled: true,
                   fillColor: DesignTokens.surfaceDark,
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                    borderRadius: BorderRadius.circular(
+                      DesignTokens.radiusMedium,
+                    ),
                     borderSide: BorderSide.none,
                   ),
                 ),
@@ -379,7 +383,9 @@ class _AddGoalModalState extends State<AddGoalModal> {
                   filled: true,
                   fillColor: DesignTokens.surfaceDark,
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                    borderRadius: BorderRadius.circular(
+                      DesignTokens.radiusMedium,
+                    ),
                     borderSide: BorderSide.none,
                   ),
                 ),
@@ -393,7 +399,9 @@ class _AddGoalModalState extends State<AddGoalModal> {
                   padding: const EdgeInsets.all(DesignTokens.spacing4),
                   decoration: BoxDecoration(
                     color: DesignTokens.surfaceDark,
-                    borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                    borderRadius: BorderRadius.circular(
+                      DesignTokens.radiusMedium,
+                    ),
                   ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -459,7 +467,9 @@ class _AddGoalModalState extends State<AddGoalModal> {
                   filled: true,
                   fillColor: DesignTokens.surfaceDark,
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                    borderRadius: BorderRadius.circular(
+                      DesignTokens.radiusMedium,
+                    ),
                     borderSide: BorderSide.none,
                   ),
                 ),
@@ -474,7 +484,9 @@ class _AddGoalModalState extends State<AddGoalModal> {
                   foregroundColor: Colors.white,
                   disabledBackgroundColor: Colors.grey[800],
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                    borderRadius: BorderRadius.circular(
+                      DesignTokens.radiusMedium,
+                    ),
                   ),
                   minimumSize: const Size(double.infinity, 50),
                 ),

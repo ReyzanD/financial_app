@@ -45,9 +45,7 @@ class InvestmentDataService {
     }
   }
 
-  Future<InvestmentModel> addInvestment(
-    Map<String, dynamic> invData,
-  ) async {
+  Future<InvestmentModel> addInvestment(Map<String, dynamic> invData) async {
     try {
       final userId = await getCurrentUserId();
       if (userId == null) throw Exception('Not authenticated');
@@ -81,10 +79,7 @@ class InvestmentDataService {
     }
   }
 
-  Future<void> updateInvestmentPrice(
-    String invId,
-    double newPrice,
-  ) async {
+  Future<void> updateInvestmentPrice(String invId, double newPrice) async {
     try {
       final userId = await getCurrentUserId();
       if (userId == null) throw Exception('Not authenticated');

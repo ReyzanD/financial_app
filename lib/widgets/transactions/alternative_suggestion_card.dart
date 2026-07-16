@@ -23,13 +23,14 @@ class AlternativeSuggestionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final hasSavings = suggestion.estimatedSavings != null &&
-        suggestion.estimatedSavings! > 0;
+    final hasSavings =
+        suggestion.estimatedSavings != null && suggestion.estimatedSavings! > 0;
     final distanceText = _formatDistance(suggestion.distanceMeters);
     final confidenceColor = _confidenceColor(suggestion.confidenceLevel);
-    final savingsText = hasSavings
-        ? 'Hemat ${CurrencyFormatter.formatRupiah(suggestion.estimatedSavings!)}'
-        : null;
+    final savingsText =
+        hasSavings
+            ? 'Hemat ${CurrencyFormatter.formatRupiah(suggestion.estimatedSavings!)}'
+            : null;
 
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
@@ -106,9 +107,7 @@ class AlternativeSuggestionCard extends StatelessWidget {
                   child: LinearProgressIndicator(
                     value: suggestion.confidenceLevel / 100.0,
                     backgroundColor: Colors.grey[800],
-                    valueColor: AlwaysStoppedAnimation<Color>(
-                      confidenceColor,
-                    ),
+                    valueColor: AlwaysStoppedAnimation<Color>(confidenceColor),
                     minHeight: 4,
                   ),
                 ),
@@ -149,10 +148,7 @@ class AlternativeSuggestionCard extends StatelessWidget {
         const SizedBox(width: 3),
         Text(
           text,
-          style: GoogleFonts.poppins(
-            color: Colors.grey[500],
-            fontSize: 11,
-          ),
+          style: GoogleFonts.poppins(color: Colors.grey[500], fontSize: 11),
         ),
       ],
     );
@@ -181,8 +177,8 @@ class AlternativeSuggestionCard extends StatelessWidget {
         Platform.isAndroid
             ? 'https://www.google.com/maps/search/?api=1&query=$lat,$lng'
             : Platform.isIOS
-                ? 'https://maps.apple.com/?ll=$lat,$lng&q=$name'
-                : 'https://www.openstreetmap.org/?mlat=$lat&mlon=$lng',
+            ? 'https://maps.apple.com/?ll=$lat,$lng&q=$name'
+            : 'https://www.openstreetmap.org/?mlat=$lat&mlon=$lng',
       );
       if (await canLaunchUrl(uri)) {
         await launchUrl(uri, mode: LaunchMode.externalApplication);

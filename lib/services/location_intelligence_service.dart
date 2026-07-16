@@ -12,8 +12,9 @@ class LocationIntelligenceService {
     try {
       LoggerService.debug('LocationIntelligence: Fetching transactions...');
       // Analyze user's transaction locations
-      final transactionsData =
-          await _transactionDataService.getTransactions(limit: 200);
+      final transactionsData = await _transactionDataService.getTransactions(
+        limit: 200,
+      );
       final transactions = List<dynamic>.from(
         transactionsData['transactions'] ?? [],
       );
@@ -381,8 +382,9 @@ class LocationIntelligenceService {
     String category,
   ) async {
     try {
-      final transactionsData =
-          await _transactionDataService.getTransactions(limit: 100);
+      final transactionsData = await _transactionDataService.getTransactions(
+        limit: 100,
+      );
       final transactions = List<dynamic>.from(
         transactionsData['transactions'] ?? [],
       );

@@ -6,5 +6,6 @@ class TemplateRepository {
   final TransactionTemplateDataService _s;
   TemplateRepository({TransactionTemplateDataService? service})
     : _s = service ?? getIt<TransactionTemplateDataService>();
-  Future<List<TransactionTemplateModel>> getTemplates() => _s.getTransactionTemplates();
+  Future<List<TransactionTemplateModel>> getTemplates() =>
+      _s.getTransactionTemplates();
 }

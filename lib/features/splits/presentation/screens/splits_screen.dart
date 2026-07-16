@@ -220,8 +220,8 @@ class _SplitsScreenState extends State<SplitsScreen> {
                   split.notes?.isNotEmpty == true
                       ? split.notes!
                       : split.participantPhone.isNotEmpty
-                          ? split.participantPhone
-                          : split.participantName,
+                      ? split.participantPhone
+                      : split.participantName,
                   style: GoogleFonts.poppins(
                     color: DesignTokens.textSecondaryDark,
                     fontSize: 12,

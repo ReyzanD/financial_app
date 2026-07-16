@@ -15,10 +15,7 @@ import 'package:financial_app/widgets/common/responsive_content.dart';
 class AnalyticsHubScreen extends StatefulWidget {
   final String initialTab;
 
-  const AnalyticsHubScreen({
-    super.key,
-    this.initialTab = 'analytics',
-  });
+  const AnalyticsHubScreen({super.key, this.initialTab = 'analytics'});
 
   @override
   State<AnalyticsHubScreen> createState() => _AnalyticsHubScreenState();

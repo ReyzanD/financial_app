@@ -37,9 +37,7 @@ class ObligationDataService {
       orderBy: 'due_date_232143 ASC',
     );
 
-    return obligations
-        .map((row) => FinancialObligation.fromMap(row))
-        .toList();
+    return obligations.map((row) => FinancialObligation.fromMap(row)).toList();
   }
 
   /// Get upcoming obligations
@@ -61,9 +59,7 @@ class ObligationDataService {
       orderBy: 'due_date_232143 ASC',
     );
 
-    return obligations
-        .map((row) => FinancialObligation.fromMap(row))
-        .toList();
+    return obligations.map((row) => FinancialObligation.fromMap(row)).toList();
   }
 
   /// Add obligation (supports bill, debt, and subscription types)
@@ -85,7 +81,8 @@ class ObligationDataService {
       'amount_232143':
           obligationData['amount'] ?? obligationData['monthly_amount'] ?? 0.0,
       'due_date_232143':
-          obligationData['due_date']?.toString() ?? obligationData['dueDate']?.toString(),
+          obligationData['due_date']?.toString() ??
+          obligationData['dueDate']?.toString(),
       'frequency_232143': obligationData['frequency'] ?? 'monthly',
       'payment_method_232143': obligationData['payment_method'] ?? 'cash',
       'category_id_232143': obligationData['category_id'],
@@ -176,7 +173,8 @@ class ObligationDataService {
     if (obligationData.containsKey('due_date') ||
         obligationData.containsKey('dueDate')) {
       data['due_date_232143'] =
-          obligationData['due_date']?.toString() ?? obligationData['dueDate']?.toString();
+          obligationData['due_date']?.toString() ??
+          obligationData['dueDate']?.toString();
     }
     if (obligationData.containsKey('frequency')) {
       data['frequency_232143'] = obligationData['frequency'];
@@ -284,11 +282,7 @@ class ObligationDataService {
     // Update obligation as paid
     await db.update(
       'financial_obligations_232143',
-      {
-        'is_paid_232143': 1,
-        'paid_date_232143': now,
-        'updated_at_232143': now,
-      },
+      {'is_paid_232143': 1, 'paid_date_232143': now, 'updated_at_232143': now},
       where: 'obligation_id_232143 = ? AND user_id_232143 = ?',
       whereArgs: [obligationId, userId],
     );
@@ -330,5 +324,4 @@ class ObligationDataService {
       'total_count': obligations.length,
     };
   }
-
 }

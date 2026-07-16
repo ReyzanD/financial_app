@@ -137,124 +137,133 @@ void main() {
   });
 
   group('TransactionDataService — integration (real SQLite)', () {
-    test('addTransaction → getTransactions: round-trip preserves all fields',
-        () async {
-      final input = {
-        'amount': 50000,
-        'type': 'expense',
-        'category_id': 'cat-food-001',
-        'category_name': 'Makanan & Minuman',
-        'category_color': '#FF6B6B',
-        'category_icon': 'food',
-        'description': 'Nasi Goreng',
-        'account_id': 'acc-cash-001',
-        'account_name': 'Cash',
-        'account_type': 'cash',
-        'payment_method': 'cash',
-        'transaction_date': '2026-07-15',
-        'is_recurring': false,
-      };
+    test(
+      'addTransaction → getTransactions: round-trip preserves all fields',
+      () async {
+        final input = {
+          'amount': 50000,
+          'type': 'expense',
+          'category_id': 'cat-food-001',
+          'category_name': 'Makanan & Minuman',
+          'category_color': '#FF6B6B',
+          'category_icon': 'food',
+          'description': 'Nasi Goreng',
+          'account_id': 'acc-cash-001',
+          'account_name': 'Cash',
+          'account_type': 'cash',
+          'payment_method': 'cash',
+          'transaction_date': '2026-07-15',
+          'is_recurring': false,
+        };
 
-      final created = await dataService.addTransaction(input);
+        final created = await dataService.addTransaction(input);
 
-      // Verify the returned model has correct fields
-      expect(created.id, isNotEmpty);
-      expect(created.amount, 50000);
-      expect(created.type, 'expense');
-      expect(created.categoryId, 'cat-food-001');
-      expect(created.categoryName, 'Makanan & Minuman');
-      expect(created.description, 'Nasi Goreng');
-      expect(created.accountId, 'acc-cash-001');
+        // Verify the returned model has correct fields
+        expect(created.id, isNotEmpty);
+        expect(created.amount, 50000);
+        expect(created.type, 'expense');
+        expect(created.categoryId, 'cat-food-001');
+        expect(created.categoryName, 'Makanan & Minuman');
+        expect(created.description, 'Nasi Goreng');
+        expect(created.accountId, 'acc-cash-001');
 
-      // Read back via getTransactions
-      final result = await dataService.getTransactions(limit: 10, offset: 0);
-      final transactions = result['transactions'] as List<Map<String, dynamic>>;
+        // Read back via getTransactions
+        final result = await dataService.getTransactions(limit: 10, offset: 0);
+        final transactions =
+            result['transactions'] as List<Map<String, dynamic>>;
 
-      expect(transactions.length, 1);
-      final row = transactions.first;
+        expect(transactions.length, 1);
+        final row = transactions.first;
 
-      // Verify the raw DB row has suffixed keys (_232143)
-      expect(row['transaction_id_232143'], created.id);
-      expect(row['amount_232143'], 50000);
-      expect(row['description_232143'], 'Nasi Goreng');
-      expect(row['category_name'], 'Makanan & Minuman'); // JOIN alias
+        // Verify the raw DB row has suffixed keys (_232143)
+        expect(row['transaction_id_232143'], created.id);
+        expect(row['amount_232143'], 50000);
+        expect(row['description_232143'], 'Nasi Goreng');
+        expect(row['category_name'], 'Makanan & Minuman'); // JOIN alias
 
-      // Verify TransactionModel.fromMap can parse the raw row
-      final parsed = TransactionModel.fromMap(row);
-      expect(parsed.id, created.id);
-      expect(parsed.amount, 50000);
-      expect(parsed.categoryName, 'Makanan & Minuman');
-    });
+        // Verify TransactionModel.fromMap can parse the raw row
+        final parsed = TransactionModel.fromMap(row);
+        expect(parsed.id, created.id);
+        expect(parsed.amount, 50000);
+        expect(parsed.categoryName, 'Makanan & Minuman');
+      },
+    );
 
-    test('addTransaction → getTransaction: single lookup returns correct model',
-        () async {
-      final input = {
-        'amount': 150000,
-        'type': 'income',
-        'category_id': 'cat-food-001',
-        'category_name': 'Makanan & Minuman',
-        'category_color': '#FF6B6B',
-        'description': 'Gaji',
-        'transaction_date': '2026-07-01',
-      };
+    test(
+      'addTransaction → getTransaction: single lookup returns correct model',
+      () async {
+        final input = {
+          'amount': 150000,
+          'type': 'income',
+          'category_id': 'cat-food-001',
+          'category_name': 'Makanan & Minuman',
+          'category_color': '#FF6B6B',
+          'description': 'Gaji',
+          'transaction_date': '2026-07-01',
+        };
 
-      final created = await dataService.addTransaction(input);
-      final fetched = await dataService.getTransaction(created.id);
+        final created = await dataService.addTransaction(input);
+        final fetched = await dataService.getTransaction(created.id);
 
-      expect(fetched, isNotNull);
-      expect(fetched!.id, created.id);
-      expect(fetched.amount, 150000);
-      expect(fetched.type, 'income');
-      expect(fetched.description, 'Gaji');
-    });
+        expect(fetched, isNotNull);
+        expect(fetched!.id, created.id);
+        expect(fetched.amount, 150000);
+        expect(fetched.type, 'income');
+        expect(fetched.description, 'Gaji');
+      },
+    );
 
-    test('addTransaction → updateTransaction → getTransaction: update round-trip',
-        () async {
-      final input = {
-        'amount': 75000,
-        'type': 'expense',
-        'category_id': 'cat-food-001',
-        'category_name': 'Makanan & Minuman',
-        'category_color': '#FF6B6B',
-        'description': 'Makan Siang',
-      };
+    test(
+      'addTransaction → updateTransaction → getTransaction: update round-trip',
+      () async {
+        final input = {
+          'amount': 75000,
+          'type': 'expense',
+          'category_id': 'cat-food-001',
+          'category_name': 'Makanan & Minuman',
+          'category_color': '#FF6B6B',
+          'description': 'Makan Siang',
+        };
 
-      final created = await dataService.addTransaction(input);
+        final created = await dataService.addTransaction(input);
 
-      // Update description and amount
-      await dataService.updateTransaction(created.id, {
-        'amount': 80000,
-        'type': 'expense',
-        'category_id': 'cat-food-001',
-        'category_name': 'Makanan & Minuman',
-        'category_color': '#FF6B6B',
-        'description': 'Makan Malam',
-        'transaction_date': '2026-07-15',
-      });
+        // Update description and amount
+        await dataService.updateTransaction(created.id, {
+          'amount': 80000,
+          'type': 'expense',
+          'category_id': 'cat-food-001',
+          'category_name': 'Makanan & Minuman',
+          'category_color': '#FF6B6B',
+          'description': 'Makan Malam',
+          'transaction_date': '2026-07-15',
+        });
 
-      final fetched = await dataService.getTransaction(created.id);
-      expect(fetched, isNotNull);
-      expect(fetched!.description, 'Makan Malam');
-      expect(fetched.amount, 80000);
-    });
+        final fetched = await dataService.getTransaction(created.id);
+        expect(fetched, isNotNull);
+        expect(fetched!.description, 'Makan Malam');
+        expect(fetched.amount, 80000);
+      },
+    );
 
-    test('addTransaction → deleteTransaction → getTransaction returns null',
-        () async {
-      final input = {
-        'amount': 25000,
-        'type': 'expense',
-        'category_id': 'cat-food-001',
-        'category_name': 'Makanan & Minuman',
-        'category_color': '#FF6B6B',
-        'description': 'Snack',
-      };
+    test(
+      'addTransaction → deleteTransaction → getTransaction returns null',
+      () async {
+        final input = {
+          'amount': 25000,
+          'type': 'expense',
+          'category_id': 'cat-food-001',
+          'category_name': 'Makanan & Minuman',
+          'category_color': '#FF6B6B',
+          'description': 'Snack',
+        };
 
-      final created = await dataService.addTransaction(input);
-      await dataService.deleteTransaction(created.id);
+        final created = await dataService.addTransaction(input);
+        await dataService.deleteTransaction(created.id);
 
-      final fetched = await dataService.getTransaction(created.id);
-      expect(fetched, isNull);
-    });
+        final fetched = await dataService.getTransaction(created.id);
+        expect(fetched, isNull);
+      },
+    );
 
     test('getTransactions respects pagination (limit/offset)', () async {
       // Insert 5 transactions

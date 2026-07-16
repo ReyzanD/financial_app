@@ -55,7 +55,7 @@ class OverpassApiService {
   final OsmCategoryMappingService _mappingService;
 
   OverpassApiService({OsmCategoryMappingService? mappingService})
-      : _mappingService = mappingService ?? OsmCategoryMappingService();
+    : _mappingService = mappingService ?? OsmCategoryMappingService();
 
   /// Find nearby POIs matching the given category around a location.
   ///
@@ -95,10 +95,8 @@ class OverpassApiService {
     final tagFilters = _mappingService.buildOverpassFilter(categoryName);
     final bboxLatMin = latitude - (radiusMeters / 111300.0);
     final bboxLatMax = latitude + (radiusMeters / 111300.0);
-    final bboxLngMin =
-        longitude - (radiusMeters / (111300.0 * _cos(latitude)));
-    final bboxLngMax =
-        longitude + (radiusMeters / (111300.0 * _cos(latitude)));
+    final bboxLngMin = longitude - (radiusMeters / (111300.0 * _cos(latitude)));
+    final bboxLngMax = longitude + (radiusMeters / (111300.0 * _cos(latitude)));
 
     // Overpass QL: find nodes and ways with matching tags in bounding box
     final query = '''
@@ -121,7 +119,8 @@ out center $maxResults;
             Uri.parse(_baseUrl),
             headers: {
               'User-Agent': _userAgent,
-              'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8',
+              'Content-Type':
+                  'application/x-www-form-urlencoded; charset=utf-8',
             },
             body: {'data': query},
           )
@@ -146,9 +145,7 @@ out center $maxResults;
         final name = tags['name']?.toString() ?? _unknownName(element);
 
         // Skip nameless elements (not useful as recommendations)
-        if (name.isEmpty ||
-            name.startsWith('_') ||
-            _isGenericName(name)) {
+        if (name.isEmpty || name.startsWith('_') || _isGenericName(name)) {
           continue;
         }
 
@@ -168,24 +165,23 @@ out center $maxResults;
 
         if (lat == null || lon == null) continue;
 
-        results.add(OverpassPoiResult(
-          osmId: element['id'].toString(),
-          osmType: element['type'] as String? ?? 'node',
-          name: name,
-          latitude: lat,
-          longitude: lon,
-          amenity: tags['amenity']?.toString(),
-          shop: tags['shop']?.toString(),
-          cuisine: tags['cuisine']?.toString(),
-          openingHours: tags['opening_hours']?.toString(),
-        ));
+        results.add(
+          OverpassPoiResult(
+            osmId: element['id'].toString(),
+            osmType: element['type'] as String? ?? 'node',
+            name: name,
+            latitude: lat,
+            longitude: lon,
+            amenity: tags['amenity']?.toString(),
+            shop: tags['shop']?.toString(),
+            cuisine: tags['cuisine']?.toString(),
+            openingHours: tags['opening_hours']?.toString(),
+          ),
+        );
       }
 
       // Cache results
-      _cache[cacheKey] = _CacheEntry(
-        data: results,
-        timestamp: DateTime.now(),
-      );
+      _cache[cacheKey] = _CacheEntry(data: results, timestamp: DateTime.now());
 
       LoggerService.info(
         '✅ Overpass found ${results.length} POIs for "$categoryName"',
@@ -209,8 +205,15 @@ out center $maxResults;
   /// Skip very generic OSM names that aren't useful as suggestions.
   bool _isGenericName(String name) {
     const generics = [
-      'restaurant', 'cafe', 'shop', 'supermarket', 'toko', 'warung',
-      'building', 'entrance', 'address',
+      'restaurant',
+      'cafe',
+      'shop',
+      'supermarket',
+      'toko',
+      'warung',
+      'building',
+      'entrance',
+      'address',
     ];
     return generics.contains(name.toLowerCase());
   }

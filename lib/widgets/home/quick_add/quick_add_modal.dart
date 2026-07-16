@@ -38,7 +38,8 @@ class QuickAddModal extends StatefulWidget {
 }
 
 class _QuickAddModalState extends State<QuickAddModal> {
-  final TransactionDataService _transactionData = getIt<TransactionDataService>();
+  final TransactionDataService _transactionData =
+      getIt<TransactionDataService>();
   final CategoryDataService _categoryData = getIt<CategoryDataService>();
   final TextEditingController _amountController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
@@ -233,7 +234,9 @@ class _QuickAddModalState extends State<QuickAddModal> {
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     color: typeColor.withValues(alpha: 0.2),
-                    borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                    borderRadius: BorderRadius.circular(
+                      DesignTokens.radiusMedium,
+                    ),
                   ),
                   child: Icon(typeIcon, color: typeColor, size: 24),
                 ),
@@ -278,15 +281,21 @@ class _QuickAddModalState extends State<QuickAddModal> {
                 filled: true,
                 fillColor: DesignTokens.surfaceDark,
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                  borderRadius: BorderRadius.circular(
+                    DesignTokens.radiusMedium,
+                  ),
                   borderSide: BorderSide(color: DesignTokens.borderDark),
                 ),
                 enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                  borderRadius: BorderRadius.circular(
+                    DesignTokens.radiusMedium,
+                  ),
                   borderSide: BorderSide(color: DesignTokens.borderDark),
                 ),
                 focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                  borderRadius: BorderRadius.circular(
+                    DesignTokens.radiusMedium,
+                  ),
                   borderSide: const BorderSide(
                     color: DesignTokens.primaryColor,
                     width: 2,
@@ -318,7 +327,9 @@ class _QuickAddModalState extends State<QuickAddModal> {
                   padding: const EdgeInsets.all(DesignTokens.spacing4),
                   decoration: BoxDecoration(
                     color: Colors.orange.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                    borderRadius: BorderRadius.circular(
+                      DesignTokens.radiusMedium,
+                    ),
                     border: Border.all(
                       color: Colors.orange.withValues(alpha: 0.3),
                     ),
@@ -354,11 +365,13 @@ class _QuickAddModalState extends State<QuickAddModal> {
                   ),
                   items:
                       _categories.map((category) {
-                        final id = category['id']?.toString() ??
+                        final id =
+                            category['id']?.toString() ??
                             category['category_id']?.toString() ??
                             category['category_id_232143']?.toString() ??
                             '';
-                        final name = category['name']?.toString() ??
+                        final name =
+                            category['name']?.toString() ??
                             category['name_232143']?.toString() ??
                             'Unknown';
                         return DropdownMenuItem(value: id, child: Text(name));
@@ -390,15 +403,21 @@ class _QuickAddModalState extends State<QuickAddModal> {
                 filled: true,
                 fillColor: DesignTokens.surfaceDark,
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                  borderRadius: BorderRadius.circular(
+                    DesignTokens.radiusMedium,
+                  ),
                   borderSide: BorderSide(color: DesignTokens.borderDark),
                 ),
                 enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                  borderRadius: BorderRadius.circular(
+                    DesignTokens.radiusMedium,
+                  ),
                   borderSide: BorderSide(color: DesignTokens.borderDark),
                 ),
                 focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                  borderRadius: BorderRadius.circular(
+                    DesignTokens.radiusMedium,
+                  ),
                   borderSide: const BorderSide(
                     color: DesignTokens.primaryColor,
                     width: 2,
@@ -417,7 +436,9 @@ class _QuickAddModalState extends State<QuickAddModal> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: typeColor,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                    borderRadius: BorderRadius.circular(
+                      DesignTokens.radiusMedium,
+                    ),
                   ),
                 ),
                 child:

@@ -112,7 +112,7 @@ class _AIBudgetRecommendationScreenState
       padding: const EdgeInsets.all(20),
       decoration: const BoxDecoration(
         gradient: LinearGradient(
-          colors: [DesignTokens.primaryColor, Color(0xFF6A4C9C)],
+          colors: [DesignTokens.primaryColor, DesignTokens.secondaryColor],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -320,7 +320,7 @@ class _AIBudgetRecommendationScreenState
       height: 56,
       decoration: const BoxDecoration(
         gradient: LinearGradient(
-          colors: [DesignTokens.primaryColor, Color(0xFF6A4C9C)],
+          colors: [DesignTokens.primaryColor, DesignTokens.secondaryColor],
         ),
         borderRadius: BorderRadius.all(Radius.circular(16)),
       ),

@@ -91,7 +91,7 @@ class _ProgressSummaryState extends State<ProgressSummary> {
         height: 120,
         decoration: BoxDecoration(
           gradient: const LinearGradient(
-            colors: [DesignTokens.primaryColor, Color(0xFF6A3093)],
+            colors: [DesignTokens.primaryColor, DesignTokens.secondaryColor],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
@@ -115,7 +115,7 @@ class _ProgressSummaryState extends State<ProgressSummary> {
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
-          colors: [DesignTokens.primaryColor, Color(0xFF6A3093)],
+          colors: [DesignTokens.primaryColor, DesignTokens.secondaryColor],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),

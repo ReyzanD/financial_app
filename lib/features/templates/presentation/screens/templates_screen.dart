@@ -375,11 +375,13 @@ class _TemplatesScreenState extends State<TemplatesScreen> {
     );
   }
 
-  Future<void> _quickAdd(TransactionTemplateModel template, TemplateController ctrl) async {
+  Future<void> _quickAdd(
+    TransactionTemplateModel template,
+    TemplateController ctrl,
+  ) async {
     try {
-      await getIt<TransactionTemplateDataService>().createTransactionFromTemplate(
-        template.id,
-      );
+      await getIt<TransactionTemplateDataService>()
+          .createTransactionFromTemplate(template.id);
       if (!mounted) return;
       final l10n = AppLocalizations.of(context);
       final name = template.name;

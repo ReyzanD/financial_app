@@ -1,29 +1,30 @@
 import 'package:flutter/material.dart';
+import 'package:financial_app/utils/design_tokens.dart';
 
 Color getCategoryColor(String category) {
   switch (category) {
     case 'Gaji':
-      return const Color(0xFF2ecc71);
+      return DesignTokens.chartGreen;
     case 'Investasi':
-      return const Color(0xFF27ae60);
+      return DesignTokens.chartDarkGreen;
     case 'Freelance':
-      return const Color(0xFF1abc9c);
+      return DesignTokens.chartTeal;
     case 'Makanan & Minuman':
-      return const Color(0xFFe74c3c);
+      return DesignTokens.chartRed;
     case 'Transportasi':
-      return const Color(0xFFf39c12);
+      return DesignTokens.chartOrange;
     case 'Belanja':
-      return const Color(0xFF9b59b6);
+      return DesignTokens.chartPurple;
     case 'Hiburan':
-      return const Color(0xFF34495e);
+      return DesignTokens.chartDarkBlueGrey;
     case 'Kesehatan':
-      return const Color(0xFFe67e22);
+      return DesignTokens.chartDarkOrange;
     case 'Pendidikan':
-      return const Color(0xFF2980b9);
+      return DesignTokens.chartBlue;
     case 'Tabungan':
-      return const Color(0xFF16a085);
+      return DesignTokens.chartDarkTeal;
     case 'Tagihan & Utilitas':
-      return const Color(0xFF95a5a6);
+      return DesignTokens.chartGrey;
     default:
       return Colors.grey;
   }

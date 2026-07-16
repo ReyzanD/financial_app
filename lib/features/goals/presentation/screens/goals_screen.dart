@@ -63,7 +63,9 @@ class _GoalsScreenState extends State<GoalsScreen> {
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
                   color: Colors.red.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                  borderRadius: BorderRadius.circular(
+                    DesignTokens.radiusMedium,
+                  ),
                   border: Border.all(color: Colors.red.withValues(alpha: 0.3)),
                 ),
                 child: Row(
@@ -79,7 +81,10 @@ class _GoalsScreenState extends State<GoalsScreen> {
                         liveRegion: true,
                         child: Text(
                           controller.errorMessage!,
-                          style: const TextStyle(color: Colors.red, fontSize: 13),
+                          style: const TextStyle(
+                            color: Colors.red,
+                            fontSize: 13,
+                          ),
                         ),
                       ),
                     ),

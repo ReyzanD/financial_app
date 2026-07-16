@@ -76,10 +76,10 @@ class ThemeService extends ChangeNotifier {
       useMaterial3: true,
       brightness: Brightness.light,
       primaryColor: DesignTokens.primaryColor,
-      scaffoldBackgroundColor: const Color(0xFFF5F5F5),
+      scaffoldBackgroundColor: DesignTokens.backgroundLight,
       colorScheme: const ColorScheme.light(
         primary: DesignTokens.primaryColor,
-        secondary: Color(0xFF6A3093),
+        secondary: DesignTokens.secondaryColor,
         surface: Colors.white,
         onPrimary: Colors.white,
         onSecondary: Colors.white,
@@ -94,11 +94,13 @@ class ThemeService extends ChangeNotifier {
       cardTheme: CardThemeData(
         color: Colors.white,
         elevation: 2,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(DesignTokens.radiusLarge)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(DesignTokens.radiusLarge),
+        ),
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: const Color(0xFFF5F5F5),
+        fillColor: DesignTokens.backgroundLight,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
           borderSide: BorderSide(color: Colors.grey[300]!),
@@ -138,10 +140,10 @@ class ThemeService extends ChangeNotifier {
         titleSmall: TextStyle(color: DesignTokens.surfaceDark),
         bodyLarge: TextStyle(color: DesignTokens.surfaceDark),
         bodyMedium: TextStyle(color: DesignTokens.surfaceDark),
-        bodySmall: TextStyle(color: Color(0xFF424242)),
+        bodySmall: TextStyle(color: DesignTokens.textSecondaryLight),
         labelLarge: TextStyle(color: DesignTokens.surfaceDark),
         labelMedium: TextStyle(color: DesignTokens.surfaceDark),
-        labelSmall: TextStyle(color: Color(0xFF424242)),
+        labelSmall: TextStyle(color: DesignTokens.textSecondaryLight),
       ),
     );
   }
@@ -155,7 +157,7 @@ class ThemeService extends ChangeNotifier {
       scaffoldBackgroundColor: DesignTokens.backgroundDark,
       colorScheme: const ColorScheme.dark(
         primary: DesignTokens.primaryColor,
-        secondary: Color(0xFF6A3093),
+        secondary: DesignTokens.secondaryColor,
         surface: DesignTokens.surfaceDark,
         onPrimary: Colors.white,
         onSecondary: Colors.white,
@@ -170,7 +172,9 @@ class ThemeService extends ChangeNotifier {
       cardTheme: CardThemeData(
         color: DesignTokens.surfaceDark,
         elevation: 0,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(DesignTokens.radiusLarge)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(DesignTokens.radiusLarge),
+        ),
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,

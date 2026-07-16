@@ -127,8 +127,7 @@ class PriceObservationDataService {
 
       // Remove top/bottom 10% as outlier trim
       final trimCount = (prices.length * 0.1).floor();
-      final trimmed =
-          prices.sublist(trimCount, prices.length - trimCount);
+      final trimmed = prices.sublist(trimCount, prices.length - trimCount);
       if (trimmed.isEmpty) return prices[prices.length ~/ 2];
 
       // Median of trimmed set
@@ -138,7 +137,8 @@ class PriceObservationDataService {
       }
       return trimmed[mid];
     } catch (e) {
-      LoggerService.error('Error computing median price for category',
+      LoggerService.error(
+        'Error computing median price for category',
         error: e,
       );
       rethrow;
@@ -162,7 +162,8 @@ class PriceObservationDataService {
       if (rows.isEmpty) return null;
       return PriceObservation.fromMap(rows.first);
     } catch (e) {
-      LoggerService.error('Error finding cheapest price for category',
+      LoggerService.error(
+        'Error finding cheapest price for category',
         error: e,
       );
       rethrow;

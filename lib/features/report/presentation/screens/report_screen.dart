@@ -295,25 +295,26 @@ class _ReportScreenState extends State<ReportScreen> {
     if (!_localeInitialized) {
       return Scaffold(
         backgroundColor: DesignTokens.backgroundDark,
-        appBar: widget.embedded
-            ? null
-            : AppBar(
-                backgroundColor: DesignTokens.backgroundDark,
-                elevation: 0,
-                leading: IconButton(
-                  icon: const Icon(Iconsax.arrow_left, color: Colors.white),
-                  tooltip: l10n?.back ?? 'Kembali',
-                  onPressed: () => Navigator.pop(context),
-                ),
-                title: Text(
-                  l10n?.create_report ?? 'Buat Laporan',
-                  style: GoogleFonts.poppins(
-                    color: Colors.white,
-                    fontSize: 20,
-                    fontWeight: FontWeight.w600,
+        appBar:
+            widget.embedded
+                ? null
+                : AppBar(
+                  backgroundColor: DesignTokens.backgroundDark,
+                  elevation: 0,
+                  leading: IconButton(
+                    icon: const Icon(Iconsax.arrow_left, color: Colors.white),
+                    tooltip: l10n?.back ?? 'Kembali',
+                    onPressed: () => Navigator.pop(context),
+                  ),
+                  title: Text(
+                    l10n?.create_report ?? 'Buat Laporan',
+                    style: GoogleFonts.poppins(
+                      color: Colors.white,
+                      fontSize: 20,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
-              ),
         body: const Column(
           children: [
             OfflineIndicator(),
@@ -331,25 +332,26 @@ class _ReportScreenState extends State<ReportScreen> {
 
     return Scaffold(
       backgroundColor: DesignTokens.backgroundDark,
-      appBar: widget.embedded
-          ? null
-          : AppBar(
-              backgroundColor: DesignTokens.backgroundDark,
-              elevation: 0,
-              leading: IconButton(
-                icon: const Icon(Iconsax.arrow_left, color: Colors.white),
-                tooltip: l10n?.back ?? 'Kembali',
-                onPressed: () => Navigator.pop(context),
-              ),
-              title: Text(
-                l10n?.create_report ?? 'Buat Laporan',
-                style: GoogleFonts.poppins(
-                  color: Colors.white,
-                  fontSize: 20,
-                  fontWeight: FontWeight.w600,
+      appBar:
+          widget.embedded
+              ? null
+              : AppBar(
+                backgroundColor: DesignTokens.backgroundDark,
+                elevation: 0,
+                leading: IconButton(
+                  icon: const Icon(Iconsax.arrow_left, color: Colors.white),
+                  tooltip: l10n?.back ?? 'Kembali',
+                  onPressed: () => Navigator.pop(context),
+                ),
+                title: Text(
+                  l10n?.create_report ?? 'Buat Laporan',
+                  style: GoogleFonts.poppins(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ),
-            ),
       body: Column(
         children: [
           const OfflineIndicator(),
@@ -457,7 +459,9 @@ class _ReportScreenState extends State<ReportScreen> {
                             backgroundColor: DesignTokens.primaryColor,
                             padding: const EdgeInsets.symmetric(vertical: 16),
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                              borderRadius: BorderRadius.circular(
+                                DesignTokens.radiusMedium,
+                              ),
                             ),
                             elevation: 0,
                           ),
@@ -498,7 +502,9 @@ class _ReportScreenState extends State<ReportScreen> {
                     padding: const EdgeInsets.all(DesignTokens.spacing4),
                     decoration: BoxDecoration(
                       color: DesignTokens.surfaceDark,
-                      borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                      borderRadius: BorderRadius.circular(
+                        DesignTokens.radiusMedium,
+                      ),
                       border: Border.all(
                         color: DesignTokens.primaryColor.withValues(alpha: 0.3),
                       ),

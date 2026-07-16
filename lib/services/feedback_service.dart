@@ -43,7 +43,7 @@ class FeedbackService {
             ),
           ],
         ),
-        backgroundColor: const Color(0xFF1E1E1E),
+        backgroundColor: DesignTokens.surfaceDark,
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
@@ -100,7 +100,7 @@ class FeedbackService {
             ),
           ],
         ),
-        backgroundColor: const Color(0xFF1E1E1E),
+        backgroundColor: DesignTokens.surfaceDark,
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
@@ -153,7 +153,7 @@ class FeedbackService {
             ),
           ],
         ),
-        backgroundColor: const Color(0xFF1E1E1E),
+        backgroundColor: DesignTokens.surfaceDark,
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
@@ -197,7 +197,7 @@ class FeedbackService {
             ),
           ],
         ),
-        backgroundColor: const Color(0xFF1E1E1E),
+        backgroundColor: DesignTokens.surfaceDark,
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
@@ -237,9 +237,11 @@ class FeedbackService {
             ),
           ],
         ),
-        backgroundColor: const Color(0xFF1E1E1E),
+        backgroundColor: DesignTokens.surfaceDark,
         behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(DesignTokens.radiusMedium)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+        ),
         duration: const Duration(days: 365), // Long duration for loading
       ),
     );

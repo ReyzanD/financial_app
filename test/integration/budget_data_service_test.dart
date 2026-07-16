@@ -158,38 +158,40 @@ void main() {
       expect(parsed.spent, 0.0);
     });
 
-    test('addBudget → getBudgets with activeOnly=false includes inactive',
-        () async {
-      final now = DateTime.now();
-      final periodStart = DateTime(now.year, now.month, 1);
-      final periodEnd = DateTime(now.year, now.month + 1, 0);
+    test(
+      'addBudget → getBudgets with activeOnly=false includes inactive',
+      () async {
+        final now = DateTime.now();
+        final periodStart = DateTime(now.year, now.month, 1);
+        final periodEnd = DateTime(now.year, now.month + 1, 0);
 
-      // Add active budget
-      await dataService.addBudget({
-        'category_id': 'cat-food-001',
-        'amount': 500000,
-        'period': 'monthly',
-        'period_start': periodStart.toIso8601String(),
-        'period_end': periodEnd.toIso8601String(),
-        'is_active': true,
-      });
+        // Add active budget
+        await dataService.addBudget({
+          'category_id': 'cat-food-001',
+          'amount': 500000,
+          'period': 'monthly',
+          'period_start': periodStart.toIso8601String(),
+          'period_end': periodEnd.toIso8601String(),
+          'is_active': true,
+        });
 
-      // Add inactive budget
-      await dataService.addBudget({
-        'category_id': 'cat-food-001',
-        'amount': 300000,
-        'period': 'monthly',
-        'period_start': periodStart.toIso8601String(),
-        'period_end': periodEnd.toIso8601String(),
-        'is_active': false,
-      });
+        // Add inactive budget
+        await dataService.addBudget({
+          'category_id': 'cat-food-001',
+          'amount': 300000,
+          'period': 'monthly',
+          'period_start': periodStart.toIso8601String(),
+          'period_end': periodEnd.toIso8601String(),
+          'is_active': false,
+        });
 
-      final activeOnly = await dataService.getBudgets(activeOnly: true);
-      expect(activeOnly.length, 1);
+        final activeOnly = await dataService.getBudgets(activeOnly: true);
+        expect(activeOnly.length, 1);
 
-      final all = await dataService.getBudgets(activeOnly: false);
-      expect(all.length, 2);
-    });
+        final all = await dataService.getBudgets(activeOnly: false);
+        expect(all.length, 2);
+      },
+    );
 
     test('addBudget → updateBudget → getBudgets: update round-trip', () async {
       final now = DateTime.now();

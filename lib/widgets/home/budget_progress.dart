@@ -74,8 +74,12 @@ class _BudgetProgressState extends State<BudgetProgress>
       // Load categories and budgets in parallel for better performance
       // Only get active budgets for home screen
       final results = await Future.wait([
-        _categoryData.getCategories().then((m) => m.map((c) => c.toMap()).toList()),
-        _budgetData.getBudgets(activeOnly: true).then((m) => m.map((b) => b.toMap()).toList()),
+        _categoryData.getCategories().then(
+          (m) => m.map((c) => c.toMap()).toList(),
+        ),
+        _budgetData
+            .getBudgets(activeOnly: true)
+            .then((m) => m.map((b) => b.toMap()).toList()),
       ]).timeout(
         const Duration(seconds: 10),
         onTimeout: () => throw Exception('Request timeout'),
@@ -691,30 +695,30 @@ class _BudgetProgressState extends State<BudgetProgress>
     switch (category.toLowerCase()) {
       case 'makanan':
       case 'makanan & minuman':
-        return const Color(0xFFE74C3C);
+        return DesignTokens.chartRed;
       case 'transportasi':
-        return const Color(0xFFF39C12);
+        return DesignTokens.chartOrange;
       case 'hiburan':
-        return const Color(0xFF9B59B6);
+        return DesignTokens.chartPurple;
       case 'belanja':
-        return const Color(0xFF9B59B6);
+        return DesignTokens.chartPurple;
       case 'kesehatan':
-        return const Color(0xFFE67E22);
+        return DesignTokens.chartDarkOrange;
       case 'pendidikan':
-        return const Color(0xFF2980B9);
+        return DesignTokens.chartBlue;
       case 'gaji':
-        return const Color(0xFF2ECC71);
+        return DesignTokens.chartGreen;
       case 'investasi':
-        return const Color(0xFF27AE60);
+        return DesignTokens.chartDarkGreen;
       case 'freelance':
-        return const Color(0xFF1ABC9C);
+        return DesignTokens.chartTeal;
       case 'tabungan':
-        return const Color(0xFF16A085);
+        return DesignTokens.chartDarkTeal;
       case 'tagihan':
       case 'tagihan & utilitas':
-        return const Color(0xFF95A5A6);
+        return DesignTokens.chartGrey;
       case 'pendapatan':
-        return const Color(0xFF2ECC71);
+        return DesignTokens.chartGreen;
       default:
         return DesignTokens.primaryColor;
     }

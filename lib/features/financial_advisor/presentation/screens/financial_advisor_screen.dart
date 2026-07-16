@@ -101,9 +101,10 @@ class _FinancialAdvisorScreenState extends State<FinancialAdvisorScreen> {
           const OfflineIndicator(),
           _buildPeriodSelector(),
           Expanded(
-            child: _isLoading
-                ? _buildLoading()
-                : _errorMessage != null
+            child:
+                _isLoading
+                    ? _buildLoading()
+                    : _errorMessage != null
                     ? _buildError()
                     : _buildContent(),
           ),
@@ -118,27 +119,21 @@ class _FinancialAdvisorScreenState extends State<FinancialAdvisorScreen> {
       color: DesignTokens.surfaceDark,
       child: Row(
         children: [
-          _periodChip(
-            label: 'Bulan Ini',
-            period: _AnalysisPeriod.currentMonth,
-          ),
+          _periodChip(label: 'Bulan Ini', period: _AnalysisPeriod.currentMonth),
           const SizedBox(width: 8),
-          _periodChip(
-            label: 'Bulan Lalu',
-            period: _AnalysisPeriod.lastMonth,
-          ),
+          _periodChip(label: 'Bulan Lalu', period: _AnalysisPeriod.lastMonth),
         ],
       ),
     );
   }
 
-  Widget _periodChip({
-    required String label,
-    required _AnalysisPeriod period,
-  }) {
+  Widget _periodChip({required String label, required _AnalysisPeriod period}) {
     final selected = _selectedPeriod == period;
     return Material(
-      color: selected ? DesignTokens.primaryColor : Colors.white.withValues(alpha: 0.1),
+      color:
+          selected
+              ? DesignTokens.primaryColor
+              : Colors.white.withValues(alpha: 0.1),
       borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
       child: InkWell(
         onTap: () {
@@ -192,8 +187,7 @@ class _FinancialAdvisorScreenState extends State<FinancialAdvisorScreen> {
               borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
               child: InkWell(
                 onTap: _loadAnalysis,
-                borderRadius:
-                    BorderRadius.circular(DesignTokens.radiusMedium),
+                borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
                 child: Padding(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 24,
@@ -293,7 +287,11 @@ class _FinancialAdvisorScreenState extends State<FinancialAdvisorScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Iconsax.wallet, size: 64, color: DesignTokens.textSecondaryDark),
+            const Icon(
+              Iconsax.wallet,
+              size: 64,
+              color: DesignTokens.textSecondaryDark,
+            ),
             const SizedBox(height: 16),
             Text(
               'Belum Ada Data Bulan Ini',
@@ -339,11 +337,19 @@ class _FinancialAdvisorScreenState extends State<FinancialAdvisorScreen> {
             ),
           ),
           const SizedBox(height: 12),
-          _summaryRow(Iconsax.arrow_up_2, 'Pemasukan',
-              CurrencyFormatter.formatRupiah(a.monthlyIncome), Colors.green),
+          _summaryRow(
+            Iconsax.arrow_up_2,
+            'Pemasukan',
+            CurrencyFormatter.formatRupiah(a.monthlyIncome),
+            Colors.green,
+          ),
           const SizedBox(height: 6),
-          _summaryRow(Iconsax.arrow_down_2, 'Pengeluaran',
-              CurrencyFormatter.formatRupiah(a.monthlyExpense), Colors.red),
+          _summaryRow(
+            Iconsax.arrow_down_2,
+            'Pengeluaran',
+            CurrencyFormatter.formatRupiah(a.monthlyExpense),
+            Colors.red,
+          ),
           const Divider(color: DesignTokens.borderDark, height: 20),
           _summaryRow(
             Iconsax.save_2,
@@ -396,7 +402,11 @@ class _FinancialAdvisorScreenState extends State<FinancialAdvisorScreen> {
         children: [
           Row(
             children: [
-              const Icon(Iconsax.diagram, color: DesignTokens.primaryColor, size: 20),
+              const Icon(
+                Iconsax.diagram,
+                color: DesignTokens.primaryColor,
+                size: 20,
+              ),
               const SizedBox(width: 8),
               Text(
                 'Aturan 50/30/20',
@@ -456,9 +466,8 @@ class _FinancialAdvisorScreenState extends State<FinancialAdvisorScreen> {
     required IconData icon,
     required double gap,
   }) {
-    final overTarget = (label == 'Tabungan')
-        ? actualPercent < target
-        : actualPercent > target;
+    final overTarget =
+        (label == 'Tabungan') ? actualPercent < target : actualPercent > target;
     final pct = actualPercent.clamp(0.0, 100.0);
 
     return Column(
@@ -557,28 +566,42 @@ class _FinancialAdvisorScreenState extends State<FinancialAdvisorScreen> {
           Row(
             children: [
               const SizedBox(width: 60),
-              ...monthLabels.map((label) => Expanded(
-                child: Text(
-                  label,
-                  textAlign: TextAlign.center,
-                  style: GoogleFonts.poppins(
-                    color: DesignTokens.textSecondaryDark,
-                    fontSize: 10,
-                    fontWeight: FontWeight.w500,
+              ...monthLabels.map(
+                (label) => Expanded(
+                  child: Text(
+                    label,
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.poppins(
+                      color: DesignTokens.textSecondaryDark,
+                      fontSize: 10,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
                 ),
-              )),
+              ),
             ],
           ),
           const SizedBox(height: 8),
-          _trendRow('Kebutuhan', Colors.blue,
-              months.map((m) => m.needsPercent).toList(), 50),
+          _trendRow(
+            'Kebutuhan',
+            Colors.blue,
+            months.map((m) => m.needsPercent).toList(),
+            50,
+          ),
           const SizedBox(height: 6),
-          _trendRow('Keinginan', Colors.orange,
-              months.map((m) => m.wantsPercent).toList(), 30),
+          _trendRow(
+            'Keinginan',
+            Colors.orange,
+            months.map((m) => m.wantsPercent).toList(),
+            30,
+          ),
           const SizedBox(height: 6),
-          _trendRow('Tabungan', Colors.green,
-              months.map((m) => m.savingsPercent).toList(), 20),
+          _trendRow(
+            'Tabungan',
+            Colors.green,
+            months.map((m) => m.savingsPercent).toList(),
+            20,
+          ),
         ],
       ),
     );
@@ -596,13 +619,28 @@ class _FinancialAdvisorScreenState extends State<FinancialAdvisorScreen> {
 
   String _monthName(int month) {
     const names = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun',
-      'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des',
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'Mei',
+      'Jun',
+      'Jul',
+      'Agu',
+      'Sep',
+      'Okt',
+      'Nov',
+      'Des',
     ];
     return names[month - 1];
   }
 
-  Widget _trendRow(String label, Color color, List<double> values, double target) {
+  Widget _trendRow(
+    String label,
+    Color color,
+    List<double> values,
+    double target,
+  ) {
     return Row(
       children: [
         SizedBox(
@@ -626,7 +664,10 @@ class _FinancialAdvisorScreenState extends State<FinancialAdvisorScreen> {
                 Text(
                   val > 0 ? '${val.toStringAsFixed(0)}%' : '-',
                   style: GoogleFonts.poppins(
-                    color: isLatest ? Colors.white : DesignTokens.textSecondaryDark,
+                    color:
+                        isLatest
+                            ? Colors.white
+                            : DesignTokens.textSecondaryDark,
                     fontWeight: isLatest ? FontWeight.w600 : FontWeight.w400,
                     fontSize: isLatest ? 14 : 12,
                   ),
@@ -665,7 +706,11 @@ class _FinancialAdvisorScreenState extends State<FinancialAdvisorScreen> {
         children: [
           Row(
             children: [
-              const Icon(Iconsax.message_text, color: DesignTokens.primaryColor, size: 20),
+              const Icon(
+                Iconsax.message_text,
+                color: DesignTokens.primaryColor,
+                size: 20,
+              ),
               const SizedBox(width: 8),
               Text(
                 'Penilaian',
@@ -702,14 +747,20 @@ class _FinancialAdvisorScreenState extends State<FinancialAdvisorScreen> {
       decoration: BoxDecoration(
         color: DesignTokens.surfaceDark,
         borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
-        border: Border.all(color: DesignTokens.successColor.withValues(alpha: 0.3)),
+        border: Border.all(
+          color: DesignTokens.successColor.withValues(alpha: 0.3),
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              const Icon(Iconsax.lamp_charge, color: DesignTokens.successColor, size: 20),
+              const Icon(
+                Iconsax.lamp_charge,
+                color: DesignTokens.successColor,
+                size: 20,
+              ),
               const SizedBox(width: 8),
               Text(
                 'Cara Hemat',
@@ -817,7 +868,9 @@ class _FinancialAdvisorScreenState extends State<FinancialAdvisorScreen> {
                   borderRadius: BorderRadius.circular(DesignTokens.radiusSmall),
                   child: InkWell(
                     onTap: () => _searchAlternatives(s.categoryName),
-                    borderRadius: BorderRadius.circular(DesignTokens.radiusSmall),
+                    borderRadius: BorderRadius.circular(
+                      DesignTokens.radiusSmall,
+                    ),
                     child: Padding(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 10,
@@ -851,7 +904,9 @@ class _FinancialAdvisorScreenState extends State<FinancialAdvisorScreen> {
                   borderRadius: BorderRadius.circular(DesignTokens.radiusSmall),
                   child: InkWell(
                     onTap: () => _createGoalFromSuggestion(s),
-                    borderRadius: BorderRadius.circular(DesignTokens.radiusSmall),
+                    borderRadius: BorderRadius.circular(
+                      DesignTokens.radiusSmall,
+                    ),
                     child: Padding(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 10,
@@ -900,8 +955,7 @@ class _FinancialAdvisorScreenState extends State<FinancialAdvisorScreen> {
   Future<void> _createGoalFromSuggestion(SavingsSuggestion s) async {
     final monthlySavings = s.potentialMonthlySavings;
     final yearlyTarget = monthlySavings * 12;
-    final targetDate =
-        DateTime.now().add(const Duration(days: 365));
+    final targetDate = DateTime.now().add(const Duration(days: 365));
 
     final initialGoal = <String, dynamic>{
       'name': 'Hemat ${s.categoryName}',
@@ -999,7 +1053,9 @@ class _FinancialAdvisorScreenState extends State<FinancialAdvisorScreen> {
             ],
           ),
           const SizedBox(height: 8),
-          ...categories.take(6).map(
+          ...categories
+              .take(6)
+              .map(
                 (c) => Padding(
                   padding: const EdgeInsets.only(bottom: 6),
                   child: Row(
@@ -1109,9 +1165,10 @@ class _FinancialAdvisorScreenState extends State<FinancialAdvisorScreen> {
                       Text(
                         '${g.progressPercent.toStringAsFixed(0)}%',
                         style: GoogleFonts.poppins(
-                          color: g.progressPercent >= 100
-                              ? Colors.green
-                              : Colors.amber,
+                          color:
+                              g.progressPercent >= 100
+                                  ? Colors.green
+                                  : Colors.amber,
                           fontWeight: FontWeight.w600,
                           fontSize: 13,
                         ),
@@ -1125,9 +1182,7 @@ class _FinancialAdvisorScreenState extends State<FinancialAdvisorScreen> {
                       value: (g.progressPercent / 100).clamp(0.0, 1.0),
                       backgroundColor: Colors.white.withValues(alpha: 0.1),
                       valueColor: AlwaysStoppedAnimation(
-                        g.progressPercent >= 100
-                            ? Colors.green
-                            : Colors.amber,
+                        g.progressPercent >= 100 ? Colors.green : Colors.amber,
                       ),
                       minHeight: 6,
                     ),
@@ -1148,12 +1203,13 @@ class _FinancialAdvisorScreenState extends State<FinancialAdvisorScreen> {
                         g.monthsToGoal >= 0
                             ? '${g.monthsToGoal} bln lagi'
                             : g.monthlyContribution > 0
-                                ? 'Tidak sesuai target'
-                                : 'Belum ditabung',
+                            ? 'Tidak sesuai target'
+                            : 'Belum ditabung',
                         style: GoogleFonts.poppins(
-                          color: g.monthsToGoal >= 0
-                              ? Colors.green
-                              : DesignTokens.textSecondaryDark,
+                          color:
+                              g.monthsToGoal >= 0
+                                  ? Colors.green
+                                  : DesignTokens.textSecondaryDark,
                           fontSize: 11,
                         ),
                       ),

@@ -122,8 +122,7 @@ class FinancialObligation {
           json['payoff_strategy']?.toString() ??
           json['payoff_strategy_232143']?.toString(),
       debtType:
-          json['debt_type']?.toString() ??
-          json['debt_type_232143']?.toString(),
+          json['debt_type']?.toString() ?? json['debt_type_232143']?.toString(),
       daysUntilDue: (json['days_until_due'] as num?)?.toInt() ?? 0,
     );
   }
@@ -167,7 +166,8 @@ class FinancialObligation {
     return FinancialObligation(
       id: map['obligation_id_232143']?.toString() ?? '',
       name: map['name_232143']?.toString() ?? '',
-      monthlyAmount: parseDecimal(map['monthly_amount_232143']) ??
+      monthlyAmount:
+          parseDecimal(map['monthly_amount_232143']) ??
           parseDecimal(map['amount_232143']) ??
           0.0,
       dueDate: dueDate ?? DateTime.now(),

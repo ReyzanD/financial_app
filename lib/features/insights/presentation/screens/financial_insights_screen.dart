@@ -36,28 +36,32 @@ class _FinancialInsightsScreenState extends State<FinancialInsightsScreen> {
     final l10n = AppLocalizations.of(context);
     return Scaffold(
       backgroundColor: DesignTokens.surfaceDark,
-      appBar: widget.embedded
-          ? null
-          : AppBar(
-              title: Text(
-                'Wawasan Keuangan',
-                style: GoogleFonts.poppins(
-                  color: Colors.white,
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
+      appBar:
+          widget.embedded
+              ? null
+              : AppBar(
+                title: Text(
+                  'Wawasan Keuangan',
+                  style: GoogleFonts.poppins(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
+                backgroundColor: DesignTokens.surfaceDark,
+                actions: [
+                  Consumer<InsightsController>(
+                    builder:
+                        (_, ctrl, __) => IconButton(
+                          icon: const Icon(
+                            Iconsax.refresh,
+                            color: Colors.white,
+                          ),
+                          onPressed: ctrl.refresh,
+                        ),
+                  ),
+                ],
               ),
-              backgroundColor: DesignTokens.surfaceDark,
-              actions: [
-                Consumer<InsightsController>(
-                  builder:
-                      (_, ctrl, __) => IconButton(
-                        icon: const Icon(Iconsax.refresh, color: Colors.white),
-                        onPressed: ctrl.refresh,
-                      ),
-                ),
-              ],
-            ),
       body: Consumer<InsightsController>(
         builder: (context, ctrl, _) {
           if (ctrl.isLoading) {

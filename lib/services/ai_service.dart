@@ -10,7 +10,8 @@ import 'package:financial_app/services/data/obligation_data_service.dart';
 import 'package:financial_app/core/di/service_locator.dart';
 
 class AIService {
-  final TransactionDataService _transactionData = getIt<TransactionDataService>();
+  final TransactionDataService _transactionData =
+      getIt<TransactionDataService>();
   final BudgetDataService _budgetData = getIt<BudgetDataService>();
   final GoalDataService _goalData = getIt<GoalDataService>();
   final ObligationDataService _obligationData = getIt<ObligationDataService>();
@@ -24,7 +25,9 @@ class AIService {
   }) async {
     try {
       // Get user's recent data
-      final transactionsData = await _transactionData.getTransactions(limit: 500);
+      final transactionsData = await _transactionData.getTransactions(
+        limit: 500,
+      );
       final transactions = List<Map<String, dynamic>>.from(
         transactionsData['transactions'] ?? [],
       );
@@ -121,7 +124,9 @@ class AIService {
   Future<Map<String, dynamic>> _generateLocalRecommendations() async {
     try {
       // Get user's recent data - increased limit for multi-period analysis
-      final transactionsData = await _transactionData.getTransactions(limit: 500);
+      final transactionsData = await _transactionData.getTransactions(
+        limit: 500,
+      );
       final transactions = List<Map<String, dynamic>>.from(
         transactionsData['transactions'] ?? [],
       );
@@ -933,7 +938,9 @@ class AIService {
       }
 
       // Get current balance
-      final transactionsData = await _transactionData.getTransactions(limit: 100);
+      final transactionsData = await _transactionData.getTransactions(
+        limit: 100,
+      );
       final transactions = List<Map<String, dynamic>>.from(
         transactionsData['transactions'] ?? [],
       );
@@ -1005,7 +1012,9 @@ class AIService {
   /// Get expense forecast for next 30 days
   Future<Map<String, dynamic>> getExpenseForecast() async {
     try {
-      final transactionsData = await _transactionData.getTransactions(limit: 100);
+      final transactionsData = await _transactionData.getTransactions(
+        limit: 100,
+      );
       final transactions = List<Map<String, dynamic>>.from(
         transactionsData['transactions'] ?? [],
       );
@@ -1027,7 +1036,9 @@ class AIService {
   /// Get spending insights for a specific period
   Future<Map<String, dynamic>> getSpendingInsights(String period) async {
     try {
-      final transactionsData = await _transactionData.getTransactions(limit: 200);
+      final transactionsData = await _transactionData.getTransactions(
+        limit: 200,
+      );
       final transactions = List<Map<String, dynamic>>.from(
         transactionsData['transactions'] ?? [],
       );

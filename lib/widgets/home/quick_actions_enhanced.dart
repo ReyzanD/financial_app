@@ -190,7 +190,10 @@ class _QuickActionsEnhancedState extends State<QuickActionsEnhanced> {
             () => Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => const FinancialObligationsScreen(initialTab: 'recurring'),
+                builder:
+                    (context) => const FinancialObligationsScreen(
+                      initialTab: 'recurring',
+                    ),
               ),
             ),
       },

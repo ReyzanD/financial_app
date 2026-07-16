@@ -21,74 +21,74 @@ class MoreTabScreen extends StatelessWidget {
             Expanded(
               child: SafeArea(
                 child: CustomScrollView(
-                slivers: [
-                  SliverToBoxAdapter(
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Semantics(
-                            header: true,
-                            child: Text(
-                              'Lainnya',
-                              style: GoogleFonts.poppins(
-                                color: Colors.white,
-                                fontWeight: FontWeight.w600,
-                                fontSize: 20,
-                              ),
-                            ),
-                          ),
-                          Icon(
-                            Iconsax.more_square,
-                            color: DesignTokens.textSecondaryDark,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  for (final section in sections) ...[
+                  slivers: [
                     SliverToBoxAdapter(
                       child: Padding(
                         padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-                        child: Text(
-                          section.title,
-                          style: GoogleFonts.poppins(
-                            color: DesignTokens.primaryColor,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                            letterSpacing: 1.0,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Semantics(
+                              header: true,
+                              child: Text(
+                                'Lainnya',
+                                style: GoogleFonts.poppins(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 20,
+                                ),
+                              ),
+                            ),
+                            Icon(
+                              Iconsax.more_square,
+                              color: DesignTokens.textSecondaryDark,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    for (final section in sections) ...[
+                      SliverToBoxAdapter(
+                        child: Padding(
+                          padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                          child: Text(
+                            section.title,
+                            style: GoogleFonts.poppins(
+                              color: DesignTokens.primaryColor,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              letterSpacing: 1.0,
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                    SliverPadding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      sliver: SliverGrid(
-                        gridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 4,
-                              mainAxisSpacing: 12,
-                              crossAxisSpacing: 8,
-                              childAspectRatio: 0.9,
-                            ),
-                        delegate: SliverChildBuilderDelegate(
-                          (context, index) =>
-                              _buildGridItem(context, section.items[index]),
-                          childCount: section.items.length,
+                      SliverPadding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        sliver: SliverGrid(
+                          gridDelegate:
+                              const SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: 4,
+                                mainAxisSpacing: 12,
+                                crossAxisSpacing: 8,
+                                childAspectRatio: 0.9,
+                              ),
+                          delegate: SliverChildBuilderDelegate(
+                            (context, index) =>
+                                _buildGridItem(context, section.items[index]),
+                            childCount: section.items.length,
+                          ),
                         ),
                       ),
-                    ),
+                    ],
+                    const SliverToBoxAdapter(child: SizedBox(height: 24)),
                   ],
-                  const SliverToBoxAdapter(child: SizedBox(height: 24)),
-                ],
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
-    ),
-  );
+    );
   }
 
   List<_MoreSection> _buildSections() {
@@ -193,7 +193,7 @@ class MoreTabScreen extends StatelessWidget {
           _MoreItem(
             icon: Iconsax.global,
             label: 'Studi Jerman',
-            color: const Color(0xFFFFCD00),
+            color: DesignTokens.warningColor,
             route: '/german-finance',
           ),
         ],

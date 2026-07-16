@@ -61,43 +61,51 @@ class _SpendingChartState extends State<SpendingChart> {
           const SizedBox(height: 12),
           // Period selector chips
           Row(
-            children: _periodOptions.map((period) {
-              final isSelected = _selectedPeriod == period;
-              return Padding(
-                padding: const EdgeInsets.only(right: 8),
-                child: GestureDetector(
-                  onTap: () => setState(() => _selectedPeriod = period),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 6,
-                    ),
-                    decoration: BoxDecoration(
-                      color: isSelected
-                          ? DesignTokens.primaryColor.withValues(alpha: 0.2)
-                          : Colors.transparent,
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(
-                        color: isSelected
-                            ? DesignTokens.primaryColor
-                            : DesignTokens.borderDark,
+            children:
+                _periodOptions.map((period) {
+                  final isSelected = _selectedPeriod == period;
+                  return Padding(
+                    padding: const EdgeInsets.only(right: 8),
+                    child: GestureDetector(
+                      onTap: () => setState(() => _selectedPeriod = period),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 6,
+                        ),
+                        decoration: BoxDecoration(
+                          color:
+                              isSelected
+                                  ? DesignTokens.primaryColor.withValues(
+                                    alpha: 0.2,
+                                  )
+                                  : Colors.transparent,
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(
+                            color:
+                                isSelected
+                                    ? DesignTokens.primaryColor
+                                    : DesignTokens.borderDark,
+                          ),
+                        ),
+                        child: Text(
+                          '$period Hari',
+                          style: GoogleFonts.poppins(
+                            color:
+                                isSelected
+                                    ? DesignTokens.primaryColor
+                                    : Colors.white70,
+                            fontSize: 12,
+                            fontWeight:
+                                isSelected
+                                    ? FontWeight.w600
+                                    : FontWeight.normal,
+                          ),
+                        ),
                       ),
                     ),
-                    child: Text(
-                      '$period Hari',
-                      style: GoogleFonts.poppins(
-                        color: isSelected
-                            ? DesignTokens.primaryColor
-                            : Colors.white70,
-                        fontSize: 12,
-                        fontWeight:
-                            isSelected ? FontWeight.w600 : FontWeight.normal,
-                      ),
-                    ),
-                  ),
-                ),
-              );
-            }).toList(),
+                  );
+                }).toList(),
           ),
           const SizedBox(height: 16),
           SizedBox(
@@ -157,9 +165,10 @@ class _SpendingChartState extends State<SpendingChart> {
                       idxEntry,
                     ) {
                       final spending = idxEntry.value.value;
-                      final barWidth = _selectedPeriod >= 90
-                          ? 4.0
-                          : _selectedPeriod >= 30
+                      final barWidth =
+                          _selectedPeriod >= 90
+                              ? 4.0
+                              : _selectedPeriod >= 30
                               ? 6.0
                               : 16.0;
                       return BarChartGroupData(
@@ -206,7 +215,7 @@ class _SpendingChartState extends State<SpendingChart> {
           if (daysAgo >= 0 && daysAgo < _selectedPeriod) {
             final amount =
                 double.tryParse(transaction['amount']?.toString() ?? '0') ??
-                    0.0;
+                0.0;
             final dayKey = transDate.toIso8601String().substring(0, 10);
             dailySpending[dayKey] = (dailySpending[dayKey] ?? 0) + amount;
           }
@@ -220,10 +229,7 @@ class _SpendingChartState extends State<SpendingChart> {
   }
 
   /// Build bottom axis title, showing labels at smart intervals to avoid crowding.
-  Widget _buildBottomTitle(
-    double value,
-    Map<String, double> dailySpending,
-  ) {
+  Widget _buildBottomTitle(double value, Map<String, double> dailySpending) {
     final entries = dailySpending.entries.toList();
     final idx = value.toInt();
     if (idx < 0 || idx >= entries.length) return const SizedBox();
@@ -233,8 +239,8 @@ class _SpendingChartState extends State<SpendingChart> {
         _selectedPeriod >= 90
             ? 14
             : _selectedPeriod >= 30
-                ? 5
-                : 1;
+            ? 5
+            : 1;
 
     // Only show label at interval steps
     if (idx % labelInterval != 0 && idx != entries.length - 1) {
@@ -247,18 +253,29 @@ class _SpendingChartState extends State<SpendingChart> {
     final day = parts[2];
 
     const months = [
-      '', 'Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun',
-      'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des',
+      '',
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'Mei',
+      'Jun',
+      'Jul',
+      'Agu',
+      'Sep',
+      'Okt',
+      'Nov',
+      'Des',
     ];
     final monthLabel =
-        int.tryParse(month) != null && int.parse(month) >= 1 &&
+        int.tryParse(month) != null &&
+                int.parse(month) >= 1 &&
                 int.parse(month) <= 12
             ? months[int.parse(month)]
             : month;
 
-    final label = _selectedPeriod >= 90
-        ? '$monthLabel $day'
-        : '$monthLabel $day';
+    final label =
+        _selectedPeriod >= 90 ? '$monthLabel $day' : '$monthLabel $day';
 
     return Padding(
       padding: const EdgeInsets.only(top: 4),

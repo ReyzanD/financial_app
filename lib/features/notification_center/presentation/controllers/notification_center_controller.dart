@@ -4,9 +4,8 @@ import 'package:financial_app/services/logger_service.dart';
 
 class NotificationCenterController extends ChangeNotifier {
   final NotificationRepository _r;
-  NotificationCenterController({
-    required NotificationRepository repository,
-  }) : _r = repository;
+  NotificationCenterController({required NotificationRepository repository})
+    : _r = repository;
 
   List<dynamic> _notifications = [];
   bool _isLoading = false;

@@ -197,8 +197,7 @@ class _PinUnlockScreenState extends State<PinUnlockScreen> {
     if (confirm == true) {
       await context.read<AuthController>().clearPin();
       await context.read<AuthController>().logout();
-      if (context.mounted)
-        Navigator.of(context).pushReplacementNamed('/login');
+      if (context.mounted) Navigator.of(context).pushReplacementNamed('/login');
     }
   }
 
@@ -315,7 +314,9 @@ class _PinUnlockScreenState extends State<PinUnlockScreen> {
                                   vertical: 16,
                                 ),
                                 shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                                  borderRadius: BorderRadius.circular(
+                                    DesignTokens.radiusMedium,
+                                  ),
                                 ),
                               ),
                             );
@@ -343,7 +344,9 @@ class _PinUnlockScreenState extends State<PinUnlockScreen> {
                         ),
                         decoration: BoxDecoration(
                           color: Colors.orange.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                          borderRadius: BorderRadius.circular(
+                            DesignTokens.radiusMedium,
+                          ),
                           border: Border.all(
                             color: Colors.orange.withValues(alpha: 0.3),
                           ),

@@ -87,7 +87,8 @@ void main() {
     test('should throw on corrupted ciphertext', () {
       const plaintext = 'test data';
       final encrypted = _encrypt(plaintext);
-      final corrupted = encrypted.substring(0, encrypted.length ~/ 2) +
+      final corrupted =
+          encrypted.substring(0, encrypted.length ~/ 2) +
           'INVALID' +
           encrypted.substring(encrypted.length ~/ 2);
 
@@ -136,10 +137,7 @@ void main() {
       final hash = sha256.convert(bytes).toString();
 
       expect(hash.length, equals(64));
-      expect(
-        sha256.convert(utf8.encode(data)).toString(),
-        equals(hash),
-      );
+      expect(sha256.convert(utf8.encode(data)).toString(), equals(hash));
       expect(
         sha256.convert(utf8.encode('wrong-data')).toString(),
         isNot(equals(hash)),

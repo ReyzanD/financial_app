@@ -139,43 +139,41 @@ class _HomeScreenState extends State<HomeScreen> {
         color: DesignTokens.primaryColor,
         backgroundColor: DesignTokens.surfaceDark,
         child: SingleChildScrollView(
-        physics: const AlwaysScrollableScrollPhysics(),
-        padding: ResponsiveHelper.padding(context),
-        child: Column(
-          children: [
-            FinancialSummaryCard(key: ValueKey('summary_$_refreshCounter')),
-            SizedBox(height: ResponsiveHelper.verticalSpacing(context, 20)),
-            const QuickActionsEnhanced(),
-            SizedBox(height: ResponsiveHelper.verticalSpacing(context, 20)),
-            ExpandableSection(
-              title: l10n?.budget ?? 'Anggaran',
-              icon: Iconsax.wallet,
-              initiallyExpanded: true,
-              child: BudgetProgress(key: ValueKey('budget_$_refreshCounter')),
-            ),
-            SizedBox(height: ResponsiveHelper.verticalSpacing(context, 16)),
-            ExpandableSection(
-              title: l10n?.ai_recommendations ?? 'AI Rekomendasi',
-              icon: Iconsax.lamp_1,
-              initiallyExpanded: false,
-              accentColor: DesignTokens.warningColor,
-              child: const AIRecommendations(),
-            ),
-            SizedBox(
-              height: ResponsiveHelper.verticalSpacing(context, 16),
-            ),
-            ExpandableSection(
-              title: l10n?.health_score ?? 'Skor Kesehatan',
-              icon: Iconsax.health,
-              initiallyExpanded: false,
-              accentColor: DesignTokens.successColor,
-              child: HealthScoreCard(
-                key: ValueKey('health_$_refreshCounter'),
+          physics: const AlwaysScrollableScrollPhysics(),
+          padding: ResponsiveHelper.padding(context),
+          child: Column(
+            children: [
+              FinancialSummaryCard(key: ValueKey('summary_$_refreshCounter')),
+              SizedBox(height: ResponsiveHelper.verticalSpacing(context, 20)),
+              const QuickActionsEnhanced(),
+              SizedBox(height: ResponsiveHelper.verticalSpacing(context, 20)),
+              ExpandableSection(
+                title: l10n?.budget ?? 'Anggaran',
+                icon: Iconsax.wallet,
+                initiallyExpanded: true,
+                child: BudgetProgress(key: ValueKey('budget_$_refreshCounter')),
               ),
-            ),
-          ],
+              SizedBox(height: ResponsiveHelper.verticalSpacing(context, 16)),
+              ExpandableSection(
+                title: l10n?.ai_recommendations ?? 'AI Rekomendasi',
+                icon: Iconsax.lamp_1,
+                initiallyExpanded: false,
+                accentColor: DesignTokens.warningColor,
+                child: const AIRecommendations(),
+              ),
+              SizedBox(height: ResponsiveHelper.verticalSpacing(context, 16)),
+              ExpandableSection(
+                title: l10n?.health_score ?? 'Skor Kesehatan',
+                icon: Iconsax.health,
+                initiallyExpanded: false,
+                accentColor: DesignTokens.successColor,
+                child: HealthScoreCard(
+                  key: ValueKey('health_$_refreshCounter'),
+                ),
+              ),
+            ],
+          ),
         ),
-      ),
       ),
     );
   }

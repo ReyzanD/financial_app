@@ -158,7 +158,7 @@ class ObligationItem extends StatelessWidget {
       child: Container(
         margin: const EdgeInsets.only(bottom: 12),
         decoration: BoxDecoration(
-          color: const Color(0xFF1F1F1F),
+          color: DesignTokens.surfaceCard,
           borderRadius: BorderRadius.circular(DesignTokens.radiusLarge),
           border: Border.all(
             color: urgencyColor.withValues(
@@ -472,7 +472,7 @@ class ObligationItem extends StatelessWidget {
       if (baseColor == Colors.green) {
         return [Colors.green.shade400, Colors.green.shade600];
       } else if (baseColor == DesignTokens.primaryColor) {
-        return [DesignTokens.primaryColor, const Color(0xFF6B4C93)];
+        return [DesignTokens.primaryColor, DesignTokens.secondaryColor];
       } else {
         // For other colors, create lighter/darker variants
         return [
@@ -576,7 +576,7 @@ class ObligationItem extends StatelessWidget {
       case ObligationType.debt:
         return Colors.red.shade400;
       case ObligationType.subscription:
-        return const Color(0xFFEC4899); // Pink-500 equivalent
+        return DesignTokens.secondaryColor; // Pink-500 equivalent
     }
   }
 

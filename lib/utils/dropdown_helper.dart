@@ -34,10 +34,9 @@ class DropdownHelper {
       prefixIcon: prefixIcon,
       filled: true,
       fillColor: DesignTokens.surfaceDark,
-      contentPadding: contentPadding ?? const EdgeInsets.symmetric(
-        horizontal: 16,
-        vertical: 14,
-      ),
+      contentPadding:
+          contentPadding ??
+          const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
         borderSide: BorderSide.none,
@@ -48,24 +47,15 @@ class DropdownHelper {
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
-        borderSide: BorderSide(
-          color: DesignTokens.primaryColor,
-          width: 1.5,
-        ),
+        borderSide: BorderSide(color: DesignTokens.primaryColor, width: 1.5),
       ),
       errorBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
-        borderSide: BorderSide(
-          color: DesignTokens.errorColor,
-          width: 1,
-        ),
+        borderSide: BorderSide(color: DesignTokens.errorColor, width: 1),
       ),
       focusedErrorBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
-        borderSide: BorderSide(
-          color: DesignTokens.errorColor,
-          width: 1.5,
-        ),
+        borderSide: BorderSide(color: DesignTokens.errorColor, width: 1.5),
       ),
     );
   }

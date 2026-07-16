@@ -6,7 +6,8 @@ import 'package:financial_app/core/di/service_locator.dart';
 
 /// Enhanced AI Recommendations Service dengan personalization, pattern analysis, dan savings opportunities
 class AIRecommendationsEnhancedService {
-  final TransactionDataService _transactionData = getIt<TransactionDataService>();
+  final TransactionDataService _transactionData =
+      getIt<TransactionDataService>();
   final BudgetDataService _budgetData = getIt<BudgetDataService>();
   final GoalDataService _goalData = getIt<GoalDataService>();
 
@@ -29,10 +30,7 @@ class AIRecommendationsEnhancedService {
       recommendations.addAll(_generatePatternRecommendations(patternAnalysis));
 
       // 2. Savings opportunities
-      final savingsOps = _identifySavingsOpportunities(
-        transactions,
-        budgets,
-      );
+      final savingsOps = _identifySavingsOpportunities(transactions, budgets);
       recommendations.addAll(savingsOps);
 
       // 3. Bill optimization
@@ -40,10 +38,7 @@ class AIRecommendationsEnhancedService {
       recommendations.addAll(billOpts);
 
       // 4. Financial goal recommendations
-      final goalRecs = _recommendFinancialGoals(
-        transactions,
-        goals,
-      );
+      final goalRecs = _recommendFinancialGoals(transactions, goals);
       recommendations.addAll(goalRecs);
 
       // Sort by priority/impact

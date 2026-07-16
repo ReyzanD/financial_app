@@ -112,7 +112,9 @@ class _OverdueObligationsViewState extends State<OverdueObligationsView> {
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
                   color: Colors.red.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                  borderRadius: BorderRadius.circular(
+                    DesignTokens.radiusMedium,
+                  ),
                   border: Border.all(color: Colors.red.withValues(alpha: 0.3)),
                 ),
                 child: Row(

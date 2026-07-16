@@ -31,14 +31,14 @@ class AlternativeRecommendationEngine {
     PriceObservationDataService? priceObservationDataService,
     AlternativeSuggestionDataService? alternativeSuggestionDataService,
     OverpassApiService? overpassApiService,
-  }) : _placeVisitDataService = placeVisitDataService ??
-            getIt<PlaceVisitDataService>(),
-       _priceObservationDataService = priceObservationDataService ??
-            getIt<PriceObservationDataService>(),
-       _alternativeSuggestionDataService = alternativeSuggestionDataService ??
-            getIt<AlternativeSuggestionDataService>(),
-       _overpassApiService = overpassApiService ??
-            getIt<OverpassApiService>();
+  }) : _placeVisitDataService =
+           placeVisitDataService ?? getIt<PlaceVisitDataService>(),
+       _priceObservationDataService =
+           priceObservationDataService ?? getIt<PriceObservationDataService>(),
+       _alternativeSuggestionDataService =
+           alternativeSuggestionDataService ??
+           getIt<AlternativeSuggestionDataService>(),
+       _overpassApiService = overpassApiService ?? getIt<OverpassApiService>();
 
   /// Get alternative suggestions for a given place visit.
   ///
@@ -56,8 +56,9 @@ class AlternativeRecommendationEngine {
             .hasFreshSuggestions(placeVisit.id);
         if (fresh) {
           LoggerService.cache('HIT', 'suggestions_${placeVisit.id}');
-          return _alternativeSuggestionDataService
-              .getForOriginPlace(placeVisit.id);
+          return _alternativeSuggestionDataService.getForOriginPlace(
+            placeVisit.id,
+          );
         }
       }
 
@@ -79,24 +80,17 @@ class AlternativeRecommendationEngine {
       }
 
       // 3. Get median price for this category for savings estimation
-      final medianPrice =
-          await _priceObservationDataService.getMedianPriceForCategory(
-        placeVisit.category,
-        minObservations: 2,
-      );
+      final medianPrice = await _priceObservationDataService
+          .getMedianPriceForCategory(placeVisit.category, minObservations: 2);
 
       // 4. Get known prices for this category's place visits
-      final knownPlacePrices =
-          await _priceObservationDataService.getPriceObservations(
-        category: placeVisit.category,
-      );
+      final knownPlacePrices = await _priceObservationDataService
+          .getPriceObservations(category: placeVisit.category);
 
       // Build a map: place_name -> lowest price observed
       final lowestPrices = <String, double>{};
       for (final obs in knownPlacePrices) {
-        final pv = await _placeVisitDataService.getPlaceVisit(
-          obs.placeVisitId,
-        );
+        final pv = await _placeVisitDataService.getPlaceVisit(obs.placeVisitId);
         if (pv != null) {
           final current = lowestPrices[pv.placeName.toLowerCase()];
           if (current == null || obs.price < current) {
@@ -149,13 +143,15 @@ class AlternativeRecommendationEngine {
           hasName: poi.name.isNotEmpty && poi.name != poi.osmId,
         );
 
-        suggestions.add(_RankedSuggestion(
-          poi: poi,
-          distanceMeters: distance,
-          estimatedSavings: estimatedSavings,
-          basis: basis,
-          confidence: confidence,
-        ));
+        suggestions.add(
+          _RankedSuggestion(
+            poi: poi,
+            distanceMeters: distance,
+            estimatedSavings: estimatedSavings,
+            basis: basis,
+            confidence: confidence,
+          ),
+        );
       }
 
       // 6. Sort: by confidence desc, then by distance asc
@@ -170,22 +166,25 @@ class AlternativeRecommendationEngine {
       final now = DateTime.now();
 
       // 7. Persist
-      final models = top
-          .map((s) => AlternativeSuggestion(
-                id: _uuid.v4(),
-                originPlaceVisitId: placeVisit.id,
-                suggestedPlaceName: s.poi.name,
-                suggestedOsmNodeId: s.poi.osmNodeId,
-                suggestedLatitude: s.poi.latitude,
-                suggestedLongitude: s.poi.longitude,
-                distanceMeters: s.distanceMeters,
-                estimatedSavings: s.estimatedSavings,
-                basis: s.basis,
-                category: placeVisit.category,
-                confidenceLevel: s.confidence,
-                generatedAt: now,
-              ))
-          .toList();
+      final models =
+          top
+              .map(
+                (s) => AlternativeSuggestion(
+                  id: _uuid.v4(),
+                  originPlaceVisitId: placeVisit.id,
+                  suggestedPlaceName: s.poi.name,
+                  suggestedOsmNodeId: s.poi.osmNodeId,
+                  suggestedLatitude: s.poi.latitude,
+                  suggestedLongitude: s.poi.longitude,
+                  distanceMeters: s.distanceMeters,
+                  estimatedSavings: s.estimatedSavings,
+                  basis: s.basis,
+                  category: placeVisit.category,
+                  confidenceLevel: s.confidence,
+                  generatedAt: now,
+                ),
+              )
+              .toList();
 
       await _alternativeSuggestionDataService.saveSuggestions(models);
       LoggerService.info(
@@ -221,9 +220,12 @@ class AlternativeRecommendationEngine {
     int score = 30; // baseline: exists and is an OSM feature
 
     if (hasName) score += 20;
-    if (distanceMeters < 200) score += 25;
-    else if (distanceMeters < 500) score += 20;
-    else if (distanceMeters < 1000) score += 10;
+    if (distanceMeters < 200)
+      score += 25;
+    else if (distanceMeters < 500)
+      score += 20;
+    else if (distanceMeters < 1000)
+      score += 10;
 
     if (hasPriceData) score += 25;
 

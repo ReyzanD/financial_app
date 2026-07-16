@@ -44,7 +44,10 @@ class TagDataService {
   }
 
   /// Add a tag
-  Future<TransactionTagModel> addTag(String name, {String color = '#8B5FBF'}) async {
+  Future<TransactionTagModel> addTag(
+    String name, {
+    String color = '#8B5FBF',
+  }) async {
     try {
       final userId = await getCurrentUserId();
       if (userId == null) throw Exception('Not authenticated');

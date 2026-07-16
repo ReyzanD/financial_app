@@ -79,80 +79,84 @@ void main() {
   });
 
   group('CategoryDataService — integration (real SQLite)', () {
-    test('addCategory → getCategories: round-trip preserves all fields',
-        () async {
-      final input = {
-        'name': 'Transportasi',
-        'type': 'expense',
-        'color': '#3498DB',
-        'icon': 'car',
-        'budget_limit': 500000,
-        'budget_period': 'monthly',
-        'display_order': 2,
-      };
+    test(
+      'addCategory → getCategories: round-trip preserves all fields',
+      () async {
+        final input = {
+          'name': 'Transportasi',
+          'type': 'expense',
+          'color': '#3498DB',
+          'icon': 'car',
+          'budget_limit': 500000,
+          'budget_period': 'monthly',
+          'display_order': 2,
+        };
 
-      final created = await dataService.addCategory(input);
+        final created = await dataService.addCategory(input);
 
-      // Verify returned model
-      expect(created.id, isNotEmpty);
-      expect(created.name, 'Transportasi');
-      expect(created.type, 'expense');
-      expect(created.color, '#3498DB');
-      expect(created.icon, 'car');
-      expect(created.budgetLimit, 500000);
-      expect(created.budgetPeriod, 'monthly');
-      expect(created.displayOrder, 2);
+        // Verify returned model
+        expect(created.id, isNotEmpty);
+        expect(created.name, 'Transportasi');
+        expect(created.type, 'expense');
+        expect(created.color, '#3498DB');
+        expect(created.icon, 'car');
+        expect(created.budgetLimit, 500000);
+        expect(created.budgetPeriod, 'monthly');
+        expect(created.displayOrder, 2);
 
-      // Read back via getCategories
-      final categories = await dataService.getCategories();
-      expect(categories.length, 1);
+        // Read back via getCategories
+        final categories = await dataService.getCategories();
+        expect(categories.length, 1);
 
-      final loaded = categories.first;
-      expect(loaded.id, created.id);
-      expect(loaded.name, 'Transportasi');
-      expect(loaded.type, 'expense');
+        final loaded = categories.first;
+        expect(loaded.id, created.id);
+        expect(loaded.name, 'Transportasi');
+        expect(loaded.type, 'expense');
 
-      // Verify CategoryModel.fromMap can parse the raw DB row
-      final row = await db.query(
-        'categories_232143',
-        where: 'category_id_232143 = ?',
-        whereArgs: [created.id],
-      );
-      expect(row.length, 1);
-      expect(row.first['category_id_232143'], created.id);
-      expect(row.first['name_232143'], 'Transportasi');
+        // Verify CategoryModel.fromMap can parse the raw DB row
+        final row = await db.query(
+          'categories_232143',
+          where: 'category_id_232143 = ?',
+          whereArgs: [created.id],
+        );
+        expect(row.length, 1);
+        expect(row.first['category_id_232143'], created.id);
+        expect(row.first['name_232143'], 'Transportasi');
 
-      final parsed = CategoryModel.fromMap(row.first);
-      expect(parsed.id, created.id);
-      expect(parsed.name, 'Transportasi');
-      expect(parsed.budgetLimit, 500000);
-    });
+        final parsed = CategoryModel.fromMap(row.first);
+        expect(parsed.id, created.id);
+        expect(parsed.name, 'Transportasi');
+        expect(parsed.budgetLimit, 500000);
+      },
+    );
 
-    test('addCategory → updateCategory → getCategories: update round-trip',
-        () async {
-      final created = await dataService.addCategory({
-        'name': 'Makanan',
-        'type': 'expense',
-        'color': '#FF6B6B',
-        'icon': 'food',
-        'display_order': 1,
-      });
+    test(
+      'addCategory → updateCategory → getCategories: update round-trip',
+      () async {
+        final created = await dataService.addCategory({
+          'name': 'Makanan',
+          'type': 'expense',
+          'color': '#FF6B6B',
+          'icon': 'food',
+          'display_order': 1,
+        });
 
-      // Update name and color
-      final updated = await dataService.updateCategory(created.id, {
-        'name': 'Makanan & Minuman',
-        'color': '#E74C3C',
-      });
+        // Update name and color
+        final updated = await dataService.updateCategory(created.id, {
+          'name': 'Makanan & Minuman',
+          'color': '#E74C3C',
+        });
 
-      expect(updated.name, 'Makanan & Minuman');
-      expect(updated.color, '#E74C3C');
+        expect(updated.name, 'Makanan & Minuman');
+        expect(updated.color, '#E74C3C');
 
-      // Verify via getCategories
-      final categories = await dataService.getCategories();
-      expect(categories.length, 1);
-      expect(categories.first.name, 'Makanan & Minuman');
-      expect(categories.first.color, '#E74C3C');
-    });
+        // Verify via getCategories
+        final categories = await dataService.getCategories();
+        expect(categories.length, 1);
+        expect(categories.first.name, 'Makanan & Minuman');
+        expect(categories.first.color, '#E74C3C');
+      },
+    );
 
     test('addCategory → deleteCategory removes it', () async {
       final created = await dataService.addCategory({

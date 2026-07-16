@@ -99,7 +99,9 @@ class _ForecastScreenState extends State<ForecastScreen> {
                           onRefresh: ctrl.refresh,
                           color: DesignTokens.primaryColor,
                           child: ListView(
-                            padding: const EdgeInsets.all(DesignTokens.spacing4),
+                            padding: const EdgeInsets.all(
+                              DesignTokens.spacing4,
+                            ),
                             children: [
                               _buildForecastSummary(ctrl),
                               const SizedBox(height: 20),
@@ -161,7 +163,9 @@ class _ForecastScreenState extends State<ForecastScreen> {
               child: Text(
                 'Butuh data transaksi untuk membuat prediksi',
                 textAlign: TextAlign.center,
-                style: GoogleFonts.poppins(color: DesignTokens.textSecondaryDark),
+                style: GoogleFonts.poppins(
+                  color: DesignTokens.textSecondaryDark,
+                ),
               ),
             ),
             const SizedBox(height: 24),
@@ -592,7 +596,9 @@ class _ForecastScreenState extends State<ForecastScreen> {
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
                   color: color,
-                  borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                  borderRadius: BorderRadius.circular(
+                    DesignTokens.radiusMedium,
+                  ),
                 ),
                 child: Text(
                   '${usagePercent.toInt()}%',
@@ -762,7 +768,9 @@ class _ForecastScreenState extends State<ForecastScreen> {
                     ),
                     decoration: BoxDecoration(
                       color: DesignTokens.warningColor.withValues(alpha: 0.15),
-                      borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                      borderRadius: BorderRadius.circular(
+                        DesignTokens.radiusMedium,
+                      ),
                       border: Border.all(
                         color: DesignTokens.warningColor.withValues(alpha: 0.3),
                       ),

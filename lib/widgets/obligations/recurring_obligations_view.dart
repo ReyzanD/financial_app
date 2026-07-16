@@ -56,8 +56,7 @@ class _RecurringObligationsViewState extends State<RecurringObligationsView> {
             obligations
                 .where(
                   (o) =>
-                      o.type == ObligationType.subscription ||
-                      o.isSubscription,
+                      o.type == ObligationType.subscription || o.isSubscription,
                 )
                 .toList();
 
@@ -101,11 +100,7 @@ class _RecurringObligationsViewState extends State<RecurringObligationsView> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(
-                    Iconsax.crown,
-                    size: 64,
-                    color: Colors.grey[600],
-                  ),
+                  Icon(Iconsax.crown, size: 64, color: Colors.grey[600]),
                   const SizedBox(height: 16),
                   Text(
                     'Tidak ada langganan berulang',
@@ -126,17 +121,18 @@ class _RecurringObligationsViewState extends State<RecurringObligationsView> {
           itemCount: obligations.length,
           itemBuilder: (context, index) {
             final obligation = obligations[index];
-              return Padding(
-                padding: const EdgeInsets.only(bottom: 8),
-                child: ObligationItem(
-                  obligation: obligation,
-                  onTap: () => ObligationHelpers.showObligationDetails(
-                    context,
-                    obligation,
-                  ),
-                  onPaymentRecorded: _onObligationChanged,
-                ),
-              );
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: ObligationItem(
+                obligation: obligation,
+                onTap:
+                    () => ObligationHelpers.showObligationDetails(
+                      context,
+                      obligation,
+                    ),
+                onPaymentRecorded: _onObligationChanged,
+              ),
+            );
           },
         );
       },

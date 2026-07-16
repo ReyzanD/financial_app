@@ -19,7 +19,8 @@ class HealthScoreCard extends StatefulWidget {
 }
 
 class _HealthScoreCardState extends State<HealthScoreCard> {
-  final TransactionDataService _transactionData = getIt<TransactionDataService>();
+  final TransactionDataService _transactionData =
+      getIt<TransactionDataService>();
   final FinancialCalculator _calculator = FinancialCalculator();
 
   Map<String, dynamic>? _healthScoreData;
@@ -61,10 +62,10 @@ class _HealthScoreCardState extends State<HealthScoreCard> {
       final summaries = summary['summary'] as Map<String, dynamic>? ?? {};
       final income =
           (summaries['income'] as Map<String, dynamic>?)?['total_amount'] ??
-              0.0;
+          0.0;
       final expense =
           (summaries['expense'] as Map<String, dynamic>?)?['total_amount'] ??
-              0.0;
+          0.0;
 
       final incomeDouble = (income is num) ? income.toDouble() : 0.0;
       final expenseDouble = (expense is num) ? expense.toDouble() : 0.0;
@@ -163,10 +164,7 @@ class _HealthScoreCardState extends State<HealthScoreCard> {
             liveRegion: true,
             child: Text(
               _errorMessage!,
-              style: GoogleFonts.poppins(
-                color: Colors.grey[400],
-                fontSize: 13,
-              ),
+              style: GoogleFonts.poppins(color: Colors.grey[400], fontSize: 13),
               textAlign: TextAlign.center,
             ),
           ),
@@ -188,8 +186,7 @@ class _HealthScoreCardState extends State<HealthScoreCard> {
     final score = (_healthScoreData!['score'] as num?)?.toDouble() ?? 0.0;
     final level = _getHealthLevel(score);
     final color = _getScoreColor(score);
-    final factors =
-        _healthScoreData!['factors'] as Map<String, dynamic>? ?? {};
+    final factors = _healthScoreData!['factors'] as Map<String, dynamic>? ?? {};
     final recommendations =
         _healthScoreData!['recommendations'] as List<dynamic>? ?? [];
 
@@ -253,11 +250,12 @@ class _HealthScoreCardState extends State<HealthScoreCard> {
             final factorScore = (entry.value as num).toDouble();
             final maxScore = _getMaxScore(entry.key);
             final ratio = maxScore > 0 ? factorScore / maxScore : 0.0;
-            final factorColor = ratio >= 0.7
-                ? DesignTokens.successColor
-                : ratio >= 0.4
-                ? Colors.orange
-                : DesignTokens.errorColor;
+            final factorColor =
+                ratio >= 0.7
+                    ? DesignTokens.successColor
+                    : ratio >= 0.4
+                    ? Colors.orange
+                    : DesignTokens.errorColor;
 
             return Padding(
               padding: const EdgeInsets.only(bottom: 12),

@@ -192,16 +192,19 @@ class MonthlyComparison extends StatelessWidget {
                       idxEntry,
                     ) {
                       final spending = idxEntry.value.value;
-                      final isCurrentMonth = idxEntry.value.key ==
-                          '$currentYear-$currentMonth';
+                      final isCurrentMonth =
+                          idxEntry.value.key == '$currentYear-$currentMonth';
                       return BarChartGroupData(
                         x: idxEntry.key,
                         barRods: [
                           BarChartRodData(
                             toY: spending,
-                            color: isCurrentMonth
-                                ? DesignTokens.primaryColor
-                                : DesignTokens.primaryColor.withValues(alpha: 0.4),
+                            color:
+                                isCurrentMonth
+                                    ? DesignTokens.primaryColor
+                                    : DesignTokens.primaryColor.withValues(
+                                      alpha: 0.4,
+                                    ),
                             width: 18,
                             borderRadius: const BorderRadius.vertical(
                               top: Radius.circular(4),
@@ -220,8 +223,19 @@ class MonthlyComparison extends StatelessWidget {
 
   static String _monthLabel(int month) {
     const months = [
-      '', 'Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun',
-      'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des',
+      '',
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'Mei',
+      'Jun',
+      'Jul',
+      'Agu',
+      'Sep',
+      'Okt',
+      'Nov',
+      'Des',
     ];
     return month >= 1 && month <= 12 ? months[month] : '';
   }

@@ -257,15 +257,16 @@ class MyApp extends StatelessWidget {
             '/map': (context) => const MapScreen(),
             '/settings': (context) => const SettingsScreen(),
             '/budgets': (context) => const BudgetsScreen(),
-            '/insights-hub': (context) => const AnalyticsHubScreen(initialTab: 'analytics'),
-            '/analytics': (context) => const AnalyticsHubScreen(initialTab: 'analytics'),
+            '/insights-hub':
+                (context) => const AnalyticsHubScreen(initialTab: 'analytics'),
+            '/analytics':
+                (context) => const AnalyticsHubScreen(initialTab: 'analytics'),
             '/goals': (context) => const GoalsScreen(),
             '/add-transaction': (context) => const AddTransactionScreen(),
             '/ai-budget-recommendation':
                 (context) => const AIBudgetRecommendationScreen(),
             '/backup': (context) => const BackupScreen(),
-            '/obligations':
-                (context) => const FinancialObligationsScreen(),
+            '/obligations': (context) => const FinancialObligationsScreen(),
             '/forecast': (context) => const ForecastScreen(),
             '/profile': (context) => const ProfileScreen(),
             '/transaction-history':
@@ -278,7 +279,9 @@ class MyApp extends StatelessWidget {
             '/splits': (context) => const SplitsScreen(),
             '/challenges': (context) => const ChallengesScreen(),
             '/calendar': (context) => const FinancialCalendarScreen(),
-            '/categories': (context) => const CategoryTagsScreen(initialMode: 'categories'),
+            '/categories':
+                (context) =>
+                    const CategoryTagsScreen(initialMode: 'categories'),
             '/templates': (context) => const TemplatesScreen(),
           },
         );
@@ -327,7 +330,9 @@ class MyApp extends StatelessWidget {
                     padding: const EdgeInsets.all(DesignTokens.spacing4),
                     decoration: BoxDecoration(
                       color: Colors.grey[900],
-                      borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                      borderRadius: BorderRadius.circular(
+                        DesignTokens.radiusMedium,
+                      ),
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,

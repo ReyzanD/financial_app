@@ -11,7 +11,8 @@ import 'package:financial_app/utils/design_tokens.dart';
 
 /// Service untuk generate AI budget recommendations with dynamic allocation
 class BudgetRecommendationService {
-  final TransactionDataService _transactionData = getIt<TransactionDataService>();
+  final TransactionDataService _transactionData =
+      getIt<TransactionDataService>();
   final GoalDataService _goalData = getIt<GoalDataService>();
   final ObligationDataService _obligationData = getIt<ObligationDataService>();
   final BudgetPredictor _budgetPredictor = getIt<BudgetPredictor>();
@@ -37,17 +38,21 @@ class BudgetRecommendationService {
       double monthlyRecurringExpenses = 0.0;
 
       try {
-        final allTransactions = await _transactionData.getTransactions(limit: 1000);
+        final allTransactions = await _transactionData.getTransactions(
+          limit: 1000,
+        );
         final allTxList = List<Map<String, dynamic>>.from(
           allTransactions['transactions'] ?? [],
         );
-        final recurringTransactions =
-            allTxList.where((t) => (t['is_recurring_232143'] as int? ?? 0) == 1);
+        final recurringTransactions = allTxList.where(
+          (t) => (t['is_recurring_232143'] as int? ?? 0) == 1,
+        );
         // Sum recurring transactions
         for (var recurring in recurringTransactions) {
           if (recurring['type_232143']?.toString() == 'expense' &&
               (recurring['is_active_232143'] as int? ?? 0) == 1) {
-            final amount = (recurring['amount_232143'] as num?)?.toDouble() ?? 0.0;
+            final amount =
+                (recurring['amount_232143'] as num?)?.toDouble() ?? 0.0;
             monthlyRecurringExpenses += amount;
           }
         }
@@ -69,11 +74,12 @@ class BudgetRecommendationService {
       }
 
       // Get historical spending data for dynamic allocation
-      final transactionsData = await _transactionData.getTransactions(limit: 500);
-      final transactions =
-          List<Map<String, dynamic>>.from(
-            transactionsData['transactions'] ?? [],
-          );
+      final transactionsData = await _transactionData.getTransactions(
+        limit: 500,
+      );
+      final transactions = List<Map<String, dynamic>>.from(
+        transactionsData['transactions'] ?? [],
+      );
 
       // Get goals for goal-aligned allocation
       final goalModels = await _goalData.getGoals();
@@ -240,7 +246,7 @@ class BudgetRecommendationService {
         'percentage': recurringPercentage,
         'amount': monthlyRecurringExpenses,
         'icon': Iconsax.receipt_2,
-        'color': const Color(0xFFFF5252),
+        'color': DesignTokens.alertRed,
         'description': '⚡ Dari tagihan & langganan Anda yang aktif',
         'flexibility': 'fixed', // Cannot be adjusted
         'is_recurring': true,
@@ -350,7 +356,7 @@ class BudgetRecommendationService {
         'percentage': 10.0,
         'amount': emergencyAmount,
         'icon': Iconsax.shield_tick,
-        'color': const Color(0xFFFF9800),
+        'color': DesignTokens.chartAmber,
         'description': 'Target: 6 bulan pengeluaran',
         'flexibility': 'low',
       });
@@ -502,16 +508,16 @@ class BudgetRecommendationService {
       case 'hiburan':
         return DesignTokens.errorColor;
       case 'shopping':
-        return const Color(0xFF9C27B0);
+        return DesignTokens.chartPurple;
       case 'hobi':
-        return const Color(0xFFFF9800);
+        return DesignTokens.chartAmber;
       case 'tabungan':
       case 'investasi':
         return DesignTokens.infoColor;
       case 'dana darurat':
-        return const Color(0xFFFF9800);
+        return DesignTokens.chartAmber;
       default:
-        return const Color(0xFF757575);
+        return DesignTokens.textTertiaryLight;
     }
   }
 
@@ -543,7 +549,7 @@ class BudgetRecommendationService {
                     'percentage': 100.0,
                     'amount': monthlyRecurringExpenses,
                     'icon': Iconsax.receipt_2,
-                    'color': const Color(0xFFFF5252),
+                    'color': DesignTokens.alertRed,
                     'description': '⚡ Dari tagihan & langganan Anda yang aktif',
                     'flexibility': 'fixed',
                     'is_recurring': true,
@@ -569,7 +575,7 @@ class BudgetRecommendationService {
         'percentage': recurringPercentage,
         'amount': monthlyRecurringExpenses,
         'icon': Iconsax.receipt_2,
-        'color': const Color(0xFFFF5252),
+        'color': DesignTokens.alertRed,
         'description': '⚡ Dari tagihan & langganan Anda yang aktif',
         'flexibility': 'fixed',
         'is_recurring': true,
@@ -663,7 +669,7 @@ class BudgetRecommendationService {
         'percentage': 10.0,
         'amount': emergencyAmount,
         'icon': Iconsax.shield_tick,
-        'color': const Color(0xFFFF9800),
+        'color': DesignTokens.chartAmber,
         'description': 'Target: 6 bulan pengeluaran (rekomendasi standar)',
         'flexibility': 'low',
         'is_template': true,

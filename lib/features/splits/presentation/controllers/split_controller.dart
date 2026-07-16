@@ -5,8 +5,7 @@ import 'package:financial_app/services/logger_service.dart';
 
 class SplitController extends ChangeNotifier {
   final SplitRepository _r;
-  SplitController({required SplitRepository repository})
-    : _r = repository;
+  SplitController({required SplitRepository repository}) : _r = repository;
 
   List<SplitModel> _splits = [];
   Map<String, dynamic> _summary = {};

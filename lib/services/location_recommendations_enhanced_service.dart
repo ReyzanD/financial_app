@@ -17,8 +17,9 @@ class LocationRecommendationsEnhancedService {
       final recommendations = await _locationService.generateLocationInsights();
 
       // Get transactions untuk price analysis
-      final transactionsData =
-          await _transactionDataService.getTransactions(limit: 200);
+      final transactionsData = await _transactionDataService.getTransactions(
+        limit: 200,
+      );
       final transactions = List<Map<String, dynamic>>.from(
         transactionsData['transactions'] ?? [],
       );
@@ -202,8 +203,9 @@ class LocationRecommendationsEnhancedService {
   /// Get spending pattern analysis per location
   Future<Map<String, dynamic>> getLocationSpendingPatterns() async {
     try {
-      final transactionsData =
-          await _transactionDataService.getTransactions(limit: 500);
+      final transactionsData = await _transactionDataService.getTransactions(
+        limit: 500,
+      );
       final transactions = List<Map<String, dynamic>>.from(
         transactionsData['transactions'] ?? [],
       );

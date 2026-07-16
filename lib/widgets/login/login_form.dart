@@ -53,33 +53,33 @@ class _LoginFormState extends State<LoginForm> {
             onToggleObscure: widget.onToggleObscure,
             autofillHints: const [AutofillHints.password],
           ),
-        const SizedBox(height: 15),
+          const SizedBox(height: 15),
 
-        // Forgot Password
-        Align(
-          alignment: Alignment.centerRight,
-          child: TextButton(
-            onPressed: () {
-              // Handle forgot password
-            },
-            child: Text(
-              'Forgot Password ?',
-              style: GoogleFonts.poppins(
-                color: DesignTokens.primaryColor,
-                fontWeight: FontWeight.w500,
+          // Forgot Password
+          Align(
+            alignment: Alignment.centerRight,
+            child: TextButton(
+              onPressed: () {
+                // Handle forgot password
+              },
+              child: Text(
+                'Forgot Password ?',
+                style: GoogleFonts.poppins(
+                  color: DesignTokens.primaryColor,
+                  fontWeight: FontWeight.w500,
+                ),
               ),
             ),
           ),
-        ),
-        const SizedBox(height: 20),
+          const SizedBox(height: 20),
 
-        // Sign In Button
-        AuthButton(
-          text: 'Sign In',
-          onPressed: widget.onLoginPressed,
-          isLoading: widget.isLoading,
-        ),
-      ],
+          // Sign In Button
+          AuthButton(
+            text: 'Sign In',
+            onPressed: widget.onLoginPressed,
+            isLoading: widget.isLoading,
+          ),
+        ],
       ),
     );
   }

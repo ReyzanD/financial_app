@@ -164,7 +164,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               backgroundColor: DesignTokens.primaryColor,
                               padding: const EdgeInsets.symmetric(vertical: 16),
                               shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                                borderRadius: BorderRadius.circular(
+                                  DesignTokens.radiusMedium,
+                                ),
                               ),
                             ),
                             child:

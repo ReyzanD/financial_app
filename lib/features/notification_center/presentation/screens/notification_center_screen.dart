@@ -310,7 +310,7 @@ class _NotificationCenterScreenState extends State<NotificationCenterScreen>
                 color:
                     isUnread
                         ? DesignTokens.surfaceDark
-                        : const Color(0xFF0F0F0F),
+                        : DesignTokens.surfaceModalAlt,
                 borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
                 border: Border.all(
                   color:
@@ -454,7 +454,8 @@ class _NotificationCenterScreenState extends State<NotificationCenterScreen>
                       children: [
                         Text(
                           n.title ??
-                              AppLocalizations.of(context)?.notifications ?? 'Notifications',
+                              AppLocalizations.of(context)?.notifications ??
+                              'Notifications',
                           style: GoogleFonts.poppins(
                             color: Colors.white,
                             fontSize: 14,

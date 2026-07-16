@@ -99,7 +99,9 @@ class _HomeHeaderState extends State<HomeHeader> {
                     Navigator.pushNamed(context, '/notifications');
                   } catch (e) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Halaman notifikasi belum tersedia')),
+                      const SnackBar(
+                        content: Text('Halaman notifikasi belum tersedia'),
+                      ),
                     );
                   }
                 },
@@ -114,7 +116,9 @@ class _HomeHeaderState extends State<HomeHeader> {
                     Navigator.pushNamed(context, '/settings');
                   } catch (e) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Halaman pengaturan belum tersedia')),
+                      const SnackBar(
+                        content: Text('Halaman pengaturan belum tersedia'),
+                      ),
                     );
                   }
                 },
@@ -145,35 +149,35 @@ class _HomeHeaderState extends State<HomeHeader> {
       label: label,
       button: true,
       child: Stack(
-      children: [
-        Container(
-          width: 48,
-          height: 48,
-          decoration: BoxDecoration(
-            color: DesignTokens.surfaceDark,
-            borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
-            border: Border.all(color: DesignTokens.borderDark),
+        children: [
+          Container(
+            width: 48,
+            height: 48,
+            decoration: BoxDecoration(
+              color: DesignTokens.surfaceDark,
+              borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+              border: Border.all(color: DesignTokens.borderDark),
+            ),
+            child: IconButton(
+              icon: Icon(icon, size: 20, color: Colors.white),
+              onPressed: onPressed,
+            ),
           ),
-          child: IconButton(
-            icon: Icon(icon, size: 20, color: Colors.white),
-            onPressed: onPressed,
-          ),
-        ),
-        if (hasNotification)
-          Positioned(
-            right: 0,
-            top: 0,
-            child: Container(
-              width: 8,
-              height: 8,
-              decoration: const BoxDecoration(
-                color: DesignTokens.primaryColor,
-                shape: BoxShape.circle,
+          if (hasNotification)
+            Positioned(
+              right: 0,
+              top: 0,
+              child: Container(
+                width: 8,
+                height: 8,
+                decoration: const BoxDecoration(
+                  color: DesignTokens.primaryColor,
+                  shape: BoxShape.circle,
+                ),
               ),
-          ),
-        ),
-      ],
-    ),
+            ),
+        ],
+      ),
     );
   }
 }

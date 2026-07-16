@@ -83,126 +83,134 @@ void main() {
   });
 
   group('ObligationDataService — integration (real SQLite)', () {
-    test('addObligation → getObligations: round-trip preserves all fields',
-        () async {
-      final input = {
-        'name': 'Listrik Bulanan',
-        'description': 'Pembayaran listrik rumah',
-        'amount': 250000,
-        'due_date': '2026-08-15',
-        'frequency': 'monthly',
-        'payment_method': 'bank_transfer',
-        'reminder_enabled': true,
-        'reminder_days_before': 3,
-      };
+    test(
+      'addObligation → getObligations: round-trip preserves all fields',
+      () async {
+        final input = {
+          'name': 'Listrik Bulanan',
+          'description': 'Pembayaran listrik rumah',
+          'amount': 250000,
+          'due_date': '2026-08-15',
+          'frequency': 'monthly',
+          'payment_method': 'bank_transfer',
+          'reminder_enabled': true,
+          'reminder_days_before': 3,
+        };
 
-      final created = await dataService.addObligation(input);
+        final created = await dataService.addObligation(input);
 
-      // Verify returned model
-      expect(created.id, isNotEmpty);
-      expect(created.name, 'Listrik Bulanan');
-      expect(created.monthlyAmount, 250000);
+        // Verify returned model
+        expect(created.id, isNotEmpty);
+        expect(created.name, 'Listrik Bulanan');
+        expect(created.monthlyAmount, 250000);
 
-      // Read back via getObligations
-      final obligations = await dataService.getObligations();
-      expect(obligations.length, 1);
+        // Read back via getObligations
+        final obligations = await dataService.getObligations();
+        expect(obligations.length, 1);
 
-      final loaded = obligations.first;
-      expect(loaded.id, created.id);
-      expect(loaded.name, 'Listrik Bulanan');
-      expect(loaded.monthlyAmount, 250000);
+        final loaded = obligations.first;
+        expect(loaded.id, created.id);
+        expect(loaded.name, 'Listrik Bulanan');
+        expect(loaded.monthlyAmount, 250000);
 
-      // Verify FinancialObligation.fromMap can parse the raw DB row
-      final row = await db.query(
-        'financial_obligations_232143',
-        where: 'obligation_id_232143 = ?',
-        whereArgs: [created.id],
-      );
-      expect(row.length, 1);
-      expect(row.first['obligation_id_232143'], created.id);
-      expect(row.first['name_232143'], 'Listrik Bulanan');
-      expect(row.first['amount_232143'], 250000);
+        // Verify FinancialObligation.fromMap can parse the raw DB row
+        final row = await db.query(
+          'financial_obligations_232143',
+          where: 'obligation_id_232143 = ?',
+          whereArgs: [created.id],
+        );
+        expect(row.length, 1);
+        expect(row.first['obligation_id_232143'], created.id);
+        expect(row.first['name_232143'], 'Listrik Bulanan');
+        expect(row.first['amount_232143'], 250000);
 
-      final parsed = FinancialObligation.fromMap(row.first);
-      expect(parsed.id, created.id);
-      expect(parsed.name, 'Listrik Bulanan');
-      expect(parsed.monthlyAmount, 250000);
-      expect(parsed.daysUntilDue, greaterThan(0));
-    });
+        final parsed = FinancialObligation.fromMap(row.first);
+        expect(parsed.id, created.id);
+        expect(parsed.name, 'Listrik Bulanan');
+        expect(parsed.monthlyAmount, 250000);
+        expect(parsed.daysUntilDue, greaterThan(0));
+      },
+    );
 
-    test('addObligation → updateObligation → getObligations: update round-trip',
-        () async {
-      final created = await dataService.addObligation({
-        'name': 'Netflix',
-        'description': 'Langganan Netflix',
-        'amount': 150000,
-        'due_date': '2026-08-20',
-        'frequency': 'monthly',
-        'payment_method': 'credit_card',
-      });
+    test(
+      'addObligation → updateObligation → getObligations: update round-trip',
+      () async {
+        final created = await dataService.addObligation({
+          'name': 'Netflix',
+          'description': 'Langganan Netflix',
+          'amount': 150000,
+          'due_date': '2026-08-20',
+          'frequency': 'monthly',
+          'payment_method': 'credit_card',
+        });
 
-      // Update name and amount
-      final updated = await dataService.updateObligation(created.id, {
-        'name': 'Netflix Premium',
-        'amount': 186000,
-      });
+        // Update name and amount
+        final updated = await dataService.updateObligation(created.id, {
+          'name': 'Netflix Premium',
+          'amount': 186000,
+        });
 
-      expect(updated.name, 'Netflix Premium');
-      expect(updated.monthlyAmount, 186000);
+        expect(updated.name, 'Netflix Premium');
+        expect(updated.monthlyAmount, 186000);
 
-      // Verify via getObligations
-      final obligations = await dataService.getObligations();
-      expect(obligations.length, 1);
-      expect(obligations.first.name, 'Netflix Premium');
-      expect(obligations.first.monthlyAmount, 186000);
-    });
+        // Verify via getObligations
+        final obligations = await dataService.getObligations();
+        expect(obligations.length, 1);
+        expect(obligations.first.name, 'Netflix Premium');
+        expect(obligations.first.monthlyAmount, 186000);
+      },
+    );
 
-    test('addObligation → deleteObligation returns true and removes it',
-        () async {
-      final created = await dataService.addObligation({
-        'name': 'PDAM',
-        'amount': 80000,
-        'due_date': '2026-08-10',
-        'frequency': 'monthly',
-        'payment_method': 'cash',
-      });
+    test(
+      'addObligation → deleteObligation returns true and removes it',
+      () async {
+        final created = await dataService.addObligation({
+          'name': 'PDAM',
+          'amount': 80000,
+          'due_date': '2026-08-10',
+          'frequency': 'monthly',
+          'payment_method': 'cash',
+        });
 
-      final deleted = await dataService.deleteObligation(created.id);
-      expect(deleted, true);
+        final deleted = await dataService.deleteObligation(created.id);
+        expect(deleted, true);
 
-      final obligations = await dataService.getObligations();
-      expect(obligations.length, 0);
-    });
+        final obligations = await dataService.getObligations();
+        expect(obligations.length, 0);
+      },
+    );
 
-    test('getUpcomingObligations returns only unpaid obligations within range',
-        () async {
-      final today = DateTime.now();
-      final dueSoon = today.add(const Duration(days: 3));
-      final dueLater = today.add(const Duration(days: 30));
+    test(
+      'getUpcomingObligations returns only unpaid obligations within range',
+      () async {
+        final today = DateTime.now();
+        final dueSoon = today.add(const Duration(days: 3));
+        final dueLater = today.add(const Duration(days: 30));
 
-      // Add obligation due within 7 days
-      await dataService.addObligation({
-        'name': 'Listrik',
-        'amount': 250000,
-        'due_date': dueSoon.toIso8601String().split('T')[0],
-        'frequency': 'monthly',
-        'payment_method': 'bank_transfer',
-      });
+        // Add obligation due within 7 days
+        await dataService.addObligation({
+          'name': 'Listrik',
+          'amount': 250000,
+          'due_date': dueSoon.toIso8601String().split('T')[0],
+          'frequency': 'monthly',
+          'payment_method': 'bank_transfer',
+        });
 
-      // Add obligation due later
-      await dataService.addObligation({
-        'name': 'Kredit Motor',
-        'amount': 500000,
-        'due_date': dueLater.toIso8601String().split('T')[0],
-        'frequency': 'monthly',
-        'payment_method': 'bank_transfer',
-      });
+        // Add obligation due later
+        await dataService.addObligation({
+          'name': 'Kredit Motor',
+          'amount': 500000,
+          'due_date': dueLater.toIso8601String().split('T')[0],
+          'frequency': 'monthly',
+          'payment_method': 'bank_transfer',
+        });
 
-      // Should find 1 obligation within 7 days
-      final upcoming = await dataService.getUpcomingObligations(days: 7);
-      expect(upcoming.length, 1);
-      expect(upcoming.first.name, 'Listrik');
-    });
+        // Should find 1 obligation within 7 days
+        final upcoming = await dataService.getUpcomingObligations(days: 7);
+        expect(upcoming.length, 1);
+        expect(upcoming.first.name, 'Listrik');
+      },
+    );
 
     test('recordObligationPayment marks obligation as paid', () async {
       final created = await dataService.addObligation({

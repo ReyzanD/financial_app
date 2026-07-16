@@ -4,8 +4,7 @@ import 'package:financial_app/services/logger_service.dart';
 
 class ReceiptController extends ChangeNotifier {
   final ReceiptRepository _r;
-  ReceiptController({required ReceiptRepository repository})
-    : _r = repository;
+  ReceiptController({required ReceiptRepository repository}) : _r = repository;
 
   List<dynamic> _receipts = [];
   bool _isLoading = false;

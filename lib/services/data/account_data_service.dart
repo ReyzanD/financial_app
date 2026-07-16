@@ -24,9 +24,7 @@ class AccountDataService {
   }
 
   /// Get accounts
-  Future<List<AccountModel>> getAccounts({
-    bool activeOnly = true,
-  }) async {
+  Future<List<AccountModel>> getAccounts({bool activeOnly = true}) async {
     final userId = await getCurrentUserId();
     if (userId == null) throw Exception('Not authenticated');
 
@@ -49,9 +47,7 @@ class AccountDataService {
   }
 
   /// Add account
-  Future<AccountModel> addAccount(
-    Map<String, dynamic> accountData,
-  ) async {
+  Future<AccountModel> addAccount(Map<String, dynamic> accountData) async {
     final userId = await getCurrentUserId();
     if (userId == null) throw Exception('Not authenticated');
 

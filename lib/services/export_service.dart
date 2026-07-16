@@ -14,7 +14,8 @@ import 'package:financial_app/core/di/service_locator.dart';
 
 /// Service untuk export/import data dengan multiple formats
 class ExportService {
-  final TransactionDataService _transactionData = getIt<TransactionDataService>();
+  final TransactionDataService _transactionData =
+      getIt<TransactionDataService>();
   final CategoryDataService _categoryData = getIt<CategoryDataService>();
   final DateFormat _dateTimeFormat = DateFormat('yyyy-MM-dd HH:mm:ss');
 
@@ -37,38 +38,39 @@ class ExportService {
           endDate != null ||
           categoryId != null ||
           type != null) {
-        filtered = transactions.where((transaction) {
-          if (startDate != null || endDate != null) {
-            final tDateStr = transaction['transaction_date']?.toString();
-            if (tDateStr != null) {
-              try {
-                final tDate = DateTime.parse(tDateStr);
-                if (startDate != null && tDate.isBefore(startDate)) {
-                  return false;
+        filtered =
+            transactions.where((transaction) {
+              if (startDate != null || endDate != null) {
+                final tDateStr = transaction['transaction_date']?.toString();
+                if (tDateStr != null) {
+                  try {
+                    final tDate = DateTime.parse(tDateStr);
+                    if (startDate != null && tDate.isBefore(startDate)) {
+                      return false;
+                    }
+                    if (endDate != null && tDate.isAfter(endDate)) {
+                      return false;
+                    }
+                  } catch (e) {
+                    return false;
+                  }
                 }
-                if (endDate != null && tDate.isAfter(endDate)) {
-                  return false;
-                }
-              } catch (e) {
-                return false;
               }
-            }
-          }
 
-          if (categoryId != null) {
-            if (transaction['category_id']?.toString() != categoryId) {
-              return false;
-            }
-          }
+              if (categoryId != null) {
+                if (transaction['category_id']?.toString() != categoryId) {
+                  return false;
+                }
+              }
 
-          if (type != null) {
-            if (transaction['type']?.toString() != type) {
-              return false;
-            }
-          }
+              if (type != null) {
+                if (transaction['type']?.toString() != type) {
+                  return false;
+                }
+              }
 
-          return true;
-        }).toList();
+              return true;
+            }).toList();
       }
 
       // Create CSV data
@@ -126,38 +128,39 @@ class ExportService {
           endDate != null ||
           categoryId != null ||
           type != null) {
-        filtered = transactions.where((transaction) {
-          if (startDate != null || endDate != null) {
-            final tDateStr = transaction['transaction_date']?.toString();
-            if (tDateStr != null) {
-              try {
-                final tDate = DateTime.parse(tDateStr);
-                if (startDate != null && tDate.isBefore(startDate)) {
-                  return false;
+        filtered =
+            transactions.where((transaction) {
+              if (startDate != null || endDate != null) {
+                final tDateStr = transaction['transaction_date']?.toString();
+                if (tDateStr != null) {
+                  try {
+                    final tDate = DateTime.parse(tDateStr);
+                    if (startDate != null && tDate.isBefore(startDate)) {
+                      return false;
+                    }
+                    if (endDate != null && tDate.isAfter(endDate)) {
+                      return false;
+                    }
+                  } catch (e) {
+                    return false;
+                  }
                 }
-                if (endDate != null && tDate.isAfter(endDate)) {
-                  return false;
-                }
-              } catch (e) {
-                return false;
               }
-            }
-          }
 
-          if (categoryId != null) {
-            if (transaction['category_id']?.toString() != categoryId) {
-              return false;
-            }
-          }
+              if (categoryId != null) {
+                if (transaction['category_id']?.toString() != categoryId) {
+                  return false;
+                }
+              }
 
-          if (type != null) {
-            if (transaction['type']?.toString() != type) {
-              return false;
-            }
-          }
+              if (type != null) {
+                if (transaction['type']?.toString() != type) {
+                  return false;
+                }
+              }
 
-          return true;
-        }).toList();
+              return true;
+            }).toList();
       }
 
       // Convert to JSON
@@ -203,38 +206,39 @@ class ExportService {
           endDate != null ||
           categoryId != null ||
           type != null) {
-        filtered = transactions.where((transaction) {
-          if (startDate != null || endDate != null) {
-            final tDateStr = transaction['transaction_date']?.toString();
-            if (tDateStr != null) {
-              try {
-                final tDate = DateTime.parse(tDateStr);
-                if (startDate != null && tDate.isBefore(startDate)) {
-                  return false;
+        filtered =
+            transactions.where((transaction) {
+              if (startDate != null || endDate != null) {
+                final tDateStr = transaction['transaction_date']?.toString();
+                if (tDateStr != null) {
+                  try {
+                    final tDate = DateTime.parse(tDateStr);
+                    if (startDate != null && tDate.isBefore(startDate)) {
+                      return false;
+                    }
+                    if (endDate != null && tDate.isAfter(endDate)) {
+                      return false;
+                    }
+                  } catch (e) {
+                    return false;
+                  }
                 }
-                if (endDate != null && tDate.isAfter(endDate)) {
-                  return false;
-                }
-              } catch (e) {
-                return false;
               }
-            }
-          }
 
-          if (categoryId != null) {
-            if (transaction['category_id']?.toString() != categoryId) {
-              return false;
-            }
-          }
+              if (categoryId != null) {
+                if (transaction['category_id']?.toString() != categoryId) {
+                  return false;
+                }
+              }
 
-          if (type != null) {
-            if (transaction['type']?.toString() != type) {
-              return false;
-            }
-          }
+              if (type != null) {
+                if (transaction['type']?.toString() != type) {
+                  return false;
+                }
+              }
 
-          return true;
-        }).toList();
+              return true;
+            }).toList();
       }
 
       // Create PDF

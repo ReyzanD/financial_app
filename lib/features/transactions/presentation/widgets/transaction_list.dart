@@ -129,8 +129,7 @@ class _TransactionListState extends State<TransactionList> {
                     locationName:
                         t.locationData?['address'] as String? ??
                         t.locationData?['name'] as String?,
-                    latitude:
-                        (t.locationData?['latitude'] as num?)?.toDouble(),
+                    latitude: (t.locationData?['latitude'] as num?)?.toDouble(),
                     longitude:
                         (t.locationData?['longitude'] as num?)?.toDouble(),
                   ),

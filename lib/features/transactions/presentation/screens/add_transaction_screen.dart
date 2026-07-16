@@ -92,9 +92,11 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
   final _amountController = TextEditingController();
   final _descriptionController = TextEditingController();
   final _notesController = TextEditingController();
-  final TransactionDataService _transactionData = getIt<TransactionDataService>();
+  final TransactionDataService _transactionData =
+      getIt<TransactionDataService>();
   final CategoryDataService _categoryData = getIt<CategoryDataService>();
-  final ReceiptScanningService _receiptService = getIt<ReceiptScanningService>();
+  final ReceiptScanningService _receiptService =
+      getIt<ReceiptScanningService>();
   final SmartCategorizationService _categorizationService =
       getIt<SmartCategorizationService>();
 
@@ -190,18 +192,14 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
 
           // Pre-select a default category if none is selected and not in edit mode
           if (!widget.isEditMode && _selectedCategory == null) {
-            final filtered = _categories
-                .where((cat) => cat.type == _selectedType)
-                .toList();
+            final filtered =
+                _categories.where((cat) => cat.type == _selectedType).toList();
             if (filtered.isNotEmpty) {
               // Prefer "Lainnya" or "Other" category as sensible default
-              final defaultCat = filtered.firstWhere(
-                (cat) {
-                  final name = cat.name.toLowerCase();
-                  return name == 'lainnya' || name == 'other';
-                },
-                orElse: () => filtered.first,
-              );
+              final defaultCat = filtered.firstWhere((cat) {
+                final name = cat.name.toLowerCase();
+                return name == 'lainnya' || name == 'other';
+              }, orElse: () => filtered.first);
               _selectedCategory = defaultCat.id;
             }
           }
@@ -311,7 +309,8 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
         if (mounted) {
           ErrorHandlerService.showWarningSnackbar(
             context,
-            AppLocalizations.of(context)?.failed_to_get_location ?? 'Failed to get location',
+            AppLocalizations.of(context)?.failed_to_get_location ??
+                'Failed to get location',
           );
         }
       } else {
@@ -369,7 +368,8 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  AppLocalizations.of(context)?.select_image_source ?? 'Select Image Source',
+                  AppLocalizations.of(context)?.select_image_source ??
+                      'Select Image Source',
                   style: GoogleFonts.poppins(
                     color: Colors.white,
                     fontSize: 18,
@@ -394,7 +394,8 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                     color: DesignTokens.primaryColor,
                   ),
                   title: Text(
-                    AppLocalizations.of(context)?.choose_from_gallery ?? 'Choose from Gallery',
+                    AppLocalizations.of(context)?.choose_from_gallery ??
+                        'Choose from Gallery',
                     style: GoogleFonts.poppins(color: Colors.white),
                   ),
                   onTap: () => Navigator.pop(context, 'gallery'),
@@ -487,7 +488,8 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
 
         ErrorHandlerService.showSuccessSnackbar(
           context,
-          AppLocalizations.of(context)?.receipt_scanned_successfully ?? 'Receipt scanned successfully',
+          AppLocalizations.of(context)?.receipt_scanned_successfully ??
+              'Receipt scanned successfully',
         );
 
         LoggerService.success('Receipt scanned successfully');
@@ -495,7 +497,8 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
         if (mounted) {
           ErrorHandlerService.showWarningSnackbar(
             context,
-            AppLocalizations.of(context)?.cannot_scan_receipt ?? 'Cannot scan receipt',
+            AppLocalizations.of(context)?.cannot_scan_receipt ??
+                'Cannot scan receipt',
           );
         }
       }
@@ -504,7 +507,8 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
       if (mounted) {
         ErrorHandlerService.showErrorSnackbar(
           context,
-          AppLocalizations.of(context)?.error_scanning_receipt ?? 'Error scanning receipt',
+          AppLocalizations.of(context)?.error_scanning_receipt ??
+              'Error scanning receipt',
         );
       }
     } finally {
@@ -627,11 +631,13 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                 (dialogContext) => AlertDialog(
                   backgroundColor: DesignTokens.surfaceDark,
                   title: Text(
-                    AppLocalizations.of(ctx)?.duplicate_transaction ?? 'Duplicate Transaction?',
+                    AppLocalizations.of(ctx)?.duplicate_transaction ??
+                        'Duplicate Transaction?',
                     style: const TextStyle(color: Colors.white),
                   ),
                   content: Text(
-                    AppLocalizations.of(ctx)?.similar_transaction_added ?? 'A similar transaction was just added',
+                    AppLocalizations.of(ctx)?.similar_transaction_added ??
+                        'A similar transaction was just added',
                     style: const TextStyle(color: Colors.white70),
                   ),
                   actions: [
@@ -644,7 +650,9 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: DesignTokens.primaryColor,
                       ),
-                      child: Text(AppLocalizations.of(ctx)?.continueText ?? 'Continue'),
+                      child: Text(
+                        AppLocalizations.of(ctx)?.continueText ?? 'Continue',
+                      ),
                     ),
                   ],
                 ),
@@ -735,7 +743,8 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
             );
           } catch (e) {
             LoggerService.warning(
-              'Non-critical: could not create place visit', error: e,
+              'Non-critical: could not create place visit',
+              error: e,
             );
           }
         }
@@ -757,7 +766,8 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
         if (!ctx.mounted) return;
         ErrorHandlerService.showSuccessSnackbar(
           ctx,
-          AppLocalizations.of(ctx)?.transaction_saved_successfully ?? 'Transaction saved successfully!',
+          AppLocalizations.of(ctx)?.transaction_saved_successfully ??
+              'Transaction saved successfully!',
         );
 
         if (!ctx.mounted) return;
@@ -884,9 +894,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                               isLoading: _isLoadingCategories,
                               onCategorySelected: (categoryId) {
                                 field.didChange(categoryId);
-                                setState(
-                                  () => _selectedCategory = categoryId,
-                                );
+                                setState(() => _selectedCategory = categoryId);
                               },
                             ),
                             if (field.hasError)

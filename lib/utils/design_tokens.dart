@@ -30,6 +30,11 @@ class DesignTokens {
   static const Color borderDark = Color(0xFF2A2A2A);
   static const Color borderLight = Color(0xFFE0E0E0);
 
+  // Card & Modal Surface Colors (dark theme)
+  static const Color surfaceCard = Color(0xFF1F1F1F);
+  static const Color surfaceModal = Color(0xFF0D0D0D);
+  static const Color surfaceModalAlt = Color(0xFF0A0A0A);
+
   // Elevation System (Material Design 3)
   static const List<BoxShadow> elevation1 = [
     BoxShadow(color: Color(0x1A000000), blurRadius: 3, offset: Offset(0, 1)),
@@ -148,6 +153,50 @@ class DesignTokens {
       default:
         return primaryColor;
     }
+  }
+
+  // Chart & Visualization Colors
+  static const Color chartRed = Color(0xFFE74C3C);
+  static const Color chartOrange = Color(0xFFF39C12);
+  static const Color chartAmber = Color(0xFFFF9800);
+  static const Color chartPurple = Color(0xFF9B59B6);
+  static const Color chartGreen = Color(0xFF2ECC71);
+  static const Color chartDarkGreen = Color(0xFF27AE60);
+  static const Color chartTeal = Color(0xFF1ABC9C);
+  static const Color chartDarkTeal = Color(0xFF16A085);
+  static const Color chartBlue = Color(0xFF2980B9);
+  static const Color chartDarkOrange = Color(0xFFE67E22);
+  static const Color chartGrey = Color(0xFF95A5A6);
+  static const Color chartDarkBlueGrey = Color(0xFF34495E);
+
+  // Alert & Recommendation Colors
+  static const Color alertRed = Color(0xFFFF5252);
+
+  // Full 12-color chart palette for budgets and transaction categories
+  static const List<Color> chartPalette = [
+    chartRed,
+    chartOrange,
+    chartPurple,
+    chartDarkOrange,
+    chartBlue,
+    chartGreen,
+    chartDarkGreen,
+    chartTeal,
+    chartDarkTeal,
+    chartGrey,
+    chartAmber,
+    primaryColor,
+  ];
+
+  /// Returns a deterministic color from [chartPalette] based on a string [key].
+  static Color getChartColor(String key) {
+    final index = key.hashCode % chartPalette.length;
+    return chartPalette[index.abs()];
+  }
+
+  /// Returns a chart color from [chartPalette] by index (clamped).
+  static Color getChartColorByIndex(int index) {
+    return chartPalette[index % chartPalette.length];
   }
 
   // Category Colors (can be extended)

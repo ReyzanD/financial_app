@@ -23,10 +23,7 @@ import 'package:financial_app/features/obligations/presentation/controllers/obli
 class FinancialObligationsScreen extends StatefulWidget {
   final String initialTab;
 
-  const FinancialObligationsScreen({
-    super.key,
-    this.initialTab = 'all',
-  });
+  const FinancialObligationsScreen({super.key, this.initialTab = 'all'});
 
   @override
   State<FinancialObligationsScreen> createState() =>
@@ -87,107 +84,106 @@ class _FinancialObligationsScreenState
         child: Column(
           children: [
             const OfflineIndicator(),
-          Consumer<ObligationController>(
-            builder: (context, ctrl, _) => _buildSummaryCards(context, ctrl),
-          ),
-          // Search Bar
-          Padding(
-            padding: ResponsiveHelper.horizontalPadding(context),
-            child: Consumer<ObligationController>(
-              builder:
-                  (context, ctrl, _) => Container(
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF1F1F1F),
-                      borderRadius: BorderRadius.circular(14),
-                      border: Border.all(
-                        color: DesignTokens.borderDark.withValues(alpha: 0.5),
-                        width: 1,
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.1),
-                          blurRadius: 8,
-                          offset: const Offset(0, 2),
+            Consumer<ObligationController>(
+              builder: (context, ctrl, _) => _buildSummaryCards(context, ctrl),
+            ),
+            // Search Bar
+            Padding(
+              padding: ResponsiveHelper.horizontalPadding(context),
+              child: Consumer<ObligationController>(
+                builder:
+                    (context, ctrl, _) => Container(
+                      decoration: BoxDecoration(
+                        color: DesignTokens.surfaceCard,
+                        borderRadius: BorderRadius.circular(14),
+                        border: Border.all(
+                          color: DesignTokens.borderDark.withValues(alpha: 0.5),
+                          width: 1,
                         ),
-                      ],
-                    ),
-                    child: TextField(
-                      controller: ctrl.searchController,
-                      style: GoogleFonts.poppins(
-                        color: Colors.white,
-                        fontSize: 14,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.1),
+                            blurRadius: 8,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
                       ),
-                      decoration: InputDecoration(
-                        hintText: l10n.search_obligations,
-                        hintStyle: GoogleFonts.poppins(
-                          color: Colors.grey[500],
+                      child: TextField(
+                        controller: ctrl.searchController,
+                        style: GoogleFonts.poppins(
+                          color: Colors.white,
                           fontSize: 14,
                         ),
-                        prefixIcon: Container(
-                          padding: const EdgeInsets.all(12),
-                          child: Icon(
-                            Iconsax.search_normal,
+                        decoration: InputDecoration(
+                          hintText: l10n.search_obligations,
+                          hintStyle: GoogleFonts.poppins(
                             color: Colors.grey[500],
-                            size: 20,
+                            fontSize: 14,
                           ),
-                        ),
-                        suffixIcon:
-                            ctrl.searchQuery.isNotEmpty
-                                ? IconButton(
-                                  icon: Container(
-                                    padding: const EdgeInsets.all(4),
-                                    decoration: BoxDecoration(
-                                      color: DesignTokens.borderDark.withValues(
-                                        alpha: 0.5,
+                          prefixIcon: Container(
+                            padding: const EdgeInsets.all(12),
+                            child: Icon(
+                              Iconsax.search_normal,
+                              color: Colors.grey[500],
+                              size: 20,
+                            ),
+                          ),
+                          suffixIcon:
+                              ctrl.searchQuery.isNotEmpty
+                                  ? IconButton(
+                                    icon: Container(
+                                      padding: const EdgeInsets.all(4),
+                                      decoration: BoxDecoration(
+                                        color: DesignTokens.borderDark
+                                            .withValues(alpha: 0.5),
+                                        shape: BoxShape.circle,
                                       ),
-                                      shape: BoxShape.circle,
+                                      child: Icon(
+                                        Icons.close,
+                                        color: Colors.grey[400],
+                                        size: 16,
+                                      ),
                                     ),
-                                    child: Icon(
-                                      Icons.close,
-                                      color: Colors.grey[400],
-                                      size: 16,
-                                    ),
-                                  ),
-                                  tooltip: l10n.delete_search,
-                                  onPressed: ctrl.clearSearch,
-                                )
-                                : null,
-                        filled: true,
-                        fillColor: Colors.transparent,
-                        border: InputBorder.none,
-                        enabledBorder: InputBorder.none,
-                        focusedBorder: InputBorder.none,
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 14,
+                                    tooltip: l10n.delete_search,
+                                    onPressed: ctrl.clearSearch,
+                                  )
+                                  : null,
+                          filled: true,
+                          fillColor: Colors.transparent,
+                          border: InputBorder.none,
+                          enabledBorder: InputBorder.none,
+                          focusedBorder: InputBorder.none,
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 14,
+                          ),
                         ),
                       ),
                     ),
+              ),
+            ),
+            SizedBox(height: ResponsiveHelper.verticalSpacing(context, 12)),
+            // View Selector
+            Consumer<ObligationController>(
+              builder:
+                  (context, ctrl, _) => ObligationViewTabs(
+                    selectedView: ctrl.selectedView,
+                    onViewChanged: (value) => ctrl.setView(value),
                   ),
             ),
-          ),
-          SizedBox(height: ResponsiveHelper.verticalSpacing(context, 12)),
-          // View Selector
-          Consumer<ObligationController>(
-            builder:
-                (context, ctrl, _) => ObligationViewTabs(
-                  selectedView: ctrl.selectedView,
-                  onViewChanged: (value) => ctrl.setView(value),
-                ),
-          ),
-          // Content based on selected view
-          Expanded(
-            child: Consumer<ObligationController>(
-              builder: (context, ctrl, _) => _buildSelectedView(ctrl),
+            // Content based on selected view
+            Expanded(
+              child: Consumer<ObligationController>(
+                builder: (context, ctrl, _) => _buildSelectedView(ctrl),
+              ),
             ),
-          ),
-        ],
-      ),
+          ],
+        ),
       ),
       floatingActionButton: Container(
         decoration: BoxDecoration(
           gradient: const LinearGradient(
-            colors: [DesignTokens.primaryColor, Color(0xFF6B4C93)],
+            colors: [DesignTokens.primaryColor, DesignTokens.secondaryColor],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
@@ -326,7 +322,7 @@ class _FinancialObligationsScreenState
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [const Color(0xFF1F1F1F), DesignTokens.surfaceDark],
+          colors: [DesignTokens.surfaceCard, DesignTokens.surfaceDark],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -358,7 +354,9 @@ class _FinancialObligationsScreenState
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
-                  borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                  borderRadius: BorderRadius.circular(
+                    DesignTokens.radiusMedium,
+                  ),
                   border: Border.all(
                     color: color.withValues(alpha: 0.3),
                     width: 1,
@@ -379,7 +377,9 @@ class _FinancialObligationsScreenState
                         color.withValues(alpha: 0.3),
                       ],
                     ),
-                    borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                    borderRadius: BorderRadius.circular(
+                      DesignTokens.radiusMedium,
+                    ),
                     border: Border.all(
                       color: color.withValues(alpha: 0.4),
                       width: 1,

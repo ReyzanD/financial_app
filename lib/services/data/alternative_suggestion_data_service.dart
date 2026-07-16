@@ -95,9 +95,10 @@ class AlternativeSuggestionDataService {
   }) async {
     try {
       final db = await _dbService.database;
-      final cutoff = DateTime.now()
-          .subtract(Duration(hours: maxAgeHours))
-          .toIso8601String();
+      final cutoff =
+          DateTime.now()
+              .subtract(Duration(hours: maxAgeHours))
+              .toIso8601String();
 
       final result = await db.rawQuery(
         '''

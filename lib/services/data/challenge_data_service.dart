@@ -18,9 +18,7 @@ class ChallengeDataService {
 
   Future<String?> getCurrentUserId() async => _authService.getCurrentUserId();
 
-  Future<List<ChallengeModel>> getChallenges({
-    bool activeOnly = true,
-  }) async {
+  Future<List<ChallengeModel>> getChallenges({bool activeOnly = true}) async {
     try {
       final userId = await getCurrentUserId();
       if (userId == null) throw Exception('Not authenticated');

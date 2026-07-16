@@ -520,11 +520,11 @@ class _BudgetsScreenState extends State<BudgetsScreen> {
   Color _getCategoryColor(String category) {
     switch (category.toLowerCase()) {
       case 'makanan':
-        return const Color(0xFFE74C3C);
+        return DesignTokens.chartRed;
       case 'transportasi':
-        return const Color(0xFFF39C12);
+        return DesignTokens.chartOrange;
       case 'hiburan':
-        return const Color(0xFF9B59B6);
+        return DesignTokens.chartPurple;
       default:
         return DesignTokens.primaryColor;
     }
@@ -650,7 +650,8 @@ class _BudgetsScreenState extends State<BudgetsScreen> {
       );
     } catch (e) {
       if (mounted) {
-        final msg = AppLocalizations.of(context)?.failed_to_load_budget_suggestions ??
+        final msg =
+            AppLocalizations.of(context)?.failed_to_load_budget_suggestions ??
             'Gagal memuat saran budget';
         Navigator.pop(context);
         ErrorHandlerService.showErrorSnackbar(context, msg);
@@ -663,7 +664,7 @@ class _BudgetsScreenState extends State<BudgetsScreen> {
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: const Color(0xFF2A2A2A),
+        color: DesignTokens.borderDark,
         borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
         border: Border.all(
           color: DesignTokens.primaryColor.withValues(alpha: 0.3),
@@ -728,7 +729,9 @@ class _BudgetsScreenState extends State<BudgetsScreen> {
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
                   color: color,
-                  borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                  borderRadius: BorderRadius.circular(
+                    DesignTokens.radiusMedium,
+                  ),
                 ),
                 child: Text(
                   '${usagePercent.toInt()}%',

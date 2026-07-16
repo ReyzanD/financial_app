@@ -193,10 +193,14 @@ class _PinSetupScreenState extends State<PinSetupScreen> {
                             ),
                             const SizedBox(height: 32),
                             Container(
-                              padding: const EdgeInsets.all(DesignTokens.spacing4),
+                              padding: const EdgeInsets.all(
+                                DesignTokens.spacing4,
+                              ),
                               decoration: BoxDecoration(
                                 color: DesignTokens.surfaceDark,
-                                borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                                borderRadius: BorderRadius.circular(
+                                  DesignTokens.radiusMedium,
+                                ),
                                 border: Border.all(
                                   color: DesignTokens.borderDark,
                                 ),

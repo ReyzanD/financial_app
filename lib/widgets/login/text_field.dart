@@ -49,7 +49,7 @@ class CustomTextField extends StatelessWidget {
                 )
                 : null,
         filled: true,
-        fillColor: const Color(0xFF2A2A2A), // Dark gray background
+        fillColor: DesignTokens.borderDark, // Dark gray background
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
           borderSide: BorderSide(color: Colors.grey[700]!, width: 1),

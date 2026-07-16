@@ -6,7 +6,8 @@ import 'package:financial_app/core/di/service_locator.dart';
 
 /// Service for predicting budget exhaustion and assessing overspending risk
 class BudgetPredictor {
-  final TransactionDataService _transactionData = getIt<TransactionDataService>();
+  final TransactionDataService _transactionData =
+      getIt<TransactionDataService>();
   final BudgetDataService _budgetData = getIt<BudgetDataService>();
   final ExpensePredictor _expensePredictor = ExpensePredictor();
 
@@ -18,7 +19,9 @@ class BudgetPredictor {
   }) async {
     try {
       // Get recent transactions for this budget category
-      final transactionsData = await _transactionData.getTransactions(limit: 200);
+      final transactionsData = await _transactionData.getTransactions(
+        limit: 200,
+      );
       final transactions = List<Map<String, dynamic>>.from(
         transactionsData['transactions'] ?? [],
       );
@@ -208,7 +211,9 @@ class BudgetPredictor {
     int monthsToAnalyze = 3,
   }) async {
     try {
-      final transactionsData = await _transactionData.getTransactions(limit: 500);
+      final transactionsData = await _transactionData.getTransactions(
+        limit: 500,
+      );
       final transactions = List<Map<String, dynamic>>.from(
         transactionsData['transactions'] ?? [],
       );

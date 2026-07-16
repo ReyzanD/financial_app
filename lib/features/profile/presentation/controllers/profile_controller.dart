@@ -5,8 +5,7 @@ import 'package:financial_app/services/logger_service.dart';
 
 class ProfileController extends ChangeNotifier {
   final ProfileRepository _r;
-  ProfileController({required ProfileRepository repository})
-    : _r = repository;
+  ProfileController({required ProfileRepository repository}) : _r = repository;
 
   bool _isLoading = false;
   bool _isSaving = false;

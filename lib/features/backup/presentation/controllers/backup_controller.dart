@@ -5,8 +5,7 @@ import 'package:financial_app/services/logger_service.dart';
 
 class BackupController extends ChangeNotifier {
   final BackupRepository _r;
-  BackupController({required BackupRepository repository})
-    : _r = repository;
+  BackupController({required BackupRepository repository}) : _r = repository;
 
   List<File> _backups = [];
   bool _isLoading = false;

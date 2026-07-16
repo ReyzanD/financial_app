@@ -16,7 +16,7 @@ class LoginHeader extends StatelessWidget {
           height: 80,
           decoration: BoxDecoration(
             gradient: const LinearGradient(
-              colors: [DesignTokens.primaryColor, Color(0xFF6A3093)],
+              colors: [DesignTokens.primaryColor, DesignTokens.secondaryColor],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
@@ -73,7 +73,7 @@ class RegisterHeader extends StatelessWidget {
           height: 80,
           decoration: BoxDecoration(
             gradient: const LinearGradient(
-              colors: [Color(0xFF6A3093), DesignTokens.primaryColor],
+              colors: [DesignTokens.secondaryColor, DesignTokens.primaryColor],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
@@ -82,7 +82,7 @@ class RegisterHeader extends StatelessWidget {
               BoxShadow(
                 color: Color.lerp(
                   Colors.transparent,
-                  Color(0xFF6A3093),
+                  DesignTokens.secondaryColor,
                   0.4,
                 )!.withAlpha(255),
                 blurRadius: 20,

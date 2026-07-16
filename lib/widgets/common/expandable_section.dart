@@ -98,43 +98,43 @@ class _ExpandableSectionState extends State<ExpandableSection>
             hint: _isExpanded ? 'Tutup' : 'Buka',
             button: true,
             child: InkWell(
-            onTap: _toggle,
-            borderRadius: BorderRadius.circular(DesignTokens.radiusLarge),
-            child: Padding(
-              padding: const EdgeInsets.all(DesignTokens.spacing4),
-              child: Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: accentColor.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(10),
+              onTap: _toggle,
+              borderRadius: BorderRadius.circular(DesignTokens.radiusLarge),
+              child: Padding(
+                padding: const EdgeInsets.all(DesignTokens.spacing4),
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: accentColor.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Icon(widget.icon, color: accentColor, size: 20),
                     ),
-                    child: Icon(widget.icon, color: accentColor, size: 20),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Text(
-                      widget.title,
-                      style: GoogleFonts.poppins(
-                        color: Colors.white,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        widget.title,
+                        style: GoogleFonts.poppins(
+                          color: Colors.white,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     ),
-                  ),
-                  RotationTransition(
-                    turns: _rotateAnimation,
-                    child: Icon(
-                      Iconsax.arrow_down_1,
-                      color: Colors.grey[500],
-                      size: 20,
+                    RotationTransition(
+                      turns: _rotateAnimation,
+                      child: Icon(
+                        Iconsax.arrow_down_1,
+                        color: Colors.grey[500],
+                        size: 20,
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
-          ),
           ),
 
           // Content — expandable with animation

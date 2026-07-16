@@ -12,9 +12,8 @@ import 'package:financial_app/l10n/app_localizations.dart';
 
 /// Minimal mock that overrides both services with canned data.
 class _MockExchangeRateService extends ExchangeRateService {
-  _MockExchangeRateService() : super(
-    exchangeRateData: _DummyExchangeRateDataService(),
-  );
+  _MockExchangeRateService()
+    : super(exchangeRateData: _DummyExchangeRateDataService());
 
   @override
   Future<double> getExchangeRate(String fromCode, String toCode) async {
@@ -28,9 +27,8 @@ class _DummyExchangeRateDataService extends ExchangeRateDataService {
 }
 
 class _MockFinancialAdvisorService extends FinancialAdvisorService {
-  _MockFinancialAdvisorService() : super(
-    transactionData: TransactionDataService(),
-  );
+  _MockFinancialAdvisorService()
+    : super(transactionData: TransactionDataService());
 
   @override
   Future<FiftyThirtyTwentyAnalysis> analyzeForPeriod({
@@ -152,10 +150,7 @@ void main() {
       await tester.pumpAndSettle(const Duration(seconds: 5));
 
       // Banner text contains key info about Sperrkonto
-      expect(
-        find.textContaining('Sperrkonto'),
-        findsWidgets,
-      );
+      expect(find.textContaining('Sperrkonto'), findsWidgets);
     });
   });
 }

@@ -60,7 +60,9 @@ class AIBudgetController extends ChangeNotifier {
       final categories =
           (await _categoryData.getCategories()).map((c) => c.toMap()).toList();
       final existingBudgets =
-          (await _budgetData.getBudgets(activeOnly: false)).map((b) => b.toMap()).toList();
+          (await _budgetData.getBudgets(
+            activeOnly: false,
+          )).map((b) => b.toMap()).toList();
       final income =
           _editedIncome ?? (_recommendation!['total_income'] as num).toDouble();
       final recCategories = _recommendation!['categories'] as List;
@@ -91,16 +93,13 @@ class AIBudgetController extends ChangeNotifier {
         );
         if (existing != null) {
           final bid = existing['budget_id_232143'] ?? existing['id'];
-          await _budgetData.updateBudget(
-            bid,
-            {
-              'amount': amount,
-              'period': 'monthly',
-              'period_start': ps.toIso8601String().split('T')[0],
-              'period_end': pe.toIso8601String().split('T')[0],
-              'alert_threshold': 80,
-            },
-          );
+          await _budgetData.updateBudget(bid, {
+            'amount': amount,
+            'period': 'monthly',
+            'period_start': ps.toIso8601String().split('T')[0],
+            'period_end': pe.toIso8601String().split('T')[0],
+            'alert_threshold': 80,
+          });
           updated++;
         } else {
           await _budgetData.addBudget({

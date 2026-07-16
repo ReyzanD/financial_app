@@ -128,7 +128,9 @@ class _AccountSectionState extends State<AccountSection> {
                       widget.selectedAccountId == null
                           ? DesignTokens.primaryColor.withValues(alpha: 0.3)
                           : DesignTokens.surfaceDark,
-                  borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                  borderRadius: BorderRadius.circular(
+                    DesignTokens.radiusMedium,
+                  ),
                   border: Border.all(
                     color:
                         widget.selectedAccountId == null
@@ -164,8 +166,7 @@ class _AccountSectionState extends State<AccountSection> {
               ),
             ),
             ..._accounts.map((account) {
-              final isSelected =
-                  widget.selectedAccountId == account.id;
+              final isSelected = widget.selectedAccountId == account.id;
               final type = account.type;
               final name = account.name;
               final colorHex = account.color ?? '#8B5FBF';
@@ -174,9 +175,7 @@ class _AccountSectionState extends State<AccountSection> {
               );
 
               return GestureDetector(
-                onTap:
-                    () =>
-                        widget.onAccountSelected(account.id),
+                onTap: () => widget.onAccountSelected(account.id),
                 child: Container(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 12,
@@ -187,7 +186,9 @@ class _AccountSectionState extends State<AccountSection> {
                         isSelected
                             ? accountColor.withValues(alpha: 0.3)
                             : DesignTokens.surfaceDark,
-                    borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                    borderRadius: BorderRadius.circular(
+                      DesignTokens.radiusMedium,
+                    ),
                     border: Border.all(
                       color: isSelected ? accountColor : Colors.grey[700]!,
                     ),

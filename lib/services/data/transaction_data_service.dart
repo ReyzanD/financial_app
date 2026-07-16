@@ -127,7 +127,9 @@ class TransactionDataService {
       [id, userId],
     );
 
-    return transactions.isNotEmpty ? TransactionModel.fromMap(transactions.first) : null;
+    return transactions.isNotEmpty
+        ? TransactionModel.fromMap(transactions.first)
+        : null;
   }
 
   /// Add transaction

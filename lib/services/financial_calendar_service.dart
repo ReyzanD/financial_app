@@ -27,10 +27,9 @@ class FinancialCalendarService {
         endDate: endDate.toIso8601String().split('T')[0],
       );
 
-      final transactions =
-          List<Map<String, dynamic>>.from(
-            transactionsData['transactions'] ?? [],
-          );
+      final transactions = List<Map<String, dynamic>>.from(
+        transactionsData['transactions'] ?? [],
+      );
       for (final transaction in transactions) {
         final dateStr =
             transaction['transaction_date_232143']?.toString() ??

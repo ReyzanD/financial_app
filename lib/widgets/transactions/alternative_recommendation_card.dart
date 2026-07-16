@@ -120,11 +120,14 @@ class AlternativeRecommendationCard extends StatelessWidget {
                               Platform.isAndroid
                                   ? 'https://www.google.com/maps/search/?api=1&query=$lat,$lng'
                                   : Platform.isIOS
-                                      ? 'https://maps.apple.com/?ll=$lat,$lng&q=$location'
-                                      : 'https://www.openstreetmap.org/?mlat=$lat&mlon=$lng',
+                                  ? 'https://maps.apple.com/?ll=$lat,$lng&q=$location'
+                                  : 'https://www.openstreetmap.org/?mlat=$lat&mlon=$lng',
                             );
                             if (await canLaunchUrl(uri)) {
-                              await launchUrl(uri, mode: LaunchMode.externalApplication);
+                              await launchUrl(
+                                uri,
+                                mode: LaunchMode.externalApplication,
+                              );
                             } else {
                               ErrorHandlerService.showInfoSnackbar(
                                 context,

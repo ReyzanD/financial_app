@@ -7,7 +7,7 @@ class ExchangeRateService {
   final ExchangeRateDataService _exchangeRateData;
 
   ExchangeRateService({ExchangeRateDataService? exchangeRateData})
-      : _exchangeRateData = exchangeRateData ?? getIt<ExchangeRateDataService>();
+    : _exchangeRateData = exchangeRateData ?? getIt<ExchangeRateDataService>();
 
   static const Map<String, double> _defaultRates = {
     'IDR': 1.0,

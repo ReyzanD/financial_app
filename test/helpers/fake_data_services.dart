@@ -35,9 +35,7 @@ class FakeAccountDataService extends AccountDataService {
   String _nextId() => 'acc_${++_counter}';
 
   @override
-  Future<List<AccountModel>> getAccounts({
-    bool activeOnly = true,
-  }) async =>
+  Future<List<AccountModel>> getAccounts({bool activeOnly = true}) async =>
       _accounts.values.map((m) => AccountModel.fromMap(m)).toList();
 
   @override
@@ -110,10 +108,7 @@ class FakeGoalDataService extends GoalDataService {
   }
 
   @override
-  Future<GoalModel> updateGoal(
-    String id,
-    Map<String, dynamic> data,
-  ) async {
+  Future<GoalModel> updateGoal(String id, Map<String, dynamic> data) async {
     if (_goals.containsKey(id)) {
       _goals[id]!.addAll(data);
     }
@@ -296,7 +291,8 @@ class FakeCategoryDataService extends CategoryDataService {
 }
 
 /// Fake [TransactionTemplateDataService] that stores data in-memory.
-class FakeTransactionTemplateDataService extends TransactionTemplateDataService {
+class FakeTransactionTemplateDataService
+    extends TransactionTemplateDataService {
   final Map<String, TransactionTemplateModel> _templates = {};
   int _counter = 0;
   String _nextId() => 'tpl_${++_counter}';
@@ -353,10 +349,7 @@ class FakeChallengeDataService extends ChallengeDataService {
   }
 
   @override
-  Future<void> updateChallenge(
-    String id,
-    Map<String, dynamic> data,
-  ) async {
+  Future<void> updateChallenge(String id, Map<String, dynamic> data) async {
     if (_challenges.containsKey(id)) {
       _challenges[id]!.addAll(_toDbFormat(data));
     }
@@ -406,9 +399,7 @@ class FakeObligationDataService extends ObligationDataService {
       'user_id_232143': 'test_user_1',
       'name_232143': obligationData['name'] ?? '',
       'monthly_amount_232143':
-          obligationData['amount'] ??
-          obligationData['monthly_amount'] ??
-          0.0,
+          obligationData['amount'] ?? obligationData['monthly_amount'] ?? 0.0,
       'due_date_232143':
           obligationData['due_date']?.toString() ??
           obligationData['dueDate']?.toString() ??
@@ -418,7 +409,8 @@ class FakeObligationDataService extends ObligationDataService {
       'original_amount_232143': obligationData['original_amount'],
       'current_balance_232143': obligationData['current_balance'],
       'interest_rate_232143': obligationData['interest_rate'],
-      'is_subscription_232143': obligationData['is_subscription'] == true ? 1 : 0,
+      'is_subscription_232143':
+          obligationData['is_subscription'] == true ? 1 : 0,
       'subscription_cycle_232143': obligationData['subscription_cycle'],
       'minimum_payment_232143': obligationData['minimum_payment'],
       'payoff_strategy_232143': obligationData['payoff_strategy'],
@@ -446,17 +438,19 @@ class FakeObligationDataService extends ObligationDataService {
           (data['amount'] as num?)?.toDouble() ??
           (data['monthly_amount'] as num?)?.toDouble() ??
           existing.monthlyAmount,
-      dueDate: data['due_date'] != null
-          ? DateTime.parse(data['due_date'].toString())
-          : data['dueDate'] != null
+      dueDate:
+          data['due_date'] != null
+              ? DateTime.parse(data['due_date'].toString())
+              : data['dueDate'] != null
               ? DateTime.parse(data['dueDate'].toString())
               : existing.dueDate,
-      type: data['type'] != null
-          ? ObligationType.values.firstWhere(
-              (e) => e.name == data['type'].toString(),
-              orElse: () => ObligationType.bill,
-            )
-          : existing.type,
+      type:
+          data['type'] != null
+              ? ObligationType.values.firstWhere(
+                (e) => e.name == data['type'].toString(),
+                orElse: () => ObligationType.bill,
+              )
+              : existing.type,
       category: data['category']?.toString() ?? existing.category,
       originalAmount:
           (data['original_amount'] as num?)?.toDouble() ??
@@ -465,8 +459,7 @@ class FakeObligationDataService extends ObligationDataService {
           (data['current_balance'] as num?)?.toDouble() ??
           existing.currentBalance,
       interestRate:
-          (data['interest_rate'] as num?)?.toDouble() ??
-          existing.interestRate,
+          (data['interest_rate'] as num?)?.toDouble() ?? existing.interestRate,
       isSubscription:
           data['is_subscription'] == true || existing.isSubscription,
       subscriptionCycle:
@@ -511,5 +504,4 @@ class FakeObligationDataService extends ObligationDataService {
       'total_count': obligations.length,
     };
   }
-
 }

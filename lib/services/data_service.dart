@@ -5,7 +5,8 @@ import 'package:financial_app/services/data/category_data_service.dart';
 import 'package:financial_app/core/di/service_locator.dart';
 
 class DataService {
-  final TransactionDataService _transactionData = getIt<TransactionDataService>();
+  final TransactionDataService _transactionData =
+      getIt<TransactionDataService>();
   final CategoryDataService _categoryData = getIt<CategoryDataService>();
 
   // Stream controllers for real-time data
@@ -83,7 +84,7 @@ class DataService {
 
       // Clear API cache on force refresh to get fresh data
       if (forceRefresh) {
-      // No API cache to clear — using direct data services now
+        // No API cache to clear — using direct data services now
       }
 
       // Fetch all data types in parallel

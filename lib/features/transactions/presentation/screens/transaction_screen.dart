@@ -90,7 +90,9 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                       _searchQuery.isNotEmpty
                           ? IconButton(
                             icon: Icon(Icons.clear, color: Colors.grey[600]),
-                            tooltip: AppLocalizations.of(context)?.delete_search ?? 'Hapus pencarian',
+                            tooltip:
+                                AppLocalizations.of(context)?.delete_search ??
+                                'Hapus pencarian',
                             onPressed: () {
                               _searchController.clear();
                             },
@@ -99,15 +101,21 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                   filled: true,
                   fillColor: DesignTokens.surfaceDark,
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                    borderRadius: BorderRadius.circular(
+                      DesignTokens.radiusMedium,
+                    ),
                     borderSide: BorderSide(color: DesignTokens.borderDark),
                   ),
                   enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                    borderRadius: BorderRadius.circular(
+                      DesignTokens.radiusMedium,
+                    ),
                     borderSide: BorderSide(color: DesignTokens.borderDark),
                   ),
                   focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                    borderRadius: BorderRadius.circular(
+                      DesignTokens.radiusMedium,
+                    ),
                     borderSide: const BorderSide(
                       color: DesignTokens.primaryColor,
                       width: 2,

@@ -71,7 +71,9 @@ void main() {
     late ExchangeRateService service;
 
     setUp(() {
-      service = ExchangeRateService(exchangeRateData: ExchangeRateDataService());
+      service = ExchangeRateService(
+        exchangeRateData: ExchangeRateDataService(),
+      );
     });
 
     test('should convert same currency to same amount', () async {

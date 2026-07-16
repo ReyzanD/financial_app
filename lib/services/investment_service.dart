@@ -6,7 +6,7 @@ class InvestmentService {
   final InvestmentDataService _investmentData;
 
   InvestmentService({InvestmentDataService? investmentData})
-      : _investmentData = investmentData ?? getIt<InvestmentDataService>();
+    : _investmentData = investmentData ?? getIt<InvestmentDataService>();
 
   Future<List<InvestmentModel>> getInvestments({String? type}) async {
     return _investmentData.getInvestments(type: type);

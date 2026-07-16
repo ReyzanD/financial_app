@@ -393,10 +393,9 @@ void main() {
         type: 'income',
       );
 
-      final updated = await service.updateCustomCategory(
-        category.id,
-        {'name': 'Updated Name'},
-      );
+      final updated = await service.updateCustomCategory(category.id, {
+        'name': 'Updated Name',
+      });
 
       expect(updated.name, 'Updated Name');
     });
@@ -409,10 +408,7 @@ void main() {
 
       await service.deleteCustomCategory(category.id);
       final categories = await service.getCustomCategories();
-      expect(
-        categories.any((c) => c.id == category.id),
-        false,
-      );
+      expect(categories.any((c) => c.id == category.id), false);
     });
 
     test('should provide default categories', () {

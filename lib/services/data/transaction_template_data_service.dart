@@ -80,9 +80,7 @@ class TransactionTemplateDataService {
     }
   }
 
-  Future<bool> deleteTransactionTemplate(
-    String templateId,
-  ) async {
+  Future<bool> deleteTransactionTemplate(String templateId) async {
     try {
       final userId = await getCurrentUserId();
       if (userId == null) throw Exception('Not authenticated');

@@ -12,7 +12,10 @@ void main() {
     setUp(() {
       final catData = CategoryDataService();
       final budgetData = BudgetDataService();
-      repository = BudgetRepository(categoryData: catData, budgetData: budgetData);
+      repository = BudgetRepository(
+        categoryData: catData,
+        budgetData: budgetData,
+      );
       controller = BudgetController(repository);
     });
 

@@ -21,26 +21,14 @@ void main() {
 
     test('should correctly classify needs vs wants vs uncategorized', () {
       final transactions = [
-        {
-          'amount': 10000000,
-          'type': 'income',
-          'category_name': 'Gaji',
-        },
+        {'amount': 10000000, 'type': 'income', 'category_name': 'Gaji'},
         {
           'amount': 3000000,
           'type': 'expense',
           'category_name': 'Makanan & Minuman',
         },
-        {
-          'amount': 1500000,
-          'type': 'expense',
-          'category_name': 'Hiburan',
-        },
-        {
-          'amount': 500000,
-          'type': 'expense',
-          'category_name': 'Pulsa',
-        },
+        {'amount': 1500000, 'type': 'expense', 'category_name': 'Hiburan'},
+        {'amount': 500000, 'type': 'expense', 'category_name': 'Pulsa'},
         {
           'amount': 750000,
           'type': 'expense',
@@ -73,9 +61,18 @@ void main() {
       expect(result.savingsPercent, 42.5); // 4.25jt / 10jt * 100
 
       // Gaps: needs within budget, wants within budget, savings exceeds target
-      expect(result.needsGap, -750000.0); // 4.25jt - 5jt = -750rb (under budget)
-      expect(result.wantsGap, -1500000.0); // 1.5jt - 3jt = -1.5jt (under budget)
-      expect(result.savingsGap, -2250000.0); // 2jt - 4.25jt = -2.25jt (under-saving? No, savingsGap is target - actual, so 2jt - 4.25jt = -2.25jt means OVER-saving)
+      expect(
+        result.needsGap,
+        -750000.0,
+      ); // 4.25jt - 5jt = -750rb (under budget)
+      expect(
+        result.wantsGap,
+        -1500000.0,
+      ); // 1.5jt - 3jt = -1.5jt (under budget)
+      expect(
+        result.savingsGap,
+        -2250000.0,
+      ); // 2jt - 4.25jt = -2.25jt (under-saving? No, savingsGap is target - actual, so 2jt - 4.25jt = -2.25jt means OVER-saving)
       // Actually: savingsGap = savingsTarget - savings = 2jt - 4.25jt = -2.25jt (negative = over-saving = good)
 
       // Category breakdowns
@@ -95,15 +92,19 @@ void main() {
 
     test('should correctly calculate needs categories', () {
       final transactions = [
-        {
-          'amount': 10000000,
-          'type': 'income',
-          'category_name': 'Gaji',
-        },
+        {'amount': 10000000, 'type': 'income', 'category_name': 'Gaji'},
         // All known need categories
         {'amount': 1000000, 'type': 'expense', 'category_name': 'Transportasi'},
-        {'amount': 2000000, 'type': 'expense', 'category_name': 'Kebutuhan Pokok'},
-        {'amount': 500000, 'type': 'expense', 'category_name': 'Tagihan & Utilitas'},
+        {
+          'amount': 2000000,
+          'type': 'expense',
+          'category_name': 'Kebutuhan Pokok',
+        },
+        {
+          'amount': 500000,
+          'type': 'expense',
+          'category_name': 'Tagihan & Utilitas',
+        },
         {'amount': 300000, 'type': 'expense', 'category_name': 'Kesehatan'},
         {'amount': 1000000, 'type': 'expense', 'category_name': 'Pendidikan'},
         {'amount': 200000, 'type': 'expense', 'category_name': 'Asuransi'},
@@ -119,7 +120,10 @@ void main() {
       final result = FinancialAdvisorService.computeAnalysis(transactions);
 
       // All 13 known needs categories
-      expect(result.needsCategories.length, 12); // Makanan & Minuman not in here but Makanan is
+      expect(
+        result.needsCategories.length,
+        12,
+      ); // Makanan & Minuman not in here but Makanan is
       // Actually needsMap has 12 distinct categories since Makanan & Minuman isn't present
       // Check total needs
       expect(result.needsActual, 8700000.0);
@@ -128,11 +132,7 @@ void main() {
 
     test('should correctly calculate wants categories', () {
       final transactions = [
-        {
-          'amount': 10000000,
-          'type': 'income',
-          'category_name': 'Gaji',
-        },
+        {'amount': 10000000, 'type': 'income', 'category_name': 'Gaji'},
         // All known want categories
         {'amount': 500000, 'type': 'expense', 'category_name': 'Hiburan'},
         {'amount': 1000000, 'type': 'expense', 'category_name': 'Belanja'},
@@ -161,16 +161,8 @@ void main() {
 
     test('should handle multiple income transactions', () {
       final transactions = [
-        {
-          'amount': 8000000,
-          'type': 'income',
-          'category_name': 'Gaji',
-        },
-        {
-          'amount': 2000000,
-          'type': 'income',
-          'category_name': 'Freelance',
-        },
+        {'amount': 8000000, 'type': 'income', 'category_name': 'Gaji'},
+        {'amount': 2000000, 'type': 'income', 'category_name': 'Freelance'},
         {
           'amount': 3000000,
           'type': 'expense',
@@ -187,16 +179,8 @@ void main() {
 
     test('should handle field name fallbacks (category vs category_name)', () {
       final transactions = [
-        {
-          'amount': 5000000,
-          'type': 'income',
-          'category': 'Gaji',
-        },
-        {
-          'amount': 1000000,
-          'type': 'expense',
-          'category': 'Makanan & Minuman',
-        },
+        {'amount': 5000000, 'type': 'income', 'category': 'Gaji'},
+        {'amount': 1000000, 'type': 'expense', 'category': 'Makanan & Minuman'},
       ];
 
       final result = FinancialAdvisorService.computeAnalysis(transactions);
@@ -207,9 +191,9 @@ void main() {
 
     test('should handle missing fields gracefully', () {
       final transactions = <Map<String, dynamic>>[
-        {'type': 'income'},  // no amount
+        {'type': 'income'}, // no amount
         {'type': 'expense', 'category_name': 'Makanan & Minuman'}, // no amount
-        <String, dynamic>{},  // completely empty
+        <String, dynamic>{}, // completely empty
       ];
 
       final result = FinancialAdvisorService.computeAnalysis(transactions);
@@ -221,30 +205,28 @@ void main() {
       expect(result.wantsActual, 0.0);
     });
 
-    test('should correctly compute percentages and gaps for over-budget needs',
-        () {
-      final transactions = [
-        {
-          'amount': 10000000,
-          'type': 'income',
-          'category_name': 'Gaji',
-        },
-        // Needs = 80% of income (> 50% target)
-        {
-          'amount': 8000000,
-          'type': 'expense',
-          'category_name': 'Makanan & Minuman',
-        },
-      ];
+    test(
+      'should correctly compute percentages and gaps for over-budget needs',
+      () {
+        final transactions = [
+          {'amount': 10000000, 'type': 'income', 'category_name': 'Gaji'},
+          // Needs = 80% of income (> 50% target)
+          {
+            'amount': 8000000,
+            'type': 'expense',
+            'category_name': 'Makanan & Minuman',
+          },
+        ];
 
-      final result = FinancialAdvisorService.computeAnalysis(transactions);
+        final result = FinancialAdvisorService.computeAnalysis(transactions);
 
-      expect(result.needsPercent, 80.0);
-      expect(result.needsGap, 3000000.0); // 8jt - 5jt = +3jt (over budget)
-      expect(result.needsTarget, 5000000.0);
-      expect(result.savings, 2000000.0);
-      expect(result.savingsPercent, 20.0); // 2jt / 10jt
-    });
+        expect(result.needsPercent, 80.0);
+        expect(result.needsGap, 3000000.0); // 8jt - 5jt = +3jt (over budget)
+        expect(result.needsTarget, 5000000.0);
+        expect(result.savings, 2000000.0);
+        expect(result.savingsPercent, 20.0); // 2jt / 10jt
+      },
+    );
 
     test('should handle scenario with irregular income and no expense', () {
       // Edge: income but no expenses
@@ -292,10 +274,7 @@ void main() {
 
       final assessment = service.getAssessment(analysis);
 
-      expect(
-        assessment,
-        contains('Belum ada data pemasukan'),
-      );
+      expect(assessment, contains('Belum ada data pemasukan'));
     });
 
     test('should mention needs over target when > 50%', () {
@@ -317,7 +296,11 @@ void main() {
       final analysis = FinancialAdvisorService.computeAnalysis(
         [
           {'amount': 10000000, 'type': 'income', 'category_name': 'Gaji'},
-          {'amount': 3000000, 'type': 'expense', 'category_name': 'Makanan & Minuman'},
+          {
+            'amount': 3000000,
+            'type': 'expense',
+            'category_name': 'Makanan & Minuman',
+          },
         ],
         goals: [
           const GoalRunRate(
@@ -366,14 +349,21 @@ void main() {
     test('should suggest reducing needs categories over 15% of income', () {
       final analysis = FinancialAdvisorService.computeAnalysis([
         {'amount': 10000000, 'type': 'income', 'category_name': 'Gaji'},
-        {'amount': 5000000, 'type': 'expense', 'category_name': 'Makanan & Minuman'},
+        {
+          'amount': 5000000,
+          'type': 'expense',
+          'category_name': 'Makanan & Minuman',
+        },
       ]);
 
       final suggestions = FinancialAdvisorService.generateSuggestions(analysis);
 
       // 5jt / 10jt = 50% of income — way over 15% threshold
       expect(suggestions, isNotEmpty);
-      expect(suggestions.any((s) => s.categoryName == 'Makanan & Minuman'), isTrue);
+      expect(
+        suggestions.any((s) => s.categoryName == 'Makanan & Minuman'),
+        isTrue,
+      );
       expect(suggestions.first.potentialMonthlySavings, greaterThan(0));
     });
 
@@ -394,7 +384,11 @@ void main() {
       final analysis = FinancialAdvisorService.computeAnalysis([
         {'amount': 10000000, 'type': 'income', 'category_name': 'Gaji'},
         // Need: 50% of income (over 15%)
-        {'amount': 5000000, 'type': 'expense', 'category_name': 'Makanan & Minuman'},
+        {
+          'amount': 5000000,
+          'type': 'expense',
+          'category_name': 'Makanan & Minuman',
+        },
         // Want: 20% of income (over 10%)
         {'amount': 2000000, 'type': 'expense', 'category_name': 'Hiburan'},
         // Another need: 20% (over 15%)
@@ -449,7 +443,11 @@ void main() {
     test('should include type and targetPercent correctly', () {
       final analysis = FinancialAdvisorService.computeAnalysis([
         {'amount': 10000000, 'type': 'income', 'category_name': 'Gaji'},
-        {'amount': 3000000, 'type': 'expense', 'category_name': 'Makanan & Minuman'},
+        {
+          'amount': 3000000,
+          'type': 'expense',
+          'category_name': 'Makanan & Minuman',
+        },
       ]);
 
       final suggestions = FinancialAdvisorService.generateSuggestions(analysis);

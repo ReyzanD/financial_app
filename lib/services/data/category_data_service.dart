@@ -36,9 +36,9 @@ class CategoryDataService {
         orderBy: 'type_232143, display_order_232143',
       );
 
-      return List<Map<String, dynamic>>.from(categories)
-          .map((m) => CategoryModel.fromMap(m))
-          .toList();
+      return List<Map<String, dynamic>>.from(
+        categories,
+      ).map((m) => CategoryModel.fromMap(m)).toList();
     } catch (e) {
       LoggerService.error('Error getting categories', error: e);
       rethrow;
@@ -46,9 +46,7 @@ class CategoryDataService {
   }
 
   /// Add category
-  Future<CategoryModel> addCategory(
-    Map<String, dynamic> categoryData,
-  ) async {
+  Future<CategoryModel> addCategory(Map<String, dynamic> categoryData) async {
     try {
       final userId = await getCurrentUserId();
       if (userId == null) throw Exception('Not authenticated');

@@ -8,7 +8,8 @@ import 'package:financial_app/services/data/goal_data_service.dart';
 
 class SettingsController extends ChangeNotifier {
   final AuthService _auth = getIt<AuthService>();
-  final TransactionDataService _transactionData = getIt<TransactionDataService>();
+  final TransactionDataService _transactionData =
+      getIt<TransactionDataService>();
   final BudgetDataService _budgetData = getIt<BudgetDataService>();
   final GoalDataService _goalData = getIt<GoalDataService>();
 
