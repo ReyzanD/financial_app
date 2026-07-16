@@ -55,6 +55,20 @@ class _MockFinancialAdvisorService extends FinancialAdvisorService {
       goalRunRates: [],
     );
   }
+
+  @override
+  Future<GoalRunRate?> getGoalRunRate(String goalName) async {
+    // Canned run-rate so the screen's "am I on track" projection renders
+    // without touching the (unavailable in tests) GoalDataService / SQLite.
+    return const GoalRunRate(
+      name: 'Sperrkonto Studi Jerman',
+      targetAmount: 200000000,
+      currentAmount: 40000000,
+      monthlyContribution: 4000000,
+      progressPercent: 20.0,
+      monthsToGoal: 10,
+    );
+  }
 }
 
 Widget _buildTestApp() {
@@ -117,7 +131,7 @@ void main() {
       await tester.pumpAndSettle(const Duration(seconds: 5));
 
       expect(find.text('Progres Tabungan Saya'), findsOneWidget);
-      expect(find.text('Tabungan/Bulan'), findsOneWidget);
+      expect(find.text('Tabungan Saat Ini'), findsOneWidget);
       expect(find.text('Estimasi Tercapai'), findsOneWidget);
     });
 

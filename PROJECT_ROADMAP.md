@@ -130,6 +130,19 @@ Replace templated recommendation strings with computed, explainable numbers:
 
 _(Ping me when you're ready to build this — I'll pull current DAAD/German student visa financial requirement figures so the numbers are accurate, not stale.)_
 
+### Phase F — Status: COMPLETE
+
+**DAAD 2026 figures (verified):** €11,904/year = €992/month, tied to BAföG §13, effective 1 Jan 2026 (German Federal Foreign Office / study-in-germany.de / DAAD). One stale source cited €11,208/€934 (2024 figure) — not used. Constants in `GermanFinanceScreen` carry a source doc comment.
+
+**Done:**
+- **Sperrkonto calculator**: required balance (€11,904) + monthly cap (€992) shown in EUR and IDR via `ExchangeRateService` (already present). Added a **months-of-coverage tracker** (`_buildCoverageCard`): current saved amount ÷ €992/month cap → N months of coverage, with a 12-month progress bar. Coverage math extracted to a pure, testable `coverageMonths()` helper.
+- **EUR ⇄ IDR conversion**: existing live converter reused (no change needed).
+- **"Am I on track" projection reusing Phase E's forecasting logic**: added public `FinancialAdvisorService.getGoalRunRate(String)` which reuses the same `_computeGoalRunRates` / `GoalRunRate` / `monthsBetween` engine as the advisor. The DAAD screen now looks up the "Sperrkonto Studi Jerman" goal and shows its real run-rate (deadline-based monthly contribution + monthsToGoal) instead of the previous ad-hoc formula. Current savings now pulled from the goal to feed both the coverage tracker and the progress card.
+
+**Verification:** `flutter analyze` 0 errors / 0 warnings (128 pre-existing info). `flutter test` 305 pass; 31 failures are the pre-existing `databaseFactory not initialized` (missing system `libsqlite3.so`) environment-only SQLite integration tests — not code defects.
+
+**Note:** `GermanFinanceScreen` user-facing strings remain hardcoded Indonesian (consistent with the file's pre-existing convention; AGENTS.md lists this as a known minor remaining item). No new DB tables, services, or routes were added.
+
 ---
 
 ## Phase G — One systems feature, pick ONE (~1–2 months)

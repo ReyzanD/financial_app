@@ -486,6 +486,18 @@ class FinancialAdvisorService {
         (to.day >= from.day ? 0 : -1);
   }
 
+  /// Returns the [GoalRunRate] for the goal whose name contains [goalName]
+  /// (case-insensitive), reusing the same run-rate engine as the advisor.
+  /// Returns `null` when no matching goal exists or the lookup fails.
+  Future<GoalRunRate?> getGoalRunRate(String goalName) async {
+    final rates = await _computeGoalRunRates();
+    final lower = goalName.toLowerCase();
+    for (final rate in rates) {
+      if (rate.name.toLowerCase().contains(lower)) return rate;
+    }
+    return null;
+  }
+
   /// Get a human-readable assessment of the user's financial health.
   String getAssessment(FiftyThirtyTwentyAnalysis analysis) {
     final parts = <String>[];
