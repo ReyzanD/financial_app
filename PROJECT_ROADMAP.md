@@ -90,6 +90,8 @@ Your original idea, and the most personally meaningful part of the app. Build it
 
 **What this demonstrates:** geospatial querying, nearest-neighbor ranking, data aggregation with outlier awareness, caching under a rate-limited free API — all defensible, explainable engineering.
 
+**Status (items 1–3 complete):** The full pipeline (DB tables, Overpass query, OSM category mapping, median price aggregation with outlier trim, local caching, and UI) was already present from earlier work. Phase D hardening added: (1) ranking corrected to spec — distance-first, then price-based when price observations exist; (2) `OverpassApiService` now gates on `NetworkService.isOnline` and `ApiSecurityService.checkRateLimit('overpass')` to respect fair use and work offline-after-first-use; (3) user price-tagging UI ("Tag harga di sini") on `AlternativesScreen` persists `self_reported` `price_observations` via `PriceObservationDataService.createSelfReported`, switching distance-only suggestions to price-aware on next refresh. Unit tests cover the ranking comparator and the network/rate-limit gating. Remaining (item 4, lower priority): surface the "based on N reports" observation count in the suggestion card UI.
+
 ---
 
 ## Phase E — Real spend/save/allocate advisor (~3–4 weeks, can overlap Phase D)

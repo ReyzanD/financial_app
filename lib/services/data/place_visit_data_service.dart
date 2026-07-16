@@ -17,9 +17,11 @@ class PlaceVisitDataService {
   final LocalAuthService _authService;
   final _uuid = const Uuid();
 
-  PlaceVisitDataService({LocalDatabaseService? dbService, LocalAuthService? authService})
-    : _dbService = dbService ?? LocalDatabaseService(),
-      _authService = authService ?? LocalAuthService();
+  PlaceVisitDataService({
+    LocalDatabaseService? dbService,
+    LocalAuthService? authService,
+  }) : _dbService = dbService ?? LocalDatabaseService(),
+       _authService = authService ?? LocalAuthService();
 
   /// Get current user ID
   Future<String?> getCurrentUserId() async {
@@ -56,7 +58,12 @@ class PlaceVisitDataService {
   Future<PlaceVisit?> getPlaceVisit(String id) async {
     try {
       final db = await _dbService.database;
-      final rows = await db.query('place_visits_232143', where: 'place_visit_id_232143 = ?', whereArgs: [id], limit: 1);
+      final rows = await db.query(
+        'place_visits_232143',
+        where: 'place_visit_id_232143 = ?',
+        whereArgs: [id],
+        limit: 1,
+      );
       if (rows.isEmpty) return null;
       return PlaceVisit.fromMap(rows.first);
     } catch (e) {
@@ -84,7 +91,10 @@ class PlaceVisitDataService {
   }
 
   /// Find existing place visit by approximate location (within ~100m of given coords).
-  Future<PlaceVisit?> findByApproximateLocation(double latitude, double longitude) async {
+  Future<PlaceVisit?> findByApproximateLocation(
+    double latitude,
+    double longitude,
+  ) async {
     try {
       final db = await _dbService.database;
       final rows = await db.query('place_visits_232143');
@@ -96,7 +106,12 @@ class PlaceVisitDataService {
 
       for (final row in rows) {
         final visit = PlaceVisit.fromMap(row);
-        final dist = LocationService.calculateDistance(latitude, longitude, visit.latitude, visit.longitude);
+        final dist = LocationService.calculateDistance(
+          latitude,
+          longitude,
+          visit.latitude,
+          visit.longitude,
+        );
         if (dist < maxDistanceMeters && dist < closestDist) {
           closest = visit;
           closestDist = dist;
@@ -104,7 +119,10 @@ class PlaceVisitDataService {
       }
       return closest;
     } catch (e) {
-      LoggerService.error('Error finding place visit by approximate location', error: e);
+      LoggerService.error(
+        'Error finding place visit by approximate location',
+        error: e,
+      );
       rethrow;
     }
   }
@@ -120,7 +138,8 @@ class PlaceVisitDataService {
 
       final lat = (ldata['latitude'] as num?)?.toDouble() ?? 0.0;
       final lng = (ldata['longitude'] as num?)?.toDouble() ?? 0.0;
-      final placeName = ldata['place_name']?.toString() ?? transaction.description;
+      final placeName =
+          ldata['place_name']?.toString() ?? transaction.description;
       final osmNodeId = ldata['osm_node_id']?.toString();
 
       // Try to find existing visit by OSM node or approximate location
@@ -207,7 +226,10 @@ class PlaceVisitDataService {
         );
       }
     } catch (e) {
-      LoggerService.error('Error upserting place visit from transaction', error: e);
+      LoggerService.error(
+        'Error upserting place visit from transaction',
+        error: e,
+      );
       rethrow;
     }
   }
@@ -220,9 +242,13 @@ class PlaceVisitDataService {
   Future<int> syncFromTransactions(TransactionDataService txnService) async {
     try {
       final data = await txnService.getTransactions(limit: 5000);
-      final transactions = List<Map<String, dynamic>>.from(data['transactions'] ?? []);
+      final transactions = List<Map<String, dynamic>>.from(
+        data['transactions'] ?? [],
+      );
 
-      LoggerService.info('PlaceVisitSync: scanning ${transactions.length} transactions...');
+      LoggerService.info(
+        'PlaceVisitSync: scanning ${transactions.length} transactions...',
+      );
 
       int synced = 0;
       int skipped = 0;
@@ -246,12 +272,17 @@ class PlaceVisitDataService {
             txn['location_data_232143'] = json.encode({
               'latitude': lat,
               'longitude': lng,
-              'place_name': locationName ?? txn['description_232143']?.toString() ?? 'Unknown Location',
+              'place_name':
+                  locationName ??
+                  txn['description_232143']?.toString() ??
+                  'Unknown Location',
               'address': locationName,
             });
           }
 
-          final model = TransactionModel.fromMap(Map<String, dynamic>.from(txn));
+          final model = TransactionModel.fromMap(
+            Map<String, dynamic>.from(txn),
+          );
 
           if (model.locationData != null) {
             await upsertFromTransaction(model);
@@ -260,15 +291,75 @@ class PlaceVisitDataService {
             skipped++;
           }
         } catch (e) {
-          LoggerService.error('PlaceVisitSync: error syncing transaction ${txn['transaction_id_232143']}', error: e);
+          LoggerService.error(
+            'PlaceVisitSync: error syncing transaction ${txn['transaction_id_232143']}',
+            error: e,
+          );
           skipped++;
         }
       }
 
-      LoggerService.info('PlaceVisitSync: done — $synced synced, $skipped skipped');
+      LoggerService.info(
+        'PlaceVisitSync: done — $synced synced, $skipped skipped',
+      );
       return synced;
     } catch (e) {
       LoggerService.error('PlaceVisitSync: sync failed', error: e);
+      rethrow;
+    }
+  }
+
+  /// Find an existing place visit by approximate location, or persist a new
+  /// synthetic one from the given coordinates/category. Returns the persisted
+  /// [PlaceVisit] so callers can link price observations to a real DB row
+  /// (the schema enforces the FK from price_observations → place_visits).
+  Future<PlaceVisit> findOrCreateByLocation({
+    required double latitude,
+    required double longitude,
+    required String category,
+    required String placeName,
+  }) async {
+    try {
+      final existing = await findByApproximateLocation(latitude, longitude);
+      if (existing != null) return existing;
+
+      final id = _uuid.v4();
+      final now = DateTime.now();
+      final db = await _dbService.database;
+
+      await db.insert('place_visits_232143', {
+        'place_visit_id_232143': id,
+        'osm_node_id_232143': null,
+        'place_name_232143': placeName,
+        'latitude_232143': latitude,
+        'longitude_232143': longitude,
+        'address_232143': null,
+        'category_232143': category,
+        'osm_tag_232143': null,
+        'visit_count_232143': 1,
+        'total_spent_232143': 0.0,
+        'first_visit_232143': now.toIso8601String().split('T')[0],
+        'last_visit_232143': now.toIso8601String().split('T')[0],
+        'created_at_232143': now.toIso8601String(),
+      });
+
+      LoggerService.info(
+        '✅ Synthetic PlaceVisit created for price tagging: $placeName',
+      );
+      return PlaceVisit(
+        id: id,
+        placeName: placeName,
+        latitude: latitude,
+        longitude: longitude,
+        category: category,
+        visitCount: 1,
+        totalSpent: 0.0,
+        firstVisit: now,
+        lastVisit: now,
+        createdAt: now,
+      );
+    } catch (e) {
+      LoggerService.error('Error finding or creating place visit', error: e);
       rethrow;
     }
   }
@@ -277,7 +368,11 @@ class PlaceVisitDataService {
   Future<bool> deletePlaceVisit(String id) async {
     try {
       final db = await _dbService.database;
-      final rowsDeleted = await db.delete('place_visits_232143', where: 'place_visit_id_232143 = ?', whereArgs: [id]);
+      final rowsDeleted = await db.delete(
+        'place_visits_232143',
+        where: 'place_visit_id_232143 = ?',
+        whereArgs: [id],
+      );
       if (rowsDeleted > 0) {
         LoggerService.info('✅ PlaceVisit deleted: $id');
         return true;

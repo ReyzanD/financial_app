@@ -8,6 +8,10 @@ class NetworkService {
   factory NetworkService() => _instance;
   NetworkService._internal();
 
+  /// Construct a standalone instance for tests, with a fixed online state.
+  /// Does not affect the app-wide singleton returned by the factory.
+  NetworkService.forTest({bool online = true}) : _isOnline = online;
+
   final Connectivity _connectivity = Connectivity();
   StreamSubscription<List<ConnectivityResult>>? _subscription;
   bool _isOnline = true;
@@ -19,7 +23,10 @@ class NetworkService {
   /// Stream untuk listen connectivity changes
   Stream<bool> get connectivityStream =>
       _connectivity.onConnectivityChanged
-          .map((results) => results.any((result) => result != ConnectivityResult.none))
+          .map(
+            (results) =>
+                results.any((result) => result != ConnectivityResult.none),
+          )
           .distinct();
 
   /// Initialize network monitoring
@@ -34,10 +41,14 @@ class NetworkService {
       _subscription = _connectivity.onConnectivityChanged.listen(
         (List<ConnectivityResult> results) {
           final wasOnline = _isOnline;
-          _isOnline = results.any((result) => result != ConnectivityResult.none);
+          _isOnline = results.any(
+            (result) => result != ConnectivityResult.none,
+          );
 
           if (wasOnline != _isOnline) {
-            LoggerService.info('Network status changed: ${_isOnline ? "Online" : "Offline"}');
+            LoggerService.info(
+              'Network status changed: ${_isOnline ? "Online" : "Offline"}',
+            );
             _notifyListeners();
           }
         },

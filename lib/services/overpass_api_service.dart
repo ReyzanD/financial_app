@@ -2,6 +2,9 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:financial_app/services/logger_service.dart';
 import 'package:financial_app/services/osm_category_mapping_service.dart';
+import 'package:financial_app/services/network_service.dart';
+import 'package:financial_app/services/api_security_service.dart';
+import 'package:financial_app/core/di/service_locator.dart';
 
 /// Result from an Overpass API query.
 class OverpassPoiResult {
@@ -53,9 +56,16 @@ class OverpassApiService {
   static const Duration _cacheDuration = Duration(hours: 24);
 
   final OsmCategoryMappingService _mappingService;
+  final NetworkService _networkService;
+  final ApiSecurityService _apiSecurityService;
 
-  OverpassApiService({OsmCategoryMappingService? mappingService})
-    : _mappingService = mappingService ?? OsmCategoryMappingService();
+  OverpassApiService({
+    OsmCategoryMappingService? mappingService,
+    NetworkService? networkService,
+    ApiSecurityService? apiSecurityService,
+  }) : _mappingService = mappingService ?? OsmCategoryMappingService(),
+       _networkService = networkService ?? getIt<NetworkService>(),
+       _apiSecurityService = apiSecurityService ?? getIt<ApiSecurityService>();
 
   /// Find nearby POIs matching the given category around a location.
   ///
@@ -84,10 +94,30 @@ class OverpassApiService {
     // Check cache
     if (!forceRefresh) {
       final cached = _cache[cacheKey];
-      if (cached != null && DateTime.now().difference(cached.timestamp) < _cacheDuration) {
+      if (cached != null &&
+          DateTime.now().difference(cached.timestamp) < _cacheDuration) {
         LoggerService.cache('HIT', 'overpass_$cacheKey');
         return cached.data;
       }
+    }
+
+    // Respect fair use: skip the network entirely when offline (callers fall
+    // back to any cached suggestions) and when the per-endpoint rate limit is
+    // exceeded. Overpass is a free, shared public service.
+    if (!_networkService.isOnline) {
+      LoggerService.warning(
+        'Overpass skipped: device offline (serving cache only)',
+      );
+      return [];
+    }
+    final withinRateLimit = await _apiSecurityService.checkRateLimit(
+      'overpass',
+    );
+    if (!withinRateLimit) {
+      LoggerService.warning(
+        'Overpass skipped: rate limit exceeded for endpoint "overpass"',
+      );
+      return [];
     }
 
     // Build Overpass QL query
@@ -116,10 +146,17 @@ out center $maxResults;
       final response = await http
           .post(
             Uri.parse(_baseUrl),
-            headers: {'User-Agent': _userAgent, 'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8'},
+            headers: {
+              'User-Agent': _userAgent,
+              'Content-Type':
+                  'application/x-www-form-urlencoded; charset=utf-8',
+            },
             body: {'data': query},
           )
-          .timeout(_timeout, onTimeout: () => throw Exception('Overpass API request timeout'));
+          .timeout(
+            _timeout,
+            onTimeout: () => throw Exception('Overpass API request timeout'),
+          );
 
       if (response.statusCode != 200) {
         throw Exception(
@@ -175,7 +212,9 @@ out center $maxResults;
       // Cache results
       _cache[cacheKey] = _CacheEntry(data: results, timestamp: DateTime.now());
 
-      LoggerService.info('✅ Overpass found ${results.length} POIs for "$categoryName"');
+      LoggerService.info(
+        '✅ Overpass found ${results.length} POIs for "$categoryName"',
+      );
       return results;
     } catch (e) {
       LoggerService.error('Overpass API query failed', error: e);
@@ -194,7 +233,17 @@ out center $maxResults;
 
   /// Skip very generic OSM names that aren't useful as suggestions.
   bool _isGenericName(String name) {
-    const generics = ['restaurant', 'cafe', 'shop', 'supermarket', 'toko', 'warung', 'building', 'entrance', 'address'];
+    const generics = [
+      'restaurant',
+      'cafe',
+      'shop',
+      'supermarket',
+      'toko',
+      'warung',
+      'building',
+      'entrance',
+      'address',
+    ];
     return generics.contains(name.toLowerCase());
   }
 

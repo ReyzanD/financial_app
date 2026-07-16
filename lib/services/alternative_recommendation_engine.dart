@@ -9,7 +9,7 @@ import 'package:financial_app/services/location_service.dart';
 import 'package:financial_app/services/logger_service.dart';
 import 'package:financial_app/core/di/service_locator.dart';
 
-/// Core recommendation engine for the Phase 2 alternative-recommendation feature.
+/// Core recommendation engine for the Phase D alternative-recommendation feature.
 ///
 /// Pipeline:
 ///   1. Receive a PlaceVisit (origin) with lat/lng + category.
@@ -31,10 +31,13 @@ class AlternativeRecommendationEngine {
     PriceObservationDataService? priceObservationDataService,
     AlternativeSuggestionDataService? alternativeSuggestionDataService,
     OverpassApiService? overpassApiService,
-  }) : _placeVisitDataService = placeVisitDataService ?? getIt<PlaceVisitDataService>(),
-       _priceObservationDataService = priceObservationDataService ?? getIt<PriceObservationDataService>(),
+  }) : _placeVisitDataService =
+           placeVisitDataService ?? getIt<PlaceVisitDataService>(),
+       _priceObservationDataService =
+           priceObservationDataService ?? getIt<PriceObservationDataService>(),
        _alternativeSuggestionDataService =
-           alternativeSuggestionDataService ?? getIt<AlternativeSuggestionDataService>(),
+           alternativeSuggestionDataService ??
+           getIt<AlternativeSuggestionDataService>(),
        _overpassApiService = overpassApiService ?? getIt<OverpassApiService>();
 
   /// Get alternative suggestions for a given place visit.
@@ -49,10 +52,13 @@ class AlternativeRecommendationEngine {
     try {
       // 1. Check cache
       if (!forceRefresh) {
-        final fresh = await _alternativeSuggestionDataService.hasFreshSuggestions(placeVisit.id);
+        final fresh = await _alternativeSuggestionDataService
+            .hasFreshSuggestions(placeVisit.id);
         if (fresh) {
           LoggerService.cache('HIT', 'suggestions_${placeVisit.id}');
-          return _alternativeSuggestionDataService.getForOriginPlace(placeVisit.id);
+          return _alternativeSuggestionDataService.getForOriginPlace(
+            placeVisit.id,
+          );
         }
       }
 
@@ -67,18 +73,19 @@ class AlternativeRecommendationEngine {
       );
 
       if (pois.isEmpty) {
-        LoggerService.info('ℹ️ No Overpass POIs found near ${placeVisit.placeName}');
+        LoggerService.info(
+          'ℹ️ No Overpass POIs found near ${placeVisit.placeName}',
+        );
         return [];
       }
 
       // 3. Get median price for this category for savings estimation
-      final medianPrice = await _priceObservationDataService.getMedianPriceForCategory(
-        placeVisit.category,
-        minObservations: 2,
-      );
+      final medianPrice = await _priceObservationDataService
+          .getMedianPriceForCategory(placeVisit.category, minObservations: 2);
 
       // 4. Get known prices for this category's place visits
-      final knownPlacePrices = await _priceObservationDataService.getPriceObservations(category: placeVisit.category);
+      final knownPlacePrices = await _priceObservationDataService
+          .getPriceObservations(category: placeVisit.category);
 
       // Build a map: place_name -> lowest price observed
       final lowestPrices = <String, double>{};
@@ -147,12 +154,12 @@ class AlternativeRecommendationEngine {
         );
       }
 
-      // 6. Sort: by confidence desc, then by distance asc
-      suggestions.sort((a, b) {
-        final confCmp = b.confidence.compareTo(a.confidence);
-        if (confCmp != 0) return confCmp;
-        return a.distanceMeters.compareTo(b.distanceMeters);
-      });
+      // 6. Sort per Phase D spec:
+      //    - Rank by Haversine distance (ascending) as the primary signal.
+      //    - When price observations exist for a candidate, rank by
+      //      (price savings, distance) instead — cheaper + closer first.
+      //    Confidence remains a displayed reliability signal, not the sort key.
+      suggestions.sort(_compareForRanking);
 
       // Take top 10
       final top = suggestions.take(10).toList();
@@ -180,11 +187,16 @@ class AlternativeRecommendationEngine {
               .toList();
 
       await _alternativeSuggestionDataService.saveSuggestions(models);
-      LoggerService.info('✅ Generated ${models.length} alternatives for ${placeVisit.placeName}');
+      LoggerService.info(
+        '✅ Generated ${models.length} alternatives for ${placeVisit.placeName}',
+      );
 
       return models;
     } catch (e) {
-      LoggerService.error('Error generating alternatives for ${placeVisit.placeName}', error: e);
+      LoggerService.error(
+        'Error generating alternatives for ${placeVisit.placeName}',
+        error: e,
+      );
       rethrow;
     }
   }
@@ -199,17 +211,50 @@ class AlternativeRecommendationEngine {
     return getAlternativesForPlace(pv, forceRefresh: forceRefresh);
   }
 
+  /// Ranking comparator per the Phase D spec:
+  ///   - Price-based suggestions (basis == 'price' with positive savings)
+  ///     rank above distance-only ones.
+  ///   - Among price-based suggestions, higher savings wins, then closer.
+  ///   - Distance-only suggestions rank by Haversine distance (ascending).
+  /// Confidence is a displayed signal, not a sort key.
+  static int _compareForRanking(_RankedSuggestion a, _RankedSuggestion b) {
+    final aHasPrice =
+        a.basis == 'price' &&
+        a.estimatedSavings != null &&
+        a.estimatedSavings! > 0;
+    final bHasPrice =
+        b.basis == 'price' &&
+        b.estimatedSavings != null &&
+        b.estimatedSavings! > 0;
+
+    if (aHasPrice && !bHasPrice) return -1;
+    if (!aHasPrice && bHasPrice) return 1;
+
+    if (aHasPrice && bHasPrice) {
+      final savingsCmp = b.estimatedSavings!.compareTo(a.estimatedSavings!);
+      if (savingsCmp != 0) return savingsCmp;
+      return a.distanceMeters.compareTo(b.distanceMeters);
+    }
+
+    return a.distanceMeters.compareTo(b.distanceMeters);
+  }
+
   /// Score a suggestion's reliability from 0–100.
-  int _computeConfidence({required bool hasPriceData, required double distanceMeters, required bool hasName}) {
+  int _computeConfidence({
+    required bool hasPriceData,
+    required double distanceMeters,
+    required bool hasName,
+  }) {
     int score = 30; // baseline: exists and is an OSM feature
 
     if (hasName) score += 20;
-    if (distanceMeters < 200)
+    if (distanceMeters < 200) {
       score += 25;
-    else if (distanceMeters < 500)
+    } else if (distanceMeters < 500) {
       score += 20;
-    else if (distanceMeters < 1000)
+    } else if (distanceMeters < 1000) {
       score += 10;
+    }
 
     if (hasPriceData) score += 25;
 
