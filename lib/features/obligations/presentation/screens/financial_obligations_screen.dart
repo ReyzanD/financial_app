@@ -9,6 +9,7 @@ import 'package:financial_app/widgets/obligations/all_obligations_view.dart';
 import 'package:financial_app/widgets/obligations/upcoming_obligations_view.dart';
 import 'package:financial_app/widgets/obligations/debts_view.dart';
 import 'package:financial_app/widgets/obligations/subscriptions_view.dart';
+import 'package:financial_app/widgets/obligations/recurring_obligations_view.dart';
 import 'package:financial_app/widgets/obligations/overdue_obligations_view.dart';
 import 'package:financial_app/widgets/obligations/obligation_helpers.dart';
 import 'package:financial_app/widgets/obligations/obligation_filters.dart';
@@ -452,6 +453,12 @@ class _FinancialObligationsScreenState
         );
       case 'subscriptions':
         return SubscriptionsView(
+          key: key,
+          searchQuery: ctrl.searchQuery,
+          filters: filters,
+        );
+      case 'recurring':
+        return RecurringObligationsView(
           key: key,
           searchQuery: ctrl.searchQuery,
           filters: filters,

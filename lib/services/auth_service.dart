@@ -1,11 +1,11 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:financial_app/services/pin_auth_service.dart';
-import 'package:financial_app/services/api_service.dart';
 import 'package:financial_app/services/local_auth_service.dart';
 import 'package:financial_app/services/local_database_service.dart';
 import 'package:financial_app/services/encryption_service.dart';
 import 'package:financial_app/services/logger_service.dart';
 import 'package:financial_app/core/di/service_locator.dart';
+import 'package:financial_app/widgets/onboarding/onboarding_flow_manager.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// Authentication Service - Now uses local database (no backend server required)
@@ -17,9 +17,7 @@ class AuthService {
   /// Login user (local database)
   Future<Map<String, dynamic>?> login(String email, String password) async {
     try {
-      // Clear any cached data from previous sessions before login
-      ApiService.clearCache();
-
+      // Data isolation is handled by user_id_232143 filtering in all data services
       final result = await _localAuth.login(email, password);
 
       // #full-stack-sync: token is now a session UUID, not the raw user_id
@@ -69,9 +67,7 @@ class AuthService {
     // Clear PIN first
     await _pinAuthService.clearPin();
 
-    // Clear all API caches (critical to prevent data leakage between users)
-    ApiService.clearCache();
-
+    // Data isolation is handled by user_id_232143 filtering in all data services
     // Logout from local auth
     await _localAuth.logout();
 
@@ -82,7 +78,7 @@ class AuthService {
 
     // Clear user-specific SharedPreferences data
     final prefs = await SharedPreferences.getInstance();
-    await prefs.remove('onboarding_completed');
+    await OnboardingFlowManager.resetOnboarding();
     await prefs.remove('default_tab_index');
     // Keep app-level settings like theme, notifications preferences
   }

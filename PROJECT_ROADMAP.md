@@ -37,6 +37,8 @@ This is the part that's tedious but most directly provable and most valuable for
    - **Controller** — resolved via `get_it` only, never constructed directly, calls the repository interface.
    Kill the parallel model systems: one typed model per domain concept (promote `lib/models/` classes to be the real domain type, delete shim entities like `debt_entity.dart`). Drop standalone "use case" classes unless they orchestrate more than one repository call. Apply this pattern to **every** feature, including the 8 that currently have nothing (auth, home, settings, onboarding, map, etc.) — consistency across all 30 is the actual goal, not depth on 8.
    Document this as a deliberate scoping decision in `docs/ARCHITECTURE.md`: "audited my own architecture, found it inconsistently applied and partly cosmetic, chose to simplify to a pattern I could apply consistently rather than half-implement a heavier one." That's a stronger interview story than claiming full clean architecture.
+   - [x] `docs/ARCHITECTURE.md` written (157 lines, documents the 3-layer pattern with rationale)
+   - [x] **Major milestone: `ApiService` migration** — all ~40 files that consumed `ApiService` instance methods migrated to typed data services (`TransactionDataService`, `BudgetDataService`, `GoalDataService`, `CategoryDataService`, `ObligationDataService`). `ApiService` itself stripped from 662→42 lines. This eliminates the last indirection layer between controllers/repositories and raw SQLite data. (Phases 4a–4f, 16 commits)
 
 2. **Fix the DI bypass.** ~22 places construct `ObligationService()`, `AccountService()`, `NetworkService()`, etc. directly instead of resolving via `get_it`. Root cause: redundant data-access paths make it easy to grab a service by its default constructor. 
    - [x] **Done** — 22 files converted to `getIt<ServiceType>()` (committed in `29e4780`). Fixed services: `ObligationService` (9 files), `AccountService` (2), `NetworkService` (1), `NotificationService` (3), `BiometricService` (1), `EncryptionService` (1), `ReceiptScanningService` (1), `SmartCategorizationService` (1), `GoalForecastingService` (1), `NotificationHistoryService` (1), `BudgetRecommendationService` (1). Also fixed pre-existing `CurrencyFormatter` undefined import. Remaining work: add a lint rule or simple test that fails if a service is constructed directly (after the architecture consolidation removes redundant paths).
@@ -145,6 +147,7 @@ Geospatial querying, nearest-neighbor ranking, basic data aggregation with outli
 ---
 
 ## Phase 3 — Real spend/save/allocate advisor (~3–4 weeks, can overlap Phase 2)
+- [x] **Complete** — `FinancialAdvisorService` + `FinancialAdvisorScreen` with full 50/30/20 budget analysis, category breakdowns, goal run-rates, multi-month trends, 31 passing tests.
 
 Replace templated recommendation strings with computed, explainable numbers.
 

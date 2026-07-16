@@ -1,5 +1,4 @@
 import 'package:get_it/get_it.dart';
-import 'package:financial_app/services/api_service.dart';
 import 'package:financial_app/services/logger_service.dart';
 import 'package:financial_app/services/theme_service.dart';
 import 'package:financial_app/services/notification_service.dart';
@@ -7,8 +6,6 @@ import 'package:financial_app/services/biometric_service.dart';
 import 'package:financial_app/services/encryption_service.dart';
 import 'package:financial_app/services/data/category_data_service.dart';
 import 'package:financial_app/services/data/budget_data_service.dart';
-import 'package:financial_app/services/data/debt_data_service.dart';
-import 'package:financial_app/services/data/subscription_data_service.dart';
 import 'package:financial_app/services/data/transaction_template_data_service.dart';
 import 'package:financial_app/services/data/goal_data_service.dart';
 import 'package:financial_app/services/data/transaction_data_service.dart';
@@ -123,11 +120,9 @@ import 'package:financial_app/features/budgets/presentation/controllers/budget_c
 
 import 'package:financial_app/services/account_service.dart';
 import 'package:financial_app/services/cash_flow_forecast_service.dart';
-import 'package:financial_app/services/debt_service.dart';
 import 'package:financial_app/services/expense_split_service.dart';
 import 'package:financial_app/services/financial_calendar_service.dart';
 import 'package:financial_app/services/investment_service.dart';
-import 'package:financial_app/services/subscription_tracker_service.dart';
 
 /// Service Locator untuk Dependency Injection menggunakan get_it
 final getIt = GetIt.instance;
@@ -138,7 +133,6 @@ Future<void> setupServiceLocator() async {
   getIt.registerLazySingleton<LoggerService>(() => LoggerService());
   getIt.registerLazySingleton<ErrorHandlerService>(() => ErrorHandlerService());
   getIt.registerLazySingleton<ObligationDataService>(() => ObligationDataService());
-  getIt.registerLazySingleton<ApiService>(() => ApiService());
   getIt.registerLazySingleton<ThemeService>(() => ThemeService());
   getIt.registerLazySingleton<LocalizationService>(() => LocalizationService());
 
@@ -441,12 +435,6 @@ Future<void> setupServiceLocator() async {
   // ========== Domain Services (CRUD operations via focused data services) ==========
   getIt.registerLazySingleton<AccountService>(() => AccountService());
   getIt.registerLazySingleton<AccountDataService>(() => AccountDataService());
-  getIt.registerLazySingleton<DebtDataService>(() => DebtDataService());
-  getIt.registerLazySingleton<SubscriptionDataService>(() => SubscriptionDataService());
-  getIt.registerLazySingleton<DebtService>(() => DebtService());
-  getIt.registerLazySingleton<SubscriptionTrackerService>(
-    () => SubscriptionTrackerService(),
-  );
   getIt.registerLazySingleton<InvestmentDataService>(() => InvestmentDataService());
   getIt.registerLazySingleton<InvestmentService>(() => InvestmentService());
   getIt.registerLazySingleton<ExpenseSplitService>(() => ExpenseSplitService());
@@ -489,7 +477,7 @@ Future<void> setupServiceLocator() async {
     () => FinancialAdvisorService(),
   );
 
-  // ========== Composite Domain Services (wrap ApiService + other services) ==========
+  // ========== Composite Domain Services ==========
   getIt.registerLazySingleton<CashFlowForecastService>(
     () => CashFlowForecastService(
       transactionData: getIt<TransactionDataService>(),
@@ -499,7 +487,7 @@ Future<void> setupServiceLocator() async {
   getIt.registerLazySingleton<FinancialCalendarService>(
     () => FinancialCalendarService(
       transactionData: getIt<TransactionDataService>(),
-      subscriptionService: getIt<SubscriptionTrackerService>(),
+      obligationData: getIt<ObligationDataService>(),
     ),
   );
 

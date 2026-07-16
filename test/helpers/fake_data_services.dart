@@ -3,14 +3,10 @@ import 'package:financial_app/services/data/transaction_template_data_service.da
 import 'package:financial_app/models/account_model.dart';
 import 'package:financial_app/models/transaction_template_model.dart';
 import 'package:financial_app/services/data/category_data_service.dart';
-import 'package:financial_app/services/data/debt_data_service.dart';
 import 'package:financial_app/services/data/goal_data_service.dart';
-import 'package:financial_app/services/data/subscription_data_service.dart';
 import 'package:financial_app/services/data/expense_split_data_service.dart';
 import 'package:financial_app/models/goal_model.dart';
-import 'package:financial_app/models/debt_model.dart';
 import 'package:financial_app/models/investment_model.dart';
-import 'package:financial_app/models/subscription_model.dart';
 import 'package:financial_app/models/split_model.dart';
 import 'package:financial_app/services/data/investment_data_service.dart';
 import 'package:financial_app/models/challenge_model.dart';
@@ -142,126 +138,6 @@ class FakeGoalDataService extends GoalDataService {
   @override
   Future<List<Map<String, dynamic>>> getGoalContributions(String goalId) async {
     return [];
-  }
-}
-
-/// Fake [DebtDataService] that stores data in-memory.
-class FakeDebtDataService extends DebtDataService {
-  final Map<String, Map<String, dynamic>> _debts = {};
-  int _counter = 0;
-  String _nextId() => 'debt_${++_counter}';
-
-  @override
-  Future<List<DebtModel>> getDebts({bool activeOnly = true}) async =>
-      _debts.values.map((m) => DebtModel.fromMap(m)).toList();
-
-  @override
-  Future<DebtModel> addDebt(Map<String, dynamic> data) async {
-    final id = _nextId();
-    final record =
-        _toDbFormat(data)
-          ..['debt_id_232143'] = id
-          ..['user_id_232143'] = 'test_user_1'
-          ..['current_balance_232143'] =
-              (data['original_amount'] as num?)?.toDouble() ?? 0.0
-          ..['paid_amount_232143'] = 0.0
-          ..['created_at_232143'] = DateTime.now().toIso8601String()
-          ..['updated_at_232143'] = DateTime.now().toIso8601String();
-    _debts[id] = record;
-    return DebtModel.fromMap(record);
-  }
-
-  @override
-  Future<Map<String, dynamic>> recordDebtPayment(
-    String debtId,
-    double amount, {
-    String? notes,
-  }) async {
-    if (_debts.containsKey(debtId)) {
-      final currentPaid =
-          (_debts[debtId]!['paid_amount_232143'] as num?)?.toDouble() ?? 0;
-      _debts[debtId]!['paid_amount_232143'] = currentPaid + amount;
-    }
-    return {'success': true};
-  }
-
-  @override
-  Future<List<Map<String, dynamic>>> getDebtPayments(String debtId) async => [];
-
-  @override
-  Future<Map<String, dynamic>> getDebtSummary() async {
-    double totalDebt = 0;
-    for (var d in _debts.values) {
-      totalDebt += (d['current_balance_232143'] as num?)?.toDouble() ?? 0;
-    }
-    return {
-      'total_debt': totalDebt,
-      'total_paid': 0,
-      'active_debts': _debts.length,
-    };
-  }
-
-  @override
-  Future<bool> deleteDebt(String debtId) async {
-    _debts.remove(debtId);
-    return true;
-  }
-}
-
-/// Fake [SubscriptionDataService] that stores data in-memory.
-class FakeSubscriptionDataService extends SubscriptionDataService {
-  final Map<String, Map<String, dynamic>> _subscriptions = {};
-  int _counter = 0;
-  String _nextId() => 'sub_${++_counter}';
-
-  @override
-  Future<List<SubscriptionModel>> getSubscriptions({
-    bool activeOnly = true,
-  }) async =>
-      _subscriptions.values.map((m) => SubscriptionModel.fromMap(m)).toList();
-
-  @override
-  Future<SubscriptionModel> addSubscription(
-    Map<String, dynamic> data,
-  ) async {
-    final id = _nextId();
-    final record =
-        _toDbFormat(data)
-          ..['subscription_id_232143'] = id
-          ..['user_id_232143'] = 'test_user_1';
-    _subscriptions[id] = record;
-    return SubscriptionModel.fromMap(record);
-  }
-
-  @override
-  Future<SubscriptionModel> updateSubscription(
-    String id,
-    Map<String, dynamic> data,
-  ) async {
-    if (_subscriptions.containsKey(id)) {
-      _subscriptions[id]!.addAll(_toDbFormat(data));
-    }
-    return SubscriptionModel.fromMap(_subscriptions[id] ?? {});
-  }
-
-  @override
-  Future<bool> deleteSubscription(String id) async {
-    return _subscriptions.remove(id) != null;
-  }
-
-  @override
-  Future<Map<String, dynamic>> getSubscriptionSummary() async {
-    double totalMonthly = 0;
-    int activeCount = 0;
-    for (var s in _subscriptions.values) {
-      totalMonthly += (s['monthly_cost_232143'] as num?)?.toDouble() ?? 0;
-      if ((s['is_active_232143'] as int? ?? 1) == 1) activeCount++;
-    }
-    return {
-      'total_monthly': totalMonthly,
-      'total_yearly': totalMonthly * 12,
-      'active_count': activeCount,
-    };
   }
 }
 
@@ -493,11 +369,8 @@ class FakeChallengeDataService extends ChallengeDataService {
 }
 
 /// Fake [ObligationDataService] that stores all data in-memory.
-/// Overrides both obligation AND debt/subscription methods to avoid getIt lookups.
 class FakeObligationDataService extends ObligationDataService {
   final Map<String, FinancialObligation> _obligations = {};
-  final Map<String, Map<String, dynamic>> _debts = {};
-  final Map<String, Map<String, dynamic>> _subscriptions = {};
   int _counter = 0;
   String _nextId() => 'obl_${++_counter}';
 
@@ -639,152 +512,4 @@ class FakeObligationDataService extends ObligationDataService {
     };
   }
 
-  // ====================================================================
-  // Debt overrides (in-memory, no getIt lookups)
-  // ====================================================================
-
-  int _debtCounter = 0;
-  String _nextDebtId() => 'fdebt_${++_debtCounter}';
-
-  @override
-  Future<List<DebtModel>> getDebts({bool activeOnly = true}) async {
-    var result = _debts.values;
-    if (activeOnly) {
-      result = result.where((d) =>
-          ((d['current_balance_232143'] as num?)?.toDouble() ?? 0) > 0);
-    }
-    return result.map((m) => DebtModel.fromMap(Map.from(m))).toList();
-  }
-
-  @override
-  Future<DebtModel> addDebt(Map<String, dynamic> data) async {
-    final id = _nextDebtId();
-    final record = Map<String, dynamic>.from(data)
-      ..['debt_id_232143'] = id
-      ..['user_id_232143'] = 'test_user_1'
-      ..['current_balance_232143'] =
-          (data['original_amount'] as num?)?.toDouble() ?? 0.0
-      ..['created_at_232143'] = DateTime.now().toIso8601String()
-      ..['updated_at_232143'] = DateTime.now().toIso8601String();
-    _debts[id] = record;
-    return DebtModel.fromMap(record);
-  }
-
-  @override
-  Future<Map<String, dynamic>> recordDebtPayment(
-    String debtId,
-    double amount, {
-    String? notes,
-  }) async {
-    if (_debts.containsKey(debtId)) {
-      final current =
-          (_debts[debtId]!['current_balance_232143'] as num?)?.toDouble() ?? 0;
-      _debts[debtId]!['current_balance_232143'] =
-          (current - amount).clamp(0.0, current);
-    }
-    return {'success': true, 'new_balance': 0, 'payment_id': 'fpay_1'};
-  }
-
-  @override
-  Future<List<Map<String, dynamic>>> getDebtPayments(String debtId) async => [];
-
-  @override
-  Future<Map<String, dynamic>> getDebtSummary() async {
-    double totalDebt = 0;
-    int count = 0;
-    for (var d in _debts.values) {
-      final balance = (d['current_balance_232143'] as num?)?.toDouble() ?? 0;
-      if (balance > 0) {
-        totalDebt += balance;
-        count++;
-      }
-    }
-    return {
-      'total_debt': totalDebt,
-      'total_original': totalDebt,
-      'total_paid': 0,
-      'debt_count': count,
-    };
-  }
-
-  @override
-  Future<bool> deleteDebt(String debtId) async {
-    return _debts.remove(debtId) != null;
-  }
-
-  // ====================================================================
-  // Subscription overrides (in-memory, no getIt lookups)
-  // ====================================================================
-
-  int _subCounter = 0;
-  String _nextSubId() => 'fsub_${++_subCounter}';
-
-  @override
-  Future<List<SubscriptionModel>> getSubscriptions({
-    bool activeOnly = true,
-  }) async {
-    var result = _subscriptions.values;
-    if (activeOnly) {
-      result = result.where(
-          (s) => (s['is_active_232143'] as int? ?? 1) == 1);
-    }
-    return result.map((m) => SubscriptionModel.fromMap(Map.from(m))).toList();
-  }
-
-  @override
-  Future<SubscriptionModel> addSubscription(
-    Map<String, dynamic> data,
-  ) async {
-    final id = _nextSubId();
-    final record = Map<String, dynamic>.from(data)
-      ..['subscription_id_232143'] = id
-      ..['user_id_232143'] = 'test_user_1'
-      ..['created_at_232143'] = DateTime.now().toIso8601String()
-      ..['updated_at_232143'] = DateTime.now().toIso8601String();
-    _subscriptions[id] = record;
-    return SubscriptionModel.fromMap(record);
-  }
-
-  @override
-  Future<SubscriptionModel> updateSubscription(
-    String id,
-    Map<String, dynamic> data,
-  ) async {
-    if (_subscriptions.containsKey(id)) {
-      _subscriptions[id]!.addAll(_toDbFormat(data));
-    }
-    return SubscriptionModel.fromMap(_subscriptions[id] ?? {});
-  }
-
-  @override
-  Future<bool> deleteSubscription(String id) async {
-    return _subscriptions.remove(id) != null;
-  }
-
-  @override
-  Future<Map<String, dynamic>> getSubscriptionSummary() async {
-    double totalMonthly = 0;
-    int count = 0;
-    for (var s in _subscriptions.values) {
-      final cost = (s['cost_232143'] as num?)?.toDouble() ?? 0;
-      final cycle = s['cycle_232143'] as String? ?? 'monthly';
-      double monthly;
-      switch (cycle) {
-        case 'weekly':
-          monthly = cost * 4.33;
-        case 'yearly':
-          monthly = cost / 12;
-        default:
-          monthly = cost;
-      }
-      totalMonthly += monthly;
-      if ((s['is_active_232143'] as int? ?? 1) == 1) count++;
-    }
-    return {
-      'total_monthly': totalMonthly,
-      'total_yearly': totalMonthly * 12,
-      'subscription_count': count,
-      'by_category': <String, double>{'general': totalMonthly},
-    };
-  }
 }

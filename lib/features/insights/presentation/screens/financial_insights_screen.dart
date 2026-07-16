@@ -11,7 +11,11 @@ import 'package:financial_app/l10n/app_localizations.dart';
 import 'package:financial_app/features/insights/presentation/controllers/insights_controller.dart';
 
 class FinancialInsightsScreen extends StatefulWidget {
-  const FinancialInsightsScreen({super.key});
+  /// When [embedded] is true (e.g. inside AnalyticsHubScreen),
+  /// the own AppBar is suppressed and refresh is shown inline.
+  final bool embedded;
+
+  const FinancialInsightsScreen({super.key, this.embedded = false});
 
   @override
   State<FinancialInsightsScreen> createState() =>
@@ -32,26 +36,28 @@ class _FinancialInsightsScreenState extends State<FinancialInsightsScreen> {
     final l10n = AppLocalizations.of(context);
     return Scaffold(
       backgroundColor: DesignTokens.surfaceDark,
-      appBar: AppBar(
-        title: Text(
-          'Wawasan Keuangan',
-          style: GoogleFonts.poppins(
-            color: Colors.white,
-            fontSize: 18,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        backgroundColor: DesignTokens.surfaceDark,
-        actions: [
-          Consumer<InsightsController>(
-            builder:
-                (_, ctrl, __) => IconButton(
-                  icon: const Icon(Iconsax.refresh, color: Colors.white),
-                  onPressed: ctrl.refresh,
+      appBar: widget.embedded
+          ? null
+          : AppBar(
+              title: Text(
+                'Wawasan Keuangan',
+                style: GoogleFonts.poppins(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
                 ),
-          ),
-        ],
-      ),
+              ),
+              backgroundColor: DesignTokens.surfaceDark,
+              actions: [
+                Consumer<InsightsController>(
+                  builder:
+                      (_, ctrl, __) => IconButton(
+                        icon: const Icon(Iconsax.refresh, color: Colors.white),
+                        onPressed: ctrl.refresh,
+                      ),
+                ),
+              ],
+            ),
       body: Consumer<InsightsController>(
         builder: (context, ctrl, _) {
           if (ctrl.isLoading) {
@@ -70,6 +76,15 @@ class _FinancialInsightsScreenState extends State<FinancialInsightsScreen> {
             child: ListView(
               padding: const EdgeInsets.all(DesignTokens.spacing4),
               children: [
+                if (widget.embedded)
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: IconButton(
+                      icon: const Icon(Iconsax.refresh, color: Colors.white70),
+                      onPressed: ctrl.refresh,
+                      tooltip: 'Refresh',
+                    ),
+                  ),
                 const OfflineIndicator(),
                 const SizedBox(height: 16),
                 _buildHealthScoreCard(ctrl),

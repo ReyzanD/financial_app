@@ -1,6 +1,6 @@
 import 'package:financial_app/services/logger_service.dart';
 import 'package:financial_app/services/account_service.dart';
-import 'package:financial_app/services/debt_service.dart';
+import 'package:financial_app/services/data/obligation_data_service.dart';
 import 'package:financial_app/services/investment_service.dart';
 import 'package:financial_app/services/data/net_worth_data_service.dart';
 import 'package:financial_app/core/di/service_locator.dart';
@@ -8,7 +8,7 @@ import 'package:financial_app/core/di/service_locator.dart';
 class NetWorthService {
   final NetWorthDataService _netWorthData = getIt<NetWorthDataService>();
   final AccountService _accountService = getIt<AccountService>();
-  final DebtService _debtService = getIt<DebtService>();
+  final ObligationDataService _obligationData = getIt<ObligationDataService>();
   final InvestmentService _investmentService = getIt<InvestmentService>();
 
   Future<Map<String, dynamic>> calculateNetWorth() async {
@@ -39,7 +39,12 @@ class NetWorthService {
   }
 
   Future<double> _calculateTotalLiabilities() async {
-    return await _debtService.getTotalDebt();
+    // Read debts from unified financial_obligations table
+    final debts = await _obligationData.getObligations(type: 'debt');
+    return debts.fold<double>(
+      0,
+      (sum, d) => sum + (d.currentBalance ?? d.monthlyAmount),
+    );
   }
 
   Future<Map<String, double>> _getAssetBreakdown() async {
@@ -56,11 +61,14 @@ class NetWorthService {
   }
 
   Future<Map<String, double>> _getLiabilityBreakdown() async {
-    final debts = await _debtService.getDebts();
+    // Read debts from unified financial_obligations table
+    final debts = await _obligationData.getObligations(type: 'debt');
     final breakdown = <String, double>{};
 
     for (var debt in debts) {
-      breakdown[debt.type] = (breakdown[debt.type] ?? 0) + debt.currentBalance;
+      final subtype = debt.debtType ?? debt.category ?? 'other';
+      breakdown[subtype] = (breakdown[subtype] ?? 0) +
+          (debt.currentBalance ?? debt.monthlyAmount);
     }
 
     return breakdown;

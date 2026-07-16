@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:provider/provider.dart';
 import 'package:financial_app/features/auth/presentation/controllers/auth_controller.dart';
 import 'package:financial_app/services/error_handler_service.dart';
@@ -10,6 +9,7 @@ import 'package:financial_app/widgets/auth/pin_pad.dart';
 import 'package:financial_app/widgets/common/offline_indicator.dart';
 import 'package:financial_app/l10n/app_localizations.dart';
 import 'package:financial_app/utils/design_tokens.dart';
+import 'package:financial_app/widgets/onboarding/onboarding_flow_manager.dart';
 
 class PinSetupScreen extends StatefulWidget {
   const PinSetupScreen({super.key});
@@ -66,9 +66,8 @@ class _PinSetupScreenState extends State<PinSetupScreen> {
         AppLocalizations.of(ctx)?.pin_created_successfully ??
             'PIN berhasil dibuat!',
       );
-      final prefs = await SharedPreferences.getInstance();
       final onboardingCompleted =
-          prefs.getBool('onboarding_completed') ?? false;
+          await OnboardingFlowManager.isOnboardingCompleted();
       if (!ctx.mounted) return;
       if (!onboardingCompleted)
         Navigator.of(ctx).pushReplacementNamed('/onboarding');

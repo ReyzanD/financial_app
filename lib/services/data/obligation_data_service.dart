@@ -1,12 +1,7 @@
 import 'package:uuid/uuid.dart';
-import 'package:financial_app/core/di/service_locator.dart';
 import 'package:financial_app/services/local_database_service.dart';
 import 'package:financial_app/services/local_auth_service.dart';
-import 'package:financial_app/services/data/debt_data_service.dart';
-import 'package:financial_app/services/data/subscription_data_service.dart';
 import 'package:financial_app/models/financial_obligation.dart';
-import 'package:financial_app/models/debt_model.dart';
-import 'package:financial_app/models/subscription_model.dart';
 
 /// Data service for Obligation CRUD operations.
 /// Extracted from the monolithic LocalDataService facade.
@@ -14,9 +9,6 @@ class ObligationDataService {
   final LocalDatabaseService _dbService;
   final LocalAuthService _authService;
   final _uuid = const Uuid();
-
-  DebtDataService get _debtService => getIt<DebtDataService>();
-  SubscriptionDataService get _subscriptionService => getIt<SubscriptionDataService>();
 
   ObligationDataService({
     LocalDatabaseService? dbService,
@@ -74,7 +66,7 @@ class ObligationDataService {
         .toList();
   }
 
-  /// Add obligation
+  /// Add obligation (supports bill, debt, and subscription types)
   Future<FinancialObligation> addObligation(
     Map<String, dynamic> obligationData,
   ) async {
@@ -85,7 +77,7 @@ class ObligationDataService {
     final obligationId = _uuid.v4();
     final now = DateTime.now().toIso8601String();
 
-    final data = {
+    final data = <String, dynamic>{
       'obligation_id_232143': obligationId,
       'user_id_232143': userId,
       'name_232143': obligationData['name'],
@@ -93,7 +85,7 @@ class ObligationDataService {
       'amount_232143':
           obligationData['amount'] ?? obligationData['monthly_amount'] ?? 0.0,
       'due_date_232143':
-          obligationData['due_date'] ?? obligationData['dueDate'],
+          obligationData['due_date']?.toString() ?? obligationData['dueDate']?.toString(),
       'frequency_232143': obligationData['frequency'] ?? 'monthly',
       'payment_method_232143': obligationData['payment_method'] ?? 'cash',
       'category_id_232143': obligationData['category_id'],
@@ -107,6 +99,51 @@ class ObligationDataService {
       'created_at_232143': now,
       'updated_at_232143': now,
     };
+
+    // Type-specific fields (bill/debt/subscription)
+    if (obligationData.containsKey('type')) {
+      data['type_232143'] = obligationData['type'];
+    }
+    if (obligationData.containsKey('category')) {
+      data['category_232143'] = obligationData['category'];
+    }
+    if (obligationData.containsKey('original_amount')) {
+      data['original_amount_232143'] = obligationData['original_amount'];
+    }
+    if (obligationData.containsKey('current_balance')) {
+      data['current_balance_232143'] = obligationData['current_balance'];
+    }
+    if (obligationData.containsKey('interest_rate')) {
+      data['interest_rate_232143'] = obligationData['interest_rate'];
+    }
+    if (obligationData.containsKey('minimum_payment')) {
+      data['minimum_payment_232143'] = obligationData['minimum_payment'];
+    }
+    if (obligationData.containsKey('payoff_strategy')) {
+      data['payoff_strategy_232143'] = obligationData['payoff_strategy'];
+    }
+    if (obligationData.containsKey('subscription_cycle')) {
+      data['subscription_cycle_232143'] = obligationData['subscription_cycle'];
+      data['is_subscription_232143'] = 1;
+    }
+    if (obligationData.containsKey('notes')) {
+      data['notes_232143'] = obligationData['notes'];
+    }
+    if (obligationData.containsKey('is_active')) {
+      data['is_active_232143'] = obligationData['is_active'] == true ? 1 : 0;
+    }
+    if (obligationData.containsKey('account_id')) {
+      data['account_id_232143'] = obligationData['account_id'];
+    }
+    if (obligationData.containsKey('debt_type')) {
+      data['debt_type_232143'] = obligationData['debt_type'];
+    }
+    if (obligationData.containsKey('creditor_name')) {
+      data['creditor_name_232143'] = obligationData['creditor_name'];
+    }
+    if (obligationData.containsKey('next_renewal')) {
+      data['next_renewal_232143'] = obligationData['next_renewal'];
+    }
 
     await db.insert('financial_obligations_232143', data);
     return FinancialObligation.fromMap(data);
@@ -139,7 +176,7 @@ class ObligationDataService {
     if (obligationData.containsKey('due_date') ||
         obligationData.containsKey('dueDate')) {
       data['due_date_232143'] =
-          obligationData['due_date'] ?? obligationData['dueDate'];
+          obligationData['due_date']?.toString() ?? obligationData['dueDate']?.toString();
     }
     if (obligationData.containsKey('frequency')) {
       data['frequency_232143'] = obligationData['frequency'];
@@ -163,6 +200,41 @@ class ObligationDataService {
     if (obligationData.containsKey('reminder_days_before')) {
       data['reminder_days_before_232143'] =
           obligationData['reminder_days_before'];
+    }
+
+    // Type-specific update fields
+    if (obligationData.containsKey('type')) {
+      data['type_232143'] = obligationData['type'];
+    }
+    if (obligationData.containsKey('category')) {
+      data['category_232143'] = obligationData['category'];
+    }
+    if (obligationData.containsKey('original_amount')) {
+      data['original_amount_232143'] = obligationData['original_amount'];
+    }
+    if (obligationData.containsKey('current_balance')) {
+      data['current_balance_232143'] = obligationData['current_balance'];
+    }
+    if (obligationData.containsKey('interest_rate')) {
+      data['interest_rate_232143'] = obligationData['interest_rate'];
+    }
+    if (obligationData.containsKey('minimum_payment')) {
+      data['minimum_payment_232143'] = obligationData['minimum_payment'];
+    }
+    if (obligationData.containsKey('subscription_cycle')) {
+      data['subscription_cycle_232143'] = obligationData['subscription_cycle'];
+    }
+    if (obligationData.containsKey('notes')) {
+      data['notes_232143'] = obligationData['notes'];
+    }
+    if (obligationData.containsKey('is_active')) {
+      data['is_active_232143'] = obligationData['is_active'] == true ? 1 : 0;
+    }
+    if (obligationData.containsKey('debt_type')) {
+      data['debt_type_232143'] = obligationData['debt_type'];
+    }
+    if (obligationData.containsKey('creditor_name')) {
+      data['creditor_name_232143'] = obligationData['creditor_name'];
     }
 
     await db.update(
@@ -259,61 +331,4 @@ class ObligationDataService {
     };
   }
 
-  // ====================================================================
-  // Debt delegation methods (backed by DebtDataService internally)
-  // ====================================================================
-
-  /// Get debts
-  Future<List<DebtModel>> getDebts({bool activeOnly = true}) =>
-      _debtService.getDebts(activeOnly: activeOnly);
-
-  /// Add debt
-  Future<DebtModel> addDebt(Map<String, dynamic> debtData) =>
-      _debtService.addDebt(debtData);
-
-  /// Record debt payment
-  Future<Map<String, dynamic>> recordDebtPayment(
-    String debtId,
-    double amount, {
-    String? notes,
-  }) => _debtService.recordDebtPayment(debtId, amount, notes: notes);
-
-  /// Get debt payments
-  Future<List<Map<String, dynamic>>> getDebtPayments(String debtId) =>
-      _debtService.getDebtPayments(debtId);
-
-  /// Get debt summary
-  Future<Map<String, dynamic>> getDebtSummary() =>
-      _debtService.getDebtSummary();
-
-  /// Delete debt
-  Future<bool> deleteDebt(String debtId) =>
-      _debtService.deleteDebt(debtId);
-
-  // ====================================================================
-  // Subscription delegation methods (backed by SubscriptionDataService internally)
-  // ====================================================================
-
-  /// Get subscriptions
-  Future<List<SubscriptionModel>> getSubscriptions({bool activeOnly = true}) =>
-      _subscriptionService.getSubscriptions(activeOnly: activeOnly);
-
-  /// Add subscription
-  Future<SubscriptionModel> addSubscription(
-    Map<String, dynamic> subData,
-  ) => _subscriptionService.addSubscription(subData);
-
-  /// Update subscription
-  Future<SubscriptionModel> updateSubscription(
-    String subId,
-    Map<String, dynamic> subData,
-  ) => _subscriptionService.updateSubscription(subId, subData);
-
-  /// Delete subscription
-  Future<bool> deleteSubscription(String subId) =>
-      _subscriptionService.deleteSubscription(subId);
-
-  /// Get subscription summary
-  Future<Map<String, dynamic>> getSubscriptionSummary() =>
-      _subscriptionService.getSubscriptionSummary();
 }

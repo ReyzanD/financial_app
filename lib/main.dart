@@ -257,6 +257,7 @@ class MyApp extends StatelessWidget {
             '/map': (context) => const MapScreen(),
             '/settings': (context) => const SettingsScreen(),
             '/budgets': (context) => const BudgetsScreen(),
+            '/insights-hub': (context) => const AnalyticsHubScreen(initialTab: 'analytics'),
             '/analytics': (context) => const AnalyticsHubScreen(initialTab: 'analytics'),
             '/goals': (context) => const GoalsScreen(),
             '/add-transaction': (context) => const AddTransactionScreen(),

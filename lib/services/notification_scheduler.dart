@@ -24,17 +24,17 @@ class NotificationScheduler {
 
   Future<void> scheduleSubscriptionNotifications() async {
     try {
-      final subscriptions = await _obligationData.getSubscriptions(
-        activeOnly: true,
+      final subscriptions = await _obligationData.getObligations(
+        type: 'subscription',
       );
 
       for (final sub in subscriptions) {
-        if (sub.nextRenewal != null && sub.nextRenewal!.isAfter(DateTime.now())) {
+        if (sub.dueDate.isAfter(DateTime.now())) {
           await _notifications.scheduleSubscriptionRenewal(
             name: sub.name,
-            cost: sub.cost,
-            renewalDate: sub.nextRenewal!,
-            cycle: sub.cycle,
+            cost: sub.monthlyAmount,
+            renewalDate: sub.dueDate,
+            cycle: sub.subscriptionCycle ?? 'monthly',
           );
         }
       }
@@ -75,18 +75,14 @@ class NotificationScheduler {
 
   Future<void> scheduleDebtNotifications() async {
     try {
-      final debts = await _obligationData.getDebts();
+      final debts = await _obligationData.getObligations(type: 'debt');
 
       for (final debt in debts) {
-        final name = debt.name;
-        final monthlyPayment = debt.monthlyPayment;
-        final dueDate = debt.dueDate;
-
-        if (dueDate != null && monthlyPayment > 0 && dueDate.isAfter(DateTime.now())) {
+        if (debt.dueDate.isAfter(DateTime.now())) {
           await _notifications.scheduleDebtPaymentReminder(
-            name: name,
-            amount: monthlyPayment,
-            dueDate: dueDate,
+            name: debt.name,
+            amount: debt.monthlyAmount,
+            dueDate: debt.dueDate,
           );
         }
       }

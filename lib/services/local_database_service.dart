@@ -190,7 +190,7 @@ class LocalDatabaseService {
       )
     ''');
 
-    // Financial obligations table
+    // Financial obligations table (unified: bills + debts + subscriptions)
     await db.execute('''
       CREATE TABLE IF NOT EXISTS financial_obligations_232143 (
         obligation_id_232143 TEXT PRIMARY KEY,
@@ -207,10 +207,26 @@ class LocalDatabaseService {
         reminder_enabled_232143 INTEGER DEFAULT 1,
         reminder_days_before_232143 INTEGER DEFAULT 3,
         auto_pay_enabled_232143 INTEGER DEFAULT 0,
+        type_232143 TEXT NOT NULL DEFAULT 'bill' CHECK (type_232143 IN ('bill','debt','subscription')),
+        original_amount_232143 REAL,
+        current_balance_232143 REAL,
+        interest_rate_232143 REAL,
+        debt_type_232143 TEXT,
+        creditor_name_232143 TEXT,
+        notes_232143 TEXT,
+        subscription_cycle_232143 TEXT,
+        next_renewal_232143 TEXT,
+        is_active_232143 INTEGER DEFAULT 1,
+        account_id_232143 TEXT,
+        category_232143 TEXT,
+        minimum_payment_232143 REAL,
+        payoff_strategy_232143 TEXT,
+        is_subscription_232143 INTEGER DEFAULT 0,
         created_at_232143 TEXT DEFAULT CURRENT_TIMESTAMP,
         updated_at_232143 TEXT DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (user_id_232143) REFERENCES users_232143(user_id_232143) ON DELETE CASCADE,
-        FOREIGN KEY (category_id_232143) REFERENCES categories_232143(category_id_232143)
+        FOREIGN KEY (category_id_232143) REFERENCES categories_232143(category_id_232143),
+        FOREIGN KEY (account_id_232143) REFERENCES accounts_232143(account_id_232143)
       )
     ''');
 
@@ -598,7 +614,7 @@ class LocalDatabaseService {
   }
 
   /// Get current database version
-  static int get currentVersion => 6;
+  static int get currentVersion => 7;
 
   /// Upgrade database schema
   Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
@@ -975,6 +991,105 @@ class LocalDatabaseService {
 
         LoggerService.info(
           '✅ Migrated to version 6: added place_visits, price_observations, alternative_suggestions tables',
+        );
+      }
+
+      if (oldVersion < 7) {
+        // Add unified type columns to financial_obligations_232143
+        await txn.execute(
+          "ALTER TABLE financial_obligations_232143 ADD COLUMN type_232143 TEXT NOT NULL DEFAULT 'bill'",
+        );
+        await txn.execute(
+          'ALTER TABLE financial_obligations_232143 ADD COLUMN original_amount_232143 REAL',
+        );
+        await txn.execute(
+          'ALTER TABLE financial_obligations_232143 ADD COLUMN current_balance_232143 REAL',
+        );
+        await txn.execute(
+          'ALTER TABLE financial_obligations_232143 ADD COLUMN interest_rate_232143 REAL',
+        );
+        await txn.execute(
+          'ALTER TABLE financial_obligations_232143 ADD COLUMN debt_type_232143 TEXT',
+        );
+        await txn.execute(
+          'ALTER TABLE financial_obligations_232143 ADD COLUMN creditor_name_232143 TEXT',
+        );
+        await txn.execute(
+          'ALTER TABLE financial_obligations_232143 ADD COLUMN notes_232143 TEXT',
+        );
+        await txn.execute(
+          'ALTER TABLE financial_obligations_232143 ADD COLUMN subscription_cycle_232143 TEXT',
+        );
+        await txn.execute(
+          'ALTER TABLE financial_obligations_232143 ADD COLUMN next_renewal_232143 TEXT',
+        );
+        await txn.execute(
+          'ALTER TABLE financial_obligations_232143 ADD COLUMN is_active_232143 INTEGER DEFAULT 1',
+        );
+        await txn.execute(
+          'ALTER TABLE financial_obligations_232143 ADD COLUMN account_id_232143 TEXT',
+        );
+        await txn.execute(
+          'ALTER TABLE financial_obligations_232143 ADD COLUMN category_232143 TEXT',
+        );
+        await txn.execute(
+          'ALTER TABLE financial_obligations_232143 ADD COLUMN minimum_payment_232143 REAL',
+        );
+        await txn.execute(
+          'ALTER TABLE financial_obligations_232143 ADD COLUMN payoff_strategy_232143 TEXT',
+        );
+        await txn.execute(
+          'ALTER TABLE financial_obligations_232143 ADD COLUMN is_subscription_232143 INTEGER DEFAULT 0',
+        );
+
+        // Migrate debts_232143 → financial_obligations_232143
+        await txn.execute('''
+          INSERT INTO financial_obligations_232143 (
+            obligation_id_232143, user_id_232143, name_232143, amount_232143,
+            due_date_232143, frequency_232143, is_paid_232143, created_at_232143,
+            updated_at_232143, type_232143, original_amount_232143,
+            current_balance_232143, interest_rate_232143, debt_type_232143,
+            creditor_name_232143, notes_232143, is_active_232143, description_232143,
+            minimum_payment_232143
+          )
+          SELECT
+            'mig_debt_' || debt_id_232143, user_id_232143, name_232143,
+            COALESCE(monthly_payment_232143, 0.0),
+            COALESCE(due_date_232143, start_date_232143),
+            'monthly', 0, created_at_232143, updated_at_232143,
+            'debt', original_amount_232143, current_balance_232143,
+            COALESCE(interest_rate_232143, 0.0), type_232143,
+            creditor_name_232143, notes_232143, 1, notes_232143,
+            monthly_payment_232143
+          FROM debts_232143
+        ''');
+
+        // Migrate subscriptions_232143 → financial_obligations_232143
+        await txn.execute('''
+          INSERT INTO financial_obligations_232143 (
+            obligation_id_232143, user_id_232143, name_232143, amount_232143,
+            due_date_232143, frequency_232143, is_paid_232143, created_at_232143,
+            updated_at_232143, type_232143, subscription_cycle_232143,
+            next_renewal_232143, is_active_232143, account_id_232143,
+            notes_232143, description_232143, category_232143,
+            is_subscription_232143
+          )
+          SELECT
+            'mig_sub_' || subscription_id_232143, user_id_232143, name_232143,
+            cost_232143, COALESCE(next_renewal_232143, start_date_232143),
+            CASE cycle_232143
+              WHEN 'weekly' THEN 'weekly'
+              WHEN 'yearly' THEN 'yearly'
+              ELSE 'monthly'
+            END, 0, created_at_232143, updated_at_232143,
+            'subscription', cycle_232143, next_renewal_232143,
+            is_active_232143, account_id_232143, notes_232143,
+            notes_232143, category_232143, 1
+          FROM subscriptions_232143
+        ''');
+
+        LoggerService.info(
+          '✅ Migrated to version 7: unified financial_obligations with type, debt, subscription columns + migrated existing data',
         );
       }
     });

@@ -3,8 +3,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:financial_app/services/location_service.dart';
-import 'package:financial_app/services/notification_service.dart';
 import 'package:financial_app/widgets/onboarding/onboarding_flow_manager.dart';
 import 'package:financial_app/widgets/onboarding/permission_request_card.dart';
 import 'package:financial_app/utils/responsive_helper.dart';
@@ -137,8 +135,6 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                   onPressed: _skipOnboarding,
                   backgroundColor: Colors.transparent,
                   foregroundColor: Colors.grey[400]!,
-                  minWidth: 0,
-                  minHeight: 0,
                 ),
               ),
             ),
@@ -423,7 +419,6 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                     onPressed: _previousPage,
                     backgroundColor: Colors.transparent,
                     foregroundColor: DesignTokens.primaryColor,
-                    minWidth: 0,
                   ),
                 ),
               if (_currentPage > 0)
@@ -542,26 +537,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
       }
     }
 
-    // 4. Try to save location (non-critical — already isolated)
-    try {
-      final pos = await LocationService.getCurrentPosition();
-      if (pos != null) {
-        final prefs = await SharedPreferences.getInstance();
-        await prefs.setDouble('user_latitude', pos.latitude);
-        await prefs.setDouble('user_longitude', pos.longitude);
-      }
-    } catch (e) {
-      LoggerService.debug('Location not available: $e');
-    }
-
-    // 5. Request notification permission (non-critical — already isolated)
-    try {
-      await NotificationService().requestPermissions();
-    } catch (e) {
-      LoggerService.debug('Notification permission not available: $e');
-    }
-
-    // 6. Navigate to home
+    // 4. Navigate to home
     if (mounted) Navigator.pushReplacementNamed(context, '/home');
   }
 }

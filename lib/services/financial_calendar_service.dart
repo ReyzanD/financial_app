@@ -1,18 +1,17 @@
 import 'package:financial_app/services/logger_service.dart';
-import 'package:financial_app/services/subscription_tracker_service.dart';
+import 'package:financial_app/services/data/obligation_data_service.dart';
 import 'package:financial_app/services/data/transaction_data_service.dart';
 import 'package:financial_app/core/di/service_locator.dart';
 
 class FinancialCalendarService {
   final TransactionDataService _transactionData;
-  final SubscriptionTrackerService _subscriptionService;
+  final ObligationDataService _obligationData;
 
   FinancialCalendarService({
     TransactionDataService? transactionData,
-    SubscriptionTrackerService? subscriptionService,
+    ObligationDataService? obligationData,
   }) : _transactionData = transactionData ?? getIt<TransactionDataService>(),
-       _subscriptionService =
-            subscriptionService ?? getIt<SubscriptionTrackerService>();
+       _obligationData = obligationData ?? getIt<ObligationDataService>();
 
   Future<List<Map<String, dynamic>>> getMonthEvents(int year, int month) async {
     final events = <Map<String, dynamic>>[];
@@ -63,18 +62,18 @@ class FinancialCalendarService {
         }
       }
 
-      final subscriptions = await _subscriptionService.getSubscriptions();
+      final subscriptions = await _obligationData.getObligations(
+        type: 'subscription',
+      );
       for (var sub in subscriptions) {
-        if (sub.nextRenewal != null &&
-            sub.nextRenewal!.year == year &&
-            sub.nextRenewal!.month == month) {
+        if (sub.dueDate.year == year && sub.dueDate.month == month) {
           events.add({
-            'date': sub.nextRenewal!,
+            'date': sub.dueDate,
             'type': 'subscription',
-            'title': '${sub.name} Renewal',
-            'amount': sub.cost,
+            'title': '${sub.name}',
+            'amount': sub.monthlyAmount,
             'transaction_type': 'expense',
-            'category': sub.category,
+            'category': sub.category ?? 'subscription',
           });
         }
       }

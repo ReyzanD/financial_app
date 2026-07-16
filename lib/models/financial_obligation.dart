@@ -14,6 +14,7 @@ class FinancialObligation {
   final String? subscriptionCycle;
   final double? minimumPayment;
   final String? payoffStrategy;
+  final String? debtType;
   final int daysUntilDue;
 
   FinancialObligation({
@@ -30,6 +31,7 @@ class FinancialObligation {
     this.subscriptionCycle,
     this.minimumPayment,
     this.payoffStrategy,
+    this.debtType,
     required this.daysUntilDue,
   });
 
@@ -52,6 +54,7 @@ class FinancialObligation {
       'subscription_cycle': subscriptionCycle,
       'minimum_payment': minimumPayment,
       'payoff_strategy': payoffStrategy,
+      'debt_type': debtType,
       'days_until_due': daysUntilDue,
     };
   }
@@ -60,7 +63,7 @@ class FinancialObligation {
     return {
       'obligation_id_232143': id,
       'name_232143': name,
-      'monthly_amount_232143': monthlyAmount,
+      'amount_232143': monthlyAmount,
       'due_date_232143': dueDate.toIso8601String().split('T')[0],
       'type_232143': type.name,
       'category_232143': category,
@@ -71,6 +74,7 @@ class FinancialObligation {
       'subscription_cycle_232143': subscriptionCycle,
       'minimum_payment_232143': minimumPayment,
       'payoff_strategy_232143': payoffStrategy,
+      'debt_type_232143': debtType,
     };
   }
 
@@ -117,6 +121,9 @@ class FinancialObligation {
       payoffStrategy:
           json['payoff_strategy']?.toString() ??
           json['payoff_strategy_232143']?.toString(),
+      debtType:
+          json['debt_type']?.toString() ??
+          json['debt_type_232143']?.toString(),
       daysUntilDue: (json['days_until_due'] as num?)?.toInt() ?? 0,
     );
   }
@@ -160,7 +167,9 @@ class FinancialObligation {
     return FinancialObligation(
       id: map['obligation_id_232143']?.toString() ?? '',
       name: map['name_232143']?.toString() ?? '',
-      monthlyAmount: parseDecimal(map['monthly_amount_232143']) ?? 0.0,
+      monthlyAmount: parseDecimal(map['monthly_amount_232143']) ??
+          parseDecimal(map['amount_232143']) ??
+          0.0,
       dueDate: dueDate ?? DateTime.now(),
       type: type,
       daysUntilDue:
@@ -176,6 +185,7 @@ class FinancialObligation {
       subscriptionCycle: map['subscription_cycle_232143']?.toString(),
       minimumPayment: parseDecimal(map['minimum_payment_232143']),
       payoffStrategy: map['payoff_strategy_232143']?.toString(),
+      debtType: map['debt_type_232143']?.toString(),
     );
   }
 

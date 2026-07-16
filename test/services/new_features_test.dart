@@ -6,8 +6,6 @@ import 'package:financial_app/models/debt_model.dart';
 import 'package:financial_app/models/subscription_model.dart';
 import 'package:financial_app/models/feature_models.dart';
 import 'package:financial_app/services/account_service.dart';
-import 'package:financial_app/services/debt_service.dart';
-import 'package:financial_app/services/subscription_tracker_service.dart';
 import 'package:financial_app/services/expense_split_service.dart';
 import 'package:financial_app/services/challenge_service.dart';
 import 'package:financial_app/services/investment_service.dart';
@@ -17,7 +15,6 @@ import '../helpers/fake_data_services.dart';
 void main() {
   late FakeAccountDataService fakeAccountData;
   late FakeGoalDataService fakeGoalData;
-  late FakeObligationDataService fakeObligationData;
   late FakeExpenseSplitDataService fakeSplitData;
   late FakeInvestmentDataService fakeInvData;
   late FakeCategoryDataService fakeCategoryData;
@@ -27,7 +24,6 @@ void main() {
     SharedPreferences.setMockInitialValues({});
     fakeAccountData = FakeAccountDataService();
     fakeGoalData = FakeGoalDataService();
-    fakeObligationData = FakeObligationDataService();
     fakeSplitData = FakeExpenseSplitDataService();
     fakeInvData = FakeInvestmentDataService();
     fakeCategoryData = FakeCategoryDataService();
@@ -97,44 +93,7 @@ void main() {
     });
   });
 
-  group('DebtService', () {
-    late DebtService service;
-
-    setUp(() {
-      service = DebtService(obligationData: fakeObligationData);
-    });
-
-    test('should start with no debts', () async {
-      final debts = await service.getDebts();
-      expect(debts, isEmpty);
-    });
-
-    test('should add a debt', () async {
-      final debt = DebtModel(
-        id: 'test_debt_1',
-        name: 'Test Loan',
-        originalAmount: 10000000,
-        currentBalance: 10000000,
-        interestRate: 12,
-        type: 'personal',
-        startDate: DateTime.now(),
-        dueDate: DateTime.now().add(const Duration(days: 365)),
-        monthlyPayment: 500000,
-        createdAt: DateTime.now(),
-      );
-
-      final result = await service.addDebt(debt);
-      expect(result.name, 'Test Loan');
-      // The service copies original_amount to current_balance when storing
-      expect(result.currentBalance, 10000000);
-    });
-
-    test('should calculate debt summary', () async {
-      final summary = await service.getDebtSummary();
-      expect(summary, isA<Map<String, dynamic>>());
-      expect(summary.containsKey('total_debt'), true);
-    });
-
+  group('DebtModel', () {
     test('DebtModel should calculate months remaining', () {
       final debt = DebtModel(
         id: 'test',
@@ -153,41 +112,8 @@ void main() {
     });
   });
 
-  group('SubscriptionTrackerService', () {
-    late SubscriptionTrackerService service;
-
-    setUp(() {
-      service = SubscriptionTrackerService(obligationData: fakeObligationData);
-    });
-
-    test('should start with no subscriptions', () async {
-      final subs = await service.getSubscriptions();
-      expect(subs, isEmpty);
-    });
-
-    test('should add a subscription', () async {
-      final sub = SubscriptionModel(
-        id: 'test_sub_1',
-        name: 'Netflix',
-        cost: 186000,
-        cycle: 'monthly',
-        startDate: DateTime.now(),
-        createdAt: DateTime.now(),
-      );
-
-      final result = await service.addSubscription(sub);
-      expect(result.name, 'Netflix');
-      expect(result.monthlyCost, 186000);
-    });
-
-    test('should calculate subscription summary', () async {
-      final summary = await service.getSubscriptionSummary();
-      expect(summary, isA<Map<String, dynamic>>());
-      expect(summary.containsKey('total_monthly'), true);
-      expect(summary.containsKey('total_yearly'), true);
-    });
-
-    test('SubscriptionModel should calculate yearly cost', () {
+  group('SubscriptionModel', () {
+    test('should calculate yearly cost', () {
       final sub = SubscriptionModel(
         id: 'test',
         name: 'Test',
@@ -200,7 +126,7 @@ void main() {
       expect(sub.yearlyCost, 1200000);
     });
 
-    test('SubscriptionModel should convert weekly to monthly', () {
+    test('should convert weekly to monthly', () {
       final sub = SubscriptionModel(
         id: 'test',
         name: 'Weekly Sub',

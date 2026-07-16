@@ -1,8 +1,8 @@
 import 'package:flutter/foundation.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:financial_app/services/auth_service.dart';
 import 'package:financial_app/services/pin_auth_service.dart';
 import 'package:financial_app/services/biometric_service.dart';
+import 'package:financial_app/widgets/onboarding/onboarding_flow_manager.dart';
 
 class AuthController extends ChangeNotifier {
   final AuthService authService;
@@ -42,14 +42,15 @@ class AuthController extends ChangeNotifier {
   ) async => (await authService.register(email, password, name)) ?? {};
   Future<void> logout() => authService.logout();
 
-  Future<bool> isOnboardingCompleted() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getBool('onboarding_completed') ?? false;
-  }
+  Future<bool> isOnboardingCompleted() =>
+      OnboardingFlowManager.isOnboardingCompleted();
 
   Future<void> setOnboardingCompleted(bool value) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('onboarding_completed', value);
+    if (value) {
+      await OnboardingFlowManager.completeOnboarding();
+    } else {
+      await OnboardingFlowManager.resetOnboarding();
+    }
   }
 
   Future<dynamic> getAvailableBiometrics() =>

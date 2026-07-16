@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:provider/provider.dart';
 import 'package:financial_app/features/auth/presentation/controllers/auth_controller.dart';
+import 'package:financial_app/widgets/onboarding/onboarding_flow_manager.dart';
 import 'package:financial_app/services/error_handler_service.dart';
 import 'package:financial_app/services/logger_service.dart';
 import 'package:financial_app/widgets/common/offline_indicator.dart';
@@ -81,9 +81,8 @@ class _LoginScreenState extends State<LoginScreen> {
         _emailController.text.trim(),
         _passwordController.text,
       );
-      final prefs = await SharedPreferences.getInstance();
       final onboardingCompleted =
-          prefs.getBool('onboarding_completed') ?? false;
+          await OnboardingFlowManager.isOnboardingCompleted();
       if (!ctx.mounted) return;
       if (!onboardingCompleted) {
         Navigator.pushReplacementNamed(ctx, '/onboarding');
@@ -142,8 +141,7 @@ class _LoginScreenState extends State<LoginScreen> {
         _passwordController.text,
         _nameController.text.trim(),
       );
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setBool('onboarding_completed', false);
+      await OnboardingFlowManager.resetOnboarding();
       if (mounted) Navigator.pushReplacementNamed(context, '/pin-setup');
     } catch (e) {
       LoggerService.error('Error during registration', error: e);
