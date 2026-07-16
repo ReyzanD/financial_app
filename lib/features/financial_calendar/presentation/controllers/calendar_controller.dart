@@ -1,10 +1,10 @@
 import 'package:flutter/foundation.dart';
-import 'package:financial_app/services/financial_calendar_service.dart';
 import 'package:financial_app/services/logger_service.dart';
+import 'package:financial_app/features/financial_calendar/data/repositories/calendar_repository.dart';
 
 class CalendarController extends ChangeNotifier {
-  final FinancialCalendarService _s;
-  CalendarController({required FinancialCalendarService service}) : _s = service;
+  final CalendarRepository _repository;
+  CalendarController({required CalendarRepository repository}) : _repository = repository;
 
   bool _isLoading = false;
   String? _error;
@@ -33,7 +33,7 @@ class CalendarController extends ChangeNotifier {
     _error = null;
     notifyListeners();
     try {
-      _events = await _s.getMonthEvents(_selectedYear, _selectedMonth);
+      _events = await _repository.getMonthEvents(_selectedYear, _selectedMonth);
     } catch (e) {
       LoggerService.error('Error loading month events', error: e);
       _error = e.toString();

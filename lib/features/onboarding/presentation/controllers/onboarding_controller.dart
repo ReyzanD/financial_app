@@ -1,8 +1,13 @@
 import 'package:flutter/foundation.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:financial_app/services/logger_service.dart';
+import 'package:financial_app/features/onboarding/data/repositories/onboarding_repository.dart';
 
 class OnboardingController extends ChangeNotifier {
+  final OnboardingRepository _repository;
+
+  OnboardingController({OnboardingRepository? repository})
+      : _repository = repository ?? OnboardingRepository();
+
   bool _isLoading = false;
   int _currentPage = 0;
   bool _isComplete = false;
@@ -20,8 +25,7 @@ class OnboardingController extends ChangeNotifier {
     _isLoading = true;
     notifyListeners();
     try {
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setBool('onboarding_complete', true);
+      await _repository.completeOnboarding();
       _isComplete = true;
     } catch (e) {
       LoggerService.error('Error saving onboarding state', error: e);
@@ -32,7 +36,6 @@ class OnboardingController extends ChangeNotifier {
   }
 
   Future<bool> checkOnboardingComplete() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getBool('onboarding_complete') ?? false;
+    return await _repository.checkOnboardingComplete();
   }
 }

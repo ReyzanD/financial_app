@@ -1,15 +1,13 @@
 import 'package:flutter/foundation.dart';
-import 'package:financial_app/services/budget_recommendation_service.dart';
 import 'package:financial_app/services/logger_service.dart';
 import 'package:financial_app/services/error_handler_service.dart';
-import 'package:financial_app/core/di/service_locator.dart';
-import 'package:financial_app/services/data/category_data_service.dart';
-import 'package:financial_app/services/data/budget_data_service.dart';
+import 'package:financial_app/features/ai_budget_recommendation/data/repositories/ai_budget_repository.dart';
 
 class AIBudgetController extends ChangeNotifier {
-  final CategoryDataService _categoryData = getIt<CategoryDataService>();
-  final BudgetDataService _budgetData = getIt<BudgetDataService>();
-  final BudgetRecommendationService _budgetService = getIt<BudgetRecommendationService>();
+  final AIBudgetRepository _repository;
+
+  AIBudgetController({AIBudgetRepository? repository})
+      : _repository = repository ?? AIBudgetRepository();
 
   bool _isLoading = true;
   bool _isApplying = false;
@@ -30,7 +28,7 @@ class AIBudgetController extends ChangeNotifier {
     _error = null;
     notifyListeners();
     try {
-      _recommendation = await _budgetService.generateRecommendation();
+      _recommendation = await _repository.generateRecommendation();
     } catch (e) {
       LoggerService.error('Error loading budget recommendation', error: e);
       _error = ErrorHandlerService.getUserFriendlyMessage(e);
@@ -56,8 +54,8 @@ class AIBudgetController extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final categories = (await _categoryData.getCategories()).map((c) => c.toMap()).toList();
-      final existingBudgets = (await _budgetData.getBudgets(activeOnly: false)).map((b) => b.toMap()).toList();
+      final categories = (await _repository.getCategories()).map((c) => c.toMap()).toList();
+      final existingBudgets = (await _repository.getBudgets(activeOnly: false)).map((b) => b.toMap()).toList();
       final income = _editedIncome ?? (_recommendation!['total_income'] as num).toDouble();
       final recCategories = _recommendation!['categories'] as List;
 
@@ -80,7 +78,7 @@ class AIBudgetController extends ChangeNotifier {
         final existing = _findExistingBudget(existingBudgets, categoryId, ps, pe);
         if (existing != null) {
           final bid = existing['budget_id_232143'] ?? existing['id'];
-          await _budgetData.updateBudget(bid, {
+          await _repository.updateBudget(bid, {
             'amount': amount,
             'period': 'monthly',
             'period_start': ps.toIso8601String().split('T')[0],
@@ -89,7 +87,7 @@ class AIBudgetController extends ChangeNotifier {
           });
           updated++;
         } else {
-          await _budgetData.addBudget({
+          await _repository.addBudget({
             'category_id': categoryId,
             'amount': amount,
             'period': 'monthly',

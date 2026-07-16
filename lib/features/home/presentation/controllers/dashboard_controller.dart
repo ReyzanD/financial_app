@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:financial_app/state/app_state.dart';
-import 'package:financial_app/core/di/service_locator.dart';
+import 'package:financial_app/features/home/data/repositories/dashboard_repository.dart';
 
 /// Coordinates dashboard-level refresh orchestration.
 ///
@@ -9,6 +8,11 @@ import 'package:financial_app/core/di/service_locator.dart';
 /// point so the home screen and FAB don't need to reach into AppState
 /// directly for that purpose.
 class DashboardController extends ChangeNotifier {
+  final DashboardRepository _repository;
+
+  DashboardController({DashboardRepository? repository})
+      : _repository = repository ?? DashboardRepository();
+
   bool _isRefreshing = false;
   bool get isRefreshing => _isRefreshing;
 
@@ -25,7 +29,7 @@ class DashboardController extends ChangeNotifier {
     notifyListeners();
 
     try {
-      await getIt<AppState>().refreshData(forceRefresh: true);
+      await _repository.refreshData(forceRefresh: true);
       _error = null;
     } catch (e) {
       _error = e.toString();
@@ -41,7 +45,7 @@ class DashboardController extends ChangeNotifier {
     notifyListeners();
 
     try {
-      await getIt<AppState>().loadInitialData();
+      await _repository.loadInitialData();
       _error = null;
     } catch (e) {
       _error = e.toString();

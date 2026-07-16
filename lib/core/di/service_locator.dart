@@ -71,11 +71,20 @@ import 'package:financial_app/features/templates/presentation/controllers/templa
 import 'package:financial_app/features/notification_center/data/repositories/notification_repository.dart';
 import 'package:financial_app/features/notification_center/presentation/controllers/notification_center_controller.dart';
 import 'package:financial_app/features/category_customization/presentation/controllers/category_controller.dart';
+import 'package:financial_app/features/category_customization/data/repositories/category_customization_repository.dart';
 import 'package:financial_app/features/financial_calendar/presentation/controllers/calendar_controller.dart';
+import 'package:financial_app/features/financial_calendar/data/repositories/calendar_repository.dart';
 import 'package:financial_app/features/onboarding/presentation/controllers/onboarding_controller.dart';
+import 'package:financial_app/features/onboarding/data/repositories/onboarding_repository.dart';
 import 'package:financial_app/features/ai_budget_recommendation/presentation/controllers/ai_budget_controller.dart';
+import 'package:financial_app/features/ai_budget_recommendation/data/repositories/ai_budget_repository.dart';
 import 'package:financial_app/features/settings/presentation/controllers/settings_controller.dart';
+import 'package:financial_app/features/settings/data/repositories/settings_repository.dart';
 import 'package:financial_app/features/home/presentation/controllers/dashboard_controller.dart';
+import 'package:financial_app/features/home/data/repositories/dashboard_repository.dart';
+import 'package:financial_app/features/map/data/repositories/map_repository.dart';
+import 'package:financial_app/features/map/presentation/controllers/map_screen_controller.dart';
+import 'package:financial_app/features/auth/data/repositories/auth_repository.dart';
 import 'package:financial_app/services/cache_service.dart';
 import 'package:financial_app/services/search_service.dart';
 import 'package:financial_app/services/export_service.dart';
@@ -265,7 +274,8 @@ Future<void> setupServiceLocator() async {
   getIt.registerFactory<ForecastController>(() => ForecastController(repository: getIt<ForecastRepository>()));
 
   // ========== Auth Feature (Clean Architecture) ==========
-  getIt.registerFactory<AuthController>(() => AuthController());
+  getIt.registerLazySingleton<AuthRepository>(() => AuthRepository());
+  getIt.registerFactory<AuthController>(() => AuthController(repository: getIt<AuthRepository>()));
 
   // ========== Backup Feature ==========
   getIt.registerLazySingleton<BackupRepository>(() => BackupRepository());
@@ -302,24 +312,32 @@ Future<void> setupServiceLocator() async {
   );
 
   // ========== Category Customization Feature (Clean Architecture) ==========
-  getIt.registerFactory<CategoryController>(() => CategoryController());
+  getIt.registerLazySingleton<CategoryCustomizationRepository>(() => CategoryCustomizationRepository());
+  getIt.registerFactory<CategoryController>(() => CategoryController(repository: getIt<CategoryCustomizationRepository>()));
 
   // ========== Calendar Feature (Clean Architecture) ==========
-  getIt.registerFactory<CalendarController>(() => CalendarController(service: getIt<FinancialCalendarService>()));
+  getIt.registerLazySingleton<CalendarRepository>(() => CalendarRepository());
+  getIt.registerFactory<CalendarController>(() => CalendarController(repository: getIt<CalendarRepository>()));
 
-  // ========== Map Feature (no controller registration - uses direct state) ==========
+  // ========== Map Feature (Clean Architecture) ==========
+  getIt.registerLazySingleton<MapRepository>(() => MapRepository());
+  getIt.registerFactory<MapScreenController>(() => MapScreenController(repository: getIt<MapRepository>()));
 
   // ========== Onboarding Feature (Clean Architecture) ==========
-  getIt.registerFactory<OnboardingController>(() => OnboardingController());
+  getIt.registerLazySingleton<OnboardingRepository>(() => OnboardingRepository());
+  getIt.registerFactory<OnboardingController>(() => OnboardingController(repository: getIt<OnboardingRepository>()));
 
   // ========== AI Budget Recommendation Feature (Clean Architecture) ==========
-  getIt.registerFactory<AIBudgetController>(() => AIBudgetController());
+  getIt.registerLazySingleton<AIBudgetRepository>(() => AIBudgetRepository());
+  getIt.registerFactory<AIBudgetController>(() => AIBudgetController(repository: getIt<AIBudgetRepository>()));
 
   // ========== Settings Feature (Clean Architecture) ==========
-  getIt.registerFactory<SettingsController>(() => SettingsController());
+  getIt.registerLazySingleton<SettingsRepository>(() => SettingsRepository());
+  getIt.registerFactory<SettingsController>(() => SettingsController(repository: getIt<SettingsRepository>()));
 
   // ========== Dashboard Feature ==========
-  getIt.registerFactory<DashboardController>(() => DashboardController());
+  getIt.registerLazySingleton<DashboardRepository>(() => DashboardRepository());
+  getIt.registerFactory<DashboardController>(() => DashboardController(repository: getIt<DashboardRepository>()));
 
   // ========== Domain Services (CRUD operations via focused data services) ==========
   getIt.registerLazySingleton<AccountService>(() => AccountService());

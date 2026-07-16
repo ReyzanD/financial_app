@@ -1,10 +1,11 @@
 import 'package:flutter/foundation.dart';
-import 'package:financial_app/services/category_customization_service.dart';
 import 'package:financial_app/models/category_model.dart';
+import 'package:financial_app/features/category_customization/data/repositories/category_customization_repository.dart';
 
 class CategoryController extends ChangeNotifier {
-  final CategoryCustomizationService _s;
-  CategoryController({CategoryCustomizationService? service}) : _s = service ?? CategoryCustomizationService();
+  final CategoryCustomizationRepository _repository;
+  CategoryController({CategoryCustomizationRepository? repository})
+      : _repository = repository ?? CategoryCustomizationRepository();
 
   List<CategoryModel> _defaultCategories = [];
   List<CategoryModel> _customCategories = [];
@@ -22,8 +23,8 @@ class CategoryController extends ChangeNotifier {
     notifyListeners();
     try {
       final results = await Future.wait<List<CategoryModel>>([
-        _s.getAllCategoriesWithCustomizations(),
-        _s.getCustomCategories(),
+        _repository.getAllCategoriesWithCustomizations(),
+        _repository.getCustomCategories(),
       ]);
       final allCategories = results[0];
       _customCategories = results[1];
@@ -38,7 +39,7 @@ class CategoryController extends ChangeNotifier {
 
   Future<void> deleteCategory(CategoryModel category) async {
     try {
-      await _s.deleteCustomCategory(category.id);
+      await _repository.deleteCustomCategory(category.id);
       await loadData();
     } catch (e) {
       rethrow;
