@@ -1,13 +1,15 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
+import 'package:financial_app/utils/design_tokens.dart';
 import 'package:financial_app/utils/responsive_helper.dart';
 
 /// Helper class untuk accessibility features
 /// Memastikan aplikasi accessible untuk semua users
 class AccessibilityHelper {
   // Minimum touch target size (48x48dp sesuai Material Design)
-  static const double minTouchTarget = 48.0;
+  // Uses DesignTokens.touchTargetMin as the single source of truth.
+  static double get minTouchTarget => DesignTokens.touchTargetMin;
 
   // Get minimum touch target size dengan responsive scaling
   static double getTouchTargetSize(BuildContext context) {
@@ -15,12 +17,20 @@ class AccessibilityHelper {
   }
 
   // Ensure widget meets minimum touch target
-  static Widget ensureTouchTarget({required BuildContext context, required Widget child, VoidCallback? onTap}) {
+  static Widget ensureTouchTarget({
+    required BuildContext context,
+    required Widget child,
+    VoidCallback? onTap,
+  }) {
     final size = getTouchTargetSize(context);
     final widget = SizedBox(width: size, height: size, child: child);
 
     if (onTap != null) {
-      return InkWell(onTap: onTap, borderRadius: BorderRadius.circular(8), child: widget);
+      return InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(8),
+        child: widget,
+      );
     }
     return widget;
   }
@@ -66,13 +76,20 @@ class AccessibilityHelper {
   }
 
   // Check if color combination meets WCAG AA (4.5:1 for normal text, 3:1 for large text)
-  static bool meetsWCAGAA(Color foreground, Color background, {bool isLargeText = false}) {
+  static bool meetsWCAGAA(
+    Color foreground,
+    Color background, {
+    bool isLargeText = false,
+  }) {
     final ratio = getContrastRatio(foreground, background);
     return isLargeText ? ratio >= 3.0 : ratio >= 4.5;
   }
 
   // Get accessible text color based on background
-  static Color getAccessibleTextColor(Color backgroundColor, {bool isLargeText = false}) {
+  static Color getAccessibleTextColor(
+    Color backgroundColor, {
+    bool isLargeText = false,
+  }) {
     final white = Colors.white;
     final black = Colors.black;
 
@@ -122,7 +139,8 @@ class AccessibilityHelper {
 
     // Ensure accessible colors
     final bgColor = backgroundColor ?? Theme.of(context).primaryColor;
-    final fgColor = foregroundColor ?? getAccessibleTextColor(bgColor, isLargeText: true);
+    final fgColor =
+        foregroundColor ?? getAccessibleTextColor(bgColor, isLargeText: true);
 
     return Semantics(
       label: createSemanticLabel(label: label, hint: hint, isButton: true),
@@ -145,7 +163,9 @@ class AccessibilityHelper {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Icon(icon, size: ResponsiveHelper.iconSize(context, 20)),
-                    SizedBox(width: ResponsiveHelper.horizontalSpacing(context, 8)),
+                    SizedBox(
+                      width: ResponsiveHelper.horizontalSpacing(context, 8),
+                    ),
                     Text(label),
                   ],
                 )
@@ -165,7 +185,8 @@ class AccessibilityHelper {
     double? iconSize,
   }) {
     final size = getTouchTargetSize(context);
-    final effectiveIconSize = iconSize ?? ResponsiveHelper.iconSize(context, 24);
+    final effectiveIconSize =
+        iconSize ?? ResponsiveHelper.iconSize(context, 24);
 
     return Semantics(
       label: createSemanticLabel(label: label, hint: hint, isButton: true),
@@ -188,11 +209,19 @@ class AccessibilityHelper {
     bool isHeader = false,
     TextStyle? style,
   }) {
-    return Semantics(label: semanticLabel ?? text, header: isHeader, child: Text(text, style: style));
+    return Semantics(
+      label: semanticLabel ?? text,
+      header: isHeader,
+      child: Text(text, style: style),
+    );
   }
 
   // Announce changes untuk screen readers
-  static void announce(BuildContext context, String message, {bool polite = true}) {
+  static void announce(
+    BuildContext context,
+    String message, {
+    bool polite = true,
+  }) {
     SemanticsService.sendAnnouncement(
       View.of(context),
       message,
@@ -212,7 +241,11 @@ class AccessibilityHelper {
   }
 
   // Adjust font size berdasarkan text scale factor
-  static double getAccessibleFontSize(BuildContext context, double baseSize, {double? maxScaleFactor}) {
+  static double getAccessibleFontSize(
+    BuildContext context,
+    double baseSize, {
+    double? maxScaleFactor,
+  }) {
     final scaleFactor = getTextScaleFactor(context);
     final maxScale = maxScaleFactor ?? 1.5;
     final effectiveScale = scaleFactor > maxScale ? maxScale : scaleFactor;

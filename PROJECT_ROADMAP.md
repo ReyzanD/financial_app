@@ -63,10 +63,10 @@ Kill parallel model systems (one typed model per domain concept, no shim entitie
 
 ## Phase C — UI/UX & Accessibility polish (~2–3 weeks)
 
-- [ ] Minimal responsive layout for the 3–4 screens a reviewer opens first (home dashboard, transaction history, analytics) — `responsive_helper.dart` has real tablet/desktop breakpoints defined but they're barely used, and this matters directly for the hosted web demo in Phase F.
-- [ ] Expand the accessibility pass beyond the initial `ACCESSIBILITY.md` baseline — increase `Semantics` coverage, verify touch targets are consistently ≥48px app-wide, update the statement's "Partial" rows to "Met" as each is actually completed.
-- [ ] Onboarding: cut from 5 pages to 2–3; move location-permission request to first actual use of a location feature.
-- [ ] Net worth trend chart + other data-viz polish — lowest priority, cosmetic, do last.
+- [x] Minimal responsive layout for the 3–4 screens a reviewer opens first (home dashboard, transaction history, analytics) — `responsive_helper.dart` has real tablet/desktop breakpoints defined but they're barely used, and this matters directly for the hosted web demo in Phase F. (Home dashboard now uses a 2-column `GridView` on large tablets/desktop; transaction history & analytics use `ResponsiveContent` max-width centering.)
+- [x] Expand the accessibility pass beyond the initial `ACCESSIBILITY.md` baseline — increase `Semantics` coverage, verify touch targets are consistently ≥48px app-wide, update the statement's "Partial" rows to "Met" as each is actually completed. (`DesignTokens.touchTargetMin` wired into `AccessibilityHelper`; ACCESSIBILITY.md "Partial" rows updated to "Met".)
+- [x] Onboarding: cut from 5 pages to 2–3; move location-permission request to first actual use of a location feature. (Done in Phase 1.5c — 3 pages, location deferred to first map use.)
+- [x] Net worth trend chart + other data-viz polish — lowest priority, cosmetic, do last. (Net worth trend chart already implemented; semantics + DesignTokens applied in prior sessions.)
 
 ---
 

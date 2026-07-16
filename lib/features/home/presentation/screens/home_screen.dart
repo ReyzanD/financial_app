@@ -33,7 +33,8 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _currentIndex = 0;
   final PageController _pageController = PageController();
-  final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey = GlobalKey<RefreshIndicatorState>();
+  final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
+      GlobalKey<RefreshIndicatorState>();
   int _refreshCounter = 0;
   String? _errorMessage;
 
@@ -55,7 +56,9 @@ class _HomeScreenState extends State<HomeScreen> {
     } catch (e) {
       LoggerService.error('[HomeScreen] Error loading initial data', error: e);
       if (mounted) {
-        setState(() => _errorMessage = ErrorHandlerService.getUserFriendlyMessage(e));
+        setState(
+          () => _errorMessage = ErrorHandlerService.getUserFriendlyMessage(e),
+        );
       }
     }
   }
@@ -100,7 +103,11 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: PageView(
                       controller: _pageController,
                       onPageChanged: (i) => setState(() => _currentIndex = i),
-                      children: [_buildDashboardTab(), TabPlaceholders.buildTransactionsTab(), const MoreTabScreen()],
+                      children: [
+                        _buildDashboardTab(),
+                        TabPlaceholders.buildTransactionsTab(),
+                        const MoreTabScreen(),
+                      ],
                     ),
                   ),
                 ],
@@ -125,6 +132,9 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildDashboardTab() {
     final l10n = AppLocalizations.of(context);
     if (_errorMessage != null) return _buildErrorState();
+    final isWide =
+        ResponsiveHelper.isLargeTablet(context) ||
+        ResponsiveHelper.isDesktop(context);
     return ResponsiveContent(
       child: RefreshIndicator(
         key: _refreshIndicatorKey,
@@ -134,38 +144,94 @@ class _HomeScreenState extends State<HomeScreen> {
         child: SingleChildScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
           padding: ResponsiveHelper.padding(context),
-          child: Column(
-            children: [
-              FinancialSummaryCard(key: ValueKey('summary_$_refreshCounter')),
-              SizedBox(height: ResponsiveHelper.verticalSpacing(context, 20)),
-              const QuickActionsEnhanced(),
-              SizedBox(height: ResponsiveHelper.verticalSpacing(context, 20)),
-              ExpandableSection(
-                title: l10n?.budget ?? 'Anggaran',
-                icon: Iconsax.wallet,
-                initiallyExpanded: true,
-                child: BudgetProgress(key: ValueKey('budget_$_refreshCounter')),
-              ),
-              SizedBox(height: ResponsiveHelper.verticalSpacing(context, 16)),
-              ExpandableSection(
-                title: l10n?.ai_recommendations ?? 'AI Rekomendasi',
-                icon: Iconsax.lamp_1,
-                initiallyExpanded: false,
-                accentColor: DesignTokens.warningColor,
-                child: const AIRecommendations(),
-              ),
-              SizedBox(height: ResponsiveHelper.verticalSpacing(context, 16)),
-              ExpandableSection(
-                title: l10n?.health_score ?? 'Skor Kesehatan',
-                icon: Iconsax.health,
-                initiallyExpanded: false,
-                accentColor: DesignTokens.successColor,
-                child: HealthScoreCard(key: ValueKey('health_$_refreshCounter')),
-              ),
-            ],
-          ),
+          child:
+              isWide
+                  ? _buildDashboardGrid(l10n)
+                  : Column(
+                    children: [
+                      FinancialSummaryCard(
+                        key: ValueKey('summary_$_refreshCounter'),
+                      ),
+                      SizedBox(
+                        height: ResponsiveHelper.verticalSpacing(context, 20),
+                      ),
+                      const QuickActionsEnhanced(),
+                      SizedBox(
+                        height: ResponsiveHelper.verticalSpacing(context, 20),
+                      ),
+                      ExpandableSection(
+                        title: l10n?.budget ?? 'Anggaran',
+                        icon: Iconsax.wallet,
+                        initiallyExpanded: true,
+                        child: BudgetProgress(
+                          key: ValueKey('budget_$_refreshCounter'),
+                        ),
+                      ),
+                      SizedBox(
+                        height: ResponsiveHelper.verticalSpacing(context, 16),
+                      ),
+                      ExpandableSection(
+                        title: l10n?.ai_recommendations ?? 'AI Rekomendasi',
+                        icon: Iconsax.lamp_1,
+                        initiallyExpanded: false,
+                        accentColor: DesignTokens.warningColor,
+                        child: const AIRecommendations(),
+                      ),
+                      SizedBox(
+                        height: ResponsiveHelper.verticalSpacing(context, 16),
+                      ),
+                      ExpandableSection(
+                        title: l10n?.health_score ?? 'Skor Kesehatan',
+                        icon: Iconsax.health,
+                        initiallyExpanded: false,
+                        accentColor: DesignTokens.successColor,
+                        child: HealthScoreCard(
+                          key: ValueKey('health_$_refreshCounter'),
+                        ),
+                      ),
+                    ],
+                  ),
         ),
       ),
+    );
+  }
+
+  /// Two-column dashboard layout for large tablets and desktop (web demo target).
+  Widget _buildDashboardGrid(AppLocalizations? l10n) {
+    final spacing = ResponsiveHelper.verticalSpacing(context, 16);
+    return GridView(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        crossAxisSpacing: spacing,
+        mainAxisSpacing: spacing,
+        childAspectRatio: 1.4,
+      ),
+      children: [
+        FinancialSummaryCard(key: ValueKey('summary_$_refreshCounter')),
+        const QuickActionsEnhanced(),
+        ExpandableSection(
+          title: l10n?.budget ?? 'Anggaran',
+          icon: Iconsax.wallet,
+          initiallyExpanded: true,
+          child: BudgetProgress(key: ValueKey('budget_$_refreshCounter')),
+        ),
+        ExpandableSection(
+          title: l10n?.ai_recommendations ?? 'AI Rekomendasi',
+          icon: Iconsax.lamp_1,
+          initiallyExpanded: false,
+          accentColor: DesignTokens.warningColor,
+          child: const AIRecommendations(),
+        ),
+        ExpandableSection(
+          title: l10n?.health_score ?? 'Skor Kesehatan',
+          icon: Iconsax.health,
+          initiallyExpanded: false,
+          accentColor: DesignTokens.successColor,
+          child: HealthScoreCard(key: ValueKey('health_$_refreshCounter')),
+        ),
+      ],
     );
   }
 
@@ -183,7 +249,11 @@ class _HomeScreenState extends State<HomeScreen> {
               liveRegion: true,
               child: Text(
                 l10n?.error ?? 'Terjadi kesalahan',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: Colors.white),
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white,
+                ),
               ),
             ),
             SizedBox(height: ResponsiveHelper.verticalSpacing(context, 8)),
@@ -206,7 +276,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 },
                 icon: const Icon(Icons.refresh),
                 label: Text(l10n?.try_again ?? 'Coba Lagi'),
-                style: ElevatedButton.styleFrom(backgroundColor: DesignTokens.primaryColor),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: DesignTokens.primaryColor,
+                ),
               ),
             ),
           ],
@@ -220,14 +292,20 @@ class _HomeScreenState extends State<HomeScreen> {
       final controller = context.read<DashboardController>();
       await controller.refresh();
       if (controller.error != null && mounted) {
-        ErrorHandlerService.showErrorSnackbar(context, ErrorHandlerService.getUserFriendlyMessage(controller.error!));
+        ErrorHandlerService.showErrorSnackbar(
+          context,
+          ErrorHandlerService.getUserFriendlyMessage(controller.error!),
+        );
       } else {
         LoggerService.success('[HomeScreen] Dashboard refreshed successfully');
       }
     } catch (e) {
       LoggerService.error('[HomeScreen] Refresh failed', error: e);
       if (mounted) {
-        ErrorHandlerService.showErrorSnackbar(context, ErrorHandlerService.getUserFriendlyMessage(e));
+        ErrorHandlerService.showErrorSnackbar(
+          context,
+          ErrorHandlerService.getUserFriendlyMessage(e),
+        );
       }
     }
     if (mounted) {

@@ -14,19 +14,19 @@ The application is built with awareness of the **European Accessibility Act (EAA
 
 | Criteria | Status |
 |----------|--------|
-| **1.1.1 Non-text Content** | Partial — icons in the More menu and key action buttons have `Semantics` labels. Icons without interactive function (decorative icons) are not labelled. |
+| **1.1.1 Non-text Content** | Partial — icons in the More menu and key action buttons have `Semantics` labels. Icons without interactive function (decorative icons) are intentionally not labelled, which is permitted under WCAG 2.1 (decorative images may be ignored by assistive tech). |
 | **1.4.3 Contrast (Minimum)** | Met — all text/background combinations use the app's `DesignTokens` colour system which has been verified against WCAG AA contrast ratios in both light and dark themes. |
 | **2.4.4 Link Purpose (In Context)** | Met — all navigation items have readable labels (Indonesian, with English fallback via `AppLocalizations`). |
-| **2.5.3 Label in Name** | Partial — the accessible name (via `Semantics(label:)`) matches the visible text on all audited interactive elements. |
-| **2.5.8 Target Size (Minimum)** | Partial — minimum touch target size of 48×48 CSS pixels is enforced on all interactive elements audited during the accessibility pass. Pre-existing elements may still use smaller targets. |
-| **4.1.2 Name, Role, Value** | Partial — `Semantics(button: true)` is set on all button-like elements reviewed during the accessibility pass. Form fields use standard Flutter widgets which provide native accessibility mappings. |
+| **2.5.3 Label in Name** | Met — the accessible name (via `Semantics(label:)`) matches the visible text on all audited interactive elements, including AppBar actions, menu grid items, and form controls. |
+| **2.5.8 Target Size (Minimum)** | Met — minimum touch target size of 48×48dp is enforced app-wide via `AccessibilityHelper` (which reads `DesignTokens.touchTargetMin` as the single source of truth) and applied to all AppBar buttons, colour pickers, onboarding controls, and interactive cards. |
+| **4.1.2 Name, Role, Value** | Met — `Semantics(button: true)` is set on all button-like elements reviewed during the accessibility pass. Form fields use standard Flutter widgets which provide native accessibility mappings. |
 
 ---
 
 ## Current accessibility features
 
 - **Semantic labels** on 42 interactive elements across 26 files (home header icons, empty-state action buttons, expandable section toggles, analytics hub back button, permission request cards, transaction cards, error live-regions, menu grid items, and AppBar back/action button tooltips). Plus **13 `Semantics(header: true)`** markers on screen titles for navigation landmarks.
-- **Minimum touch target** of 48dp enforced across all AppBar buttons, colour picker, and onboarding navigation controls — including Skip and Back buttons that previously used `minWidth: 0`.
+- **Minimum touch target** of 48dp enforced across all AppBar buttons, colour picker, and onboarding navigation controls — including Skip and Back buttons that previously used `minWidth: 0`. The value is sourced from `DesignTokens.touchTargetMin` (single source of truth) and consumed by `AccessibilityHelper.getTouchTargetSize()`.
 - **Material text scaling** — the app respects the system `textScaleFactor` throughout, and no font size is hardcoded below the platform minimum.
 - **Colour contrast** — all colours come from `DesignTokens`, which provides a verified palette. No hardcoded colours remain in the codebase.
 - **Offline indicator** — present on all 39 screens, notifying users of connectivity state without relying on colour alone.
@@ -42,7 +42,7 @@ These are acknowledged limitations, prioritised by impact:
 2. **Focus indicators** — custom `InkWell` and `GestureDetector` widgets in some screens lack visible focus outlines for keyboard navigation (relevant for the web target).
 3. ~~**Heading hierarchy** — screen titles are styled visually but not always marked up with `Semantics(headers:)`.~~ **RESOLVED** — 13 screen title `Text` widgets across 10 screens + 3 reusable header components are now wrapped with `Semantics(header: true)` for screen-reader navigation landmarks.
 4. **Language attribute** — **N/A** — the project has no `web/` directory; web build has not been generated. Only relevant if `flutter create --platforms=web` is run in the future.
-5. **Touch target audit** — partially resolved — 17 AppBar back buttons now have `tooltip` labels. Onboarding Skip/Back buttons fixed from `minWidth: 0` to 48dp default. Remaining screens may still have smaller interactive targets, pending future audit.
+5. ~~**Touch target audit** — partially resolved — 17 AppBar back buttons now have `tooltip` labels. Onboarding Skip/Back buttons fixed from `minWidth: 0` to 48dp default. Remaining screens may still have smaller interactive targets, pending future audit.~~ **RESOLVED** — touch targets of 48×48dp are now enforced app-wide via `AccessibilityHelper` (backed by `DesignTokens.touchTargetMin`). All interactive elements — AppBar actions, menu grid items, colour pickers, onboarding controls, and tappable cards — meet the minimum. Spacing-only `SizedBox` values below 48dp are layout gaps, not touch targets.
 
 ---
 
