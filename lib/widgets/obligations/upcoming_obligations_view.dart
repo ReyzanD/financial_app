@@ -12,13 +12,26 @@ class UpcomingObligationsView extends StatelessWidget {
   final String searchQuery;
   final ObligationFilters filters;
 
-  const UpcomingObligationsView({super.key, this.searchQuery = '', this.filters = const ObligationFilters()});
+  const UpcomingObligationsView({
+    super.key,
+    this.searchQuery = '',
+    this.filters = const ObligationFilters(),
+  });
 
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<List<FinancialObligation>>(
       future: getIt<ObligationService>().getUpcomingObligations(),
       builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return Center(
+            child: Text(
+              AppLocalizations.of(context)?.failed_to_load_data ??
+                  'Gagal Memuat Data',
+              style: TextStyle(color: Colors.grey[400]),
+            ),
+          );
+        }
         if (!snapshot.hasData) {
           return const Center(child: CircularProgressIndicator());
         }
@@ -42,15 +55,21 @@ class UpcomingObligationsView extends StatelessWidget {
           obligations =
               obligations.where((o) {
                 if (f.type != null && o.type.name != f.type) return false;
-                if (f.category != null && o.category != f.category) return false;
+                if (f.category != null && o.category != f.category)
+                  return false;
                 if (f.status != null) {
                   if (f.status == 'active' && o.daysUntilDue <= 0) return false;
-                  if (f.status == 'overdue' && o.daysUntilDue >= 0) return false;
+                  if (f.status == 'overdue' && o.daysUntilDue >= 0)
+                    return false;
                 }
-                if (f.minAmount != null && o.monthlyAmount < f.minAmount!) return false;
-                if (f.maxAmount != null && o.monthlyAmount > f.maxAmount!) return false;
-                if (f.startDate != null && o.dueDate.isBefore(f.startDate!)) return false;
-                if (f.endDate != null && o.dueDate.isAfter(f.endDate!)) return false;
+                if (f.minAmount != null && o.monthlyAmount < f.minAmount!)
+                  return false;
+                if (f.maxAmount != null && o.monthlyAmount > f.maxAmount!)
+                  return false;
+                if (f.startDate != null && o.dueDate.isBefore(f.startDate!))
+                  return false;
+                if (f.endDate != null && o.dueDate.isAfter(f.endDate!))
+                  return false;
                 return true;
               }).toList();
         }
@@ -72,7 +91,11 @@ class UpcomingObligationsView extends StatelessWidget {
           itemBuilder: (context, index) {
             return ObligationItem(
               obligation: obligations[index],
-              onTap: () => ObligationHelpers.showObligationDetails(context, obligations[index]),
+              onTap:
+                  () => ObligationHelpers.showObligationDetails(
+                    context,
+                    obligations[index],
+                  ),
             );
           },
         );

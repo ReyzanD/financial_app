@@ -12,13 +12,26 @@ class SubscriptionsView extends StatelessWidget {
   final String searchQuery;
   final ObligationFilters filters;
 
-  const SubscriptionsView({super.key, this.searchQuery = '', this.filters = const ObligationFilters()});
+  const SubscriptionsView({
+    super.key,
+    this.searchQuery = '',
+    this.filters = const ObligationFilters(),
+  });
 
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<List<FinancialObligation>>(
       future: getIt<ObligationService>().getSubscriptions(),
       builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return Center(
+            child: Text(
+              AppLocalizations.of(context)?.failed_to_load_data ??
+                  'Gagal Memuat Data',
+              style: TextStyle(color: Colors.grey[400]),
+            ),
+          );
+        }
         if (!snapshot.hasData) {
           return const Center(child: CircularProgressIndicator());
         }
@@ -42,15 +55,21 @@ class SubscriptionsView extends StatelessWidget {
           subscriptions =
               subscriptions.where((s) {
                 if (f.type != null && s.type.name != f.type) return false;
-                if (f.category != null && s.category != f.category) return false;
+                if (f.category != null && s.category != f.category)
+                  return false;
                 if (f.status != null) {
                   if (f.status == 'active' && s.daysUntilDue <= 0) return false;
-                  if (f.status == 'overdue' && s.daysUntilDue >= 0) return false;
+                  if (f.status == 'overdue' && s.daysUntilDue >= 0)
+                    return false;
                 }
-                if (f.minAmount != null && s.monthlyAmount < f.minAmount!) return false;
-                if (f.maxAmount != null && s.monthlyAmount > f.maxAmount!) return false;
-                if (f.startDate != null && s.dueDate.isBefore(f.startDate!)) return false;
-                if (f.endDate != null && s.dueDate.isAfter(f.endDate!)) return false;
+                if (f.minAmount != null && s.monthlyAmount < f.minAmount!)
+                  return false;
+                if (f.maxAmount != null && s.monthlyAmount > f.maxAmount!)
+                  return false;
+                if (f.startDate != null && s.dueDate.isBefore(f.startDate!))
+                  return false;
+                if (f.endDate != null && s.dueDate.isAfter(f.endDate!))
+                  return false;
                 return true;
               }).toList();
         }
@@ -71,7 +90,11 @@ class SubscriptionsView extends StatelessWidget {
           itemCount: subscriptions.length,
           itemBuilder: (context, index) {
             return GestureDetector(
-              onTap: () => ObligationHelpers.showObligationDetails(context, subscriptions[index]),
+              onTap:
+                  () => ObligationHelpers.showObligationDetails(
+                    context,
+                    subscriptions[index],
+                  ),
               child: SubscriptionItem(subscription: subscriptions[index]),
             );
           },

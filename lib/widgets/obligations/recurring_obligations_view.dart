@@ -8,6 +8,7 @@ import 'package:financial_app/widgets/obligations/obligation_filters.dart';
 import 'package:financial_app/widgets/obligations/obligation_helpers.dart';
 import 'package:financial_app/widgets/obligations/obligation_item.dart';
 import 'package:financial_app/utils/design_tokens.dart';
+import 'package:financial_app/l10n/app_localizations.dart';
 
 /// View for recurring obligations (subscriptions + recurring bills).
 class RecurringObligationsView extends StatefulWidget {
@@ -40,6 +41,15 @@ class _RecurringObligationsViewState extends State<RecurringObligationsView> {
       key: ValueKey('recurring_$_refreshKey'),
       future: getIt<ObligationService>().getObligations(),
       builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return Center(
+            child: Text(
+              AppLocalizations.of(context)?.failed_to_load_data ??
+                  'Gagal Memuat Data',
+              style: TextStyle(color: Colors.grey[400]),
+            ),
+          );
+        }
         if (!snapshot.hasData) {
           return const Center(
             child: CircularProgressIndicator(color: DesignTokens.primaryColor),

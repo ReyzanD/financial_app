@@ -13,7 +13,11 @@ class OverdueObligationsView extends StatefulWidget {
   final String searchQuery;
   final ObligationFilters filters;
 
-  const OverdueObligationsView({super.key, this.searchQuery = '', this.filters = const ObligationFilters()});
+  const OverdueObligationsView({
+    super.key,
+    this.searchQuery = '',
+    this.filters = const ObligationFilters(),
+  });
 
   @override
   State<OverdueObligationsView> createState() => _OverdueObligationsViewState();
@@ -34,6 +38,15 @@ class _OverdueObligationsViewState extends State<OverdueObligationsView> {
       key: ValueKey('overdue_$_refreshKey'),
       future: getIt<ObligationService>().getObligations(),
       builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return Center(
+            child: Text(
+              AppLocalizations.of(context)?.failed_to_load_data ??
+                  'Gagal Memuat Data',
+              style: TextStyle(color: Colors.grey[400]),
+            ),
+          );
+        }
         if (!snapshot.hasData) {
           return const Center(child: CircularProgressIndicator());
         }
@@ -47,15 +60,21 @@ class _OverdueObligationsViewState extends State<OverdueObligationsView> {
           overdue =
               overdue.where((o) {
                 if (f.type != null && o.type.name != f.type) return false;
-                if (f.category != null && o.category != f.category) return false;
+                if (f.category != null && o.category != f.category)
+                  return false;
                 if (f.status != null) {
                   if (f.status == 'active' && o.daysUntilDue <= 0) return false;
-                  if (f.status == 'overdue' && o.daysUntilDue >= 0) return false;
+                  if (f.status == 'overdue' && o.daysUntilDue >= 0)
+                    return false;
                 }
-                if (f.minAmount != null && o.monthlyAmount < f.minAmount!) return false;
-                if (f.maxAmount != null && o.monthlyAmount > f.maxAmount!) return false;
-                if (f.startDate != null && o.dueDate.isBefore(f.startDate!)) return false;
-                if (f.endDate != null && o.dueDate.isAfter(f.endDate!)) return false;
+                if (f.minAmount != null && o.monthlyAmount < f.minAmount!)
+                  return false;
+                if (f.maxAmount != null && o.monthlyAmount > f.maxAmount!)
+                  return false;
+                if (f.startDate != null && o.dueDate.isBefore(f.startDate!))
+                  return false;
+                if (f.endDate != null && o.dueDate.isAfter(f.endDate!))
+                  return false;
                 return true;
               }).toList();
         }
@@ -70,12 +89,20 @@ class _OverdueObligationsViewState extends State<OverdueObligationsView> {
                 const SizedBox(height: DesignTokens.spacing4),
                 Text(
                   'Tidak Ada Tagihan Terlambat',
-                  style: GoogleFonts.poppins(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600),
+                  style: GoogleFonts.poppins(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
                 const SizedBox(height: DesignTokens.spacing2),
                 Text(
-                  l10n?.all_bills_paid ?? 'Semua tagihan Anda sudah dibayar atau belum jatuh tempo',
-                  style: GoogleFonts.poppins(color: Colors.grey[600], fontSize: 12),
+                  l10n?.all_bills_paid ??
+                      'Semua tagihan Anda sudah dibayar atau belum jatuh tempo',
+                  style: GoogleFonts.poppins(
+                    color: Colors.grey[600],
+                    fontSize: 12,
+                  ),
                 ),
               ],
             ),
@@ -94,7 +121,9 @@ class _OverdueObligationsViewState extends State<OverdueObligationsView> {
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
                   color: Colors.red.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                  borderRadius: BorderRadius.circular(
+                    DesignTokens.radiusMedium,
+                  ),
                   border: Border.all(color: Colors.red.withValues(alpha: 0.3)),
                 ),
                 child: Row(
@@ -104,14 +133,22 @@ class _OverdueObligationsViewState extends State<OverdueObligationsView> {
                     Expanded(
                       child: Text(
                         '${overdue.length} tagihan terlambat - segera bayar untuk menghindari denda',
-                        style: GoogleFonts.poppins(color: Colors.red[300], fontSize: 13, fontWeight: FontWeight.w500),
+                        style: GoogleFonts.poppins(
+                          color: Colors.red[300],
+                          fontSize: 13,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
                     ),
                   ],
                 ),
               );
             }
-            return ObligationItem(obligation: overdue[index - 1], onTap: () {}, onPaymentRecorded: _refreshData);
+            return ObligationItem(
+              obligation: overdue[index - 1],
+              onTap: () {},
+              onPaymentRecorded: _refreshData,
+            );
           },
         );
       },

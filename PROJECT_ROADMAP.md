@@ -342,6 +342,49 @@ Added `test/utils/color_parsing_test.dart` (9 cases).
 
 ---
 
+## Code Review Pass 4 — async races, uncaught queries & FutureBuilder errors (COMPLETE)
+
+Fourth sweep (via explore agent) into screens/services beyond parse/cast classes:
+use-after-dispose `setState`, uncaught `firstWhere`, `List.generate` over mismatched
+lists, raw `double.parse` on formatted input, and the systemic FutureBuilder `hasError`
+omission (9 occurrences that hang on error).
+
+**Analyzer:** `flutter analyze` → 0 errors, 0 warnings (138 pre-existing info).
+**Tests:** 318 pass; 31 failures are the pre-existing `databaseFactory not initialized`
+(missing system `libsqlite3.so`) environment-only SQLite tests — not code defects.
+
+### Use-after-dispose (Class 1 — real crash on pop-during-async)
+- **`location_picker_map.dart`** — 4× `setState` after `await` without a `mounted` guard
+  (`_searchPlaces` results branch, no-results branch, `finally`, `_initializeMap`).
+  Each now guarded with `if (mounted)` before `setState` (prevents
+  `setState() called after dispose` when the sheet is popped mid-network-call).
+
+### Uncaught query (Class 7)
+- **`investment_service.dart:23`** — `updatePrice` used `investments.firstWhere(...)`
+  with no `orElse` (throws `StateError` if the just-updated row isn't in the fetched
+  list). Now `where(...).toList()` + explicit `StateError` on empty.
+
+### Latent RangeError (Class 6)
+- **`report_screen.dart:560`** — `List.generate(options.length, (i) => values[i])`
+  would throw if `options`/`values` lengths diverge. Now bounds-checked
+  (`i < values.length ? values[i] : options[i]`).
+
+### Locale/format inconsistency (Class 10)
+- **`add_transaction_screen.dart:676,765`** — `double.parse(_amountController.text)`
+  (raw, unsanitized) inconsistent with the sanitized `double.tryParse(...replaceAll)`
+  used elsewhere; threw on formatted input ("1.000.000"). Now sanitized `tryParse`
+  with an `invalid_amount` guard (submit) / safe skip (budget update).
+
+### FutureBuilder `hasError` (Class 4 — 9 occurrences, hung on error)
+Added an error branch to every FutureBuilder that only checked `!hasData` (so a failed
+future showed a permanent spinner / blank). Now shows a localized `failed_to_load_data`
+message (or `SizedBox.shrink()` for the non-critical biometric button):
+`upcoming_obligations_view`, `all_obligations_view`, `debts_view`, `overdue_obligations_view`,
+`recurring_obligations_view`, `subscriptions_view`, `obligation_summary_cards`,
+`notification_center_screen`, `pin_unlock_screen`.
+
+---
+
 ## Phase H — Packaging for reviewers (~2–3 weeks, do this close to application time)
 
 - Host the Flutter **web** build (GitHub Pages/Netlify) — "try it live" beats "clone and run."

@@ -672,8 +672,19 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
 
       try {
         // Prepare transaction data for API
+        final parsedAmount = double.tryParse(
+          _amountController.text.replaceAll(RegExp(r'[^0-9.]'), ''),
+        );
+        if (parsedAmount == null || parsedAmount <= 0) {
+          ErrorHandlerService.showWarningSnackbar(
+            ctx,
+            AppLocalizations.of(ctx)?.invalid_amount ?? 'Jumlah tidak valid',
+          );
+          setState(() => _isSubmitting = false);
+          return;
+        }
         final transactionData = {
-          'amount': double.parse(_amountController.text),
+          'amount': parsedAmount,
           'type': _selectedType,
           'category_id': _selectedCategory,
           'account_id': _selectedAccountId,
@@ -760,11 +771,16 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
         // If it's an expense, update the budget spent amount
         if (_selectedType == 'expense') {
           try {
-            await getIt<BudgetDataService>().updateBudgetForExpense(
-              categoryId: _selectedCategory ?? '',
-              amount: double.parse(_amountController.text),
-              transactionDate: _selectedDate,
+            final budgetAmount = double.tryParse(
+              _amountController.text.replaceAll(RegExp(r'[^0-9.]'), ''),
             );
+            if (budgetAmount != null && budgetAmount > 0) {
+              await getIt<BudgetDataService>().updateBudgetForExpense(
+                categoryId: _selectedCategory ?? '',
+                amount: budgetAmount,
+                transactionDate: _selectedDate,
+              );
+            }
           } catch (e) {
             LoggerService.warning('Budget update not critical', error: e);
           }

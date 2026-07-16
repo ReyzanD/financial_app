@@ -14,6 +14,7 @@ class ObligationSummaryCards extends StatelessWidget {
     return FutureBuilder<Map<String, dynamic>>(
       future: getIt<ObligationService>().getObligationsSummary(),
       builder: (context, snapshot) {
+        if (snapshot.hasError) return SizedBox();
         if (!snapshot.hasData) return SizedBox();
 
         final summary = snapshot.data!;
@@ -27,7 +28,9 @@ class ObligationSummaryCards extends StatelessWidget {
               Expanded(
                 child: _buildSummaryCard(
                   l10n?.this_month ?? 'Bulan Ini',
-                  CurrencyFormatter.formatRupiah((summary['monthlyTotal'] as num?)?.toInt() ?? 0),
+                  CurrencyFormatter.formatRupiah(
+                    (summary['monthlyTotal'] as num?)?.toInt() ?? 0,
+                  ),
                   Colors.blue,
                   Iconsax.calendar,
                 ),
@@ -38,7 +41,9 @@ class ObligationSummaryCards extends StatelessWidget {
               Expanded(
                 child: _buildSummaryCard(
                   l10n?.total_debt ?? 'Total Hutang',
-                  CurrencyFormatter.formatRupiah((summary['totalDebt'] as num?)?.toInt() ?? 0),
+                  CurrencyFormatter.formatRupiah(
+                    (summary['totalDebt'] as num?)?.toInt() ?? 0,
+                  ),
                   Colors.red,
                   Iconsax.card,
                 ),
@@ -50,7 +55,12 @@ class ObligationSummaryCards extends StatelessWidget {
     );
   }
 
-  Widget _buildSummaryCard(String title, String amount, Color color, IconData icon) {
+  Widget _buildSummaryCard(
+    String title,
+    String amount,
+    Color color,
+    IconData icon,
+  ) {
     return Card(
       color: DesignTokens.surfaceDark,
       child: Padding(
@@ -66,7 +76,14 @@ class ObligationSummaryCards extends StatelessWidget {
               ],
             ),
             SizedBox(height: DesignTokens.spacing2),
-            Text(amount, style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+            Text(
+              amount,
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
           ],
         ),
       ),

@@ -17,10 +17,19 @@ class InvestmentService {
     return created;
   }
 
-  Future<InvestmentModel> updatePrice(String investmentId, double newPrice) async {
+  Future<InvestmentModel> updatePrice(
+    String investmentId,
+    double newPrice,
+  ) async {
     await _investmentData.updateInvestmentPrice(investmentId, newPrice);
     final investments = await getInvestments();
-    return investments.firstWhere((i) => i.id == investmentId);
+    final updated = investments.where((i) => i.id == investmentId).toList();
+    if (updated.isEmpty) {
+      throw StateError(
+        'Investment not found after price update: $investmentId',
+      );
+    }
+    return updated.first;
   }
 
   Future<void> deleteInvestment(String investmentId) async {

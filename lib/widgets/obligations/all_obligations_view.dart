@@ -13,7 +13,11 @@ class AllObligationsView extends StatefulWidget {
   final String searchQuery;
   final ObligationFilters filters;
 
-  const AllObligationsView({super.key, this.searchQuery = '', this.filters = const ObligationFilters()});
+  const AllObligationsView({
+    super.key,
+    this.searchQuery = '',
+    this.filters = const ObligationFilters(),
+  });
 
   @override
   State<AllObligationsView> createState() => _AllObligationsViewState();
@@ -28,11 +32,20 @@ class _SectionItem {
   final String? title;
   final int? count;
 
-  const _SectionItem.header(this.title, this.count) : type = _SectionItemType.header, obligation = null;
+  const _SectionItem.header(this.title, this.count)
+    : type = _SectionItemType.header,
+      obligation = null;
 
-  const _SectionItem.obligation(this.obligation) : type = _SectionItemType.obligation, title = null, count = null;
+  const _SectionItem.obligation(this.obligation)
+    : type = _SectionItemType.obligation,
+      title = null,
+      count = null;
 
-  const _SectionItem.spacing() : type = _SectionItemType.spacing, obligation = null, title = null, count = null;
+  const _SectionItem.spacing()
+    : type = _SectionItemType.spacing,
+      obligation = null,
+      title = null,
+      count = null;
 }
 
 class _AllObligationsViewState extends State<AllObligationsView> {
@@ -80,6 +93,15 @@ class _AllObligationsViewState extends State<AllObligationsView> {
       key: ValueKey('obligations_$_refreshKey'),
       future: getIt<ObligationService>().getObligations(),
       builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return Center(
+            child: Text(
+              AppLocalizations.of(context)?.failed_to_load_data ??
+                  'Gagal Memuat Data',
+              style: TextStyle(color: Colors.grey[400]),
+            ),
+          );
+        }
         if (!snapshot.hasData) {
           return const Center(child: CircularProgressIndicator());
         }
@@ -92,15 +114,21 @@ class _AllObligationsViewState extends State<AllObligationsView> {
           obligations =
               obligations.where((o) {
                 if (f.type != null && o.type.name != f.type) return false;
-                if (f.category != null && o.category != f.category) return false;
+                if (f.category != null && o.category != f.category)
+                  return false;
                 if (f.status != null) {
                   if (f.status == 'active' && o.daysUntilDue <= 0) return false;
-                  if (f.status == 'overdue' && o.daysUntilDue >= 0) return false;
+                  if (f.status == 'overdue' && o.daysUntilDue >= 0)
+                    return false;
                 }
-                if (f.minAmount != null && o.monthlyAmount < f.minAmount!) return false;
-                if (f.maxAmount != null && o.monthlyAmount > f.maxAmount!) return false;
-                if (f.startDate != null && o.dueDate.isBefore(f.startDate!)) return false;
-                if (f.endDate != null && o.dueDate.isAfter(f.endDate!)) return false;
+                if (f.minAmount != null && o.monthlyAmount < f.minAmount!)
+                  return false;
+                if (f.maxAmount != null && o.monthlyAmount > f.maxAmount!)
+                  return false;
+                if (f.startDate != null && o.dueDate.isBefore(f.startDate!))
+                  return false;
+                if (f.endDate != null && o.dueDate.isAfter(f.endDate!))
+                  return false;
                 return true;
               }).toList();
         }
@@ -110,16 +138,26 @@ class _AllObligationsViewState extends State<AllObligationsView> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(Icons.receipt_long_outlined, size: 64, color: Colors.grey[600]),
+                Icon(
+                  Icons.receipt_long_outlined,
+                  size: 64,
+                  color: Colors.grey[600],
+                ),
                 const SizedBox(height: DesignTokens.spacing4),
                 Text(
                   AppLocalizations.of(context)!.no_obligations,
-                  style: GoogleFonts.poppins(color: Colors.grey[400], fontSize: 16),
+                  style: GoogleFonts.poppins(
+                    color: Colors.grey[400],
+                    fontSize: 16,
+                  ),
                 ),
                 const SizedBox(height: DesignTokens.spacing2),
                 Text(
                   AppLocalizations.of(context)!.add_obligation_hint,
-                  style: GoogleFonts.poppins(color: Colors.grey[600], fontSize: 12),
+                  style: GoogleFonts.poppins(
+                    color: Colors.grey[600],
+                    fontSize: 12,
+                  ),
                 ),
               ],
             ),
@@ -127,9 +165,14 @@ class _AllObligationsViewState extends State<AllObligationsView> {
         }
 
         // Group obligations by type
-        final bills = obligations.where((o) => o.type == ObligationType.bill).toList();
-        final subscriptions = obligations.where((o) => o.type == ObligationType.subscription).toList();
-        final debts = obligations.where((o) => o.type == ObligationType.debt).toList();
+        final bills =
+            obligations.where((o) => o.type == ObligationType.bill).toList();
+        final subscriptions =
+            obligations
+                .where((o) => o.type == ObligationType.subscription)
+                .toList();
+        final debts =
+            obligations.where((o) => o.type == ObligationType.debt).toList();
 
         final items = _buildSectionItems(bills, subscriptions, debts);
 
@@ -148,7 +191,11 @@ class _AllObligationsViewState extends State<AllObligationsView> {
                   padding: const EdgeInsets.only(bottom: 4),
                   child: ObligationItem(
                     obligation: item.obligation!,
-                    onTap: () => ObligationHelpers.showObligationDetails(context, item.obligation!),
+                    onTap:
+                        () => ObligationHelpers.showObligationDetails(
+                          context,
+                          item.obligation!,
+                        ),
                     onPaymentRecorded: _refreshData,
                   ),
                 );
@@ -162,7 +209,14 @@ class _AllObligationsViewState extends State<AllObligationsView> {
   Widget _buildSectionHeader(String title, int count) {
     return Row(
       children: [
-        Text(title, style: GoogleFonts.poppins(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600)),
+        Text(
+          title,
+          style: GoogleFonts.poppins(
+            color: Colors.white,
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
         const SizedBox(width: 8),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
@@ -172,7 +226,11 @@ class _AllObligationsViewState extends State<AllObligationsView> {
           ),
           child: Text(
             count.toString(),
-            style: GoogleFonts.poppins(color: DesignTokens.primaryColor, fontSize: 12, fontWeight: FontWeight.bold),
+            style: GoogleFonts.poppins(
+              color: DesignTokens.primaryColor,
+              fontSize: 12,
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ),
       ],

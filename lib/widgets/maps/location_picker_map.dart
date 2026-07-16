@@ -68,28 +68,30 @@ class _LocationPickerMapState extends State<LocationPickerMap> {
       if (results.isNotEmpty) {
         LoggerService.success('✅ Found ${results.length} results for: $query');
 
-        setState(() {
-          _searchResults = results;
-          _showResults = true;
-        });
-
-        if (!mounted) return;
-        ErrorHandlerService.showSuccessSnackbar(
-          context,
-          l10n?.search_results_found(results.length) ??
-              '${results.length} lokasi ditemukan - pilih dari daftar',
-        );
+        if (mounted) {
+          setState(() {
+            _searchResults = results;
+            _showResults = true;
+          });
+          ErrorHandlerService.showSuccessSnackbar(
+            context,
+            l10n?.search_results_found(results.length) ??
+                '${results.length} lokasi ditemukan - pilih dari daftar',
+          );
+        }
       } else {
         LoggerService.warning('❌ No results found for: $query');
-        setState(() {
-          _searchResults = [];
-          _showResults = false;
-        });
-        if (!mounted) return;
-        ErrorHandlerService.showWarningSnackbar(
-          context,
-          l10n?.location_not_found(query) ?? 'Lokasi "$query" tidak ditemukan',
-        );
+        if (mounted) {
+          setState(() {
+            _searchResults = [];
+            _showResults = false;
+          });
+          ErrorHandlerService.showWarningSnackbar(
+            context,
+            l10n?.location_not_found(query) ??
+                'Lokasi "$query" tidak ditemukan',
+          );
+        }
       }
     } catch (e, stackTrace) {
       LoggerService.error(
@@ -103,13 +105,14 @@ class _LocationPickerMapState extends State<LocationPickerMap> {
         '${l10n?.failed_to_search ?? 'Gagal mencari'}: ${ErrorHandlerService.getUserFriendlyMessage(e)}',
       );
     } finally {
-      setState(() => _isSearching = false);
+      if (mounted) setState(() => _isSearching = false);
     }
   }
 
   Future<void> _initializeMap() async {
     // Get current location
     final position = await LocationService.getCurrentLatLng();
+    if (!mounted) return;
 
     setState(() {
       if (position != null) {
