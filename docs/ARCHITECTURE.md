@@ -80,6 +80,15 @@ These were only registered in `main.dart` and never navigated to from anywhere �
 
 ---
 
+## Root-Cause Analysis
+
+See [`ARCHITECTURE_ROOT_CAUSE.md`](./ARCHITECTURE_ROOT_CAUSE.md) for the
+deep-dive on the suffixed-key mismatch pattern that caused ~60% of the
+CRITICAL bugs, and how the current single-normalization-point design prevents
+it structurally.
+
+---
+
 ## Model Strategy
 
 All domain models live in `lib/models/`:
@@ -117,16 +126,22 @@ All services, repositories, and controllers are registered in `lib/core/di/servi
 
 ## Feature Status (Architecture Coverage)
 
-Accurate as of July 2026 (34 feature directories):
+Accurate as of July 16, 2026 (30 feature directories after the obligations merge):
 
 | Layer | Count | Description |
 |-------|-------|-------------|
 | **Full Clean Architecture** (domain/ + data/ + presentation/) | **2** | `goals`, `transactions` — the only features with domain entities, use cases, and repository interfaces |
 | **Simplified 2-layer** (data/repositories/ + presentation/) | **18** | Concrete repository + controller, no domain layer. Repository wraps a DataService directly. |
 | **Presentation only** | **11** | Screen + optional controller, backed by existing services. No dedicated data layer. |
-| **Skeleton** (empty directories) | **3** | `debts`, `recurring_transactions`, `subscriptions` — directory scaffolding from initial clean-architecture setup that was never populated (widget modals exist elsewhere). |
+| **Empty** (directory, no files) | **1** | `recurring_transactions` — directory scaffolding from initial setup, never populated. Widgets for recurring transactions live in `lib/widgets/transactions/`. |
 
 Features with no dedicated controller (screen uses services directly): `daad`, `financial_advisor`, `more_tab`.
+
+**Note on the obligations merge (Phase 4):** the old `debts` and `subscriptions`
+feature directories were removed. Their UI now lives under `lib/widgets/obligations/`
+and is served by the unified `ObligationDataService` (which internally wraps the
+former `DebtDataService` / `SubscriptionDataService` logic). This reduced the
+feature count from 32 to 30 and eliminated two parallel data services.
 
 **Target:** Every feature should have at least a Controller + Repository + Data Service. Features that are pure UI over existing services (auth, home, settings, onboarding) may omit the data service if they don't own a database table.
 

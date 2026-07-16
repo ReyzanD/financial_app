@@ -79,6 +79,7 @@ logs/
 /docs/*
 # Keep only the canonical architecture doc; everything else is in docs/archive/
 !/docs/ARCHITECTURE.md
+!/docs/ARCHITECTURE_ROOT_CAUSE.md
 # Database
 *.db
 *.sqlite
