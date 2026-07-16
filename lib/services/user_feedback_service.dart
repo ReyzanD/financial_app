@@ -29,8 +29,7 @@ class UserFeedbackService {
       // Try to send to backend
       try {
         // Note: Ini perlu endpoint di backend
-        // final apiService = ApiService();
-        // await apiService.post('feedback', feedback);
+        // Feedback is stored locally (standalone mode)
         LoggerService.info('Feedback submitted: $type');
       } catch (e) {
         // If backend fails, queue for later
@@ -87,9 +86,7 @@ class UserFeedbackService {
 
       for (var feedbackData in queue) {
         try {
-          // Try to send to backend
-          // final apiService = ApiService();
-          // await apiService.post('feedback', feedbackData);
+          // Standalone mode — feedback is stored locally only
           LoggerService.info('Synced queued feedback: ${feedbackData['type']}');
         } catch (e) {
           LoggerService.error('Error syncing feedback', error: e);
