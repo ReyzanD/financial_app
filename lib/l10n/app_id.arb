@@ -638,5 +638,13 @@
   "add_split": "Tambah Split",
   "add_template": "Tambah Template",
   "chart_placeholder": "Grafik akan tersedia setelah beberapa periode",
-  "health_score": "Skor Kesehatan"
+  "health_score": "Skor Kesehatan",
+  "rule503020": "Aturan 50/30/20",
+  "zeroBasedBudget": "Anggaran Zero-Based",
+  "zbSurplus": "Surplus (belum dialokasikan)",
+  "zbShortfall": "Kekurangan (perlu ditutup)",
+  "zbMathHint": "Setiap pengeluaran dapat \"pekerjaan\"; sisa = pemasukan − total alokasi.",
+  "totalAllocated": "Total dialokasikan",
+  "allocations": "Alokasi per kategori",
+  "noAllocations": "Belum ada pengeluaran tercatat."
 }

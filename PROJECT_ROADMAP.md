@@ -103,6 +103,23 @@ Replace templated recommendation strings with computed, explainable numbers:
 - Apply a named budgeting model (50/30/20 or zero-based) against the user's _actual_ numbers, and show the math in the UI, not a canned tip.
 - Optional stretch: a small, explainable text classifier (Naive Bayes/logistic regression) for auto-categorization, if you want one genuine ML talking point — without overclaiming "AI" elsewhere.
 
+### Phase E — Status: COMPLETE (core)
+
+**Done:**
+- `FinancialAdvisorService` already implemented a real computed 50/30/20 engine (`FiftyThirtyTwentyAnalysis`) classifying transactions into needs/wants/savings against actual numbers.
+- Added **zero-based budgeting** as a second named model:
+  - `BudgetingModel` enum (`fiftyThirtyTwenty`, `zeroBased`).
+  - `ZeroBasedAnalysis` class + `computeZeroBased()` pure static (income − allocated = surplus/shortfall, with explicit math).
+  - `analyzeZeroBasedForPeriod()` real engine pulling actual transactions per category.
+- Fixed **goal run-rate**: `_computeGoalRunRates` now derives `monthlyContribution` from `targetDate` deadline when `monthlyTarget` is not set; added public `monthsBetween()` helper (was private `_monthsBetween`).
+- UI: `FinancialAdvisorScreen` gained a model toggle (`_buildModelSelector`) and `_buildZeroBasedCard` showing the explicit income − allocated = surplus/shortfall math plus per-category allocations.
+- l10n: added `rule503020`, `zeroBasedBudget`, `zbSurplus`, `zbShortfall`, `zbMathHint`, `totalAllocated`, `allocations`, `noAllocations` to `app_en.arb` + `app_id.arb`; ran `flutter gen-l10n`.
+- Tests: `test/services/financial_advisor_service_test.dart` (zero-based surplus/shortfall, `monthsBetween`, 50/30/20 classification) — 5 new tests, all passing. Fixed `test/widgets/financial_advisor_screen_test.dart` mock to override `analyzeZeroBasedForPeriod` (10 widget tests now pass).
+
+**Verification:** `flutter analyze` 0 errors / 0 warnings (127 pre-existing info). `flutter test` 301 pass; 31 failures are the pre-existing `databaseFactory not initialized` (missing system `libsqlite3.so`) environment-only SQLite integration tests — not code defects.
+
+**Deferred (optional stretch, not done):** Naive-Bayes/logistic auto-categorization classifier. `SmartCategorizationService` already exists as a keyword scorer and could be upgraded later.
+
 ---
 
 ## Phase F — DAAD narrative feature: German student finance planner (~2–3 weeks)

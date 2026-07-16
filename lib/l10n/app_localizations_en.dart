@@ -57,7 +57,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get add_income => 'Add Income';
 
   @override
-  String get add_income_first => 'Add income first or reduce the expense amount.';
+  String get add_income_first =>
+      'Add income first or reduce the expense amount.';
 
   @override
   String get add_obligation => 'Add Obligation';
@@ -99,7 +100,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get analytics => 'Analytics';
 
   @override
-  String get amount_must_be_greater_than_zero => 'Amount must be greater than 0';
+  String get amount_must_be_greater_than_zero =>
+      'Amount must be greater than 0';
 
   @override
   String get contribution_amount => 'Contribution Amount';
@@ -134,10 +136,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get authentication_required => 'Authentication Required';
 
   @override
-  String get authentication_required_for_delete => 'Authentication required to delete account';
+  String get authentication_required_for_delete =>
+      'Authentication required to delete account';
 
   @override
-  String get authentication_required_for_export => 'Authentication required to export data';
+  String get authentication_required_for_export =>
+      'Authentication required to export data';
 
   @override
   String get available_balance => 'Available Balance';
@@ -201,7 +205,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get cannot_recognize_amount => 'Cannot recognize amount from';
 
   @override
-  String get cannot_scan_receipt => 'Cannot scan receipt. Make sure the image is clear and contains text.';
+  String get cannot_scan_receipt =>
+      'Cannot scan receipt. Make sure the image is clear and contains text.';
 
   @override
   String get cannot_scan_receipt_try_again => 'Cannot scan receipt. Try again.';
@@ -228,7 +233,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get change_password => 'Change Password';
 
   @override
-  String get change_password_security => 'Change password and security settings';
+  String get change_password_security =>
+      'Change password and security settings';
 
   @override
   String get change_password_title => 'Change Password';
@@ -243,7 +249,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get close => 'Close';
 
   @override
-  String get confirm_delete_budget => 'Are you sure you want to delete this budget?';
+  String get confirm_delete_budget =>
+      'Are you sure you want to delete this budget?';
 
   @override
   String get confirm_new_password => 'Confirm new password';
@@ -297,7 +304,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get data_privacy => 'Data & Privacy';
 
   @override
-  String get data_saved_to_clipboard => 'Data saved to clipboard. Keep it safe!';
+  String get data_saved_to_clipboard =>
+      'Data saved to clipboard. Keep it safe!';
 
   @override
   String get date => 'Date';
@@ -346,7 +354,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get delete_all_history => 'Delete All History';
 
   @override
-  String get delete_backup_message => 'This backup will be permanently deleted.';
+  String get delete_backup_message =>
+      'This backup will be permanently deleted.';
 
   @override
   String get delete_backup_title => 'Delete Backup?';
@@ -364,25 +373,30 @@ class AppLocalizationsEn extends AppLocalizations {
   String get delete_label => 'Delete';
 
   @override
-  String get delete_notification_history_message => 'All notification history will be deleted';
+  String get delete_notification_history_message =>
+      'All notification history will be deleted';
 
   @override
   String get delete_obligation => 'Delete Obligation';
 
   @override
-  String get delete_obligation_confirm => 'Are you sure you want to delete the obligation';
+  String get delete_obligation_confirm =>
+      'Are you sure you want to delete the obligation';
 
   @override
   String get delete_payment => 'Delete Payment';
 
   @override
-  String get delete_payment_confirm => 'Are you sure you want to delete this payment?';
+  String get delete_payment_confirm =>
+      'Are you sure you want to delete this payment?';
 
   @override
-  String get delete_recurring_transaction_message => 'will be deleted permanently.';
+  String get delete_recurring_transaction_message =>
+      'will be deleted permanently.';
 
   @override
-  String get delete_recurring_transaction_title => 'Delete Recurring Transaction?';
+  String get delete_recurring_transaction_title =>
+      'Delete Recurring Transaction?';
 
   @override
   String get description => 'Description';
@@ -433,7 +447,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get emergency_fund => 'Emergency Fund';
 
   @override
-  String get enable_for_local_recommendations => 'Enable for local recommendations';
+  String get enable_for_local_recommendations =>
+      'Enable for local recommendations';
 
   @override
   String get enable_reminders => 'Enable Reminders';
@@ -466,7 +481,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get error_scanning => 'Error scanning';
 
   @override
-  String get error_scanning_receipt => 'An error occurred while scanning receipt. Please try again.';
+  String get error_scanning_receipt =>
+      'An error occurred while scanning receipt. Please try again.';
 
   @override
   String get every_day_at => 'Every day at';
@@ -502,7 +518,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get failed_to_delete_notification => 'Failed to delete';
 
   @override
-  String get failed_to_get_location => 'Failed to get location. Make sure location permission is enabled.';
+  String get failed_to_get_location =>
+      'Failed to get location. Make sure location permission is enabled.';
 
   @override
   String get failed_to_load_analytics => 'Failed to load analytics';
@@ -748,10 +765,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get no_categories_available => 'No categories available';
 
   @override
-  String get no_categories_create_first => 'No categories. Create categories first in the Budget menu.';
+  String get no_categories_create_first =>
+      'No categories. Create categories first in the Budget menu.';
 
   @override
-  String get no_connection_subtitle => 'Check your internet connection and try again';
+  String get no_connection_subtitle =>
+      'Check your internet connection and try again';
 
   @override
   String get no_connection_title => 'No Connection';
@@ -790,7 +809,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get no_payment_history => 'No payment history yet';
 
   @override
-  String get no_recurring_transactions_subtitle => 'Automatically record recurring transactions';
+  String get no_recurring_transactions_subtitle =>
+      'Automatically record recurring transactions';
 
   @override
   String get no_recurring_transactions_title => 'No Recurring Transactions';
@@ -814,10 +834,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get no_subscriptions => 'No active subscriptions';
 
   @override
-  String get no_transactions_for_period => 'No transactions for selected period';
+  String get no_transactions_for_period =>
+      'No transactions for selected period';
 
   @override
-  String get no_transactions_subtitle => 'Start recording your expenses and income';
+  String get no_transactions_subtitle =>
+      'Start recording your expenses and income';
 
   @override
   String get no_transactions_title => 'No Transactions';
@@ -844,19 +866,23 @@ class AppLocalizationsEn extends AppLocalizations {
   String get notifications_bills_due => 'Notifications for bills due soon';
 
   @override
-  String get notifications_budget_almost_empty => 'Notifications when budget is almost/empty';
+  String get notifications_budget_almost_empty =>
+      'Notifications when budget is almost/empty';
 
   @override
-  String get notifications_help_stay_updated => 'Notifications help you stay updated with finances';
+  String get notifications_help_stay_updated =>
+      'Notifications help you stay updated with finances';
 
   @override
-  String get notifications_progress_achievements => 'Notifications for progress and goal achievements';
+  String get notifications_progress_achievements =>
+      'Notifications for progress and goal achievements';
 
   @override
   String get notifications_will_appear_here => 'Notifications will appear here';
 
   @override
-  String get obligation_deleted_successfully => 'Obligation deleted successfully';
+  String get obligation_deleted_successfully =>
+      'Obligation deleted successfully';
 
   @override
   String get obligation_name => 'Obligation Name';
@@ -994,7 +1020,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get quick_income => 'Quick Income';
 
   @override
-  String get receipt_scanned_successfully => 'Receipt scanned successfully! Form has been filled automatically.';
+  String get receipt_scanned_successfully =>
+      'Receipt scanned successfully! Form has been filled automatically.';
 
   @override
   String get record_payment => 'Record Payment';
@@ -1105,7 +1132,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get select_year => 'Select Year';
 
   @override
-  String get server_error_subtitle => 'Server is having issues. Try again in a few moments';
+  String get server_error_subtitle =>
+      'Server is having issues. Try again in a few moments';
 
   @override
   String get server_error_title => 'An Error Occurred';
@@ -1126,7 +1154,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get shortage => 'Shortage';
 
   @override
-  String get similar_transaction_added => 'A similar transaction was just added. Are you sure you want to continue?';
+  String get similar_transaction_added =>
+      'A similar transaction was just added. Are you sure you want to continue?';
 
   @override
   String get skip => 'Skip';
@@ -1147,7 +1176,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get spent => 'Spent';
 
   @override
-  String get start_managing_finances => 'Let\'s start managing your finances better';
+  String get start_managing_finances =>
+      'Let\'s start managing your finances better';
 
   @override
   String get status => 'Status';
@@ -1252,7 +1282,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get track_all_transactions => 'Track all transactions';
 
   @override
-  String get transaction_deleted_successfully => 'Transaction deleted successfully';
+  String get transaction_deleted_successfully =>
+      'Transaction deleted successfully';
 
   @override
   String get transaction_paused => 'Transaction paused';
@@ -1268,7 +1299,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get transaction_history => 'Transaction History';
 
   @override
-  String get transaction_saved_successfully => 'Transaction saved successfully!';
+  String get transaction_saved_successfully =>
+      'Transaction saved successfully!';
 
   @override
   String get transactions => 'Transactions';
@@ -1307,7 +1339,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get use_iris => 'Use Iris';
 
   @override
-  String get use_pin_to_unlock => 'Use this PIN to quickly unlock the app every time you log in';
+  String get use_pin_to_unlock =>
+      'Use this PIN to quickly unlock the app every time you log in';
 
   @override
   String get user_profile => 'User Profile';
@@ -1322,7 +1355,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get vehicle => 'Vehicle';
 
   @override
-  String get view_today_financial_activity => 'View your financial activity today';
+  String get view_today_financial_activity =>
+      'View your financial activity today';
 
   @override
   String get visit => 'Visit';
@@ -1349,7 +1383,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get yearly => 'Yearly';
 
   @override
-  String get you_need_to_login_again => 'You need to login again with email and password.';
+  String get you_need_to_login_again =>
+      'You need to login again with email and password.';
 
   @override
   String get delete_transaction_confirm => 'Delete Transaction?';
@@ -1359,13 +1394,15 @@ class AppLocalizationsEn extends AppLocalizations {
       'Are you sure you want to delete this transaction? The balance will be restored.';
 
   @override
-  String get delete_transaction_message_short => 'Are you sure you want to delete this transaction?';
+  String get delete_transaction_message_short =>
+      'Are you sure you want to delete this transaction?';
 
   @override
   String get failed_to_delete_transaction => 'Failed to delete transaction';
 
   @override
-  String get transaction_added_successfully => 'Transaction added successfully!';
+  String get transaction_added_successfully =>
+      'Transaction added successfully!';
 
   @override
   String get delete_goal_confirm => 'Delete Goal?';
@@ -1398,7 +1435,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get no_data_for_recommendation => 'No data for recommendations';
 
   @override
-  String get authentication_required_to_delete => 'Authentication required to delete transaction';
+  String get authentication_required_to_delete =>
+      'Authentication required to delete transaction';
 
   @override
   String get failed_to_delete_goal => 'Failed to delete goal';
@@ -1473,7 +1511,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get edit_percentage => 'Edit Percentage';
 
   @override
-  String get failed_to_load_transactions => 'Failed to load data. Tap to retry.';
+  String get failed_to_load_transactions =>
+      'Failed to load data. Tap to retry.';
 
   @override
   String get failed_to_connect => 'Failed to connect to server';
@@ -1485,13 +1524,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get no_budget_yet => 'No budget yet';
 
   @override
-  String get create_budget_to_manage => 'Create a budget to manage your finances better';
+  String get create_budget_to_manage =>
+      'Create a budget to manage your finances better';
 
   @override
   String get no_recommendations_available => 'No AI recommendations available';
 
   @override
-  String get failed_to_load_budget_suggestions => 'Failed to load budget suggestions';
+  String get failed_to_load_budget_suggestions =>
+      'Failed to load budget suggestions';
 
   @override
   String get budget_deleted => 'Budget deleted.';
@@ -1518,25 +1559,31 @@ class AppLocalizationsEn extends AppLocalizations {
   String get challenge_deleted_successfully => 'Challenge deleted successfully';
 
   @override
-  String get delete_challenge_confirm => 'Are you sure you want to delete this challenge?';
+  String get delete_challenge_confirm =>
+      'Are you sure you want to delete this challenge?';
 
   @override
-  String get investment_deleted_successfully => 'Investment deleted successfully';
+  String get investment_deleted_successfully =>
+      'Investment deleted successfully';
 
   @override
-  String get delete_investment_confirm => 'Are you sure you want to delete this investment?';
+  String get delete_investment_confirm =>
+      'Are you sure you want to delete this investment?';
 
   @override
-  String get subscription_deleted_successfully => 'Subscription deleted successfully';
+  String get subscription_deleted_successfully =>
+      'Subscription deleted successfully';
 
   @override
-  String get delete_subscription_confirm => 'Are you sure you want to delete this subscription?';
+  String get delete_subscription_confirm =>
+      'Are you sure you want to delete this subscription?';
 
   @override
   String get split_deleted_successfully => 'Split deleted successfully';
 
   @override
-  String get delete_split_confirm => 'Are you sure you want to delete this split?';
+  String get delete_split_confirm =>
+      'Are you sure you want to delete this split?';
 
   @override
   String get debt_deleted_successfully => 'Debt deleted successfully';
@@ -1545,7 +1592,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get category_deleted => 'Category deleted successfully';
 
   @override
-  String get delete_category_confirm => 'Are you sure you want to delete this category?';
+  String get delete_category_confirm =>
+      'Are you sure you want to delete this category?';
 
   @override
   String get receipt_scanned => 'Receipt scanned successfully';
@@ -1569,7 +1617,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get create_transaction => 'Create transaction';
 
   @override
-  String get create_transaction_from_receipt => 'Create Transaction from Receipt';
+  String get create_transaction_from_receipt =>
+      'Create Transaction from Receipt';
 
   @override
   String get profile_saved_successfully => 'Profile saved successfully';
@@ -1650,7 +1699,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get no_backups => 'No backups';
 
   @override
-  String get delete_backup_warning => 'Are you sure you want to delete this backup?';
+  String get delete_backup_warning =>
+      'Are you sure you want to delete this backup?';
 
   @override
   String get backup_deleted_message => 'Backup deleted';
@@ -1689,7 +1739,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get no_active_debts => 'No active debts';
 
   @override
-  String get receipt_scanned_success => 'Receipt scanned successfully! Form has been filled automatically.';
+  String get receipt_scanned_success =>
+      'Receipt scanned successfully! Form has been filled automatically.';
 
   @override
   String get month => 'Month';
@@ -1734,13 +1785,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get no_challenges => 'No challenges yet';
 
   @override
-  String get no_alternative_recommendations => 'No alternative recommendations for this category';
+  String get no_alternative_recommendations =>
+      'No alternative recommendations for this category';
 
   @override
   String get add_category => 'Add Category';
 
   @override
-  String get transaction_created_from_receipt => 'Transaction created from receipt:';
+  String get transaction_created_from_receipt =>
+      'Transaction created from receipt:';
 
   @override
   String get enter_balance => 'Enter balance';
@@ -1788,13 +1841,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get set_budget_per_category => 'Set budget per category';
 
   @override
-  String get enable_features_for_best_experience => 'Enable features for best experience';
+  String get enable_features_for_best_experience =>
+      'Enable features for best experience';
 
   @override
   String get just_now => 'Just now';
 
   @override
-  String get manage_all_transactions => 'Manage all your financial transactions';
+  String get manage_all_transactions =>
+      'Manage all your financial transactions';
 
   @override
   String get camera => 'Camera';
@@ -1875,7 +1930,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get select => 'Select';
 
   @override
-  String get select_location_on_map_first => 'Select a location on the map first';
+  String get select_location_on_map_first =>
+      'Select a location on the map first';
 
   @override
   String get selected_location => 'Selected Location';
@@ -1894,7 +1950,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get transaction_map => 'Transaction Map';
 
   @override
-  String get unable_to_get_location_permission => 'Unable to get current location. Please check permissions.';
+  String get unable_to_get_location_permission =>
+      'Unable to get current location. Please check permissions.';
 
   @override
   String get your_location => 'Your Location';
@@ -1930,5 +1987,31 @@ class AppLocalizationsEn extends AppLocalizations {
   String get add_template => 'Add Template';
 
   @override
-  String get chart_placeholder => 'Chart will be available after several periods';
+  String get chart_placeholder =>
+      'Chart will be available after several periods';
+
+  @override
+  String get rule503020 => '50/30/20 Rule';
+
+  @override
+  String get zeroBasedBudget => 'Zero-Based Budget';
+
+  @override
+  String get zbSurplus => 'Surplus (unallocated)';
+
+  @override
+  String get zbShortfall => 'Shortfall (to close)';
+
+  @override
+  String get zbMathHint =>
+      'Every expense gets a job; remainder = income − total allocated.';
+
+  @override
+  String get totalAllocated => 'Total allocated';
+
+  @override
+  String get allocations => 'Allocations by category';
+
+  @override
+  String get noAllocations => 'No expenses recorded yet.';
 }

@@ -62,7 +62,8 @@ import 'app_localizations_id.dart';
 /// be consistent with the languages listed in the AppLocalizations.supportedLocales
 /// property.
 abstract class AppLocalizations {
-  AppLocalizations(String locale) : localeName = intl.Intl.canonicalizedLocale(locale.toString());
+  AppLocalizations(String locale)
+    : localeName = intl.Intl.canonicalizedLocale(locale.toString());
 
   final String localeName;
 
@@ -70,7 +71,8 @@ abstract class AppLocalizations {
     return Localizations.of<AppLocalizations>(context, AppLocalizations);
   }
 
-  static const LocalizationsDelegate<AppLocalizations> delegate = _AppLocalizationsDelegate();
+  static const LocalizationsDelegate<AppLocalizations> delegate =
+      _AppLocalizationsDelegate();
 
   /// A list of this localizations delegate along with the default localizations
   /// delegates.
@@ -82,15 +84,19 @@ abstract class AppLocalizations {
   /// Additional delegates can be added by appending to this list in
   /// MaterialApp. This list does not have to be used at all if a custom list
   /// of delegates is preferred or required.
-  static const List<LocalizationsDelegate<dynamic>> localizationsDelegates = <LocalizationsDelegate<dynamic>>[
-    delegate,
-    GlobalMaterialLocalizations.delegate,
-    GlobalCupertinoLocalizations.delegate,
-    GlobalWidgetsLocalizations.delegate,
-  ];
+  static const List<LocalizationsDelegate<dynamic>> localizationsDelegates =
+      <LocalizationsDelegate<dynamic>>[
+        delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+      ];
 
   /// A list of this localizations delegate's supported locales.
-  static const List<Locale> supportedLocales = <Locale>[Locale('en'), Locale('id')];
+  static const List<Locale> supportedLocales = <Locale>[
+    Locale('en'),
+    Locale('id'),
+  ];
 
   /// No description provided for @about_app.
   ///
@@ -3901,9 +3907,58 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Chart will be available after several periods'**
   String get chart_placeholder;
+
+  /// No description provided for @rule503020.
+  ///
+  /// In en, this message translates to:
+  /// **'50/30/20 Rule'**
+  String get rule503020;
+
+  /// No description provided for @zeroBasedBudget.
+  ///
+  /// In en, this message translates to:
+  /// **'Zero-Based Budget'**
+  String get zeroBasedBudget;
+
+  /// No description provided for @zbSurplus.
+  ///
+  /// In en, this message translates to:
+  /// **'Surplus (unallocated)'**
+  String get zbSurplus;
+
+  /// No description provided for @zbShortfall.
+  ///
+  /// In en, this message translates to:
+  /// **'Shortfall (to close)'**
+  String get zbShortfall;
+
+  /// No description provided for @zbMathHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Every expense gets a job; remainder = income − total allocated.'**
+  String get zbMathHint;
+
+  /// No description provided for @totalAllocated.
+  ///
+  /// In en, this message translates to:
+  /// **'Total allocated'**
+  String get totalAllocated;
+
+  /// No description provided for @allocations.
+  ///
+  /// In en, this message translates to:
+  /// **'Allocations by category'**
+  String get allocations;
+
+  /// No description provided for @noAllocations.
+  ///
+  /// In en, this message translates to:
+  /// **'No expenses recorded yet.'**
+  String get noAllocations;
 }
 
-class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
+class _AppLocalizationsDelegate
+    extends LocalizationsDelegate<AppLocalizations> {
   const _AppLocalizationsDelegate();
 
   @override
@@ -3912,7 +3967,8 @@ class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> 
   }
 
   @override
-  bool isSupported(Locale locale) => <String>['en', 'id'].contains(locale.languageCode);
+  bool isSupported(Locale locale) =>
+      <String>['en', 'id'].contains(locale.languageCode);
 
   @override
   bool shouldReload(_AppLocalizationsDelegate old) => false;

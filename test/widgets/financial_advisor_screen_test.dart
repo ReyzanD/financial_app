@@ -31,6 +31,46 @@ class _MockFinancialAdvisorService extends FinancialAdvisorService {
     return List.generate(count, (_) => _createMockAnalysis());
   }
 
+  @override
+  Future<ZeroBasedAnalysis> analyzeZeroBasedForPeriod({
+    required DateTime start,
+    required DateTime end,
+  }) async {
+    return ZeroBasedAnalysis(
+      monthlyIncome: 10000000,
+      monthlyExpense: 6000000,
+      unallocated: 4000000,
+      allocatedPercent: 60.0,
+      allocations: const [
+        CategoryBreakdown(
+          name: 'Makanan & Minuman',
+          amount: 2000000,
+          percentOfIncome: 20.0,
+        ),
+        CategoryBreakdown(
+          name: 'Hiburan',
+          amount: 1500000,
+          percentOfIncome: 15.0,
+        ),
+        CategoryBreakdown(
+          name: 'Transportasi',
+          amount: 1000000,
+          percentOfIncome: 10.0,
+        ),
+        CategoryBreakdown(
+          name: 'Belanja',
+          amount: 1000000,
+          percentOfIncome: 10.0,
+        ),
+        CategoryBreakdown(
+          name: 'Listrik',
+          amount: 500000,
+          percentOfIncome: 5.0,
+        ),
+      ],
+    );
+  }
+
   FiftyThirtyTwentyAnalysis _createMockAnalysis() {
     return FiftyThirtyTwentyAnalysis(
       monthlyIncome: 10000000,

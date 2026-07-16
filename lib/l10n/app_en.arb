@@ -638,5 +638,13 @@
   "add_split": "Add Split",
   "add_template": "Add Template",
   "chart_placeholder": "Chart will be available after several periods",
-  "health_score": "Health Score"
+  "health_score": "Health Score",
+  "rule503020": "50/30/20 Rule",
+  "zeroBasedBudget": "Zero-Based Budget",
+  "zbSurplus": "Surplus (unallocated)",
+  "zbShortfall": "Shortfall (to close)",
+  "zbMathHint": "Every expense gets a job; remainder = income − total allocated.",
+  "totalAllocated": "Total allocated",
+  "allocations": "Allocations by category",
+  "noAllocations": "No expenses recorded yet."
 }
