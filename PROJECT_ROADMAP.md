@@ -38,7 +38,7 @@ Nice work — this is a genuinely strong batch of fixes, not just documentation.
 - [x] Fix the 22 hardcoded-color files, then correct `CODEBASE_AUDIT.md` to match reality. (82 instances across 23 files → all via `DesignTokens.*`; 0 remaining)
 - [x] Unify the spacing convention across the app. (563 raw `SizedBox(height:)` → `DesignTokens.spacingX`)
 - [x] Prune/consolidate the docs folder to the 6 files above (or a clearly organized `docs/archive/` if you want to keep history, gitignored or clearly labeled as such). (71 files → ARCHITECTURE.md + archive)
-- [ ] Add a lint rule or simple test that fails if `ApiService()` is constructed outside `get_it`, so the 2 remaining bypasses (and any regression) get caught automatically.
+- [x] Add a lint rule or simple test that fails if `ApiService()` is constructed outside `get_it`, so the 2 remaining bypasses (and any regression) get caught automatically. (0 bypasses found; test scans all lib/ for direct constructions)
 - [ ] Go through `CODEBASE_AUDIT.md` line by line one more time — only keep a claim if you've personally reopened the file and confirmed it. This is the second round where one specific line was stale; make this pass the one that actually closes the loop.
 
 ---

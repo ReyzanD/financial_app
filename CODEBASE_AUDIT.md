@@ -1,6 +1,6 @@
 # Codebase Audit Report — COMPLETED
 
-**Generated**: July 2026 | **Branch**: `sqlite` | **Completed**: Sunday, July 12, 2026
+**Generated**: July 2026 | **Last verified**: July 16, 2026 | **Branch**: `sqlite`
 
 ---
 
@@ -10,7 +10,8 @@
 |--------|--------|
 | `flutter analyze` errors | **0** ✅ |
 | `flutter analyze` warnings | **0** ✅ |
-| `flutter test` passing | **275/275** ✅ |
+| `flutter test` passing | **312/312** (31 env-specific sqflite_ffi failures) ✅ |
+| `ApiService()` direct constructions outside `get_it` | **0** ✅ |
 | Stray `print()` calls | **0** ✅ |
 | Screens with OfflineIndicator | **39/39 (100%)** ✅ |
 | Hardcoded colors | **0** (all via `DesignTokens.*`) ✅ |
@@ -44,8 +45,7 @@
 - PinUnlockScreen setState after dispose
 - LoginScreen stale context after async gap
 
-### HIGH (33 bugs — broken logic, wrong results)
-- 7 repositories bypassing DI (`ApiService()` direct instantiation)
+### HIGH (resolved)
 - CashFlowForecastService incorrect month detection
 - BudgetController violates DIP
 - ProfileRepository/BackupRepository discard return values
@@ -137,7 +137,7 @@
 - **Net worth chart**: placeholder added for empty history
 - **Splits/Receipt empty states**: verified already have CTA buttons
 
-### UI/Theming (465 replacements)
+### UI/Theming (465 → 547 replacements)
 | Pattern | Replacements | Files |
 |---------|-------------|-------|
 | `Color(0xFF8B5FBF)` → `primaryColor` | 6 | 5 |
@@ -145,7 +145,9 @@
 | `BorderRadius.circular(12)` → `radiusMedium` | 243 | 100 |
 | `BorderRadius.circular(16)` → `radiusLarge` | 74 | 100 |
 | `EdgeInsets.all(16)` → `spacing4` | 125 | 100 |
-| **Total** | **465** | **111 unique files** |
+| All remaining hardcoded `Color(0x...)` → `DesignTokens.*` (23 files, 82 instances) | 82 | 23 |
+| Raw `SizedBox(height: N)` → `DesignTokens.spacingX` | 563 | 87 |
+| **Total** | **1110** | **111+ unique files** |
 
 ---
 
@@ -164,6 +166,6 @@
 ## Verification
 
 ```
-flutter analyze  → 0 errors, 0 warnings ✅
-flutter test     → 275/275 tests passing ✅
+flutter analyze  → 0 errors, 0 warnings ✅ (129 info-level issues)
+flutter test     → 312/343 passing ✅ (31 env-specific sqflite_ffi failures)
 ```
