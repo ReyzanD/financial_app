@@ -135,9 +135,16 @@ class _QuickAddModalState extends State<QuickAddModal> {
       return;
     }
 
-    final amount = double.parse(
+    final amount = double.tryParse(
       _amountController.text.replaceAll(RegExp(r'[^0-9.]'), ''),
     );
+    if (amount == null || amount <= 0) {
+      ErrorHandlerService.showWarningSnackbar(
+        context,
+        AppLocalizations.of(context)?.invalid_amount ?? 'Jumlah tidak valid',
+      );
+      return;
+    }
 
     final ctx = context;
 

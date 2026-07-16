@@ -39,7 +39,7 @@ class GoalForecastingService {
         for (final c in sorted) {
           total += (c['amount'] as num?)?.toDouble() ?? 0;
         }
-        avgContribution = total / sorted.length;
+        avgContribution = sorted.isEmpty ? 0.0 : total / sorted.length;
 
         if (sorted.length >= 3) {
           final firstHalf = sorted.take(sorted.length ~/ 2);

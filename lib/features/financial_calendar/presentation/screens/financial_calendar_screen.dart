@@ -11,7 +11,8 @@ import 'package:financial_app/widgets/common/offline_indicator.dart';
 class FinancialCalendarScreen extends StatefulWidget {
   const FinancialCalendarScreen({super.key});
   @override
-  State<FinancialCalendarScreen> createState() => _FinancialCalendarScreenState();
+  State<FinancialCalendarScreen> createState() =>
+      _FinancialCalendarScreenState();
 }
 
 class _FinancialCalendarScreenState extends State<FinancialCalendarScreen> {
@@ -33,7 +34,9 @@ class _FinancialCalendarScreenState extends State<FinancialCalendarScreen> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) => context.read<CalendarController>().loadMonthEvents());
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) => context.read<CalendarController>().loadMonthEvents(),
+    );
   }
 
   @override
@@ -44,13 +47,21 @@ class _FinancialCalendarScreenState extends State<FinancialCalendarScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            Consumer<CalendarController>(builder: (_, ctrl, __) => _buildHeader(context, l10n, ctrl)),
+            Consumer<CalendarController>(
+              builder: (_, ctrl, __) => _buildHeader(context, l10n, ctrl),
+            ),
             const OfflineIndicator(),
             Expanded(
               child: Consumer<CalendarController>(
                 builder: (_, ctrl, __) {
-                  if (ctrl.isLoading) return Center(child: CircularProgressIndicator(color: DesignTokens.primaryColor));
-                  if (ctrl.error != null) return _buildErrorState(context, l10n, ctrl);
+                  if (ctrl.isLoading)
+                    return Center(
+                      child: CircularProgressIndicator(
+                        color: DesignTokens.primaryColor,
+                      ),
+                    );
+                  if (ctrl.error != null)
+                    return _buildErrorState(context, l10n, ctrl);
                   return ListView(
                     padding: const EdgeInsets.all(DesignTokens.spacing4),
                     children: [
@@ -68,38 +79,65 @@ class _FinancialCalendarScreenState extends State<FinancialCalendarScreen> {
     );
   }
 
-  Widget _buildHeader(BuildContext context, AppLocalizations? l10n, CalendarController ctrl) {
+  Widget _buildHeader(
+    BuildContext context,
+    AppLocalizations? l10n,
+    CalendarController ctrl,
+  ) {
     return Container(
       padding: const EdgeInsets.all(DesignTokens.spacing4),
       child: Row(
         children: [
           IconButton(
-            icon: const Icon(Iconsax.arrow_left, color: DesignTokens.textPrimaryDark),
+            icon: const Icon(
+              Iconsax.arrow_left,
+              color: DesignTokens.textPrimaryDark,
+            ),
             onPressed: () => Navigator.pop(context),
           ),
           const SizedBox(width: 8),
           Text(
             l10n?.dashboard ?? 'Kalender',
-            style: GoogleFonts.poppins(color: DesignTokens.textPrimaryDark, fontSize: 20, fontWeight: FontWeight.bold),
+            style: GoogleFonts.poppins(
+              color: DesignTokens.textPrimaryDark,
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            ),
           ),
           const Spacer(),
           IconButton(
-            icon: const Icon(Iconsax.arrow_left, color: DesignTokens.textPrimaryDark),
+            icon: const Icon(
+              Iconsax.arrow_left,
+              color: DesignTokens.textPrimaryDark,
+            ),
             onPressed: () {
               final m = ctrl.selectedMonth == 1 ? 12 : ctrl.selectedMonth - 1;
-              final y = ctrl.selectedMonth == 1 ? ctrl.selectedYear - 1 : ctrl.selectedYear;
+              final y =
+                  ctrl.selectedMonth == 1
+                      ? ctrl.selectedYear - 1
+                      : ctrl.selectedYear;
               ctrl.setDate(y, m, DateTime(y, m, 1));
             },
           ),
           Text(
             '${monthNames[ctrl.selectedMonth - 1]} ${ctrl.selectedYear}',
-            style: GoogleFonts.poppins(color: DesignTokens.textPrimaryDark, fontSize: 14, fontWeight: FontWeight.w600),
+            style: GoogleFonts.poppins(
+              color: DesignTokens.textPrimaryDark,
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+            ),
           ),
           IconButton(
-            icon: const Icon(Iconsax.arrow_right, color: DesignTokens.textPrimaryDark),
+            icon: const Icon(
+              Iconsax.arrow_right,
+              color: DesignTokens.textPrimaryDark,
+            ),
             onPressed: () {
               final m = ctrl.selectedMonth == 12 ? 1 : ctrl.selectedMonth + 1;
-              final y = ctrl.selectedMonth == 12 ? ctrl.selectedYear + 1 : ctrl.selectedYear;
+              final y =
+                  ctrl.selectedMonth == 12
+                      ? ctrl.selectedYear + 1
+                      : ctrl.selectedYear;
               ctrl.setDate(y, m, DateTime(y, m, 1));
             },
           ),
@@ -109,8 +147,10 @@ class _FinancialCalendarScreenState extends State<FinancialCalendarScreen> {
   }
 
   Widget _buildCalendarGrid(BuildContext context, CalendarController ctrl) {
-    final daysInMonth = DateTime(ctrl.selectedYear, ctrl.selectedMonth + 1, 0).day;
-    final firstDayOfWeek = DateTime(ctrl.selectedYear, ctrl.selectedMonth, 1).weekday;
+    final daysInMonth =
+        DateTime(ctrl.selectedYear, ctrl.selectedMonth + 1, 0).day;
+    final firstDayOfWeek =
+        DateTime(ctrl.selectedYear, ctrl.selectedMonth, 1).weekday;
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
@@ -144,7 +184,10 @@ class _FinancialCalendarScreenState extends State<FinancialCalendarScreen> {
           GridView.builder(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 7, childAspectRatio: 1.2),
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 7,
+              childAspectRatio: 1.2,
+            ),
             itemCount: daysInMonth + firstDayOfWeek - 1,
             itemBuilder: (_, index) {
               if (index < firstDayOfWeek - 1) return const SizedBox.shrink();
@@ -179,9 +222,15 @@ class _FinancialCalendarScreenState extends State<FinancialCalendarScreen> {
                     child: Text(
                       '$day',
                       style: GoogleFonts.poppins(
-                        color: isSelected ? Colors.white : DesignTokens.textPrimaryDark,
+                        color:
+                            isSelected
+                                ? Colors.white
+                                : DesignTokens.textPrimaryDark,
                         fontSize: 12,
-                        fontWeight: isSelected || isToday ? FontWeight.w600 : FontWeight.normal,
+                        fontWeight:
+                            isSelected || isToday
+                                ? FontWeight.w600
+                                : FontWeight.normal,
                       ),
                     ),
                   ),
@@ -194,11 +243,22 @@ class _FinancialCalendarScreenState extends State<FinancialCalendarScreen> {
     );
   }
 
-  Widget _buildSelectedDayEvents(BuildContext context, AppLocalizations? l10n, CalendarController ctrl) {
+  Widget _buildSelectedDayEvents(
+    BuildContext context,
+    AppLocalizations? l10n,
+    CalendarController ctrl,
+  ) {
     final dayEvents =
         ctrl.events.where((e) {
-          final d = e['date'] as DateTime? ?? DateTime.parse(e['date_str'] ?? '');
-          return d.year == ctrl.selectedDay.year && d.month == ctrl.selectedDay.month && d.day == ctrl.selectedDay.day;
+          final d =
+              e['date'] as DateTime? ??
+              (e['date_str'] is String
+                  ? DateTime.tryParse(e['date_str'] as String)
+                  : null);
+          if (d == null) return false;
+          return d.year == ctrl.selectedDay.year &&
+              d.month == ctrl.selectedDay.month &&
+              d.day == ctrl.selectedDay.day;
         }).toList();
     double totalIncome = 0, totalExpense = 0;
     for (final ev in dayEvents) {
@@ -212,7 +272,11 @@ class _FinancialCalendarScreenState extends State<FinancialCalendarScreen> {
       children: [
         Text(
           '${ctrl.selectedDay.day}/${ctrl.selectedDay.month} - ${dayEvents.length} ${l10n?.transactions ?? 'transaksi'}',
-          style: GoogleFonts.poppins(color: DesignTokens.textPrimaryDark, fontSize: 16, fontWeight: FontWeight.w600),
+          style: GoogleFonts.poppins(
+            color: DesignTokens.textPrimaryDark,
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+          ),
         ),
         const SizedBox(height: DesignTokens.spacing2),
         if (totalIncome > 0 || totalExpense > 0)
@@ -231,7 +295,10 @@ class _FinancialCalendarScreenState extends State<FinancialCalendarScreen> {
                     children: [
                       Text(
                         l10n?.income ?? 'Pemasukan',
-                        style: GoogleFonts.poppins(color: DesignTokens.textSecondaryDark, fontSize: 11),
+                        style: GoogleFonts.poppins(
+                          color: DesignTokens.textSecondaryDark,
+                          fontSize: 11,
+                        ),
                       ),
                       Text(
                         CurrencyFormatter.formatRupiah(totalIncome.toInt()),
@@ -250,7 +317,10 @@ class _FinancialCalendarScreenState extends State<FinancialCalendarScreen> {
                     children: [
                       Text(
                         l10n?.expense ?? 'Pengeluaran',
-                        style: GoogleFonts.poppins(color: DesignTokens.textSecondaryDark, fontSize: 11),
+                        style: GoogleFonts.poppins(
+                          color: DesignTokens.textSecondaryDark,
+                          fontSize: 11,
+                        ),
                       ),
                       Text(
                         CurrencyFormatter.formatRupiah(totalExpense.toInt()),
@@ -271,7 +341,10 @@ class _FinancialCalendarScreenState extends State<FinancialCalendarScreen> {
           Center(
             child: Text(
               l10n?.no_events ?? 'Tidak ada event',
-              style: GoogleFonts.poppins(color: DesignTokens.textSecondaryDark, fontSize: 14),
+              style: GoogleFonts.poppins(
+                color: DesignTokens.textSecondaryDark,
+                fontSize: 14,
+              ),
             ),
           )
         else
@@ -308,7 +381,10 @@ class _FinancialCalendarScreenState extends State<FinancialCalendarScreen> {
             ),
             child: Icon(
               isIncome ? Iconsax.arrow_up_1 : Iconsax.arrow_down,
-              color: isIncome ? DesignTokens.successColor : DesignTokens.errorColor,
+              color:
+                  isIncome
+                      ? DesignTokens.successColor
+                      : DesignTokens.errorColor,
               size: 16,
             ),
           ),
@@ -327,7 +403,10 @@ class _FinancialCalendarScreenState extends State<FinancialCalendarScreen> {
                 ),
                 Text(
                   event['description'] ?? '',
-                  style: GoogleFonts.poppins(color: DesignTokens.textSecondaryDark, fontSize: 12),
+                  style: GoogleFonts.poppins(
+                    color: DesignTokens.textSecondaryDark,
+                    fontSize: 12,
+                  ),
                 ),
               ],
             ),
@@ -335,7 +414,10 @@ class _FinancialCalendarScreenState extends State<FinancialCalendarScreen> {
           Text(
             '${isIncome ? '+' : '-'}${CurrencyFormatter.formatRupiah((event['amount'] ?? 0).toInt())}',
             style: GoogleFonts.poppins(
-              color: isIncome ? DesignTokens.successColor : DesignTokens.errorColor,
+              color:
+                  isIncome
+                      ? DesignTokens.successColor
+                      : DesignTokens.errorColor,
               fontWeight: FontWeight.w600,
               fontSize: 14,
             ),
@@ -345,7 +427,11 @@ class _FinancialCalendarScreenState extends State<FinancialCalendarScreen> {
     );
   }
 
-  Widget _buildErrorState(BuildContext context, AppLocalizations? l10n, CalendarController ctrl) {
+  Widget _buildErrorState(
+    BuildContext context,
+    AppLocalizations? l10n,
+    CalendarController ctrl,
+  ) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -354,15 +440,30 @@ class _FinancialCalendarScreenState extends State<FinancialCalendarScreen> {
           const SizedBox(height: DesignTokens.spacing4),
           Text(
             l10n?.error ?? 'Terjadi kesalahan',
-            style: GoogleFonts.poppins(color: DesignTokens.textPrimaryDark, fontSize: 18, fontWeight: FontWeight.w600),
+            style: GoogleFonts.poppins(
+              color: DesignTokens.textPrimaryDark,
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
+            ),
           ),
           const SizedBox(height: DesignTokens.spacing2),
-          Text(ctrl.error ?? '', style: GoogleFonts.poppins(color: DesignTokens.textSecondaryDark, fontSize: 14)),
+          Text(
+            ctrl.error ?? '',
+            style: GoogleFonts.poppins(
+              color: DesignTokens.textSecondaryDark,
+              fontSize: 14,
+            ),
+          ),
           const SizedBox(height: DesignTokens.spacing4),
           ElevatedButton(
             onPressed: ctrl.loadMonthEvents,
-            style: ElevatedButton.styleFrom(backgroundColor: DesignTokens.primaryColor),
-            child: Text(l10n?.retry ?? 'Coba Lagi', style: GoogleFonts.poppins(color: Colors.white)),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: DesignTokens.primaryColor,
+            ),
+            child: Text(
+              l10n?.retry ?? 'Coba Lagi',
+              style: GoogleFonts.poppins(color: Colors.white),
+            ),
           ),
         ],
       ),

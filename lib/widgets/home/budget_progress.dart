@@ -18,10 +18,12 @@ class BudgetProgress extends StatefulWidget {
   State<BudgetProgress> createState() => _BudgetProgressState();
 }
 
-class _BudgetProgressState extends State<BudgetProgress> with SingleTickerProviderStateMixin {
+class _BudgetProgressState extends State<BudgetProgress>
+    with SingleTickerProviderStateMixin {
   final BudgetDataService _budgetData = getIt<BudgetDataService>();
   final CategoryDataService _categoryData = getIt<CategoryDataService>();
-  final BudgetRecommendationService _recommendationService = BudgetRecommendationService();
+  final BudgetRecommendationService _recommendationService =
+      BudgetRecommendationService();
   List<Map<String, dynamic>> _budgets = [];
   Map<String, String> _categories = {};
   bool _isLoading = true;
@@ -34,8 +36,14 @@ class _BudgetProgressState extends State<BudgetProgress> with SingleTickerProvid
   @override
   void initState() {
     super.initState();
-    _animationController = AnimationController(duration: const Duration(milliseconds: 800), vsync: this);
-    _fadeAnimation = CurvedAnimation(parent: _animationController, curve: Curves.easeInOut);
+    _animationController = AnimationController(
+      duration: const Duration(milliseconds: 800),
+      vsync: this,
+    );
+    _fadeAnimation = CurvedAnimation(
+      parent: _animationController,
+      curve: Curves.easeInOut,
+    );
 
     // Delay initial load to ensure context is ready
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -66,9 +74,16 @@ class _BudgetProgressState extends State<BudgetProgress> with SingleTickerProvid
       // Load categories and budgets in parallel for better performance
       // Only get active budgets for home screen
       final results = await Future.wait([
-        _categoryData.getCategories().then((m) => m.map((c) => c.toMap()).toList()),
-        _budgetData.getBudgets(activeOnly: true).then((m) => m.map((b) => b.toMap()).toList()),
-      ]).timeout(const Duration(seconds: 10), onTimeout: () => throw Exception('Request timeout'));
+        _categoryData.getCategories().then(
+          (m) => m.map((c) => c.toMap()).toList(),
+        ),
+        _budgetData
+            .getBudgets(activeOnly: true)
+            .then((m) => m.map((b) => b.toMap()).toList()),
+      ]).timeout(
+        const Duration(seconds: 10),
+        onTimeout: () => throw Exception('Request timeout'),
+      );
 
       final categories = results[0];
       final budgets = results[1];
@@ -92,10 +107,16 @@ class _BudgetProgressState extends State<BudgetProgress> with SingleTickerProvid
           _categories = categoryMap;
           final budgetsList = budgets;
           budgetsList.sort((a, b) {
-            final spentA = (a['spent_amount_232143'] ?? a['spent'] as num?)?.toDouble() ?? 0.0;
-            final amountA = (a['amount_232143'] ?? a['amount'] as num?)?.toDouble() ?? 1.0;
-            final spentB = (b['spent_amount_232143'] ?? b['spent'] as num?)?.toDouble() ?? 0.0;
-            final amountB = (b['amount_232143'] ?? b['amount'] as num?)?.toDouble() ?? 1.0;
+            final spentA =
+                (a['spent_amount_232143'] ?? a['spent'] as num?)?.toDouble() ??
+                0.0;
+            final amountA =
+                (a['amount_232143'] ?? a['amount'] as num?)?.toDouble() ?? 1.0;
+            final spentB =
+                (b['spent_amount_232143'] ?? b['spent'] as num?)?.toDouble() ??
+                0.0;
+            final amountB =
+                (b['amount_232143'] ?? b['amount'] as num?)?.toDouble() ?? 1.0;
             final percentageA = amountA > 0 ? spentA / amountA : 0.0;
             final percentageB = amountB > 0 ? spentB / amountB : 0.0;
             return percentageB.compareTo(percentageA);
@@ -142,18 +163,22 @@ class _BudgetProgressState extends State<BudgetProgress> with SingleTickerProvid
     final errorStr = error.toString().toLowerCase();
     if (errorStr.contains('timeout')) {
       return 'Koneksi timeout. Cek koneksi internet Anda.';
-    } else if (errorStr.contains('connection') || errorStr.contains('network')) {
-      return l10n?.failed_to_connect ?? 'Gagal terhubung ke server. Pastikan backend berjalan.';
+    } else if (errorStr.contains('connection') ||
+        errorStr.contains('network')) {
+      return l10n?.failed_to_connect ??
+          'Gagal terhubung ke server. Pastikan backend berjalan.';
     } else if (errorStr.contains('unauthorized') || errorStr.contains('401')) {
       return l10n?.session_ended ?? 'Sesi berakhir. Silakan login kembali.';
     } else {
-      return l10n?.failed_to_load_transactions ?? 'Gagal memuat data. Tap untuk coba lagi.';
+      return l10n?.failed_to_load_transactions ??
+          'Gagal memuat data. Tap untuk coba lagi.';
     }
   }
 
   Future<void> _loadRecommendations() async {
     try {
-      final recommendation = await _recommendationService.generateRecommendation();
+      final recommendation =
+          await _recommendationService.generateRecommendation();
       if (mounted && recommendation['categories'] != null) {
         final categories = recommendation['categories'] as List;
         if (categories.isNotEmpty) {
@@ -186,7 +211,12 @@ class _BudgetProgressState extends State<BudgetProgress> with SingleTickerProvid
             ),
             GestureDetector(
               onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) => const BudgetsScreen()));
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const BudgetsScreen(),
+                  ),
+                );
               },
               child: Text(
                 'Lihat Semua',
@@ -203,7 +233,9 @@ class _BudgetProgressState extends State<BudgetProgress> with SingleTickerProvid
           Center(
             child: Padding(
               padding: ResponsiveHelper.padding(context, multiplier: 1.25),
-              child: const CircularProgressIndicator(color: DesignTokens.primaryColor),
+              child: const CircularProgressIndicator(
+                color: DesignTokens.primaryColor,
+              ),
             ),
           )
         else if (_errorMessage != null)
@@ -220,7 +252,9 @@ class _BudgetProgressState extends State<BudgetProgress> with SingleTickerProvid
               padding: ResponsiveHelper.padding(context, multiplier: 2.0),
               decoration: BoxDecoration(
                 color: DesignTokens.surfaceDark,
-                borderRadius: BorderRadius.circular(ResponsiveHelper.borderRadius(context, 16)),
+                borderRadius: BorderRadius.circular(
+                  ResponsiveHelper.borderRadius(context, 16),
+                ),
                 border: Border.all(color: Colors.red.withValues(alpha: 0.3)),
               ),
               child: Column(
@@ -230,7 +264,9 @@ class _BudgetProgressState extends State<BudgetProgress> with SingleTickerProvid
                     color: Colors.red[400],
                     size: ResponsiveHelper.iconSize(context, 48),
                   ),
-                  SizedBox(height: ResponsiveHelper.verticalSpacing(context, 12)),
+                  SizedBox(
+                    height: ResponsiveHelper.verticalSpacing(context, 12),
+                  ),
                   Semantics(
                     liveRegion: true,
                     child: Text(
@@ -242,7 +278,9 @@ class _BudgetProgressState extends State<BudgetProgress> with SingleTickerProvid
                       ),
                     ),
                   ),
-                  SizedBox(height: ResponsiveHelper.verticalSpacing(context, 4)),
+                  SizedBox(
+                    height: ResponsiveHelper.verticalSpacing(context, 4),
+                  ),
                   Semantics(
                     liveRegion: true,
                     child: Text(
@@ -254,12 +292,20 @@ class _BudgetProgressState extends State<BudgetProgress> with SingleTickerProvid
                       ),
                     ),
                   ),
-                  SizedBox(height: ResponsiveHelper.verticalSpacing(context, 12)),
+                  SizedBox(
+                    height: ResponsiveHelper.verticalSpacing(context, 12),
+                  ),
                   Container(
-                    padding: ResponsiveHelper.symmetricPadding(context, horizontal: 16, vertical: 8),
+                    padding: ResponsiveHelper.symmetricPadding(
+                      context,
+                      horizontal: 16,
+                      vertical: 8,
+                    ),
                     decoration: BoxDecoration(
                       color: DesignTokens.primaryColor.withValues(alpha: 0.2),
-                      borderRadius: BorderRadius.circular(ResponsiveHelper.borderRadius(context, 20)),
+                      borderRadius: BorderRadius.circular(
+                        ResponsiveHelper.borderRadius(context, 20),
+                      ),
                       border: Border.all(color: DesignTokens.primaryColor),
                     ),
                     child: Text(
@@ -280,7 +326,9 @@ class _BudgetProgressState extends State<BudgetProgress> with SingleTickerProvid
             padding: ResponsiveHelper.padding(context, multiplier: 2.0),
             decoration: BoxDecoration(
               color: DesignTokens.surfaceDark,
-              borderRadius: BorderRadius.circular(ResponsiveHelper.borderRadius(context, 16)),
+              borderRadius: BorderRadius.circular(
+                ResponsiveHelper.borderRadius(context, 16),
+              ),
               border: Border.all(color: DesignTokens.borderDark),
             ),
             child: Column(
@@ -301,9 +349,13 @@ class _BudgetProgressState extends State<BudgetProgress> with SingleTickerProvid
                 ),
                 SizedBox(height: ResponsiveHelper.verticalSpacing(context, 4)),
                 Text(
-                  l10n?.create_budget_to_manage ?? 'Buat budget untuk kelola keuangan lebih baik',
+                  l10n?.create_budget_to_manage ??
+                      'Buat budget untuk kelola keuangan lebih baik',
                   textAlign: TextAlign.center,
-                  style: GoogleFonts.poppins(color: Colors.grey[600], fontSize: ResponsiveHelper.fontSize(context, 12)),
+                  style: GoogleFonts.poppins(
+                    color: Colors.grey[600],
+                    fontSize: ResponsiveHelper.fontSize(context, 12),
+                  ),
                 ),
               ],
             ),
@@ -313,7 +365,8 @@ class _BudgetProgressState extends State<BudgetProgress> with SingleTickerProvid
             opacity: _fadeAnimation,
             child: Column(
               children: [
-                if (_recommendation != null) _buildRecommendationBanner(_recommendation!),
+                if (_recommendation != null)
+                  _buildRecommendationBanner(_recommendation!),
                 ..._budgets.map((budget) => _buildBudgetItem(budget)),
               ],
             ),
@@ -327,16 +380,25 @@ class _BudgetProgressState extends State<BudgetProgress> with SingleTickerProvid
     if (categories.isEmpty) return const SizedBox.shrink();
 
     final topRecommendation = categories.first;
-    final categoryName = topRecommendation['category_name'] as String? ?? 'Umum';
-    final suggestedAmount = (topRecommendation['recommended_amount'] as num?)?.toDouble() ?? 0.0;
-    final reason = topRecommendation['reason'] as String? ?? 'Berdasarkan pola pengeluaran Anda';
+    final categoryName =
+        topRecommendation['category_name'] as String? ?? 'Umum';
+    final suggestedAmount =
+        (topRecommendation['recommended_amount'] as num?)?.toDouble() ?? 0.0;
+    final reason =
+        topRecommendation['reason'] as String? ??
+        'Berdasarkan pola pengeluaran Anda';
 
     return GestureDetector(
       onTap: () {
-        Navigator.push(context, MaterialPageRoute(builder: (context) => const BudgetsScreen()));
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const BudgetsScreen()),
+        );
       },
       child: Container(
-        margin: EdgeInsets.only(bottom: ResponsiveHelper.verticalSpacing(context, 12)),
+        margin: EdgeInsets.only(
+          bottom: ResponsiveHelper.verticalSpacing(context, 12),
+        ),
         padding: ResponsiveHelper.padding(context),
         decoration: BoxDecoration(
           gradient: LinearGradient(
@@ -345,8 +407,12 @@ class _BudgetProgressState extends State<BudgetProgress> with SingleTickerProvid
               DesignTokens.primaryColor.withValues(alpha: 0.05),
             ],
           ),
-          borderRadius: BorderRadius.circular(ResponsiveHelper.borderRadius(context, 16)),
-          border: Border.all(color: DesignTokens.primaryColor.withValues(alpha: 0.3)),
+          borderRadius: BorderRadius.circular(
+            ResponsiveHelper.borderRadius(context, 16),
+          ),
+          border: Border.all(
+            color: DesignTokens.primaryColor.withValues(alpha: 0.3),
+          ),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -387,7 +453,10 @@ class _BudgetProgressState extends State<BudgetProgress> with SingleTickerProvid
             SizedBox(height: ResponsiveHelper.verticalSpacing(context, 4)),
             Text(
               reason,
-              style: GoogleFonts.poppins(color: Colors.grey[400], fontSize: ResponsiveHelper.fontSize(context, 11)),
+              style: GoogleFonts.poppins(
+                color: Colors.grey[400],
+                fontSize: ResponsiveHelper.fontSize(context, 11),
+              ),
             ),
           ],
         ),
@@ -397,12 +466,20 @@ class _BudgetProgressState extends State<BudgetProgress> with SingleTickerProvid
 
   Widget _buildBudgetItem(Map<String, dynamic> budget) {
     // Support both old and new field names
-    final categoryId = (budget['category_id_232143'] ?? budget['category_id'])?.toString();
+    final categoryId =
+        (budget['category_id_232143'] ?? budget['category_id'])?.toString();
     final category =
-        categoryId != null && _categories.containsKey(categoryId) ? _categories[categoryId]! : 'All Categories';
+        categoryId != null && _categories.containsKey(categoryId)
+            ? _categories[categoryId]!
+            : 'All Categories';
 
-    final spent = (budget['spent_amount_232143'] ?? budget['spent'] as num?)?.toDouble() ?? 0.0;
-    final amount = (budget['amount_232143'] ?? budget['amount'] as num?)?.toDouble() ?? 0.0;
+    final spent =
+        (budget['spent_amount_232143'] ?? budget['spent'] as num?)
+            ?.toDouble() ??
+        0.0;
+    final amount =
+        (budget['amount_232143'] ?? budget['amount'] as num?)?.toDouble() ??
+        0.0;
 
     // Handle edge cases
     if (amount <= 0) {
@@ -414,24 +491,43 @@ class _BudgetProgressState extends State<BudgetProgress> with SingleTickerProvid
     final color = _getCategoryColor(category);
 
     // Calculate percentage
-    final actualPercentage = spent / amount; // Actual percentage (can be > 100%)
-    final percentage = actualPercentage.clamp(0.0, 1.0); // For progress bar (max 100%)
+    final actualPercentage =
+        amount > 0 ? spent / amount : 0.0; // Actual percentage (can be > 100%)
+    final percentage = actualPercentage.clamp(
+      0.0,
+      1.0,
+    ); // For progress bar (max 100%)
     final isOverBudget = spent > amount;
     final displayColor = isOverBudget ? Colors.red : color;
 
     return Container(
       width: double.infinity,
-      margin: EdgeInsets.only(bottom: ResponsiveHelper.verticalSpacing(context, 12)),
+      margin: EdgeInsets.only(
+        bottom: ResponsiveHelper.verticalSpacing(context, 12),
+      ),
       padding: ResponsiveHelper.padding(context),
       decoration: BoxDecoration(
         color: DesignTokens.surfaceDark,
-        borderRadius: BorderRadius.circular(ResponsiveHelper.borderRadius(context, 16)),
+        borderRadius: BorderRadius.circular(
+          ResponsiveHelper.borderRadius(context, 16),
+        ),
         border: Border.all(
-          color: isOverBudget ? Colors.red.withValues(alpha: 0.3) : DesignTokens.borderDark,
+          color:
+              isOverBudget
+                  ? Colors.red.withValues(alpha: 0.3)
+                  : DesignTokens.borderDark,
           width: isOverBudget ? 1.5 : 1,
         ),
         boxShadow:
-            isOverBudget ? [BoxShadow(color: Colors.red.withValues(alpha: 0.1), blurRadius: 8, spreadRadius: 1)] : null,
+            isOverBudget
+                ? [
+                  BoxShadow(
+                    color: Colors.red.withValues(alpha: 0.1),
+                    blurRadius: 8,
+                    spreadRadius: 1,
+                  ),
+                ]
+                : null,
       ),
       child: Column(
         children: [
@@ -444,7 +540,9 @@ class _BudgetProgressState extends State<BudgetProgress> with SingleTickerProvid
                   height: ResponsiveHelper.iconSize(context, 40),
                   decoration: BoxDecoration(
                     color: displayColor.withValues(alpha: 0.2),
-                    borderRadius: BorderRadius.circular(ResponsiveHelper.borderRadius(context, 10)),
+                    borderRadius: BorderRadius.circular(
+                      ResponsiveHelper.borderRadius(context, 10),
+                    ),
                   ),
                   child: Icon(
                     Icons.account_balance_wallet_rounded,
@@ -452,7 +550,9 @@ class _BudgetProgressState extends State<BudgetProgress> with SingleTickerProvid
                     size: ResponsiveHelper.iconSize(context, 20),
                   ),
                 ),
-                SizedBox(width: ResponsiveHelper.horizontalSpacing(context, 12)),
+                SizedBox(
+                  width: ResponsiveHelper.horizontalSpacing(context, 12),
+                ),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -467,12 +567,20 @@ class _BudgetProgressState extends State<BudgetProgress> with SingleTickerProvid
                         ),
                       ),
                       if (isOverBudget) ...[
-                        SizedBox(height: ResponsiveHelper.verticalSpacing(context, 4)),
+                        SizedBox(
+                          height: ResponsiveHelper.verticalSpacing(context, 4),
+                        ),
                         Container(
-                          padding: ResponsiveHelper.symmetricPadding(context, horizontal: 6, vertical: 2),
+                          padding: ResponsiveHelper.symmetricPadding(
+                            context,
+                            horizontal: 6,
+                            vertical: 2,
+                          ),
                           decoration: BoxDecoration(
                             color: Colors.red.withValues(alpha: 0.2),
-                            borderRadius: BorderRadius.circular(ResponsiveHelper.borderRadius(context, 6)),
+                            borderRadius: BorderRadius.circular(
+                              ResponsiveHelper.borderRadius(context, 6),
+                            ),
                           ),
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
@@ -482,12 +590,20 @@ class _BudgetProgressState extends State<BudgetProgress> with SingleTickerProvid
                                 color: Colors.red,
                                 size: ResponsiveHelper.iconSize(context, 12),
                               ),
-                              SizedBox(width: ResponsiveHelper.horizontalSpacing(context, 4)),
+                              SizedBox(
+                                width: ResponsiveHelper.horizontalSpacing(
+                                  context,
+                                  4,
+                                ),
+                              ),
                               Text(
                                 'Over',
                                 style: GoogleFonts.poppins(
                                   color: Colors.red,
-                                  fontSize: ResponsiveHelper.fontSize(context, 10),
+                                  fontSize: ResponsiveHelper.fontSize(
+                                    context,
+                                    10,
+                                  ),
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
@@ -525,7 +641,9 @@ class _BudgetProgressState extends State<BudgetProgress> with SingleTickerProvid
           ),
           SizedBox(height: ResponsiveHelper.verticalSpacing(context, 12)),
           ClipRRect(
-            borderRadius: BorderRadius.circular(ResponsiveHelper.borderRadius(context, 10)),
+            borderRadius: BorderRadius.circular(
+              ResponsiveHelper.borderRadius(context, 10),
+            ),
             child: TweenAnimationBuilder<double>(
               duration: const Duration(milliseconds: 1000),
               curve: Curves.easeOutCubic,

@@ -17,10 +17,10 @@ class SettingsRepository {
     TransactionDataService? transactionData,
     BudgetDataService? budgetData,
     GoalDataService? goalData,
-  })  : _auth = auth ?? getIt<AuthService>(),
-        _transactionData = transactionData ?? getIt<TransactionDataService>(),
-        _budgetData = budgetData ?? getIt<BudgetDataService>(),
-        _goalData = goalData ?? getIt<GoalDataService>();
+  }) : _auth = auth ?? getIt<AuthService>(),
+       _transactionData = transactionData ?? getIt<TransactionDataService>(),
+       _budgetData = budgetData ?? getIt<BudgetDataService>(),
+       _goalData = goalData ?? getIt<GoalDataService>();
 
   Future<void> logout() async {
     return await _auth.logout();
@@ -32,6 +32,12 @@ class SettingsRepository {
 
   Future<Map<String, dynamic>> getTransactions({int limit = 10000}) async {
     return await _transactionData.getTransactions(limit: limit);
+  }
+
+  /// Full-history export helper — pages through every transaction so exports
+  /// never silently truncate at a fixed limit (unlike [getTransactions]).
+  Future<List<Map<String, dynamic>>> exportAllTransactions() async {
+    return await _transactionData.getAllTransactions();
   }
 
   Future<List<dynamic>> getBudgets() async {

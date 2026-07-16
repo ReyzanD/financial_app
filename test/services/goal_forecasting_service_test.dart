@@ -44,6 +44,19 @@ void main() {
       expect(result['warning'], isNotNull);
     });
 
+    test('empty historical contributions falls back to monthlyContribution', () {
+      final result = service.forecastGoalCompletion(
+        targetAmount: 1000000,
+        currentAmount: 200000,
+        monthlyContribution: 100000,
+        historicalContributions: [], // empty list -> uses monthlyContribution
+      );
+
+      // No divide-by-zero; completion uses monthlyContribution (8 months).
+      expect(result['monthsToCompletion'], 8);
+      expect(result['onTrack'], true);
+    });
+
     test('should analyze historical contributions trend', () {
       final result = service.forecastGoalCompletion(
         targetAmount: 1000000,

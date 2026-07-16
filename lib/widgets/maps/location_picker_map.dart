@@ -59,7 +59,11 @@ class _LocationPickerMapState extends State<LocationPickerMap> {
       LoggerService.debug('🔍 Searching for location: $query');
 
       // Use MapProviderService with automatic fallback
-      final results = await MapProviderService.searchLocation(query, countryCode: 'id', limit: 5);
+      final results = await MapProviderService.searchLocation(
+        query,
+        countryCode: 'id',
+        limit: 5,
+      );
 
       if (results.isNotEmpty) {
         LoggerService.success('✅ Found ${results.length} results for: $query');
@@ -72,7 +76,8 @@ class _LocationPickerMapState extends State<LocationPickerMap> {
         if (!mounted) return;
         ErrorHandlerService.showSuccessSnackbar(
           context,
-          l10n?.search_results_found(results.length) ?? '${results.length} lokasi ditemukan - pilih dari daftar',
+          l10n?.search_results_found(results.length) ??
+              '${results.length} lokasi ditemukan - pilih dari daftar',
         );
       } else {
         LoggerService.warning('❌ No results found for: $query');
@@ -87,7 +92,11 @@ class _LocationPickerMapState extends State<LocationPickerMap> {
         );
       }
     } catch (e, stackTrace) {
-      LoggerService.error('❌ Search error: $e', error: e, stackTrace: stackTrace);
+      LoggerService.error(
+        '❌ Search error: $e',
+        error: e,
+        stackTrace: stackTrace,
+      );
       if (!mounted) return;
       ErrorHandlerService.showErrorSnackbar(
         context,
@@ -109,7 +118,10 @@ class _LocationPickerMapState extends State<LocationPickerMap> {
 
       // If there's an initial location, use it
       if (widget.initialLocation != null) {
-        _selectedPosition = LatLng(widget.initialLocation!.latitude, widget.initialLocation!.longitude);
+        _selectedPosition = LatLng(
+          widget.initialLocation!.latitude,
+          widget.initialLocation!.longitude,
+        );
         _selectedAddress = widget.initialLocation!.address;
       } else if (_currentPosition != null) {
         // Otherwise use current location as default
@@ -148,7 +160,8 @@ class _LocationPickerMapState extends State<LocationPickerMap> {
       if (!mounted) return;
       ErrorHandlerService.showErrorSnackbar(
         context,
-        l10n?.cannot_get_current_location ?? 'Tidak dapat mendapatkan lokasi saat ini',
+        l10n?.cannot_get_current_location ??
+            'Tidak dapat mendapatkan lokasi saat ini',
       );
     }
   }
@@ -158,7 +171,8 @@ class _LocationPickerMapState extends State<LocationPickerMap> {
     if (_selectedPosition == null) {
       ErrorHandlerService.showWarningSnackbar(
         context,
-        l10n?.select_location_on_map_first ?? 'Pilih lokasi di peta terlebih dahulu',
+        l10n?.select_location_on_map_first ??
+            'Pilih lokasi di peta terlebih dahulu',
       );
       return;
     }
@@ -166,7 +180,8 @@ class _LocationPickerMapState extends State<LocationPickerMap> {
     final locationData = LocationData(
       latitude: _selectedPosition!.latitude,
       longitude: _selectedPosition!.longitude,
-      placeName: _selectedAddress ?? (l10n?.selected_location ?? 'Lokasi Terpilih'),
+      placeName:
+          _selectedAddress ?? (l10n?.selected_location ?? 'Lokasi Terpilih'),
       address: _selectedAddress,
     );
 
@@ -175,9 +190,11 @@ class _LocationPickerMapState extends State<LocationPickerMap> {
 
   void _selectSearchResult(Map<String, dynamic> result) {
     final l10n = AppLocalizations.of(context);
-    final lat = result['lat'] as double;
-    final lng = result['lng'] as double;
-    final displayName = result['displayName'] as String;
+    final lat = (result['lat'] as num?)?.toDouble();
+    final lng = (result['lng'] as num?)?.toDouble();
+    final displayName = result['displayName']?.toString() ?? '';
+
+    if (lat == null || lng == null) return;
 
     final newPosition = LatLng(lat, lng);
 
@@ -192,7 +209,8 @@ class _LocationPickerMapState extends State<LocationPickerMap> {
 
     ErrorHandlerService.showSuccessSnackbar(
       context,
-      l10n?.selected_prefix(displayName.split(',').first) ?? 'Dipilih: ${displayName.split(',').first}',
+      l10n?.selected_prefix(displayName.split(',').first) ??
+          'Dipilih: ${displayName.split(',').first}',
     );
   }
 
@@ -207,11 +225,18 @@ class _LocationPickerMapState extends State<LocationPickerMap> {
         decoration: BoxDecoration(
           color: DesignTokens.primaryColor.withValues(alpha: 0.2),
           borderRadius: BorderRadius.circular(DesignTokens.radiusLarge),
-          border: Border.all(color: DesignTokens.primaryColor.withValues(alpha: 0.5), width: 1),
+          border: Border.all(
+            color: DesignTokens.primaryColor.withValues(alpha: 0.5),
+            width: 1,
+          ),
         ),
         child: Text(
           placeName,
-          style: GoogleFonts.poppins(color: DesignTokens.primaryColor, fontSize: 11, fontWeight: FontWeight.w500),
+          style: GoogleFonts.poppins(
+            color: DesignTokens.primaryColor,
+            fontSize: 11,
+            fontWeight: FontWeight.w500,
+          ),
         ),
       ),
     );
@@ -263,7 +288,10 @@ class _LocationPickerMapState extends State<LocationPickerMap> {
         backgroundColor: DesignTokens.backgroundDark,
         title: Text(
           l10n?.pick_location ?? 'Pilih Lokasi',
-          style: GoogleFonts.poppins(color: Colors.white, fontWeight: FontWeight.w600),
+          style: GoogleFonts.poppins(
+            color: Colors.white,
+            fontWeight: FontWeight.w600,
+          ),
         ),
         leading: IconButton(
           icon: const Icon(Iconsax.arrow_left, color: Colors.white),
@@ -273,10 +301,16 @@ class _LocationPickerMapState extends State<LocationPickerMap> {
         actions: [
           TextButton.icon(
             onPressed: _confirmLocation,
-            icon: const Icon(Iconsax.tick_circle, color: DesignTokens.primaryColor),
+            icon: const Icon(
+              Iconsax.tick_circle,
+              color: DesignTokens.primaryColor,
+            ),
             label: Text(
               l10n?.select ?? 'Pilih',
-              style: GoogleFonts.poppins(color: DesignTokens.primaryColor, fontWeight: FontWeight.w600),
+              style: GoogleFonts.poppins(
+                color: DesignTokens.primaryColor,
+                fontWeight: FontWeight.w600,
+              ),
             ),
           ),
         ],
@@ -291,7 +325,9 @@ class _LocationPickerMapState extends State<LocationPickerMap> {
                     mapController: _mapController,
                     options: MapOptions(
                       initialCenter:
-                          _selectedPosition ?? _currentPosition ?? const LatLng(-5.1477, 119.4327), // Makassar fallback
+                          _selectedPosition ??
+                          _currentPosition ??
+                          const LatLng(-5.1477, 119.4327), // Makassar fallback
                       initialZoom: 15.0,
                       minZoom: 5.0,
                       maxZoom: 18.0,
@@ -312,25 +348,46 @@ class _LocationPickerMapState extends State<LocationPickerMap> {
                     left: 16,
                     right: 16,
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 8,
+                      ),
                       decoration: BoxDecoration(
                         color: DesignTokens.surfaceDark,
-                        borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                        borderRadius: BorderRadius.circular(
+                          DesignTokens.radiusMedium,
+                        ),
                         boxShadow: [
-                          BoxShadow(color: Colors.black.withValues(alpha: 0.3), blurRadius: 10, spreadRadius: 2),
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.3),
+                            blurRadius: 10,
+                            spreadRadius: 2,
+                          ),
                         ],
                       ),
                       child: Row(
                         children: [
-                          const Icon(Iconsax.search_normal, color: DesignTokens.primaryColor, size: 20),
+                          const Icon(
+                            Iconsax.search_normal,
+                            color: DesignTokens.primaryColor,
+                            size: 20,
+                          ),
                           const SizedBox(width: 12),
                           Expanded(
                             child: TextField(
                               controller: _searchController,
-                              style: GoogleFonts.poppins(color: Colors.white, fontSize: 14),
+                              style: GoogleFonts.poppins(
+                                color: Colors.white,
+                                fontSize: 14,
+                              ),
                               decoration: InputDecoration(
-                                hintText: l10n?.search_places_hint ?? 'Cari tempat (contoh: Pantai Losari)',
-                                hintStyle: GoogleFonts.poppins(color: Colors.grey[500], fontSize: 13),
+                                hintText:
+                                    l10n?.search_places_hint ??
+                                    'Cari tempat (contoh: Pantai Losari)',
+                                hintStyle: GoogleFonts.poppins(
+                                  color: Colors.grey[500],
+                                  fontSize: 13,
+                                ),
                                 border: InputBorder.none,
                                 isDense: true,
                               ),
@@ -341,12 +398,20 @@ class _LocationPickerMapState extends State<LocationPickerMap> {
                             const SizedBox(
                               width: 16,
                               height: 16,
-                              child: CircularProgressIndicator(strokeWidth: 2, color: DesignTokens.primaryColor),
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: DesignTokens.primaryColor,
+                              ),
                             )
                           else
                             IconButton(
-                              icon: const Icon(Iconsax.search_normal_1, size: 20, color: Colors.green),
-                              onPressed: () => _searchLocation(_searchController.text),
+                              icon: const Icon(
+                                Iconsax.search_normal_1,
+                                size: 20,
+                                color: Colors.green,
+                              ),
+                              onPressed:
+                                  () => _searchLocation(_searchController.text),
                               tooltip: l10n?.search ?? 'Cari',
                             ),
                         ],
@@ -363,7 +428,9 @@ class _LocationPickerMapState extends State<LocationPickerMap> {
                       child: Container(
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          color: const Color(0xFF1A1A1A).withValues(alpha: 0.95),
+                          color: const Color(
+                            0xFF1A1A1A,
+                          ).withValues(alpha: 0.95),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Column(
@@ -404,9 +471,15 @@ class _LocationPickerMapState extends State<LocationPickerMap> {
                         constraints: const BoxConstraints(maxHeight: 300),
                         decoration: BoxDecoration(
                           color: DesignTokens.surfaceDark,
-                          borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                          borderRadius: BorderRadius.circular(
+                            DesignTokens.radiusMedium,
+                          ),
                           boxShadow: [
-                            BoxShadow(color: Colors.black.withValues(alpha: 0.5), blurRadius: 15, spreadRadius: 3),
+                            BoxShadow(
+                              color: Colors.black.withValues(alpha: 0.5),
+                              blurRadius: 15,
+                              spreadRadius: 3,
+                            ),
                           ],
                         ),
                         child: Column(
@@ -416,15 +489,26 @@ class _LocationPickerMapState extends State<LocationPickerMap> {
                             Container(
                               padding: const EdgeInsets.all(12),
                               decoration: const BoxDecoration(
-                                border: Border(bottom: BorderSide(color: DesignTokens.borderDark, width: 1)),
+                                border: Border(
+                                  bottom: BorderSide(
+                                    color: DesignTokens.borderDark,
+                                    width: 1,
+                                  ),
+                                ),
                               ),
                               child: Row(
                                 children: [
-                                  const Icon(Iconsax.location, color: DesignTokens.primaryColor, size: 18),
+                                  const Icon(
+                                    Iconsax.location,
+                                    color: DesignTokens.primaryColor,
+                                    size: 18,
+                                  ),
                                   const SizedBox(width: 8),
                                   Expanded(
                                     child: Text(
-                                      l10n?.locations_found_title(_searchResults.length) ??
+                                      l10n?.locations_found_title(
+                                            _searchResults.length,
+                                          ) ??
                                           '${_searchResults.length} Lokasi Ditemukan',
                                       style: GoogleFonts.poppins(
                                         color: Colors.white,
@@ -434,7 +518,11 @@ class _LocationPickerMapState extends State<LocationPickerMap> {
                                     ),
                                   ),
                                   IconButton(
-                                    icon: const Icon(Iconsax.close_circle, size: 18, color: Colors.grey),
+                                    icon: const Icon(
+                                      Iconsax.close_circle,
+                                      size: 18,
+                                      color: Colors.grey,
+                                    ),
                                     onPressed: () {
                                       setState(() {
                                         _showResults = false;
@@ -453,21 +541,38 @@ class _LocationPickerMapState extends State<LocationPickerMap> {
                                 itemCount: _searchResults.length,
                                 itemBuilder: (context, index) {
                                   final result = _searchResults[index];
-                                  final displayName = result['displayName'] as String;
+                                  final displayName =
+                                      result['displayName'] as String;
                                   final parts = displayName.split(',');
                                   final mainName = parts.first.trim();
                                   final subName =
                                       parts.length > 1
-                                          ? parts.sublist(1, parts.length > 3 ? 3 : parts.length).join(',').trim()
+                                          ? parts
+                                              .sublist(
+                                                1,
+                                                parts.length > 3
+                                                    ? 3
+                                                    : parts.length,
+                                              )
+                                              .join(',')
+                                              .trim()
                                           : '';
 
                                   return InkWell(
                                     onTap: () => _selectSearchResult(result),
                                     child: Container(
-                                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 16,
+                                        vertical: 12,
+                                      ),
                                       decoration: BoxDecoration(
                                         border: Border(
-                                          bottom: BorderSide(color: Colors.grey.withValues(alpha: 0.1), width: 1),
+                                          bottom: BorderSide(
+                                            color: Colors.grey.withValues(
+                                              alpha: 0.1,
+                                            ),
+                                            width: 1,
+                                          ),
                                         ),
                                       ),
                                       child: Row(
@@ -475,8 +580,10 @@ class _LocationPickerMapState extends State<LocationPickerMap> {
                                           Container(
                                             padding: const EdgeInsets.all(8),
                                             decoration: BoxDecoration(
-                                              color: DesignTokens.primaryColor.withValues(alpha: 0.2),
-                                              borderRadius: BorderRadius.circular(8),
+                                              color: DesignTokens.primaryColor
+                                                  .withValues(alpha: 0.2),
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
                                             ),
                                             child: const Icon(
                                               Iconsax.location,
@@ -487,7 +594,8 @@ class _LocationPickerMapState extends State<LocationPickerMap> {
                                           const SizedBox(width: 12),
                                           Expanded(
                                             child: Column(
-                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
                                               children: [
                                                 Text(
                                                   mainName,
@@ -497,21 +605,30 @@ class _LocationPickerMapState extends State<LocationPickerMap> {
                                                     fontWeight: FontWeight.w600,
                                                   ),
                                                   maxLines: 1,
-                                                  overflow: TextOverflow.ellipsis,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
                                                 ),
                                                 if (subName.isNotEmpty) ...[
                                                   const SizedBox(height: 2),
                                                   Text(
                                                     subName,
-                                                    style: GoogleFonts.poppins(color: Colors.grey[500], fontSize: 11),
+                                                    style: GoogleFonts.poppins(
+                                                      color: Colors.grey[500],
+                                                      fontSize: 11,
+                                                    ),
                                                     maxLines: 1,
-                                                    overflow: TextOverflow.ellipsis,
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
                                                   ),
                                                 ],
                                               ],
                                             ),
                                           ),
-                                          const Icon(Iconsax.arrow_right_3, size: 16, color: Colors.grey),
+                                          const Icon(
+                                            Iconsax.arrow_right_3,
+                                            size: 16,
+                                            color: Colors.grey,
+                                          ),
                                         ],
                                       ),
                                     ),
@@ -534,9 +651,15 @@ class _LocationPickerMapState extends State<LocationPickerMap> {
                         padding: const EdgeInsets.all(DesignTokens.spacing4),
                         decoration: BoxDecoration(
                           color: DesignTokens.surfaceDark,
-                          borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                          borderRadius: BorderRadius.circular(
+                            DesignTokens.radiusMedium,
+                          ),
                           boxShadow: [
-                            BoxShadow(color: Colors.black.withValues(alpha: 0.3), blurRadius: 10, spreadRadius: 2),
+                            BoxShadow(
+                              color: Colors.black.withValues(alpha: 0.3),
+                              blurRadius: 10,
+                              spreadRadius: 2,
+                            ),
                           ],
                         ),
                         child: Column(
@@ -545,7 +668,11 @@ class _LocationPickerMapState extends State<LocationPickerMap> {
                           children: [
                             Row(
                               children: [
-                                const Icon(Iconsax.location, color: Colors.green, size: 20),
+                                const Icon(
+                                  Iconsax.location,
+                                  color: Colors.green,
+                                  size: 20,
+                                ),
                                 const SizedBox(width: 8),
                                 Text(
                                   l10n?.selected_location ?? 'Lokasi Terpilih',
@@ -560,11 +687,17 @@ class _LocationPickerMapState extends State<LocationPickerMap> {
                             const SizedBox(height: DesignTokens.spacing2),
                             Text(
                               'Lat: ${_selectedPosition!.latitude.toStringAsFixed(6)}',
-                              style: GoogleFonts.poppins(color: Colors.grey[400], fontSize: 12),
+                              style: GoogleFonts.poppins(
+                                color: Colors.grey[400],
+                                fontSize: 12,
+                              ),
                             ),
                             Text(
                               'Lng: ${_selectedPosition!.longitude.toStringAsFixed(6)}',
-                              style: GoogleFonts.poppins(color: Colors.grey[400], fontSize: 12),
+                              style: GoogleFonts.poppins(
+                                color: Colors.grey[400],
+                                fontSize: 12,
+                              ),
                             ),
                           ],
                         ),
@@ -580,7 +713,10 @@ class _LocationPickerMapState extends State<LocationPickerMap> {
             heroTag: 'location_picker_zoom_in',
             onPressed: () {
               // Get current center, default to Makassar if null
-              final center = _selectedPosition ?? _currentPosition ?? const LatLng(-5.1477, 119.4327);
+              final center =
+                  _selectedPosition ??
+                  _currentPosition ??
+                  const LatLng(-5.1477, 119.4327);
               _mapController.move(center, 16.0);
             },
             backgroundColor: DesignTokens.primaryColor,
@@ -591,7 +727,10 @@ class _LocationPickerMapState extends State<LocationPickerMap> {
           FloatingActionButton.small(
             heroTag: 'location_picker_zoom_out',
             onPressed: () {
-              final center = _selectedPosition ?? _currentPosition ?? const LatLng(-5.1477, 119.4327);
+              final center =
+                  _selectedPosition ??
+                  _currentPosition ??
+                  const LatLng(-5.1477, 119.4327);
               _mapController.move(center, 14.0);
             },
             backgroundColor: DesignTokens.primaryColor,

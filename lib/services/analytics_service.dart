@@ -36,9 +36,11 @@ class AnalyticsService {
         final dateStr =
             t['transaction_date_232143']?.toString() ??
             t['transaction_date']?.toString() ??
-            t['date']?.toString() ??
-            '';
-        final date = DateTime.parse(dateStr);
+            t['date']?.toString();
+        final date =
+            dateStr != null
+                ? (DateTime.tryParse(dateStr) ?? DateTime.now())
+                : DateTime.now();
 
         switch (period) {
           case 'week':

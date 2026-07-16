@@ -19,11 +19,13 @@ class TransactionHistoryScreen extends StatefulWidget {
   const TransactionHistoryScreen({super.key});
 
   @override
-  State<TransactionHistoryScreen> createState() => _TransactionHistoryScreenState();
+  State<TransactionHistoryScreen> createState() =>
+      _TransactionHistoryScreenState();
 }
 
 class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
-  final TransactionDataService _transactionData = getIt<TransactionDataService>();
+  final TransactionDataService _transactionData =
+      getIt<TransactionDataService>();
   final TextEditingController _searchController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
   List<Map<String, dynamic>> _transactions = [];
@@ -56,7 +58,8 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
   }
 
   void _onScroll() {
-    if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent * 0.8) {
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent * 0.8) {
       if (!_isLoadingMore && _hasMore) {
         _loadMoreTransactions();
       }
@@ -79,15 +82,25 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
     }
 
     try {
-      final data = await _transactionData.getTransactions(limit: _pageSize, offset: _currentOffset);
-      final transactions = List<Map<String, dynamic>>.from(data['transactions'] ?? []);
+      final data = await _transactionData.getTransactions(
+        limit: _pageSize,
+        offset: _currentOffset,
+      );
+      final transactions = List<Map<String, dynamic>>.from(
+        data['transactions'] ?? [],
+      );
 
       // Sort by date descending (newest first) initially
-      transactions.sort((a, b) {
-        final dateA = DateTime.parse((a['transaction_date_232143'] ?? a['date'] ?? DateTime.now().toIso8601String()));
-        final dateB = DateTime.parse((b['transaction_date_232143'] ?? b['date'] ?? DateTime.now().toIso8601String()));
-        return dateB.compareTo(dateA);
-      });
+      DateTime _safeDate(Map<String, dynamic> t) {
+        final raw = t['transaction_date_232143'] ?? t['date'];
+        if (raw is String) {
+          final parsed = DateTime.tryParse(raw);
+          if (parsed != null) return parsed;
+        }
+        return DateTime.now();
+      }
+
+      transactions.sort((a, b) => _safeDate(b).compareTo(_safeDate(a)));
 
       setState(() {
         if (reset) {
@@ -139,7 +152,10 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
 
     for (var transaction in reversed) {
       final amountRaw = transaction['amount'];
-      final amount = amountRaw is num ? amountRaw.toDouble() : (double.tryParse(amountRaw?.toString() ?? '0') ?? 0.0);
+      final amount =
+          amountRaw is num
+              ? amountRaw.toDouble()
+              : (double.tryParse(amountRaw?.toString() ?? '0') ?? 0.0);
 
       final typeRaw = transaction['type'];
       final type = typeRaw?.toString().toLowerCase() ?? 'expense';
@@ -161,12 +177,18 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
 
     // Apply type filter
     if (_filterType != 'all') {
-      filtered = filtered.where((t) => t['type']?.toString().toLowerCase() == _filterType).toList();
+      filtered =
+          filtered
+              .where((t) => t['type']?.toString().toLowerCase() == _filterType)
+              .toList();
     }
 
     // Apply category filter
     if (_selectedCategory != 'all') {
-      filtered = filtered.where((t) => t['category_name']?.toString() == _selectedCategory).toList();
+      filtered =
+          filtered
+              .where((t) => t['category_name']?.toString() == _selectedCategory)
+              .toList();
     }
 
     // Apply date range filter
@@ -175,7 +197,9 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
           filtered.where((t) {
             try {
               final date = DateTime.parse(t['date'] ?? '');
-              return date.isAfter(_dateRange!.start.subtract(const Duration(days: 1))) &&
+              return date.isAfter(
+                    _dateRange!.start.subtract(const Duration(days: 1)),
+                  ) &&
                   date.isBefore(_dateRange!.end.add(const Duration(days: 1)));
             } catch (e) {
               return false;
@@ -187,8 +211,10 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
     if (_searchQuery.isNotEmpty) {
       filtered =
           filtered.where((t) {
-            final description = (t['description'] ?? '').toString().toLowerCase();
-            final category = (t['category_name'] ?? '').toString().toLowerCase();
+            final description =
+                (t['description'] ?? '').toString().toLowerCase();
+            final category =
+                (t['category_name'] ?? '').toString().toLowerCase();
             final amount = (t['amount'] ?? 0).toString();
             final notes = (t['notes'] ?? '').toString().toLowerCase();
 
@@ -213,15 +239,31 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
     switch (_sortBy) {
       case 'date_desc':
         list.sort((a, b) {
-          final dateA = DateTime.parse((a['transaction_date_232143'] ?? a['date'] ?? DateTime.now().toIso8601String()));
-          final dateB = DateTime.parse((b['transaction_date_232143'] ?? b['date'] ?? DateTime.now().toIso8601String()));
+          final dateA = DateTime.parse(
+            (a['transaction_date_232143'] ??
+                a['date'] ??
+                DateTime.now().toIso8601String()),
+          );
+          final dateB = DateTime.parse(
+            (b['transaction_date_232143'] ??
+                b['date'] ??
+                DateTime.now().toIso8601String()),
+          );
           return dateB.compareTo(dateA);
         });
         break;
       case 'date_asc':
         list.sort((a, b) {
-          final dateA = DateTime.parse((a['transaction_date_232143'] ?? a['date'] ?? DateTime.now().toIso8601String()));
-          final dateB = DateTime.parse((b['transaction_date_232143'] ?? b['date'] ?? DateTime.now().toIso8601String()));
+          final dateA = DateTime.parse(
+            (a['transaction_date_232143'] ??
+                a['date'] ??
+                DateTime.now().toIso8601String()),
+          );
+          final dateB = DateTime.parse(
+            (b['transaction_date_232143'] ??
+                b['date'] ??
+                DateTime.now().toIso8601String()),
+          );
           return dateA.compareTo(dateB);
         });
         break;
@@ -263,7 +305,11 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
   }
 
   String _formatCurrency(double amount) {
-    final formatter = NumberFormat.currency(locale: 'id_ID', symbol: 'Rp ', decimalDigits: 0);
+    final formatter = NumberFormat.currency(
+      locale: 'id_ID',
+      symbol: 'Rp ',
+      decimalDigits: 0,
+    );
     return formatter.format(amount);
   }
 
@@ -317,7 +363,11 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
         ),
         title: Text(
           l10n?.transaction_history ?? 'Riwayat Transaksi',
-          style: GoogleFonts.poppins(color: Colors.white, fontSize: 20, fontWeight: FontWeight.w600),
+          style: GoogleFonts.poppins(
+            color: Colors.white,
+            fontSize: 20,
+            fontWeight: FontWeight.w600,
+          ),
         ),
         actions: [
           IconButton(
@@ -325,7 +375,11 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const AnalyticsHubScreen(initialTab: 'reports')),
+                MaterialPageRoute(
+                  builder:
+                      (context) =>
+                          const AnalyticsHubScreen(initialTab: 'reports'),
+                ),
               );
             },
             tooltip: l10n?.create_report ?? 'Buat Laporan',
@@ -344,7 +398,11 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
             Expanded(
               child:
                   _isLoading
-                      ? const Center(child: CircularProgressIndicator(color: DesignTokens.primaryColor))
+                      ? const Center(
+                        child: CircularProgressIndicator(
+                          color: DesignTokens.primaryColor,
+                        ),
+                      )
                       : Column(
                         children: [
                           _buildSummaryCard(),
@@ -410,12 +468,26 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(Icons.account_balance_wallet_rounded, color: Colors.white, size: 20),
+                const Icon(
+                  Icons.account_balance_wallet_rounded,
+                  color: Colors.white,
+                  size: 20,
+                ),
                 const SizedBox(width: 8),
-                Text('${l10n?.balance ?? 'Saldo'}: ', style: GoogleFonts.poppins(color: Colors.white70, fontSize: 14)),
+                Text(
+                  '${l10n?.balance ?? 'Saldo'}: ',
+                  style: GoogleFonts.poppins(
+                    color: Colors.white70,
+                    fontSize: 14,
+                  ),
+                ),
                 Text(
                   _formatCurrency(_runningBalance),
-                  style: GoogleFonts.poppins(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+                  style: GoogleFonts.poppins(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ],
             ),
@@ -425,17 +497,30 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
     );
   }
 
-  Widget _buildSummaryItem(String label, double amount, Color color, IconData icon) {
+  Widget _buildSummaryItem(
+    String label,
+    double amount,
+    Color color,
+    IconData icon,
+  ) {
     return Expanded(
       child: Column(
         children: [
           Icon(icon, color: color, size: 24),
           SizedBox(height: ResponsiveHelper.verticalSpacing(context, 8)),
-          Text(label, style: GoogleFonts.poppins(color: Colors.white70, fontSize: 11), textAlign: TextAlign.center),
+          Text(
+            label,
+            style: GoogleFonts.poppins(color: Colors.white70, fontSize: 11),
+            textAlign: TextAlign.center,
+          ),
           SizedBox(height: ResponsiveHelper.verticalSpacing(context, 4)),
           Text(
             _formatCurrency(amount),
-            style: GoogleFonts.poppins(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
+            style: GoogleFonts.poppins(
+              color: Colors.white,
+              fontSize: 14,
+              fontWeight: FontWeight.bold,
+            ),
             textAlign: TextAlign.center,
           ),
         ],
@@ -456,11 +541,17 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
             decoration: InputDecoration(
               hintText: l10n?.search_transactions ?? 'Cari transaksi...',
               hintStyle: GoogleFonts.poppins(color: Colors.grey[600]),
-              prefixIcon: const Icon(Icons.search_rounded, color: DesignTokens.primaryColor),
+              prefixIcon: const Icon(
+                Icons.search_rounded,
+                color: DesignTokens.primaryColor,
+              ),
               suffixIcon:
                   _searchQuery.isNotEmpty
                       ? IconButton(
-                        icon: const Icon(Icons.close_rounded, color: Colors.grey),
+                        icon: const Icon(
+                          Icons.close_rounded,
+                          color: Colors.grey,
+                        ),
                         onPressed: () {
                           _searchController.clear();
                         },
@@ -478,7 +569,10 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
-                borderSide: const BorderSide(color: DesignTokens.primaryColor, width: 2),
+                borderSide: const BorderSide(
+                  color: DesignTokens.primaryColor,
+                  width: 2,
+                ),
               ),
             ),
           ),
@@ -488,7 +582,11 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
             children: [
               Text(
                 '${l10n?.filter ?? 'Filter'}: ',
-                style: GoogleFonts.poppins(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w600),
+                style: GoogleFonts.poppins(
+                  color: Colors.white,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
               const SizedBox(width: 8),
               Expanded(
@@ -498,15 +596,25 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
                     children: [
                       _buildFilterChip(l10n?.all ?? 'Semua', 'all'),
                       _buildFilterChip(l10n?.income ?? 'Pemasukan', 'income'),
-                      _buildFilterChip(l10n?.expense ?? 'Pengeluaran', 'expense'),
+                      _buildFilterChip(
+                        l10n?.expense ?? 'Pengeluaran',
+                        'expense',
+                      ),
                     ],
                   ),
                 ),
               ),
               // Clear filters button
-              if (_searchQuery.isNotEmpty || _filterType != 'all' || _selectedCategory != 'all' || _dateRange != null)
+              if (_searchQuery.isNotEmpty ||
+                  _filterType != 'all' ||
+                  _selectedCategory != 'all' ||
+                  _dateRange != null)
                 IconButton(
-                  icon: const Icon(Icons.refresh_rounded, color: DesignTokens.primaryColor, size: 20),
+                  icon: const Icon(
+                    Icons.refresh_rounded,
+                    color: DesignTokens.primaryColor,
+                    size: 20,
+                  ),
                   onPressed: _clearAllFilters,
                   tooltip: l10n?.reset_filter ?? 'Reset Filter',
                 ),
@@ -518,7 +626,11 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
             children: [
               Text(
                 l10n?.sort_by ?? 'Urutkan: ',
-                style: GoogleFonts.poppins(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w600),
+                style: GoogleFonts.poppins(
+                  color: Colors.white,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
               const SizedBox(width: 8),
               Expanded(
@@ -527,14 +639,23 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
                   decoration: BoxDecoration(
                     color: DesignTokens.surfaceDark,
                     borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: DesignTokens.primaryColor.withValues(alpha: 0.3)),
+                    border: Border.all(
+                      color: DesignTokens.primaryColor.withValues(alpha: 0.3),
+                    ),
                   ),
                   child: DropdownButtonHideUnderline(
                     child: DropdownButton<String>(
                       value: _sortBy,
                       dropdownColor: DesignTokens.surfaceDark,
-                      icon: const Icon(Icons.keyboard_arrow_down_rounded, color: Colors.white70, size: 20),
-                      style: GoogleFonts.poppins(color: Colors.white, fontSize: 12),
+                      icon: const Icon(
+                        Icons.keyboard_arrow_down_rounded,
+                        color: Colors.white70,
+                        size: 20,
+                      ),
+                      style: GoogleFonts.poppins(
+                        color: Colors.white,
+                        fontSize: 12,
+                      ),
                       onChanged: (value) {
                         if (value != null) {
                           setState(() {
@@ -544,10 +665,22 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
                         }
                       },
                       items: [
-                        DropdownMenuItem(value: 'date_desc', child: Text(l10n?.newest_date ?? 'Newest Date')),
-                        DropdownMenuItem(value: 'date_asc', child: Text(l10n?.oldest_date ?? 'Oldest Date')),
-                        DropdownMenuItem(value: 'amount_desc', child: Text(l10n?.highest_amount ?? 'Highest Amount')),
-                        DropdownMenuItem(value: 'amount_asc', child: Text(l10n?.lowest_amount ?? 'Lowest Amount')),
+                        DropdownMenuItem(
+                          value: 'date_desc',
+                          child: Text(l10n?.newest_date ?? 'Newest Date'),
+                        ),
+                        DropdownMenuItem(
+                          value: 'date_asc',
+                          child: Text(l10n?.oldest_date ?? 'Oldest Date'),
+                        ),
+                        DropdownMenuItem(
+                          value: 'amount_desc',
+                          child: Text(l10n?.highest_amount ?? 'Highest Amount'),
+                        ),
+                        DropdownMenuItem(
+                          value: 'amount_asc',
+                          child: Text(l10n?.lowest_amount ?? 'Lowest Amount'),
+                        ),
                       ],
                     ),
                   ),
@@ -571,9 +704,17 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
           decoration: BoxDecoration(
-            color: isSelected ? DesignTokens.primaryColor : DesignTokens.surfaceDark,
+            color:
+                isSelected
+                    ? DesignTokens.primaryColor
+                    : DesignTokens.surfaceDark,
             borderRadius: BorderRadius.circular(DesignTokens.radiusLarge),
-            border: Border.all(color: isSelected ? DesignTokens.primaryColor : Colors.grey.withValues(alpha: 0.3)),
+            border: Border.all(
+              color:
+                  isSelected
+                      ? DesignTokens.primaryColor
+                      : Colors.grey.withValues(alpha: 0.3),
+            ),
           ),
           child: Text(
             label,
@@ -590,13 +731,20 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
 
   Widget _buildTransactionsList() {
     if (_isLoading && _transactions.isEmpty) {
-      return const Center(child: CircularProgressIndicator(color: DesignTokens.primaryColor));
+      return const Center(
+        child: CircularProgressIndicator(color: DesignTokens.primaryColor),
+      );
     }
 
     if (_filteredTransactions.isEmpty) {
       return Center(
         child: EmptyStates.noTransactions(
-          () => Navigator.push(context, MaterialPageRoute(builder: (context) => const AddTransactionScreen())),
+          () => Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const AddTransactionScreen(),
+            ),
+          ),
           context,
         ),
       );
@@ -611,7 +759,9 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
           return const Center(
             child: Padding(
               padding: EdgeInsets.all(16.0),
-              child: CircularProgressIndicator(color: DesignTokens.primaryColor),
+              child: CircularProgressIndicator(
+                color: DesignTokens.primaryColor,
+              ),
             ),
           );
         }
@@ -650,7 +800,10 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
             decoration: BoxDecoration(
               color: typeColor.withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(14),
-              border: Border.all(color: typeColor.withValues(alpha: 0.3), width: 1.5),
+              border: Border.all(
+                color: typeColor.withValues(alpha: 0.3),
+                width: 1.5,
+              ),
             ),
             child: Icon(typeIcon, color: typeColor, size: 26),
           ),
@@ -662,7 +815,11 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
               children: [
                 Text(
                   description,
-                  style: GoogleFonts.poppins(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w600),
+                  style: GoogleFonts.poppins(
+                    color: Colors.white,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                  ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -670,23 +827,39 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
                 Row(
                   children: [
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 2,
+                      ),
                       decoration: BoxDecoration(
                         color: typeColor.withValues(alpha: 0.2),
                         borderRadius: BorderRadius.circular(4),
                       ),
                       child: Text(
                         category,
-                        style: GoogleFonts.poppins(color: typeColor, fontSize: 10, fontWeight: FontWeight.w500),
+                        style: GoogleFonts.poppins(
+                          color: typeColor,
+                          fontSize: 10,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
                     ),
                     const SizedBox(width: 8),
-                    Text(_formatDate(date), style: GoogleFonts.poppins(color: Colors.grey[500], fontSize: 11)),
+                    Text(
+                      _formatDate(date),
+                      style: GoogleFonts.poppins(
+                        color: Colors.grey[500],
+                        fontSize: 11,
+                      ),
+                    ),
                   ],
                 ),
                 SizedBox(height: ResponsiveHelper.verticalSpacing(context, 8)),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: Colors.white.withValues(alpha: 0.05),
                     borderRadius: BorderRadius.circular(6),
@@ -694,11 +867,19 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(Icons.account_balance_wallet_rounded, size: 12, color: Colors.grey[500]),
+                      Icon(
+                        Icons.account_balance_wallet_rounded,
+                        size: 12,
+                        color: Colors.grey[500],
+                      ),
                       const SizedBox(width: 4),
                       Text(
                         '${l10n?.balance ?? 'Saldo'}: ${_formatCurrency(runningBalance)}',
-                        style: GoogleFonts.poppins(color: Colors.grey[400], fontSize: 10, fontWeight: FontWeight.w500),
+                        style: GoogleFonts.poppins(
+                          color: Colors.grey[400],
+                          fontSize: 10,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
                     ],
                   ),
@@ -711,8 +892,14 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Text(
-                type == 'income' ? '+${_formatCurrency(amount)}' : '-${_formatCurrency(amount)}',
-                style: GoogleFonts.poppins(color: typeColor, fontSize: 15, fontWeight: FontWeight.bold),
+                type == 'income'
+                    ? '+${_formatCurrency(amount)}'
+                    : '-${_formatCurrency(amount)}',
+                style: GoogleFonts.poppins(
+                  color: typeColor,
+                  fontSize: 15,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ],
           ),

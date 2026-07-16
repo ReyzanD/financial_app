@@ -74,7 +74,12 @@ class AddTransactionScreen extends StatefulWidget {
   /// If null, defaults to 'expense' (or the transaction's type in edit mode).
   final String? defaultType;
 
-  const AddTransactionScreen({super.key, this.transaction, this.onUpdated, this.defaultType});
+  const AddTransactionScreen({
+    super.key,
+    this.transaction,
+    this.onUpdated,
+    this.defaultType,
+  });
 
   @override
   State<AddTransactionScreen> createState() => _AddTransactionScreenState();
@@ -87,10 +92,13 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
   final _amountController = TextEditingController();
   final _descriptionController = TextEditingController();
   final _notesController = TextEditingController();
-  final TransactionDataService _transactionData = getIt<TransactionDataService>();
+  final TransactionDataService _transactionData =
+      getIt<TransactionDataService>();
   final CategoryDataService _categoryData = getIt<CategoryDataService>();
-  final ReceiptScanningService _receiptService = getIt<ReceiptScanningService>();
-  final SmartCategorizationService _categorizationService = getIt<SmartCategorizationService>();
+  final ReceiptScanningService _receiptService =
+      getIt<ReceiptScanningService>();
+  final SmartCategorizationService _categorizationService =
+      getIt<SmartCategorizationService>();
 
   // Form state
   late String _selectedType;
@@ -119,7 +127,10 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
     super.initState();
 
     // Initialize type: defaultType param > edit mode > 'expense'
-    _selectedType = widget.defaultType ?? (widget.transaction?['type']?.toString()) ?? 'expense';
+    _selectedType =
+        widget.defaultType ??
+        (widget.transaction?['type']?.toString()) ??
+        'expense';
 
     // If editing, populate form with existing data
     if (widget.isEditMode) {
@@ -139,7 +150,8 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
     _selectedType = transaction['type']?.toString() ?? 'expense';
     _selectedCategory = transaction['category_id']?.toString();
     _selectedAccountId = transaction['account_id']?.toString();
-    _selectedPaymentMethod = transaction['payment_method']?.toString() ?? 'cash';
+    _selectedPaymentMethod =
+        transaction['payment_method']?.toString() ?? 'cash';
 
     // Parse date
     if (transaction['date'] != null) {
@@ -180,7 +192,8 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
 
           // Pre-select a default category if none is selected and not in edit mode
           if (!widget.isEditMode && _selectedCategory == null) {
-            final filtered = _categories.where((cat) => cat.type == _selectedType).toList();
+            final filtered =
+                _categories.where((cat) => cat.type == _selectedType).toList();
             if (filtered.isNotEmpty) {
               // Prefer "Lainnya" or "Other" category as sensible default
               final defaultCat = filtered.firstWhere((cat) {
@@ -218,7 +231,9 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
       return;
     }
 
-    _categorizationService.suggestCategory(description: desc).then((suggestions) {
+    _categorizationService.suggestCategory(description: desc).then((
+      suggestions,
+    ) {
       if (mounted && suggestions.isNotEmpty) {
         final categoryIds =
             suggestions
@@ -259,7 +274,10 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
     // Import the location picker map
     final result = await Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => LocationPickerMap(initialLocation: _currentLocation)),
+      MaterialPageRoute(
+        builder:
+            (context) => LocationPickerMap(initialLocation: _currentLocation),
+      ),
     );
 
     if (result != null && result is LocationData) {
@@ -273,7 +291,10 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
     setState(() {
       _currentLocation = null;
     });
-    ErrorHandlerService.showInfoSnackbar(context, AppLocalizations.of(context)?.location_removed ?? 'Location removed');
+    ErrorHandlerService.showInfoSnackbar(
+      context,
+      AppLocalizations.of(context)?.location_removed ?? 'Location removed',
+    );
   }
 
   Future<void> _getCurrentLocation() async {
@@ -288,12 +309,18 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
         if (mounted) {
           ErrorHandlerService.showWarningSnackbar(
             context,
-            AppLocalizations.of(context)?.failed_to_get_location ?? 'Failed to get location',
+            AppLocalizations.of(context)?.failed_to_get_location ??
+                'Failed to get location',
           );
         }
       } else {
-        LoggerService.debug('Location received: ${position.latitude}, ${position.longitude}');
-        final placeName = LocationService.getAddressFromCoordinates(position.latitude, position.longitude);
+        LoggerService.debug(
+          'Location received: ${position.latitude}, ${position.longitude}',
+        );
+        final placeName = LocationService.getAddressFromCoordinates(
+          position.latitude,
+          position.longitude,
+        );
         LoggerService.debug('Place name: $placeName');
 
         if (mounted) {
@@ -317,7 +344,10 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
     } catch (e) {
       LoggerService.error('Error getting location', error: e);
       if (mounted) {
-        ErrorHandlerService.showErrorSnackbar(context, ErrorHandlerService.getUserFriendlyMessage(e));
+        ErrorHandlerService.showErrorSnackbar(
+          context,
+          ErrorHandlerService.getUserFriendlyMessage(e),
+        );
       }
     } finally {
       if (mounted) setState(() => _isGettingLocation = false);
@@ -328,7 +358,9 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
     final option = await showModalBottomSheet<String>(
       context: context,
       backgroundColor: DesignTokens.surfaceDark,
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
       builder:
           (context) => Container(
             padding: const EdgeInsets.all(20),
@@ -336,12 +368,20 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  AppLocalizations.of(context)?.select_image_source ?? 'Select Image Source',
-                  style: GoogleFonts.poppins(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+                  AppLocalizations.of(context)?.select_image_source ??
+                      'Select Image Source',
+                  style: GoogleFonts.poppins(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 const SizedBox(height: DesignTokens.spacing5),
                 ListTile(
-                  leading: const Icon(Iconsax.camera, color: DesignTokens.primaryColor),
+                  leading: const Icon(
+                    Iconsax.camera,
+                    color: DesignTokens.primaryColor,
+                  ),
                   title: Text(
                     AppLocalizations.of(context)?.take_photo ?? 'Take Photo',
                     style: GoogleFonts.poppins(color: Colors.white),
@@ -349,9 +389,13 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                   onTap: () => Navigator.pop(context, 'camera'),
                 ),
                 ListTile(
-                  leading: const Icon(Iconsax.gallery, color: DesignTokens.primaryColor),
+                  leading: const Icon(
+                    Iconsax.gallery,
+                    color: DesignTokens.primaryColor,
+                  ),
                   title: Text(
-                    AppLocalizations.of(context)?.choose_from_gallery ?? 'Choose from Gallery',
+                    AppLocalizations.of(context)?.choose_from_gallery ??
+                        'Choose from Gallery',
                     style: GoogleFonts.poppins(color: Colors.white),
                   ),
                   onTap: () => Navigator.pop(context, 'gallery'),
@@ -385,10 +429,16 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
       }
 
       if (mounted) {
-        ErrorHandlerService.showInfoSnackbar(context, AppLocalizations.of(context)?.loading ?? 'Loading...');
+        ErrorHandlerService.showInfoSnackbar(
+          context,
+          AppLocalizations.of(context)?.loading ?? 'Loading...',
+        );
       }
 
-      final scanResult = await _receiptService.scanReceipt(imageFile, saveImage: true);
+      final scanResult = await _receiptService.scanReceipt(
+        imageFile,
+        saveImage: true,
+      );
 
       if (scanResult != null && mounted) {
         final parsedData = scanResult['parsed_data'] as Map<String, dynamic>;
@@ -410,10 +460,13 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
             if (dateParts.length == 3) {
               final day = int.parse(dateParts[0]);
               final month = int.parse(dateParts[1]);
-              final year = int.parse(dateParts[2].length == 2 ? '20${dateParts[2]}' : dateParts[2]);
+              final year = int.parse(
+                dateParts[2].length == 2 ? '20${dateParts[2]}' : dateParts[2],
+              );
               final parsedDate = DateTime(year, month, day);
 
-              if (_selectedType == 'expense' && parsedDate.isAfter(DateTime.now())) {
+              if (_selectedType == 'expense' &&
+                  parsedDate.isAfter(DateTime.now())) {
               } else {
                 setState(() {
                   _selectedDate = parsedDate;
@@ -435,7 +488,8 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
 
         ErrorHandlerService.showSuccessSnackbar(
           context,
-          AppLocalizations.of(context)?.receipt_scanned_successfully ?? 'Receipt scanned successfully',
+          AppLocalizations.of(context)?.receipt_scanned_successfully ??
+              'Receipt scanned successfully',
         );
 
         LoggerService.success('Receipt scanned successfully');
@@ -443,7 +497,8 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
         if (mounted) {
           ErrorHandlerService.showWarningSnackbar(
             context,
-            AppLocalizations.of(context)?.cannot_scan_receipt ?? 'Cannot scan receipt',
+            AppLocalizations.of(context)?.cannot_scan_receipt ??
+                'Cannot scan receipt',
           );
         }
       }
@@ -452,7 +507,8 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
       if (mounted) {
         ErrorHandlerService.showErrorSnackbar(
           context,
-          AppLocalizations.of(context)?.error_scanning_receipt ?? 'Error scanning receipt',
+          AppLocalizations.of(context)?.error_scanning_receipt ??
+              'Error scanning receipt',
         );
       }
     } finally {
@@ -465,7 +521,8 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
     String? categoryName;
 
     if (_currentLocation?.placeType == 'restaurant' ||
-        _currentLocation?.placeName?.toLowerCase().contains('restaurant') == true) {
+        _currentLocation?.placeName?.toLowerCase().contains('restaurant') ==
+            true) {
       categoryName = 'food';
     } else if (_currentLocation?.placeType == 'gas_station') {
       categoryName = 'transport';
@@ -473,7 +530,9 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
 
     if (categoryName != null) {
       // Find the category ID from the loaded categories
-      final matches = _categories.where((cat) => cat.name.toLowerCase().contains(categoryName!));
+      final matches = _categories.where(
+        (cat) => cat.name.toLowerCase().contains(categoryName!),
+      );
 
       if (matches.isNotEmpty) {
         setState(() {
@@ -488,7 +547,10 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
       context: context,
       initialDate: _selectedDate,
       firstDate: DateTime(2020),
-      lastDate: _selectedType == 'expense' ? DateTime.now() : DateTime.now().add(const Duration(days: 365)),
+      lastDate:
+          _selectedType == 'expense'
+              ? DateTime.now()
+              : DateTime.now().add(const Duration(days: 365)),
     );
 
     if (picked != null && picked != _selectedDate) {
@@ -509,7 +571,9 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
               surface: DesignTokens.surfaceDark,
               onSurface: Colors.white,
             ),
-            dialogTheme: DialogThemeData(backgroundColor: DesignTokens.backgroundDark),
+            dialogTheme: DialogThemeData(
+              backgroundColor: DesignTokens.backgroundDark,
+            ),
           ),
           child: child!,
         );
@@ -541,9 +605,17 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
 
       // Check for duplicate transactions
       try {
-        final recentTransactionsData = await _transactionData.getTransactions(limit: 20);
-        final recentTransactions = List<Map<String, dynamic>>.from(recentTransactionsData['transactions'] ?? []);
-        final amount = double.tryParse(_amountController.text.replaceAll(RegExp(r'[^0-9.]'), '')) ?? 0.0;
+        final recentTransactionsData = await _transactionData.getTransactions(
+          limit: 20,
+        );
+        final recentTransactions = List<Map<String, dynamic>>.from(
+          recentTransactionsData['transactions'] ?? [],
+        );
+        final amount =
+            double.tryParse(
+              _amountController.text.replaceAll(RegExp(r'[^0-9.]'), ''),
+            ) ??
+            0.0;
         final isDuplicate = FormValidators.isDuplicateTransaction(
           amount: amount,
           description: _descriptionController.text.trim(),
@@ -559,11 +631,13 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                 (dialogContext) => AlertDialog(
                   backgroundColor: DesignTokens.surfaceDark,
                   title: Text(
-                    AppLocalizations.of(ctx)?.duplicate_transaction ?? 'Duplicate Transaction?',
+                    AppLocalizations.of(ctx)?.duplicate_transaction ??
+                        'Duplicate Transaction?',
                     style: const TextStyle(color: Colors.white),
                   ),
                   content: Text(
-                    AppLocalizations.of(ctx)?.similar_transaction_added ?? 'A similar transaction was just added',
+                    AppLocalizations.of(ctx)?.similar_transaction_added ??
+                        'A similar transaction was just added',
                     style: const TextStyle(color: Colors.white70),
                   ),
                   actions: [
@@ -573,8 +647,12 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                     ),
                     ElevatedButton(
                       onPressed: () => Navigator.pop(dialogContext, true),
-                      style: ElevatedButton.styleFrom(backgroundColor: DesignTokens.primaryColor),
-                      child: Text(AppLocalizations.of(ctx)?.continueText ?? 'Continue'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: DesignTokens.primaryColor,
+                      ),
+                      child: Text(
+                        AppLocalizations.of(ctx)?.continueText ?? 'Continue',
+                      ),
                     ),
                   ],
                 ),
@@ -603,11 +681,15 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
           'notes': _notesController.text,
           'payment_method': _selectedPaymentMethod,
           'transaction_date': _selectedDate.toIso8601String().split('T')[0],
-          'time': '${_selectedTime.hour.toString().padLeft(2, '0')}:${_selectedTime.minute.toString().padLeft(2, '0')}',
+          'time':
+              '${_selectedTime.hour.toString().padLeft(2, '0')}:${_selectedTime.minute.toString().padLeft(2, '0')}',
           if (_receiptImagePath != null) 'receipt_image_url': _receiptImagePath,
-          if (_currentLocation != null) 'location_name': _currentLocation!.placeName ?? _currentLocation!.address ?? '',
+          if (_currentLocation != null)
+            'location_name':
+                _currentLocation!.placeName ?? _currentLocation!.address ?? '',
           if (_currentLocation != null) 'latitude': _currentLocation!.latitude,
-          if (_currentLocation != null) 'longitude': _currentLocation!.longitude,
+          if (_currentLocation != null)
+            'longitude': _currentLocation!.longitude,
           if (_currentLocation != null) 'address': _currentLocation!.address,
           if (_currentLocation != null)
             'location_data': {
@@ -617,7 +699,8 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
               'address': _currentLocation?.address,
             },
           if (_isRecurring) 'is_recurring': true,
-          if (_isRecurring && _recurringFrequency != null) 'recurring_pattern': _recurringFrequency,
+          if (_isRecurring && _recurringFrequency != null)
+            'recurring_pattern': _recurringFrequency,
         };
 
         LoggerService.debug(
@@ -632,7 +715,17 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
 
         // Check balance before adding expense
         if (_selectedType == 'expense') {
-          final shouldContinue = await _checkBalanceBeforeExpense(double.parse(_amountController.text));
+          final parsedAmount = double.tryParse(_amountController.text);
+          if (parsedAmount == null || parsedAmount <= 0) {
+            ErrorHandlerService.showWarningSnackbar(
+              context,
+              AppLocalizations.of(context)?.invalid_amount ??
+                  'Jumlah tidak valid',
+            );
+            setState(() => _isSubmitting = false);
+            return;
+          }
+          final shouldContinue = await _checkBalanceBeforeExpense(parsedAmount);
           if (!shouldContinue) {
             setState(() => _isSubmitting = false);
             return;
@@ -649,10 +742,18 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
             final pvService = getIt<PlaceVisitDataService>();
             final poService = getIt<PriceObservationDataService>();
             final placeVisit = await pvService.upsertFromTransaction(savedTx);
-            await poService.createFromTransaction(placeVisitId: placeVisit.id, transaction: savedTx);
-            LoggerService.info('✅ PlaceVisit + PriceObservation created for ${placeVisit.placeName}');
+            await poService.createFromTransaction(
+              placeVisitId: placeVisit.id,
+              transaction: savedTx,
+            );
+            LoggerService.info(
+              '✅ PlaceVisit + PriceObservation created for ${placeVisit.placeName}',
+            );
           } catch (e) {
-            LoggerService.warning('Non-critical: could not create place visit', error: e);
+            LoggerService.warning(
+              'Non-critical: could not create place visit',
+              error: e,
+            );
           }
         }
 
@@ -673,7 +774,8 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
         if (!ctx.mounted) return;
         ErrorHandlerService.showSuccessSnackbar(
           ctx,
-          AppLocalizations.of(ctx)?.transaction_saved_successfully ?? 'Transaction saved successfully!',
+          AppLocalizations.of(ctx)?.transaction_saved_successfully ??
+              'Transaction saved successfully!',
         );
 
         if (!ctx.mounted) return;
@@ -703,7 +805,10 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
       appBar: AppBar(
         title: Text(
           l10n?.add_transaction ?? 'Tambah Transaksi',
-          style: GoogleFonts.poppins(color: Colors.white, fontWeight: FontWeight.w600),
+          style: GoogleFonts.poppins(
+            color: Colors.white,
+            fontWeight: FontWeight.w600,
+          ),
         ),
         backgroundColor: DesignTokens.backgroundDark,
         elevation: 0,
@@ -719,7 +824,10 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                     ? const SizedBox(
                       width: 20,
                       height: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: Colors.white,
+                      ),
                     )
                     : const Icon(Iconsax.scan_barcode, color: Colors.white),
             tooltip: l10n?.scan_receipt ?? 'Pindai',
@@ -728,7 +836,12 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
           IconButton(
             icon: const Icon(Iconsax.book_saved, color: Colors.white),
             onPressed: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) => const ReceiptHistoryScreen()));
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const ReceiptHistoryScreen(),
+                ),
+              );
             },
             tooltip: l10n?.receipt_history ?? 'Riwayat Struk',
           ),
@@ -747,7 +860,9 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                   children: [
                     // Amount Input
                     AmountField(controller: _amountController),
-                    SizedBox(height: ResponsiveHelper.verticalSpacing(context, 20)),
+                    SizedBox(
+                      height: ResponsiveHelper.verticalSpacing(context, 20),
+                    ),
 
                     // Transaction Type Selector
                     TypeSelector(
@@ -763,7 +878,9 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                         });
                       },
                     ),
-                    SizedBox(height: ResponsiveHelper.verticalSpacing(context, 20)),
+                    SizedBox(
+                      height: ResponsiveHelper.verticalSpacing(context, 20),
+                    ),
 
                     // Category Selection
                     FormField<String>(
@@ -792,15 +909,26 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                               Semantics(
                                 liveRegion: true,
                                 child: Padding(
-                                  padding: const EdgeInsets.only(top: 4, left: 12),
-                                  child: Text(field.errorText!, style: TextStyle(color: Colors.red[400], fontSize: 12)),
+                                  padding: const EdgeInsets.only(
+                                    top: 4,
+                                    left: 12,
+                                  ),
+                                  child: Text(
+                                    field.errorText!,
+                                    style: TextStyle(
+                                      color: Colors.red[400],
+                                      fontSize: 12,
+                                    ),
+                                  ),
                                 ),
                               ),
                           ],
                         );
                       },
                     ),
-                    SizedBox(height: ResponsiveHelper.verticalSpacing(context, 20)),
+                    SizedBox(
+                      height: ResponsiveHelper.verticalSpacing(context, 20),
+                    ),
 
                     // Description
                     DescriptionField(controller: _descriptionController),
@@ -811,20 +939,32 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                         runSpacing: 8,
                         children:
                             _categorySuggestions.map((suggestion) {
-                              final confidence = suggestion['confidence'] as double;
+                              final confidence =
+                                  suggestion['confidence'] as double;
                               final category = suggestion['category'] as String;
                               return Material(
-                                color: DesignTokens.primaryColor.withValues(alpha: 0.15),
+                                color: DesignTokens.primaryColor.withValues(
+                                  alpha: 0.15,
+                                ),
                                 borderRadius: BorderRadius.circular(20),
                                 child: InkWell(
-                                  onTap: () => _selectSuggestedCategory(suggestion),
+                                  onTap:
+                                      () =>
+                                          _selectSuggestedCategory(suggestion),
                                   borderRadius: BorderRadius.circular(20),
                                   child: Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 14,
+                                      vertical: 8,
+                                    ),
                                     child: Row(
                                       mainAxisSize: MainAxisSize.min,
                                       children: [
-                                        Icon(Iconsax.tag, size: 14, color: DesignTokens.primaryColor),
+                                        Icon(
+                                          Iconsax.tag,
+                                          size: 14,
+                                          color: DesignTokens.primaryColor,
+                                        ),
                                         const SizedBox(width: 6),
                                         Text(
                                           category,
@@ -838,7 +978,8 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                                         Text(
                                           '${(confidence * 100).toInt()}%',
                                           style: GoogleFonts.poppins(
-                                            color: DesignTokens.textTertiaryDark,
+                                            color:
+                                                DesignTokens.textTertiaryDark,
                                             fontSize: 11,
                                           ),
                                         ),
@@ -850,13 +991,18 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                             }).toList(),
                       ),
                     ],
-                    SizedBox(height: ResponsiveHelper.verticalSpacing(context, 20)),
+                    SizedBox(
+                      height: ResponsiveHelper.verticalSpacing(context, 20),
+                    ),
 
                     // Date & Time
                     FormField<DateTime>(
                       initialValue: _selectedDate,
                       validator: (value) {
-                        return FormValidators.validateDate(value, allowFuture: _selectedType == 'income');
+                        return FormValidators.validateDate(
+                          value,
+                          allowFuture: _selectedType == 'income',
+                        );
                       },
                       builder: (FormFieldState<DateTime> field) {
                         return Column(
@@ -877,14 +1023,22 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                                 liveRegion: true,
                                 child: Padding(
                                   padding: const EdgeInsets.only(top: 4),
-                                  child: Text(field.errorText!, style: TextStyle(color: Colors.red[400], fontSize: 12)),
+                                  child: Text(
+                                    field.errorText!,
+                                    style: TextStyle(
+                                      color: Colors.red[400],
+                                      fontSize: 12,
+                                    ),
+                                  ),
                                 ),
                               ),
                           ],
                         );
                       },
                     ),
-                    SizedBox(height: ResponsiveHelper.verticalSpacing(context, 20)),
+                    SizedBox(
+                      height: ResponsiveHelper.verticalSpacing(context, 20),
+                    ),
 
                     // More Options (collapsible — Account, Payment, Location, Notes, Recurring)
                     MoreOptionsSection(
@@ -896,7 +1050,8 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                       onPaymentMethodSelected: (method) {
                         setState(() => _selectedPaymentMethod = method);
                       },
-                      currentLocation: _selectedType == 'expense' ? _currentLocation : null,
+                      currentLocation:
+                          _selectedType == 'expense' ? _currentLocation : null,
                       isGettingLocation: _isGettingLocation,
                       onGetLocation: _getCurrentLocation,
                       onPickFromMap: _pickLocationFromMap,
@@ -915,10 +1070,15 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                         setState(() => _recurringFrequency = value);
                       },
                     ),
-                    SizedBox(height: ResponsiveHelper.verticalSpacing(context, 24)),
+                    SizedBox(
+                      height: ResponsiveHelper.verticalSpacing(context, 24),
+                    ),
 
                     // Save Button
-                    SubmitButton(onPressed: _submitForm, isLoading: _isSubmitting),
+                    SubmitButton(
+                      onPressed: _submitForm,
+                      isLoading: _isSubmitting,
+                    ),
                   ],
                 ),
               ),

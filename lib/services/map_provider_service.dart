@@ -306,7 +306,9 @@ class MapProviderService {
         );
 
     if (response.statusCode == 200) {
-      final results = json.decode(response.body) as List;
+      final decoded = json.decode(response.body);
+      if (decoded is! List) return [];
+      final results = decoded;
 
       if (results.isEmpty) {
         return [];

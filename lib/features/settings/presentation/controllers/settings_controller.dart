@@ -7,7 +7,7 @@ class SettingsController extends ChangeNotifier {
   final SettingsRepository _repository;
 
   SettingsController({SettingsRepository? repository})
-      : _repository = repository ?? getIt<SettingsRepository>();
+    : _repository = repository ?? getIt<SettingsRepository>();
 
   bool _aiRecommendationsEnabled = true;
   bool _locationServicesEnabled = true;
@@ -23,8 +23,10 @@ class SettingsController extends ChangeNotifier {
 
   Future<void> load() async {
     final prefs = await SharedPreferences.getInstance();
-    _aiRecommendationsEnabled = prefs.getBool('ai_recommendations_enabled') ?? true;
-    _locationServicesEnabled = prefs.getBool('location_services_enabled') ?? true;
+    _aiRecommendationsEnabled =
+        prefs.getBool('ai_recommendations_enabled') ?? true;
+    _locationServicesEnabled =
+        prefs.getBool('location_services_enabled') ?? true;
     _notificationsEnabled = prefs.getBool('notifications_enabled') ?? true;
     _darkModeEnabled = prefs.getBool('dark_mode_enabled') ?? true;
     _defaultTabIndex = prefs.getInt('default_tab_index') ?? 0;
@@ -79,13 +81,18 @@ class SettingsController extends ChangeNotifier {
     await _repository.deleteAccount();
   }
 
-  Future<Map<String, dynamic>> exportData({int limit = 10000}) async {
-    final transactions = await _repository.getTransactions(limit: limit);
+  Future<Map<String, dynamic>> exportData() async {
+    final transactions = await _repository.exportAllTransactions();
     final budgets = await _repository.getBudgets();
     final goals = await _repository.getGoals();
     return {
       'exported_at': DateTime.now().toIso8601String(),
-      'stats': {'total_transactions': transactions['total'] ?? 0, 'budgets': budgets.length, 'goals': goals.length},
+      'transactions': transactions,
+      'stats': {
+        'total_transactions': transactions.length,
+        'budgets': budgets.length,
+        'goals': goals.length,
+      },
     };
   }
 }

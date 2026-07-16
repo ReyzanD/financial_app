@@ -262,6 +262,53 @@ Two new regression tests added (goal-forecasting month math, financial-calculato
 
 ---
 
+## Code Review Pass 2 — crash & data-loss hardening (COMPLETE)
+
+Second static sweep (via explore agent) targeting real crashes / silent data loss on
+normal input: unguarded `DateTime.parse`, user-input `double.parse`, external-JSON `as`
+casts, divide-by-zero, and a DB N+1.
+
+**Analyzer:** `flutter analyze` → 0 errors, 0 warnings (126 pre-existing info).
+**Tests:** 308 pass; 31 failures are the pre-existing `databaseFactory not initialized`
+(missing system `libsqlite3.so`) environment-only SQLite tests — not code defects.
+One new regression test added (goal-forecasting empty-history fallback).
+
+### Crashes / data loss fixed
+- **`budget_data_service.dart:382`** — N+1: per-month `db.rawQuery` inside a `for` loop
+  replaced with a single grouped `GROUP BY y,m` query over the whole window (one round-trip).
+- **`transaction_history_screen.dart:87-88`** — unguarded `DateTime.parse` in the sort
+  comparator (a malformed date aborted the whole sort); now `_safeDate()` uses `DateTime.tryParse`
+  with a `DateTime.now()` fallback.
+- **`financial_calendar_screen.dart:200`** — unguarded `DateTime.parse(e['date_str'] ?? '')`
+  inside `.where`; now `DateTime.tryParse` + skip-on-null (no throw).
+- **`analytics_service.dart:41`** — `DateTime.parse('')` fallback threw and dropped the txn
+  from the period filter; now `DateTime.tryParse` with `DateTime.now()` fallback.
+- **`quick_add_modal.dart:138`** — user-input `double.parse` (stripped text) crashed on
+  empty/`".."`; now `double.tryParse` + `invalid_amount` warning snackbar + early return.
+- **`add_transaction_screen.dart:635`** — user-input `double.parse` was **outside** the try
+  block (uncaught `FormatException`); now `double.tryParse` + `invalid_amount` guard.
+- **`location_picker_map.dart:178-180`** — `result['lat'] as double` / `as String` on an
+  external search result threw `CastError`; now `(as num?)?.toDouble()` + null guard + early return.
+- **`map_provider_service.dart:309`** — `json.decode(...) as List` threw when the API returned
+  an object; now `is! List` → return `[]` (downstream already `tryParse`s each entry).
+- **`category_model.dart:33`** — `double.parse` on a stored `budget_limit` threw on corrupted
+  data; now `double.tryParse` (null on bad value).
+
+### Divide-by-zero guards
+- **`goal_forecasting_service.dart:42`** — `total / sorted.length` guarded for empty history.
+- **`location_intelligence_service.dart:95`** — `total / locationCounts[location]!` →
+  `count > 0 ? total / count : 0.0` (also removed the `!` assertion).
+- **`financial_insights_screen.dart:484`** — `(amount / total) * 100` → `total > 0 ? … : 0.0`.
+- **`budget_progress.dart:417`** — `spent / amount` → `amount > 0 ? … : 0.0`.
+
+### Silent data loss
+- **`settings_controller.exportData` / `settings_repository`** — export was capped at a fixed
+  `limit: 10000` (`getTransactions`), silently dropping transactions beyond 10k. Added
+  `exportAllTransactions()` (pages via `getAllTransactions()`) and switched the export to it;
+  the reported `total_transactions` count is now the true full-history count.
+
+---
+
 ## Phase H — Packaging for reviewers (~2–3 weeks, do this close to application time)
 
 - Host the Flutter **web** build (GitHub Pages/Netlify) — "try it live" beats "clone and run."
