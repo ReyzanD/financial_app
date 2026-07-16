@@ -27,14 +27,19 @@ class TransactionRemoteDataSource {
     return transactions.map((t) => t as Map<String, dynamic>).toList();
   }
 
-  Future<Map<String, dynamic>> createTransaction(Map<String, dynamic> data) async {
+  Future<Map<String, dynamic>> createTransaction(
+    Map<String, dynamic> data,
+  ) async {
     final model = await _transactionData.addTransaction(data);
     return model.toJson();
   }
 
-  Future<Map<String, dynamic>> updateTransaction(String id, Map<String, dynamic> data) async {
+  Future<Map<String, dynamic>> updateTransaction(
+    String id,
+    Map<String, dynamic> data,
+  ) async {
     final model = await _transactionData.updateTransaction(id, data);
-    return model?.toJson() ?? <String, dynamic>{};
+    return model.toJson();
   }
 
   Future<void> deleteTransaction(String id) async {

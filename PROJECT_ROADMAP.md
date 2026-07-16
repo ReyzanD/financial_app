@@ -205,6 +205,63 @@ Run with: `LD_LIBRARY_PATH=<build dir>:$LD_LIBRARY_PATH flutter test test/perfor
 
 ---
 
+## Code Review Pass — correctness, security & performance hardening (COMPLETE)
+
+Run after Phase G at the user's request ("focus on building and review the codebase
+first and testing"). No new features — a static read of the service/widget layer plus
+targeted fixes and regression tests.
+
+**Analyzer:** `flutter analyze` → 0 errors, 0 warnings (123 pre-existing info).
+**Tests:** 305 pass; 31 failures are the pre-existing `databaseFactory not initialized`
+(missing system `libsqlite3.so`) environment-only SQLite tests — not code defects.
+Two new regression tests added (goal-forecasting month math, financial-calculator null safety).
+
+### Correctness (C1–C8)
+- **C1** `budget_forecast_service.dart` — guarded divide-by-zero when `budgetAmount == 0`
+  (returned `double.infinity` before).
+- **C2** `financial_calculator.dart` `calculateRunningBalance` — null `amount`/`type` no longer
+  throw (`_toMoney(null)` / `as String`); null amount → 0, null type → treated as expense.
+- **C3** `map_provider_service.dart` — Nominatim `lat`/`lon` parsed with `double.tryParse`,
+  invalid rows skipped instead of crashing on `as String`.
+- **C4** `report_service.dart` — PDF transaction cap was a silent `take(50)`; replaced with a
+  named `const _maxTransactionsInPdf = 200` used by both the cap and the footer count.
+- **C5** `cash_flow_forecast_service.dart` — `DateTime.parse` on transaction dates wrapped in
+  try/catch per row (bad dates skipped, not fatal).
+- **C6** `analytics_service.dart` — `averageDailyExpense` denominator now uses a real
+  `_daysInPeriod()` helper (was `daysBetween` over a possibly-wrong range, could divide by 1).
+- **C7** `ai_service.dart` + `expense_predictor.dart` — `(amount ?? 0).toDouble()` on a non-num
+  value crashed; now `(amount as num?)?.toDouble() ?? 0.0`.
+- **C8** `goal_forecasting_service.dart` — completion/milestone dates used `*30` day drift
+  (8 months ≠ 240 days across month lengths); now real month arithmetic
+  `DateTime(year, month + n, day)`.
+
+### Security / Input validation (S1–S4)
+- **S1** `add_obligation_modal.dart` — 5× `double.parse` on user input → `double.tryParse` via a
+  `_tryParseOrNull` helper with a clear error snackbar instead of a crash.
+- **S2** `add_budget_modal.dart` — `double.parse` on the amount field → `double.tryParse` with an
+  early-return error snackbar.
+- **S3** `add_goal_modal.dart` — `double.parse` on the target field → `double.tryParse ?? 0`.
+- **S4** `alternative_suggestion_card.dart` + `alternative_recommendation_card.dart` — URL query
+  params (`name`, `location`) now `Uri.encodeComponent(...)` to avoid malformed/unsafe URLs.
+
+### Performance — N+1 / redundant full-history loads (P1–P4)
+- **P1** `budget_predictor.dart` — `predictBudgetExhaustion` & `assessOverspendingRisk` now fetch
+  `getAllTransactions()` **once** and reuse it (was re-fetching inside the loop per category).
+- **P2** `financial_advisor_service.dart` — `analyzeMultiMonth` fetches the window once and
+  partitions in Dart instead of one query per month.
+- **P3** `budget_recommendation_service.dart` — single `getAllTransactions()` reused;
+  `suggestOptimalBudgets` gained an optional `transactions` param (passed through from P1).
+- **P4** `budget_forecast_service.dart` — `getBudgetHistoryTrends` now fetches `getBudgets()`
+  once outside the per-month loop (was inside).
+
+### Analyzer warnings fixed (4)
+- `budget_controller.dart:51` — `cat.type?.` → `cat.type.` (unnecessary null-aware).
+- `transaction_remote_datasource.dart:37` — `model?.toJson()` → `model.toJson()`.
+- `quick_add_modal.dart:77` — removed redundant `cat != null` guard.
+- `recurring_obligations_view.dart:35` — removed unused `l10n` + its import.
+
+---
+
 ## Phase H — Packaging for reviewers (~2–3 weeks, do this close to application time)
 
 - Host the Flutter **web** build (GitHub Pages/Netlify) — "try it live" beats "clone and run."

@@ -6,7 +6,9 @@ import 'package:financial_app/services/logger_service.dart';
 class ExpensePredictor {
   /// Predict expenses for the next N days based on historical data
   /// Returns forecast as Money object with confidence score and confidence intervals
-  Future<Map<String, dynamic>> predictNext30Days({required List<Map<String, dynamic>> transactions}) async {
+  Future<Map<String, dynamic>> predictNext30Days({
+    required List<Map<String, dynamic>> transactions,
+  }) async {
     try {
       if (transactions.isEmpty) {
         return {
@@ -25,7 +27,10 @@ class ExpensePredictor {
       final recentExpenses =
           transactions.where((t) {
             try {
-              final dateStr = t['transaction_date']?.toString() ?? t['date']?.toString() ?? '';
+              final dateStr =
+                  t['transaction_date']?.toString() ??
+                  t['date']?.toString() ??
+                  '';
               if (dateStr.isEmpty) return false;
               final date = DateTime.parse(dateStr);
               final type = t['type']?.toString().toLowerCase() ?? 'expense';
@@ -52,7 +57,9 @@ class ExpensePredictor {
 
       // Multi-algorithm prediction
       final movingAvgForecast = _predictMovingAverage(amounts);
-      final exponentialSmoothingForecast = _predictExponentialSmoothing(amounts);
+      final exponentialSmoothingForecast = _predictExponentialSmoothing(
+        amounts,
+      );
       final regressionForecast = _predictLinearRegression(amounts);
 
       // Seasonal adjustment
@@ -60,7 +67,10 @@ class ExpensePredictor {
 
       // Combine predictions with weights
       final combinedForecast =
-          (movingAvgForecast * 0.4 + exponentialSmoothingForecast * 0.35 + regressionForecast * 0.25) * seasonalFactor;
+          (movingAvgForecast * 0.4 +
+              exponentialSmoothingForecast * 0.35 +
+              regressionForecast * 0.25) *
+          seasonalFactor;
 
       // Detect trend
       final trend = _detectTrend(amounts);
@@ -73,7 +83,10 @@ class ExpensePredictor {
         finalForecast *= 0.97; // 3% reduction
       }
 
-      final forecastMoney = Money.fromInt(finalForecast.round(), isoCode: 'IDR');
+      final forecastMoney = Money.fromInt(
+        finalForecast.round(),
+        isoCode: 'IDR',
+      );
 
       // Calculate confidence based on data quality
       final confidence = _calculateConfidence(
@@ -85,7 +98,10 @@ class ExpensePredictor {
       // Calculate confidence intervals (95% confidence)
       final stdDev = _calculateStandardDeviation(amounts);
       final marginOfError = stdDev * 1.96; // 95% confidence interval
-      final lowerBound = (finalForecast - marginOfError).clamp(0.0, double.infinity);
+      final lowerBound = (finalForecast - marginOfError).clamp(
+        0.0,
+        double.infinity,
+      );
       final upperBound = finalForecast + marginOfError;
 
       LoggerService.debug(
@@ -162,7 +178,10 @@ class ExpensePredictor {
   }
 
   /// Predict using exponential smoothing method
-  double _predictExponentialSmoothing(List<double> amounts, {double alpha = 0.3}) {
+  double _predictExponentialSmoothing(
+    List<double> amounts, {
+    double alpha = 0.3,
+  }) {
     if (amounts.isEmpty) return 0.0;
     if (amounts.length == 1) return amounts.first;
 
@@ -182,7 +201,11 @@ class ExpensePredictor {
 
     final sumX = indices.reduce((a, b) => a + b);
     final sumY = amounts.reduce((a, b) => a + b);
-    final sumXY = indices.asMap().entries.map((e) => e.value * amounts[e.key]).reduce((a, b) => a + b);
+    final sumXY = indices
+        .asMap()
+        .entries
+        .map((e) => e.value * amounts[e.key])
+        .reduce((a, b) => a + b);
     final sumX2 = indices.map((x) => x * x).reduce((a, b) => a + b);
 
     final slope = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
@@ -194,7 +217,10 @@ class ExpensePredictor {
 
   /// Calculate seasonal adjustment factor
   /// Accounts for holidays, paydays, and monthly patterns
-  double _calculateSeasonalFactor(List<Map<String, dynamic>> expenses, DateTime now) {
+  double _calculateSeasonalFactor(
+    List<Map<String, dynamic>> expenses,
+    DateTime now,
+  ) {
     double factor = 1.0;
 
     // Check if we're near end of month (typically higher spending)
@@ -294,19 +320,25 @@ class ExpensePredictor {
   }
 
   /// Calculate confidence score (0.0 to 1.0)
-  double _calculateConfidence({required int dataPoints, required double variance, required double trendStrength}) {
+  double _calculateConfidence({
+    required int dataPoints,
+    required double variance,
+    required double trendStrength,
+  }) {
     // Base confidence from data points (more data = higher confidence)
     final dataConfidence = (dataPoints / 30).clamp(0.0, 1.0);
 
     // Variance factor (lower variance = higher confidence)
     final avgAmount = 100000.0; // Assume average daily expense
-    final varianceFactor = (1 - (variance / (avgAmount * avgAmount)).clamp(0.0, 1.0));
+    final varianceFactor =
+        (1 - (variance / (avgAmount * avgAmount)).clamp(0.0, 1.0));
 
     // Trend strength factor
     final trendFactor = trendStrength.clamp(0.0, 1.0);
 
     // Weighted average
-    final confidence = (dataConfidence * 0.4) + (varianceFactor * 0.3) + (trendFactor * 0.3);
+    final confidence =
+        (dataConfidence * 0.4) + (varianceFactor * 0.3) + (trendFactor * 0.3);
 
     return confidence.clamp(0.0, 1.0);
   }
@@ -328,7 +360,9 @@ class ExpensePredictor {
   }
 
   /// Predict expenses by category for next 30 days
-  Future<Map<String, Money>> predictByCategory({required List<Map<String, dynamic>> transactions}) async {
+  Future<Map<String, Money>> predictByCategory({
+    required List<Map<String, dynamic>> transactions,
+  }) async {
     final predictions = <String, Money>{};
 
     // Group by category
@@ -343,7 +377,7 @@ class ExpensePredictor {
         if (!date.isAfter(thirtyDaysAgo) || type != 'expense') continue;
 
         final category = transaction['category_name']?.toString() ?? 'Lainnya';
-        final amount = (transaction['amount'] ?? 0).toDouble();
+        final amount = (transaction['amount'] as num?)?.toDouble() ?? 0.0;
 
         categoryGroups.putIfAbsent(category, () => []).add(amount);
       } catch (e) {

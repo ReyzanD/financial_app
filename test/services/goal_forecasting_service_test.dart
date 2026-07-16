@@ -123,5 +123,47 @@ void main() {
       expect(result['monthsToCompletion'], greaterThan(0));
       expect(result['confidence'], 0.7);
     });
+
+    test('completion date uses real month arithmetic (no *30 drift)', () {
+      // Freeze "now" by checking the offset is exactly monthsToCompletion months.
+      final result = service.forecastGoalCompletion(
+        targetAmount: 1000000,
+        currentAmount: 200000,
+        monthlyContribution: 100000, // 8 months to completion
+      );
+
+      final completionStr = result['completionDate'] as String?;
+      expect(completionStr, isNotNull);
+      final completion = DateTime.tryParse(completionStr!);
+      expect(completion, isNotNull);
+      // 8 months from now must not be 8*30=240 days (which would drift).
+      final now = DateTime.now();
+      final expected = DateTime(now.year, now.month + 8, now.day);
+      expect(completion!.year, expected.year);
+      expect(completion.month, expected.month);
+      expect(completion.day, expected.day);
+      // Sanity: must NOT equal now + 240 days (the old buggy behaviour).
+      final buggy = now.add(const Duration(days: 240));
+      expect(
+        completion.day == buggy.day && completion.month == buggy.month,
+        isFalse,
+      );
+    });
+
+    test('milestone dates use real month arithmetic', () {
+      final milestones = service.generateMilestones(
+        targetAmount: 1000000,
+        monthsToCompletion: 12,
+      );
+
+      final now = DateTime.now();
+      // Last milestone (100%) should be exactly 12 months from now.
+      final lastDate = DateTime.tryParse(milestones.last['date'] as String);
+      expect(lastDate, isNotNull);
+      final expected = DateTime(now.year, now.month + 12, now.day);
+      expect(lastDate!.year, expected.year);
+      expect(lastDate.month, expected.month);
+      expect(lastDate.day, expected.day);
+    });
   });
 }

@@ -51,22 +51,31 @@ class _AddObligationModalState extends State<AddObligationModal> {
     final initial = widget.initialObligation;
     if (initial != null) {
       _nameController.text = initial['name_232143']?.toString() ?? '';
-      _monthlyAmountController.text = (initial['monthly_amount_232143'] as num?)?.toStringAsFixed(0) ?? '';
+      _monthlyAmountController.text =
+          (initial['monthly_amount_232143'] as num?)?.toStringAsFixed(0) ?? '';
       _selectedType = initial['type_232143']?.toString() ?? 'bill';
       _selectedCategory = initial['category_232143']?.toString() ?? 'utility';
-      _dueDayOfMonth = int.tryParse(initial['due_date_232143']?.toString() ?? '1') ?? 1;
+      _dueDayOfMonth =
+          int.tryParse(initial['due_date_232143']?.toString() ?? '1') ?? 1;
 
       if (initial['original_amount_232143'] != null) {
-        _originalAmountController.text = (initial['original_amount_232143'] as num?)?.toStringAsFixed(0) ?? '';
+        _originalAmountController.text =
+            (initial['original_amount_232143'] as num?)?.toStringAsFixed(0) ??
+            '';
       }
       if (initial['current_balance_232143'] != null) {
-        _currentBalanceController.text = (initial['current_balance_232143'] as num?)?.toStringAsFixed(0) ?? '';
+        _currentBalanceController.text =
+            (initial['current_balance_232143'] as num?)?.toStringAsFixed(0) ??
+            '';
       }
       if (initial['interest_rate_232143'] != null) {
-        _interestRateController.text = (initial['interest_rate_232143'] as num?)?.toStringAsFixed(2) ?? '';
+        _interestRateController.text =
+            (initial['interest_rate_232143'] as num?)?.toStringAsFixed(2) ?? '';
       }
       if (initial['minimum_payment_232143'] != null) {
-        _minimumPaymentController.text = (initial['minimum_payment_232143'] as num?)?.toStringAsFixed(0) ?? '';
+        _minimumPaymentController.text =
+            (initial['minimum_payment_232143'] as num?)?.toStringAsFixed(0) ??
+            '';
       }
 
       _subscriptionCycle = initial['subscription_cycle_232143']?.toString();
@@ -85,6 +94,17 @@ class _AddObligationModalState extends State<AddObligationModal> {
     super.dispose();
   }
 
+  /// Parses an optional amount field; returns null when empty, or throws a
+  /// clear error when the text is non-empty but not a valid number (so the
+  /// user sees a message instead of a silent crash / zero-default corruption).
+  double? _tryParseOrNull(String text) {
+    final trimmed = text.trim();
+    if (trimmed.isEmpty) return null;
+    final value = double.tryParse(trimmed);
+    if (value == null) throw Exception('Jumlah tidak valid: $trimmed');
+    return value;
+  }
+
   Future<void> _submit() async {
     LoggerService.debug('Submit button tapped');
 
@@ -100,26 +120,26 @@ class _AddObligationModalState extends State<AddObligationModal> {
 
     try {
       LoggerService.debug('Preparing obligation data...');
+      final monthlyAmount = double.tryParse(_monthlyAmountController.text);
+      if (monthlyAmount == null) {
+        throw Exception('Jumlah bulanan tidak valid');
+      }
       final data = <String, dynamic>{
         'name': _nameController.text,
         'type': _selectedType,
         'category': _selectedCategory,
-        'monthly_amount': double.parse(_monthlyAmountController.text),
+        'monthly_amount': monthlyAmount,
         'due_date': _dueDayOfMonth,
       };
 
-      if (_originalAmountController.text.isNotEmpty) {
-        data['original_amount'] = double.parse(_originalAmountController.text);
-      }
-      if (_currentBalanceController.text.isNotEmpty) {
-        data['current_balance'] = double.parse(_currentBalanceController.text);
-      }
-      if (_interestRateController.text.isNotEmpty) {
-        data['interest_rate'] = double.parse(_interestRateController.text);
-      }
-      if (_minimumPaymentController.text.isNotEmpty) {
-        data['minimum_payment'] = double.parse(_minimumPaymentController.text);
-      }
+      final originalAmount = _tryParseOrNull(_originalAmountController.text);
+      if (originalAmount != null) data['original_amount'] = originalAmount;
+      final currentBalance = _tryParseOrNull(_currentBalanceController.text);
+      if (currentBalance != null) data['current_balance'] = currentBalance;
+      final interestRate = _tryParseOrNull(_interestRateController.text);
+      if (interestRate != null) data['interest_rate'] = interestRate;
+      final minimumPayment = _tryParseOrNull(_minimumPaymentController.text);
+      if (minimumPayment != null) data['minimum_payment'] = minimumPayment;
       if (_subscriptionCycle != null && _subscriptionCycle!.isNotEmpty) {
         data['subscription_cycle'] = _subscriptionCycle;
         data['is_subscription'] = true;
@@ -130,7 +150,8 @@ class _AddObligationModalState extends State<AddObligationModal> {
 
       if (_isEdit) {
         LoggerService.info('Updating existing obligation...');
-        final id = widget.initialObligation?['obligation_id_232143']?.toString();
+        final id =
+            widget.initialObligation?['obligation_id_232143']?.toString();
         if (id == null) {
           throw Exception(AppLocalizations.of(context)!.invalid_obligation_id);
         }
@@ -149,7 +170,9 @@ class _AddObligationModalState extends State<AddObligationModal> {
       if (context.mounted) {
         ErrorHandlerService.showSuccessSnackbar(
           context,
-          _isEdit ? 'Kewajiban berhasil diperbarui.' : 'Kewajiban berhasil ditambahkan.',
+          _isEdit
+              ? 'Kewajiban berhasil diperbarui.'
+              : 'Kewajiban berhasil ditambahkan.',
         );
       }
     } catch (e) {
@@ -159,7 +182,11 @@ class _AddObligationModalState extends State<AddObligationModal> {
         _isLoading = false;
       });
       if (context.mounted) {
-        ErrorHandlerService.showErrorSnackbar(context, ErrorHandlerService.getUserFriendlyMessage(e), onRetry: _submit);
+        ErrorHandlerService.showErrorSnackbar(
+          context,
+          ErrorHandlerService.getUserFriendlyMessage(e),
+          onRetry: _submit,
+        );
       }
     }
   }
@@ -167,7 +194,12 @@ class _AddObligationModalState extends State<AddObligationModal> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom, left: 20, right: 20, top: 20),
+      padding: EdgeInsets.only(
+        bottom: MediaQuery.of(context).viewInsets.bottom,
+        left: 20,
+        right: 20,
+        top: 20,
+      ),
       child: SingleChildScrollView(
         child: Form(
           key: _formKey,
@@ -177,12 +209,21 @@ class _AddObligationModalState extends State<AddObligationModal> {
               Container(
                 width: 40,
                 height: 4,
-                decoration: BoxDecoration(color: Colors.grey[600], borderRadius: BorderRadius.circular(2)),
+                decoration: BoxDecoration(
+                  color: Colors.grey[600],
+                  borderRadius: BorderRadius.circular(2),
+                ),
               ),
               const SizedBox(height: DesignTokens.spacing5),
               Text(
-                _isEdit ? AppLocalizations.of(context)!.edit_obligation : AppLocalizations.of(context)!.add_obligation,
-                style: GoogleFonts.poppins(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+                _isEdit
+                    ? AppLocalizations.of(context)!.edit_obligation
+                    : AppLocalizations.of(context)!.add_obligation,
+                style: GoogleFonts.poppins(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               const SizedBox(height: DesignTokens.spacing6),
 
@@ -196,11 +237,17 @@ class _AddObligationModalState extends State<AddObligationModal> {
                   filled: true,
                   fillColor: DesignTokens.surfaceDark,
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                    borderRadius: BorderRadius.circular(
+                      DesignTokens.radiusMedium,
+                    ),
                     borderSide: BorderSide.none,
                   ),
                 ),
-                validator: (value) => FormValidators.validateName(value, fieldName: AppLocalizations.of(context)!.name),
+                validator:
+                    (value) => FormValidators.validateName(
+                      value,
+                      fieldName: AppLocalizations.of(context)!.name,
+                    ),
               ),
               const SizedBox(height: DesignTokens.spacing4),
 
@@ -209,11 +256,22 @@ class _AddObligationModalState extends State<AddObligationModal> {
                 initialValue: _selectedType,
                 dropdownColor: DesignTokens.surfaceDark,
                 style: const TextStyle(color: Colors.white),
-                decoration: DropdownHelper.darkDropdownDecoration(labelText: AppLocalizations.of(context)!.type),
+                decoration: DropdownHelper.darkDropdownDecoration(
+                  labelText: AppLocalizations.of(context)!.type,
+                ),
                 items: [
-                  DropdownMenuItem(value: 'bill', child: Text(AppLocalizations.of(context)!.bill)),
-                  DropdownMenuItem(value: 'debt', child: Text(AppLocalizations.of(context)!.debt)),
-                  DropdownMenuItem(value: 'subscription', child: Text(AppLocalizations.of(context)!.subscription)),
+                  DropdownMenuItem(
+                    value: 'bill',
+                    child: Text(AppLocalizations.of(context)!.bill),
+                  ),
+                  DropdownMenuItem(
+                    value: 'debt',
+                    child: Text(AppLocalizations.of(context)!.debt),
+                  ),
+                  DropdownMenuItem(
+                    value: 'subscription',
+                    child: Text(AppLocalizations.of(context)!.subscription),
+                  ),
                 ],
                 onChanged: (value) {
                   if (value != null) {
@@ -230,19 +288,54 @@ class _AddObligationModalState extends State<AddObligationModal> {
                 initialValue: _selectedCategory,
                 dropdownColor: DesignTokens.surfaceDark,
                 style: const TextStyle(color: Colors.white),
-                decoration: DropdownHelper.darkDropdownDecoration(labelText: AppLocalizations.of(context)!.category),
+                decoration: DropdownHelper.darkDropdownDecoration(
+                  labelText: AppLocalizations.of(context)!.category,
+                ),
                 items: [
-                  DropdownMenuItem(value: 'utility', child: Text(AppLocalizations.of(context)!.utilities)),
-                  DropdownMenuItem(value: 'internet', child: Text(AppLocalizations.of(context)!.internet)),
-                  DropdownMenuItem(value: 'phone', child: Text(AppLocalizations.of(context)!.phone)),
-                  DropdownMenuItem(value: 'insurance', child: Text(AppLocalizations.of(context)!.insurance)),
-                  DropdownMenuItem(value: 'credit_card', child: Text(AppLocalizations.of(context)!.credit_card)),
-                  DropdownMenuItem(value: 'personal_loan', child: Text(AppLocalizations.of(context)!.personal_loan)),
-                  DropdownMenuItem(value: 'mortgage', child: Text(AppLocalizations.of(context)!.mortgage)),
-                  DropdownMenuItem(value: 'car_loan', child: Text(AppLocalizations.of(context)!.car_loan)),
-                  DropdownMenuItem(value: 'student_loan', child: Text(AppLocalizations.of(context)!.student_loan)),
-                  DropdownMenuItem(value: 'subscription', child: Text(AppLocalizations.of(context)!.subscription)),
-                  DropdownMenuItem(value: 'other', child: Text(AppLocalizations.of(context)!.other)),
+                  DropdownMenuItem(
+                    value: 'utility',
+                    child: Text(AppLocalizations.of(context)!.utilities),
+                  ),
+                  DropdownMenuItem(
+                    value: 'internet',
+                    child: Text(AppLocalizations.of(context)!.internet),
+                  ),
+                  DropdownMenuItem(
+                    value: 'phone',
+                    child: Text(AppLocalizations.of(context)!.phone),
+                  ),
+                  DropdownMenuItem(
+                    value: 'insurance',
+                    child: Text(AppLocalizations.of(context)!.insurance),
+                  ),
+                  DropdownMenuItem(
+                    value: 'credit_card',
+                    child: Text(AppLocalizations.of(context)!.credit_card),
+                  ),
+                  DropdownMenuItem(
+                    value: 'personal_loan',
+                    child: Text(AppLocalizations.of(context)!.personal_loan),
+                  ),
+                  DropdownMenuItem(
+                    value: 'mortgage',
+                    child: Text(AppLocalizations.of(context)!.mortgage),
+                  ),
+                  DropdownMenuItem(
+                    value: 'car_loan',
+                    child: Text(AppLocalizations.of(context)!.car_loan),
+                  ),
+                  DropdownMenuItem(
+                    value: 'student_loan',
+                    child: Text(AppLocalizations.of(context)!.student_loan),
+                  ),
+                  DropdownMenuItem(
+                    value: 'subscription',
+                    child: Text(AppLocalizations.of(context)!.subscription),
+                  ),
+                  DropdownMenuItem(
+                    value: 'other',
+                    child: Text(AppLocalizations.of(context)!.other),
+                  ),
                 ],
                 onChanged: (value) {
                   if (value != null) {
@@ -265,7 +358,9 @@ class _AddObligationModalState extends State<AddObligationModal> {
                   filled: true,
                   fillColor: DesignTokens.surfaceDark,
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                    borderRadius: BorderRadius.circular(
+                      DesignTokens.radiusMedium,
+                    ),
                     borderSide: BorderSide.none,
                   ),
                 ),
@@ -281,7 +376,13 @@ class _AddObligationModalState extends State<AddObligationModal> {
                 decoration: DropdownHelper.darkDropdownDecoration(
                   labelText: AppLocalizations.of(context)!.due_date_day,
                 ),
-                items: List.generate(31, (index) => DropdownMenuItem(value: index + 1, child: Text('${index + 1}'))),
+                items: List.generate(
+                  31,
+                  (index) => DropdownMenuItem(
+                    value: index + 1,
+                    child: Text('${index + 1}'),
+                  ),
+                ),
                 onChanged: (value) {
                   if (value != null) {
                     setState(() {
@@ -299,12 +400,17 @@ class _AddObligationModalState extends State<AddObligationModal> {
                   keyboardType: TextInputType.number,
                   style: const TextStyle(color: Colors.white),
                   decoration: InputDecoration(
-                    labelText: AppLocalizations.of(context)!.original_debt_amount_optional,
+                    labelText:
+                        AppLocalizations.of(
+                          context,
+                        )!.original_debt_amount_optional,
                     labelStyle: TextStyle(color: Colors.grey[400]),
                     filled: true,
                     fillColor: DesignTokens.surfaceDark,
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                      borderRadius: BorderRadius.circular(
+                        DesignTokens.radiusMedium,
+                      ),
                       borderSide: BorderSide.none,
                     ),
                   ),
@@ -315,12 +421,15 @@ class _AddObligationModalState extends State<AddObligationModal> {
                   keyboardType: TextInputType.number,
                   style: const TextStyle(color: Colors.white),
                   decoration: InputDecoration(
-                    labelText: AppLocalizations.of(context)!.current_balance_optional,
+                    labelText:
+                        AppLocalizations.of(context)!.current_balance_optional,
                     labelStyle: TextStyle(color: Colors.grey[400]),
                     filled: true,
                     fillColor: DesignTokens.surfaceDark,
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                      borderRadius: BorderRadius.circular(
+                        DesignTokens.radiusMedium,
+                      ),
                       borderSide: BorderSide.none,
                     ),
                   ),
@@ -331,12 +440,17 @@ class _AddObligationModalState extends State<AddObligationModal> {
                   keyboardType: TextInputType.number,
                   style: const TextStyle(color: Colors.white),
                   decoration: InputDecoration(
-                    labelText: AppLocalizations.of(context)!.interest_rate_percent_optional,
+                    labelText:
+                        AppLocalizations.of(
+                          context,
+                        )!.interest_rate_percent_optional,
                     labelStyle: TextStyle(color: Colors.grey[400]),
                     filled: true,
                     fillColor: DesignTokens.surfaceDark,
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                      borderRadius: BorderRadius.circular(
+                        DesignTokens.radiusMedium,
+                      ),
                       borderSide: BorderSide.none,
                     ),
                   ),
@@ -347,12 +461,15 @@ class _AddObligationModalState extends State<AddObligationModal> {
                   keyboardType: TextInputType.number,
                   style: const TextStyle(color: Colors.white),
                   decoration: InputDecoration(
-                    labelText: AppLocalizations.of(context)!.minimum_payment_optional,
+                    labelText:
+                        AppLocalizations.of(context)!.minimum_payment_optional,
                     labelStyle: TextStyle(color: Colors.grey[400]),
                     filled: true,
                     fillColor: DesignTokens.surfaceDark,
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                      borderRadius: BorderRadius.circular(
+                        DesignTokens.radiusMedium,
+                      ),
                       borderSide: BorderSide.none,
                     ),
                   ),
@@ -367,12 +484,22 @@ class _AddObligationModalState extends State<AddObligationModal> {
                   dropdownColor: DesignTokens.surfaceDark,
                   style: const TextStyle(color: Colors.white),
                   decoration: DropdownHelper.darkDropdownDecoration(
-                    labelText: AppLocalizations.of(context)!.subscription_cycle_label,
+                    labelText:
+                        AppLocalizations.of(context)!.subscription_cycle_label,
                   ),
                   items: [
-                    DropdownMenuItem(value: 'monthly', child: Text(AppLocalizations.of(context)!.monthly)),
-                    DropdownMenuItem(value: 'yearly', child: Text(AppLocalizations.of(context)!.yearly)),
-                    DropdownMenuItem(value: 'weekly', child: Text(AppLocalizations.of(context)!.weekly)),
+                    DropdownMenuItem(
+                      value: 'monthly',
+                      child: Text(AppLocalizations.of(context)!.monthly),
+                    ),
+                    DropdownMenuItem(
+                      value: 'yearly',
+                      child: Text(AppLocalizations.of(context)!.yearly),
+                    ),
+                    DropdownMenuItem(
+                      value: 'weekly',
+                      child: Text(AppLocalizations.of(context)!.weekly),
+                    ),
                   ],
                   onChanged: (value) {
                     setState(() {
@@ -390,7 +517,11 @@ class _AddObligationModalState extends State<AddObligationModal> {
                   backgroundColor: DesignTokens.primaryColor,
                   foregroundColor: Colors.white,
                   disabledBackgroundColor: Colors.grey[800],
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(DesignTokens.radiusMedium)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(
+                      DesignTokens.radiusMedium,
+                    ),
+                  ),
                   minimumSize: const Size(double.infinity, 50),
                 ),
                 child:
@@ -398,7 +529,10 @@ class _AddObligationModalState extends State<AddObligationModal> {
                         ? const SizedBox(
                           width: 20,
                           height: 20,
-                          child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.white,
+                          ),
                         )
                         : Text(
                           _isEdit

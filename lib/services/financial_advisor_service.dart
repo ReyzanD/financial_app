@@ -235,19 +235,43 @@ class FinancialAdvisorService {
   }
 
   /// Run analysis for each of the last [count] months (including current).
-  /// Returns a list ordered from oldest to newest.
+  /// Returns a list ordered from oldest to newest. Fetches the whole window
+  /// once and partitions in Dart to avoid one DB scan per month.
   Future<List<FiftyThirtyTwentyAnalysis>> analyzeMultiMonth(int count) async {
     final now = DateTime.now();
+    final earliest = DateTime(now.year, now.month - (count - 1), 1);
+    final latest = DateTime(now.year, now.month + 1, 0);
+
+    List<Map<String, dynamic>> window;
+    try {
+      window = await _transactionData.getAllTransactions(
+        startDate: earliest.toIso8601String().split('T')[0],
+        endDate: latest.toIso8601String().split('T')[0],
+      );
+    } catch (e) {
+      LoggerService.error('Error loading multi-month window', error: e);
+      window = [];
+    }
+
     final results = <FiftyThirtyTwentyAnalysis>[];
     for (int i = count - 1; i >= 0; i--) {
       final start = DateTime(now.year, now.month - i, 1);
       final end = DateTime(now.year, now.month - i + 1, 0);
       if (start.isAfter(now)) break;
       try {
-        results.add(await analyzeForPeriod(start: start, end: end));
+        final monthTxns = window.where((t) {
+          final dateStr =
+              t['transaction_date_232143']?.toString() ??
+              t['transaction_date']?.toString() ??
+              '';
+          if (dateStr.isEmpty) return false;
+          final date = DateTime.tryParse(dateStr);
+          if (date == null) return false;
+          return !date.isBefore(start) && !date.isAfter(end);
+        }).toList();
+        results.add(computeAnalysis(monthTxns));
       } catch (e) {
         LoggerService.error('Error analyzing month -$i', error: e);
-        // Add empty analysis so indices stay aligned
         results.add(computeAnalysis([]));
       }
     }

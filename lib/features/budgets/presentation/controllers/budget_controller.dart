@@ -48,7 +48,7 @@ class BudgetController extends ChangeNotifier {
       // Map categories (expense only)
       final categoryMap = <String, String>{};
       for (final cat in rawCategories) {
-        if (cat.type?.toString().toLowerCase() == 'expense') {
+        if (cat.type.toString().toLowerCase() == 'expense') {
           categoryMap[cat.id] = cat.name;
         }
       }

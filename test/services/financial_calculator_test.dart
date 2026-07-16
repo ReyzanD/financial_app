@@ -122,6 +122,28 @@ void main() {
       expect(result[1]['runningBalanceValue'], 7000000.0);
     });
 
+    test(
+      'calculateRunningBalance handles null amount and null type safely',
+      () {
+        // A row missing amount/type used to throw (ArgumentError / CastError).
+        final transactions = [
+          {'date': '2025-01-01', 'type': 'income'}, // no amount
+          {'date': '2025-01-05', 'amount': 3000000.0}, // no type
+          {'date': '2025-01-10', 'amount': null, 'type': null}, // both null
+        ];
+
+        final result = calculator.calculateRunningBalance(
+          transactions: transactions,
+        );
+
+        expect(result.length, 3);
+        // null amount -> 0; null type -> treated as expense (subtracts).
+        expect(result[0]['runningBalanceValue'], 0.0);
+        expect(result[1]['runningBalanceValue'], -3000000.0);
+        expect(result[2]['runningBalanceValue'], -3000000.0);
+      },
+    );
+
     test('calculateBalanceProjection should project positive balance', () {
       final result = calculator.calculateBalanceProjection(
         currentBalance: 10000000,

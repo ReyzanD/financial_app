@@ -181,7 +181,7 @@ class AlternativeSuggestionCard extends StatelessWidget {
         Platform.isAndroid
             ? 'https://www.google.com/maps/search/?api=1&query=$lat,$lng'
             : Platform.isIOS
-            ? 'https://maps.apple.com/?ll=$lat,$lng&q=$name'
+            ? 'https://maps.apple.com/?ll=$lat,$lng&q=${Uri.encodeComponent(name)}'
             : 'https://www.openstreetmap.org/?mlat=$lat&mlon=$lng',
       );
       if (await canLaunchUrl(uri)) {

@@ -57,6 +57,26 @@ class AnalyticsService {
     }).toList();
   }
 
+  /// Number of days in the analytics window, used as the denominator for
+  /// average-daily metrics (not the count of days that had a transaction).
+  int _daysInPeriod(String period, DateTime now) {
+    switch (period) {
+      case 'week':
+        return 7;
+      case 'month':
+        return DateTime(now.year, now.month + 1, 0).day;
+      case 'year':
+        return DateTime(
+              now.year + 1,
+              1,
+              0,
+            ).difference(DateTime(now.year, 1, 1)).inDays +
+            1;
+      default:
+        return 30;
+    }
+  }
+
   Map<String, dynamic> _calculateAnalytics(
     List<Map<String, dynamic>> transactions,
     String period,
@@ -120,7 +140,9 @@ class AnalyticsService {
       'topIncomeCategories': topIncomeCategories,
       'dailyData': dailyData,
       'averageDailyExpense':
-          dailyData.isNotEmpty ? totalExpense / dailyData.length : 0,
+          _daysInPeriod(period, now) > 0
+              ? totalExpense / _daysInPeriod(period, now)
+              : 0,
       'previousPeriod': previousPeriodData,
     };
   }

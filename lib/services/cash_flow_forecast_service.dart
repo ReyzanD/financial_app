@@ -128,7 +128,12 @@ class CashFlowForecastService {
             '';
         if (dateStr.isEmpty) continue;
 
-        final date = DateTime.parse(dateStr);
+        final DateTime date;
+        try {
+          date = DateTime.parse(dateStr);
+        } catch (_) {
+          continue; // Skip rows with unparseable dates instead of aborting.
+        }
         final type =
             t['type_232143']?.toString() ?? t['type']?.toString() ?? '';
         final amount =

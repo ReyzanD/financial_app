@@ -37,10 +37,17 @@ class BudgetRecommendationService {
       // Get recurring transactions and bills (with error handling)
       double monthlyRecurringExpenses = 0.0;
 
+      // Load all transactions once and reuse for both recurring-sum and
+      // historical-spending steps (avoids redundant full-table scans).
+      List<Map<String, dynamic>> allTransactions = [];
       try {
-        final allTransactions = await _transactionData.getAllTransactions();
-        final allTxList = allTransactions;
-        final recurringTransactions = allTxList.where(
+        allTransactions = await _transactionData.getAllTransactions();
+      } catch (e) {
+        LoggerService.warning('Could not fetch transactions', error: e);
+      }
+
+      try {
+        final recurringTransactions = allTransactions.where(
           (t) => (t['is_recurring_232143'] as int? ?? 0) == 1,
         );
         // Sum recurring transactions
@@ -54,7 +61,7 @@ class BudgetRecommendationService {
         }
       } catch (e) {
         LoggerService.warning(
-          'Could not fetch recurring transactions',
+          'Could not process recurring transactions',
           error: e,
         );
       }
@@ -69,8 +76,8 @@ class BudgetRecommendationService {
         LoggerService.warning('Could not fetch obligations', error: e);
       }
 
-      // Get historical spending data for dynamic allocation
-      final transactions = await _transactionData.getAllTransactions();
+      // Historical spending data for dynamic allocation (reuse loaded list)
+      final transactions = allTransactions;
 
       // Get goals for goal-aligned allocation
       final goalModels = await _goalData.getGoals();
@@ -193,9 +200,10 @@ class BudgetRecommendationService {
     final recurringPercentage =
         income > 0 ? (monthlyRecurringExpenses / income) * 100 : 0;
 
-    // Get optimal budget suggestions from BudgetPredictor
+    // Get optimal budget suggestions from BudgetPredictor (reuse loaded list)
     final optimalBudgets = await _budgetPredictor.suggestOptimalBudgets(
       monthsToAnalyze: 6,
+      transactions: transactions,
     );
 
     // Check if optimalBudgets is empty (no spending patterns detected)

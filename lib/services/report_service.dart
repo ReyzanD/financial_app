@@ -7,6 +7,10 @@ import 'package:csv/csv.dart';
 import 'package:financial_app/models/transaction_model.dart';
 
 class ReportService {
+  /// Max transactions rendered in the PDF table (PDF size guard). The total
+  /// count is always disclosed in the report footer when truncated.
+  static const int _maxTransactionsInPdf = 200;
+
   /// Generate PDF report for monthly or yearly transactions
   Future<File> generatePdfReport({
     required List<TransactionModel> transactions,
@@ -16,7 +20,11 @@ class ReportService {
   }) async {
     final pdf = pw.Document();
     final dateFormat = DateFormat('dd MMMM yyyy', 'id_ID');
-    final currencyFormat = NumberFormat.currency(locale: 'id_ID', symbol: 'Rp ', decimalDigits: 0);
+    final currencyFormat = NumberFormat.currency(
+      locale: 'id_ID',
+      symbol: 'Rp ',
+      decimalDigits: 0,
+    );
 
     // Calculate summary
     final totalIncome = transactions
@@ -34,11 +42,14 @@ class ReportService {
     for (var transaction in transactions) {
       if (transaction.type.toLowerCase() == 'expense') {
         final category = transaction.categoryName;
-        categoryExpenses[category] = (categoryExpenses[category] ?? 0) + transaction.amount;
+        categoryExpenses[category] =
+            (categoryExpenses[category] ?? 0) + transaction.amount;
       }
     }
 
-    final sortedCategories = categoryExpenses.entries.toList()..sort((a, b) => b.value.compareTo(a.value));
+    final sortedCategories =
+        categoryExpenses.entries.toList()
+          ..sort((a, b) => b.value.compareTo(a.value));
 
     // Build PDF
     pdf.addPage(
@@ -56,11 +67,22 @@ class ReportService {
                   pw.Column(
                     crossAxisAlignment: pw.CrossAxisAlignment.start,
                     children: [
-                      pw.Text('Laporan Keuangan', style: pw.TextStyle(fontSize: 24, fontWeight: pw.FontWeight.bold)),
+                      pw.Text(
+                        'Laporan Keuangan',
+                        style: pw.TextStyle(
+                          fontSize: 24,
+                          fontWeight: pw.FontWeight.bold,
+                        ),
+                      ),
                       pw.SizedBox(height: 4),
                       pw.Text(
-                        periodType == 'monthly' ? 'Laporan Bulanan' : 'Laporan Tahunan',
-                        style: pw.TextStyle(fontSize: 14, color: PdfColors.grey700),
+                        periodType == 'monthly'
+                            ? 'Laporan Bulanan'
+                            : 'Laporan Tahunan',
+                        style: pw.TextStyle(
+                          fontSize: 14,
+                          color: PdfColors.grey700,
+                        ),
                       ),
                     ],
                   ),
@@ -76,10 +98,19 @@ class ReportService {
             // Period Information
             pw.Container(
               padding: const pw.EdgeInsets.all(12),
-              decoration: pw.BoxDecoration(color: PdfColors.grey200, borderRadius: pw.BorderRadius.circular(8)),
+              decoration: pw.BoxDecoration(
+                color: PdfColors.grey200,
+                borderRadius: pw.BorderRadius.circular(8),
+              ),
               child: pw.Row(
                 children: [
-                  pw.Text('Periode: ', style: pw.TextStyle(fontSize: 12, fontWeight: pw.FontWeight.bold)),
+                  pw.Text(
+                    'Periode: ',
+                    style: pw.TextStyle(
+                      fontSize: 12,
+                      fontWeight: pw.FontWeight.bold,
+                    ),
+                  ),
                   pw.Text(
                     '${dateFormat.format(startDate)} - ${dateFormat.format(endDate)}',
                     style: const pw.TextStyle(fontSize: 12),
@@ -90,13 +121,30 @@ class ReportService {
             pw.SizedBox(height: 20),
 
             // Summary Section
-            pw.Text('Ringkasan', style: pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold)),
+            pw.Text(
+              'Ringkasan',
+              style: pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold),
+            ),
             pw.SizedBox(height: 12),
             pw.Row(
               children: [
-                pw.Expanded(child: _buildSummaryBox('Total Pemasukan', totalIncome, PdfColors.green, currencyFormat)),
+                pw.Expanded(
+                  child: _buildSummaryBox(
+                    'Total Pemasukan',
+                    totalIncome,
+                    PdfColors.green,
+                    currencyFormat,
+                  ),
+                ),
                 pw.SizedBox(width: 12),
-                pw.Expanded(child: _buildSummaryBox('Total Pengeluaran', totalExpense, PdfColors.red, currencyFormat)),
+                pw.Expanded(
+                  child: _buildSummaryBox(
+                    'Total Pengeluaran',
+                    totalExpense,
+                    PdfColors.red,
+                    currencyFormat,
+                  ),
+                ),
                 pw.SizedBox(width: 12),
                 pw.Expanded(
                   child: _buildSummaryBox(
@@ -112,23 +160,40 @@ class ReportService {
 
             // Category Breakdown
             if (sortedCategories.isNotEmpty) ...[
-              pw.Text('Pengeluaran per Kategori', style: pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold)),
+              pw.Text(
+                'Pengeluaran per Kategori',
+                style: pw.TextStyle(
+                  fontSize: 18,
+                  fontWeight: pw.FontWeight.bold,
+                ),
+              ),
               pw.SizedBox(height: 12),
               pw.Table(
                 border: pw.TableBorder.all(color: PdfColors.grey300),
                 children: [
                   pw.TableRow(
-                    decoration: const pw.BoxDecoration(color: PdfColors.grey200),
+                    decoration: const pw.BoxDecoration(
+                      color: PdfColors.grey200,
+                    ),
                     children: [
                       pw.Padding(
                         padding: const pw.EdgeInsets.all(8),
-                        child: pw.Text('Kategori', style: pw.TextStyle(fontWeight: pw.FontWeight.bold, fontSize: 12)),
+                        child: pw.Text(
+                          'Kategori',
+                          style: pw.TextStyle(
+                            fontWeight: pw.FontWeight.bold,
+                            fontSize: 12,
+                          ),
+                        ),
                       ),
                       pw.Padding(
                         padding: const pw.EdgeInsets.all(8),
                         child: pw.Text(
                           'Jumlah',
-                          style: pw.TextStyle(fontWeight: pw.FontWeight.bold, fontSize: 12),
+                          style: pw.TextStyle(
+                            fontWeight: pw.FontWeight.bold,
+                            fontSize: 12,
+                          ),
                           textAlign: pw.TextAlign.right,
                         ),
                       ),
@@ -136,19 +201,26 @@ class ReportService {
                         padding: const pw.EdgeInsets.all(8),
                         child: pw.Text(
                           'Persentase',
-                          style: pw.TextStyle(fontWeight: pw.FontWeight.bold, fontSize: 12),
+                          style: pw.TextStyle(
+                            fontWeight: pw.FontWeight.bold,
+                            fontSize: 12,
+                          ),
                           textAlign: pw.TextAlign.right,
                         ),
                       ),
                     ],
                   ),
                   ...sortedCategories.take(10).map((entry) {
-                    final percentage = (entry.value / totalExpense * 100).toStringAsFixed(1);
+                    final percentage = (entry.value / totalExpense * 100)
+                        .toStringAsFixed(1);
                     return pw.TableRow(
                       children: [
                         pw.Padding(
                           padding: const pw.EdgeInsets.all(8),
-                          child: pw.Text(entry.key, style: const pw.TextStyle(fontSize: 11)),
+                          child: pw.Text(
+                            entry.key,
+                            style: const pw.TextStyle(fontSize: 11),
+                          ),
                         ),
                         pw.Padding(
                           padding: const pw.EdgeInsets.all(8),
@@ -175,7 +247,10 @@ class ReportService {
             ],
 
             // Transaction List
-            pw.Text('Daftar Transaksi', style: pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold)),
+            pw.Text(
+              'Daftar Transaksi',
+              style: pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold),
+            ),
             pw.SizedBox(height: 12),
             pw.Table(
               border: pw.TableBorder.all(color: PdfColors.grey300),
@@ -198,13 +273,22 @@ class ReportService {
                     _buildTableCell('Jumlah', isHeader: true, alignRight: true),
                   ],
                 ),
-                // Transactions (limit to 50 for PDF size)
-                ...transactions.take(50).map((transaction) {
+                // Transactions (cap for PDF size; total is disclosed in footer)
+                ...transactions.take(_maxTransactionsInPdf).map((transaction) {
                   return pw.TableRow(
                     children: [
-                      _buildTableCell(DateFormat('dd/MM/yyyy', 'id_ID').format(transaction.transactionDate)),
+                      _buildTableCell(
+                        DateFormat(
+                          'dd/MM/yyyy',
+                          'id_ID',
+                        ).format(transaction.transactionDate),
+                      ),
                       _buildTableCell(transaction.categoryName),
-                      _buildTableCell(transaction.type == 'income' ? 'Pemasukan' : 'Pengeluaran'),
+                      _buildTableCell(
+                        transaction.type == 'income'
+                            ? 'Pemasukan'
+                            : 'Pengeluaran',
+                      ),
                       _buildTableCell(
                         transaction.paymentMethod == 'cash'
                             ? 'Tunai'
@@ -215,7 +299,10 @@ class ReportService {
                       _buildTableCell(
                         '${transaction.type == 'income' ? '+' : '-'}${currencyFormat.format(transaction.amount)}',
                         alignRight: true,
-                        color: transaction.type == 'income' ? PdfColors.green : PdfColors.red,
+                        color:
+                            transaction.type == 'income'
+                                ? PdfColors.green
+                                : PdfColors.red,
                       ),
                     ],
                   );
@@ -224,12 +311,16 @@ class ReportService {
             ),
 
             // Footer
-            if (transactions.length > 50)
+            if (transactions.length > _maxTransactionsInPdf)
               pw.Padding(
                 padding: const pw.EdgeInsets.only(top: 12),
                 child: pw.Text(
-                  'Catatan: Hanya menampilkan 50 transaksi pertama. Total transaksi: ${transactions.length}',
-                  style: pw.TextStyle(fontSize: 10, color: PdfColors.grey600, fontStyle: pw.FontStyle.italic),
+                  'Catatan: Hanya menampilkan $_maxTransactionsInPdf transaksi pertama. Total transaksi: ${transactions.length}',
+                  style: pw.TextStyle(
+                    fontSize: 10,
+                    color: PdfColors.grey600,
+                    fontStyle: pw.FontStyle.italic,
+                  ),
                 ),
               ),
           ];
@@ -241,7 +332,9 @@ class ReportService {
     final directory = await getApplicationDocumentsDirectory();
     final timestamp = DateTime.now().toIso8601String().replaceAll(':', '-');
     final periodLabel =
-        periodType == 'monthly' ? DateFormat('MMM_yyyy', 'id_ID').format(startDate) : '${startDate.year}';
+        periodType == 'monthly'
+            ? DateFormat('MMM_yyyy', 'id_ID').format(startDate)
+            : '${startDate.year}';
     final filename = 'laporan_keuangan_${periodLabel}_$timestamp.pdf';
     final file = File('${directory.path}/$filename');
     await file.writeAsBytes(await pdf.save());
@@ -249,7 +342,12 @@ class ReportService {
     return file;
   }
 
-  pw.Widget _buildSummaryBox(String label, double amount, PdfColor color, NumberFormat currencyFormat) {
+  pw.Widget _buildSummaryBox(
+    String label,
+    double amount,
+    PdfColor color,
+    NumberFormat currencyFormat,
+  ) {
     return pw.Container(
       padding: const pw.EdgeInsets.all(12),
       decoration: pw.BoxDecoration(
@@ -260,18 +358,30 @@ class ReportService {
       child: pw.Column(
         crossAxisAlignment: pw.CrossAxisAlignment.start,
         children: [
-          pw.Text(label, style: pw.TextStyle(fontSize: 11, color: PdfColors.grey700)),
+          pw.Text(
+            label,
+            style: pw.TextStyle(fontSize: 11, color: PdfColors.grey700),
+          ),
           pw.SizedBox(height: 4),
           pw.Text(
             currencyFormat.format(amount),
-            style: pw.TextStyle(fontSize: 14, fontWeight: pw.FontWeight.bold, color: color),
+            style: pw.TextStyle(
+              fontSize: 14,
+              fontWeight: pw.FontWeight.bold,
+              color: color,
+            ),
           ),
         ],
       ),
     );
   }
 
-  pw.Widget _buildTableCell(String text, {bool isHeader = false, bool alignRight = false, PdfColor? color}) {
+  pw.Widget _buildTableCell(
+    String text, {
+    bool isHeader = false,
+    bool alignRight = false,
+    PdfColor? color,
+  }) {
     return pw.Padding(
       padding: const pw.EdgeInsets.all(6),
       child: pw.Text(
@@ -298,11 +408,15 @@ class ReportService {
     List<TransactionModel> filtered = List.from(transactions);
 
     if (typeFilter != null && typeFilter != 'all') {
-      filtered = filtered.where((t) => t.type.toLowerCase() == typeFilter.toLowerCase()).toList();
+      filtered =
+          filtered
+              .where((t) => t.type.toLowerCase() == typeFilter.toLowerCase())
+              .toList();
     }
 
     if (categoryFilter != null && categoryFilter != 'all') {
-      filtered = filtered.where((t) => t.categoryName == categoryFilter).toList();
+      filtered =
+          filtered.where((t) => t.categoryName == categoryFilter).toList();
     }
 
     if (startDate != null) {
@@ -310,14 +424,23 @@ class ReportService {
           filtered
               .where(
                 (t) =>
-                    t.transactionDate.isAfter(startDate.subtract(const Duration(days: 1))) ||
+                    t.transactionDate.isAfter(
+                      startDate.subtract(const Duration(days: 1)),
+                    ) ||
                     t.transactionDate.isAtSameMomentAs(startDate),
               )
               .toList();
     }
 
     if (endDate != null) {
-      filtered = filtered.where((t) => t.transactionDate.isBefore(endDate.add(const Duration(days: 1)))).toList();
+      filtered =
+          filtered
+              .where(
+                (t) => t.transactionDate.isBefore(
+                  endDate.add(const Duration(days: 1)),
+                ),
+              )
+              .toList();
     }
 
     // Sort by date descending
@@ -326,7 +449,16 @@ class ReportService {
     // Create CSV data
     final List<List<dynamic>> csvData = [
       // Header
-      ['Tanggal', 'Waktu', 'Tipe', 'Kategori', 'Deskripsi', 'Jumlah', 'Metode Pembayaran', 'Lokasi'],
+      [
+        'Tanggal',
+        'Waktu',
+        'Tipe',
+        'Kategori',
+        'Deskripsi',
+        'Jumlah',
+        'Metode Pembayaran',
+        'Lokasi',
+      ],
       // Data
       ...filtered.map((transaction) {
         return [
@@ -341,7 +473,9 @@ class ReportService {
               : transaction.paymentMethod == 'card'
               ? 'Kartu'
               : transaction.paymentMethod,
-          transaction.locationData?['address'] ?? transaction.locationData?['place_name'] ?? '',
+          transaction.locationData?['address'] ??
+              transaction.locationData?['place_name'] ??
+              '',
         ];
       }),
     ];

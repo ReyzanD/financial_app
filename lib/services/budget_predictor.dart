@@ -16,14 +16,16 @@ class BudgetPredictor {
     required String budgetId,
     required double budgetLimit,
     required double currentSpent,
+    List<Map<String, dynamic>>? transactions,
   }) async {
     try {
-      // Get transactions for this budget (all history, not a fixed cap)
-      final transactions = await _transactionData.getAllTransactions();
+      // Get transactions for this budget (all history, not a fixed cap).
+      // Allow a pre-loaded list to avoid re-scanning the table per budget.
+      final txns = transactions ?? await _transactionData.getAllTransactions();
 
       // Filter transactions for this budget's category
       final categoryTransactions =
-          transactions.where((t) {
+          txns.where((t) {
             final type = t['type']?.toString().toLowerCase() ?? 'expense';
             return type == 'expense';
           }).toList();
@@ -102,6 +104,9 @@ class BudgetPredictor {
   Future<List<Map<String, dynamic>>> assessOverspendingRisk() async {
     try {
       final budgetModels = await _budgetData.getBudgets();
+      // Load all transactions once and reuse across budgets (avoids an N+1
+      // full-table scan — one scan per budget).
+      final allTransactions = await _transactionData.getAllTransactions();
       final riskAssessments = <Map<String, dynamic>>[];
 
       for (var budget in budgetModels) {
@@ -116,6 +121,7 @@ class BudgetPredictor {
           budgetId: budgetId,
           budgetLimit: budgetLimit,
           currentSpent: currentSpent,
+          transactions: allTransactions,
         );
 
         final usagePercent = (currentSpent / budgetLimit) * 100;
@@ -204,9 +210,10 @@ class BudgetPredictor {
   /// Suggest optimal budget amounts based on historical patterns
   Future<Map<String, double>> suggestOptimalBudgets({
     int monthsToAnalyze = 3,
+    List<Map<String, dynamic>>? transactions,
   }) async {
     try {
-      final transactions = await _transactionData.getAllTransactions();
+      final txns = transactions ?? await _transactionData.getAllTransactions();
 
       final now = DateTime.now();
       final categorySpending = <String, List<double>>{};
@@ -215,7 +222,7 @@ class BudgetPredictor {
       for (int i = 0; i < monthsToAnalyze; i++) {
         final monthDate = DateTime(now.year, now.month - i, 1);
         final monthTransactions =
-            transactions.where((t) {
+            txns.where((t) {
               try {
                 final dateStr =
                     t['transaction_date']?.toString() ??

@@ -7,7 +7,6 @@ import 'package:financial_app/services/obligation_service.dart';
 import 'package:financial_app/widgets/obligations/obligation_filters.dart';
 import 'package:financial_app/widgets/obligations/obligation_helpers.dart';
 import 'package:financial_app/widgets/obligations/obligation_item.dart';
-import 'package:financial_app/l10n/app_localizations.dart';
 import 'package:financial_app/utils/design_tokens.dart';
 
 /// View for recurring obligations (subscriptions + recurring bills).
@@ -15,10 +14,15 @@ class RecurringObligationsView extends StatefulWidget {
   final String searchQuery;
   final ObligationFilters filters;
 
-  const RecurringObligationsView({super.key, this.searchQuery = '', this.filters = const ObligationFilters()});
+  const RecurringObligationsView({
+    super.key,
+    this.searchQuery = '',
+    this.filters = const ObligationFilters(),
+  });
 
   @override
-  State<RecurringObligationsView> createState() => _RecurringObligationsViewState();
+  State<RecurringObligationsView> createState() =>
+      _RecurringObligationsViewState();
 }
 
 class _RecurringObligationsViewState extends State<RecurringObligationsView> {
@@ -32,20 +36,26 @@ class _RecurringObligationsViewState extends State<RecurringObligationsView> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-
     return FutureBuilder<List<FinancialObligation>>(
       key: ValueKey('recurring_$_refreshKey'),
       future: getIt<ObligationService>().getObligations(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
-          return const Center(child: CircularProgressIndicator(color: DesignTokens.primaryColor));
+          return const Center(
+            child: CircularProgressIndicator(color: DesignTokens.primaryColor),
+          );
         }
 
         var obligations = snapshot.data!;
 
         // Filter: only recurring (subscriptions or is_subscription)
-        obligations = obligations.where((o) => o.type == ObligationType.subscription || o.isSubscription).toList();
+        obligations =
+            obligations
+                .where(
+                  (o) =>
+                      o.type == ObligationType.subscription || o.isSubscription,
+                )
+                .toList();
 
         // Apply search
         if (widget.searchQuery.isNotEmpty) {
@@ -91,7 +101,10 @@ class _RecurringObligationsViewState extends State<RecurringObligationsView> {
                   const SizedBox(height: DesignTokens.spacing4),
                   Text(
                     'Tidak ada langganan berulang',
-                    style: GoogleFonts.poppins(color: Colors.grey[500], fontSize: 14),
+                    style: GoogleFonts.poppins(
+                      color: Colors.grey[500],
+                      fontSize: 14,
+                    ),
                     textAlign: TextAlign.center,
                   ),
                 ],
@@ -109,7 +122,11 @@ class _RecurringObligationsViewState extends State<RecurringObligationsView> {
               padding: const EdgeInsets.only(bottom: 8),
               child: ObligationItem(
                 obligation: obligation,
-                onTap: () => ObligationHelpers.showObligationDetails(context, obligation),
+                onTap:
+                    () => ObligationHelpers.showObligationDetails(
+                      context,
+                      obligation,
+                    ),
                 onPaymentRecorded: _onObligationChanged,
               ),
             );

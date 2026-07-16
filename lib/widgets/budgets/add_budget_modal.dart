@@ -16,7 +16,11 @@ class AddBudgetModal extends StatefulWidget {
   final Map<String, String> categories;
   final Map<String, dynamic>? initialBudget;
 
-  const AddBudgetModal({super.key, required this.categories, this.initialBudget});
+  const AddBudgetModal({
+    super.key,
+    required this.categories,
+    this.initialBudget,
+  });
 
   @override
   State<AddBudgetModal> createState() => _AddBudgetModalState();
@@ -39,7 +43,9 @@ class _AddBudgetModalState extends State<AddBudgetModal> {
   @override
   void initState() {
     super.initState();
-    LoggerService.debug('AddBudgetModal - Received ${widget.categories.length} categories');
+    LoggerService.debug(
+      'AddBudgetModal - Received ${widget.categories.length} categories',
+    );
     _amountController = TextEditingController();
     final initial = widget.initialBudget;
     if (initial != null) {
@@ -111,17 +117,34 @@ class _AddBudgetModalState extends State<AddBudgetModal> {
     });
 
     try {
-      final amount = double.parse(_amountController.text);
+      final amount = double.tryParse(_amountController.text);
+      if (amount == null) {
+        if (!mounted) return;
+        ErrorHandlerService.showErrorSnackbar(
+          context,
+          'Jumlah anggaran tidak valid',
+        );
+        setState(() => _isLoading = false);
+        return;
+      }
       DateTime periodEnd;
       switch (_selectedPeriod) {
         case 'weekly':
           periodEnd = _startDate.add(const Duration(days: 7));
           break;
         case 'monthly':
-          periodEnd = DateTime(_startDate.year, _startDate.month + 1, _startDate.day);
+          periodEnd = DateTime(
+            _startDate.year,
+            _startDate.month + 1,
+            _startDate.day,
+          );
           break;
         case 'yearly':
-          periodEnd = DateTime(_startDate.year + 1, _startDate.month, _startDate.day);
+          periodEnd = DateTime(
+            _startDate.year + 1,
+            _startDate.month,
+            _startDate.day,
+          );
           break;
         default:
           periodEnd = _startDate.add(const Duration(days: 30));
@@ -142,7 +165,9 @@ class _AddBudgetModalState extends State<AddBudgetModal> {
 
       final ctrl = getIt<BudgetController>();
       if (_isEdit) {
-        final id = widget.initialBudget?['budget_id_232143']?.toString() ?? widget.initialBudget?['id']?.toString();
+        final id =
+            widget.initialBudget?['budget_id_232143']?.toString() ??
+            widget.initialBudget?['id']?.toString();
         if (id == null) {
           throw Exception('ID budget tidak valid');
         }
@@ -160,8 +185,10 @@ class _AddBudgetModalState extends State<AddBudgetModal> {
         ErrorHandlerService.showSuccessSnackbar(
           context,
           _isEdit
-              ? (l10n?.budget_updated_successfully ?? 'Budget berhasil diperbarui.')
-              : (l10n?.budget_added_successfully ?? 'Budget berhasil ditambahkan.'),
+              ? (l10n?.budget_updated_successfully ??
+                  'Budget berhasil diperbarui.')
+              : (l10n?.budget_added_successfully ??
+                  'Budget berhasil ditambahkan.'),
         );
       }
     } catch (e) {
@@ -171,7 +198,11 @@ class _AddBudgetModalState extends State<AddBudgetModal> {
         _isLoading = false;
       });
       if (context.mounted) {
-        ErrorHandlerService.showErrorSnackbar(context, ErrorHandlerService.getUserFriendlyMessage(e), onRetry: _submit);
+        ErrorHandlerService.showErrorSnackbar(
+          context,
+          ErrorHandlerService.getUserFriendlyMessage(e),
+          onRetry: _submit,
+        );
       }
     }
   }
@@ -187,7 +218,12 @@ class _AddBudgetModalState extends State<AddBudgetModal> {
     };
 
     return Container(
-      padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom, left: 20, right: 20, top: 20),
+      padding: EdgeInsets.only(
+        bottom: MediaQuery.of(context).viewInsets.bottom,
+        left: 20,
+        right: 20,
+        top: 20,
+      ),
       child: SingleChildScrollView(
         child: Form(
           key: _formKey,
@@ -197,23 +233,40 @@ class _AddBudgetModalState extends State<AddBudgetModal> {
               Container(
                 width: 40,
                 height: 4,
-                decoration: BoxDecoration(color: Colors.grey[600], borderRadius: BorderRadius.circular(2)),
+                decoration: BoxDecoration(
+                  color: Colors.grey[600],
+                  borderRadius: BorderRadius.circular(2),
+                ),
               ),
               const SizedBox(height: DesignTokens.spacing5),
               Text(
-                _isEdit ? (l10n?.edit_budget ?? 'Edit Budget') : (l10n?.add_budget ?? 'Tambah Budget'),
-                style: GoogleFonts.poppins(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+                _isEdit
+                    ? (l10n?.edit_budget ?? 'Edit Budget')
+                    : (l10n?.add_budget ?? 'Tambah Budget'),
+                style: GoogleFonts.poppins(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               const SizedBox(height: DesignTokens.spacing6),
               DropdownButtonFormField<String?>(
                 initialValue: _selectedCategoryId,
                 dropdownColor: DesignTokens.surfaceDark,
                 style: const TextStyle(color: Colors.white),
-                decoration: DropdownHelper.darkDropdownDecoration(labelText: l10n?.category ?? 'Kategori'),
+                decoration: DropdownHelper.darkDropdownDecoration(
+                  labelText: l10n?.category ?? 'Kategori',
+                ),
                 items: [
-                  DropdownMenuItem<String?>(value: null, child: Text(l10n?.all_categories ?? 'Semua Kategori')),
+                  DropdownMenuItem<String?>(
+                    value: null,
+                    child: Text(l10n?.all_categories ?? 'Semua Kategori'),
+                  ),
                   ...widget.categories.entries.map(
-                    (entry) => DropdownMenuItem<String?>(value: entry.key, child: Text(entry.value)),
+                    (entry) => DropdownMenuItem<String?>(
+                      value: entry.key,
+                      child: Text(entry.value),
+                    ),
                   ),
                 ],
                 onChanged: (value) {
@@ -233,7 +286,9 @@ class _AddBudgetModalState extends State<AddBudgetModal> {
                   filled: true,
                   fillColor: DesignTokens.surfaceDark,
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                    borderRadius: BorderRadius.circular(
+                      DesignTokens.radiusMedium,
+                    ),
                     borderSide: BorderSide.none,
                   ),
                 ),
@@ -244,10 +299,17 @@ class _AddBudgetModalState extends State<AddBudgetModal> {
                 initialValue: _selectedPeriod,
                 dropdownColor: DesignTokens.surfaceDark,
                 style: const TextStyle(color: Colors.white),
-                decoration: DropdownHelper.darkDropdownDecoration(labelText: 'Periode'),
+                decoration: DropdownHelper.darkDropdownDecoration(
+                  labelText: 'Periode',
+                ),
                 items:
                     periodOptions.entries
-                        .map((e) => DropdownMenuItem<String>(value: e.key, child: Text(e.value)))
+                        .map(
+                          (e) => DropdownMenuItem<String>(
+                            value: e.key,
+                            child: Text(e.value),
+                          ),
+                        )
                         .toList(),
                 onChanged: (value) {
                   if (value == null) return;
@@ -263,7 +325,9 @@ class _AddBudgetModalState extends State<AddBudgetModal> {
                   padding: const EdgeInsets.all(DesignTokens.spacing4),
                   decoration: BoxDecoration(
                     color: DesignTokens.surfaceDark,
-                    borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                    borderRadius: BorderRadius.circular(
+                      DesignTokens.radiusMedium,
+                    ),
                   ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -271,7 +335,10 @@ class _AddBudgetModalState extends State<AddBudgetModal> {
                       Text('Mulai', style: TextStyle(color: Colors.grey[400])),
                       Text(
                         DateFormat('dd MMM yyyy').format(_startDate),
-                        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w500),
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
                     ],
                   ),
@@ -286,7 +353,10 @@ class _AddBudgetModalState extends State<AddBudgetModal> {
                   });
                 },
                 activeThumbColor: DesignTokens.primaryColor,
-                title: Text('Rollover sisa ke periode berikutnya', style: TextStyle(color: Colors.white)),
+                title: Text(
+                  'Rollover sisa ke periode berikutnya',
+                  style: TextStyle(color: Colors.white),
+                ),
                 contentPadding: EdgeInsets.zero,
               ),
               const SizedBox(height: DesignTokens.spacing2),
@@ -321,7 +391,10 @@ class _AddBudgetModalState extends State<AddBudgetModal> {
                   });
                 },
                 activeThumbColor: DesignTokens.primaryColor,
-                title: Text(l10n?.active_label ?? 'Aktif', style: TextStyle(color: Colors.white)),
+                title: Text(
+                  l10n?.active_label ?? 'Aktif',
+                  style: TextStyle(color: Colors.white),
+                ),
                 contentPadding: EdgeInsets.zero,
               ),
               const SizedBox(height: DesignTokens.spacing6),
@@ -331,7 +404,11 @@ class _AddBudgetModalState extends State<AddBudgetModal> {
                   backgroundColor: DesignTokens.primaryColor,
                   foregroundColor: Colors.white,
                   disabledBackgroundColor: Colors.grey[800],
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(DesignTokens.radiusMedium)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(
+                      DesignTokens.radiusMedium,
+                    ),
+                  ),
                   minimumSize: const Size(double.infinity, 50),
                 ),
                 child:
@@ -339,7 +416,10 @@ class _AddBudgetModalState extends State<AddBudgetModal> {
                         ? const SizedBox(
                           width: 20,
                           height: 20,
-                          child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.white,
+                          ),
                         )
                         : Text(
                           _isEdit

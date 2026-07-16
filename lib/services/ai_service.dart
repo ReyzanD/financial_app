@@ -10,7 +10,8 @@ import 'package:financial_app/services/data/obligation_data_service.dart';
 import 'package:financial_app/core/di/service_locator.dart';
 
 class AIService {
-  final TransactionDataService _transactionData = getIt<TransactionDataService>();
+  final TransactionDataService _transactionData =
+      getIt<TransactionDataService>();
   final BudgetDataService _budgetData = getIt<BudgetDataService>();
   final GoalDataService _goalData = getIt<GoalDataService>();
   final ObligationDataService _obligationData = getIt<ObligationDataService>();
@@ -19,18 +20,27 @@ class AIService {
   final RecommendationPersonalizer _personalizer = RecommendationPersonalizer();
 
   /// Generate multiple intelligent financial recommendations (3-5)
-  Future<List<Map<String, dynamic>>> generateMultipleRecommendations({int limit = 5}) async {
+  Future<List<Map<String, dynamic>>> generateMultipleRecommendations({
+    int limit = 5,
+  }) async {
     try {
       // Get user's recent data
-      final transactionsData = await _transactionData.getTransactions(limit: 500);
-      final transactions = List<Map<String, dynamic>>.from(transactionsData['transactions'] ?? []);
+      final transactionsData = await _transactionData.getTransactions(
+        limit: 500,
+      );
+      final transactions = List<Map<String, dynamic>>.from(
+        transactionsData['transactions'] ?? [],
+      );
       final budgetModels = await _budgetData.getBudgets();
       final budgets = budgetModels.map((b) => b.toJson()).toList();
       final goalModels = await _goalData.getGoals();
       final goals = goalModels.map((g) => g.toJson()).toList();
 
       // Enhanced multi-period analysis
-      final multiPeriodAnalysis = _patternAnalyzer.analyzeMultiPeriod(transactions: transactions, monthsToAnalyze: 3);
+      final multiPeriodAnalysis = _patternAnalyzer.analyzeMultiPeriod(
+        transactions: transactions,
+        monthsToAnalyze: 3,
+      );
 
       // Current month analysis
       final currentAnalysis = _analyzeSpendingPatterns(transactions);
@@ -40,8 +50,10 @@ class AIService {
         ...currentAnalysis,
         'multi_period': multiPeriodAnalysis,
         'trends': multiPeriodAnalysis['trends'] ?? {},
-        'category_correlations': multiPeriodAnalysis['category_correlations'] ?? {},
-        'day_of_week_patterns': multiPeriodAnalysis['day_of_week_patterns'] ?? {},
+        'category_correlations':
+            multiPeriodAnalysis['category_correlations'] ?? {},
+        'day_of_week_patterns':
+            multiPeriodAnalysis['day_of_week_patterns'] ?? {},
         'frequent_merchants': multiPeriodAnalysis['frequent_merchants'] ?? [],
       };
 
@@ -50,20 +62,33 @@ class AIService {
 
       // Get base recommendations using the same logic as _selectBestRecommendation
       // but collecting all recommendations instead of just the best
-      final baseRecs = _collectAllRecommendations(enhancedAnalysis, budgets, goals);
+      final baseRecs = _collectAllRecommendations(
+        enhancedAnalysis,
+        budgets,
+        goals,
+      );
       allRecommendations.addAll(baseRecs);
 
       // Add contextual recommendations
-      final contextualRecs = await _generateContextualRecommendations(enhancedAnalysis, budgets, goals);
+      final contextualRecs = await _generateContextualRecommendations(
+        enhancedAnalysis,
+        budgets,
+        goals,
+      );
       allRecommendations.addAll(contextualRecs);
 
       // Personalize and sort
-      final personalizedRecs = await _personalizer.personalizeRecommendations(allRecommendations);
+      final personalizedRecs = await _personalizer.personalizeRecommendations(
+        allRecommendations,
+      );
 
       // Return top N recommendations
       return personalizedRecs.take(limit).toList();
     } catch (e) {
-      LoggerService.error('Error generating multiple recommendations', error: e);
+      LoggerService.error(
+        'Error generating multiple recommendations',
+        error: e,
+      );
       return [];
     }
   }
@@ -85,7 +110,10 @@ class AIService {
         return Map<String, dynamic>.from(backendResponse);
       }
     } catch (e) {
-      LoggerService.warning('Backend AI not available, using local intelligence', error: e);
+      LoggerService.warning(
+        'Backend AI not available, using local intelligence',
+        error: e,
+      );
     }
 
     // Fallback: Generate smart recommendations locally
@@ -96,15 +124,22 @@ class AIService {
   Future<Map<String, dynamic>> _generateLocalRecommendations() async {
     try {
       // Get user's recent data - increased limit for multi-period analysis
-      final transactionsData = await _transactionData.getTransactions(limit: 500);
-      final transactions = List<Map<String, dynamic>>.from(transactionsData['transactions'] ?? []);
+      final transactionsData = await _transactionData.getTransactions(
+        limit: 500,
+      );
+      final transactions = List<Map<String, dynamic>>.from(
+        transactionsData['transactions'] ?? [],
+      );
       final budgetModels = await _budgetData.getBudgets();
       final budgets = budgetModels.map((b) => b.toJson()).toList();
       final goalModels = await _goalData.getGoals();
       final goals = goalModels.map((g) => g.toJson()).toList();
 
       // Enhanced multi-period analysis
-      final multiPeriodAnalysis = _patternAnalyzer.analyzeMultiPeriod(transactions: transactions, monthsToAnalyze: 3);
+      final multiPeriodAnalysis = _patternAnalyzer.analyzeMultiPeriod(
+        transactions: transactions,
+        monthsToAnalyze: 3,
+      );
 
       // Current month analysis (for backward compatibility)
       final currentAnalysis = _analyzeSpendingPatterns(transactions);
@@ -114,23 +149,37 @@ class AIService {
         ...currentAnalysis,
         'multi_period': multiPeriodAnalysis,
         'trends': multiPeriodAnalysis['trends'] ?? {},
-        'category_correlations': multiPeriodAnalysis['category_correlations'] ?? {},
-        'day_of_week_patterns': multiPeriodAnalysis['day_of_week_patterns'] ?? {},
+        'category_correlations':
+            multiPeriodAnalysis['category_correlations'] ?? {},
+        'day_of_week_patterns':
+            multiPeriodAnalysis['day_of_week_patterns'] ?? {},
         'frequent_merchants': multiPeriodAnalysis['frequent_merchants'] ?? [],
       };
 
       // Generate recommendations based on enhanced analysis
-      final recommendations = _selectBestRecommendation(enhancedAnalysis, budgets, goals);
+      final recommendations = _selectBestRecommendation(
+        enhancedAnalysis,
+        budgets,
+        goals,
+      );
 
       // Add contextual recommendations (time-sensitive, event-based)
-      final contextualRecs = await _generateContextualRecommendations(enhancedAnalysis, budgets, goals);
+      final contextualRecs = await _generateContextualRecommendations(
+        enhancedAnalysis,
+        budgets,
+        goals,
+      );
 
       // Combine and personalize
       final allRecommendations = [recommendations, ...contextualRecs];
-      final personalizedRecs = await _personalizer.personalizeRecommendations(allRecommendations);
+      final personalizedRecs = await _personalizer.personalizeRecommendations(
+        allRecommendations,
+      );
 
       // Return top recommendation
-      return personalizedRecs.isNotEmpty ? personalizedRecs.first : recommendations;
+      return personalizedRecs.isNotEmpty
+          ? personalizedRecs.first
+          : recommendations;
     } catch (e) {
       LoggerService.error('Error generating local recommendations', error: e);
       return _getDefaultRecommendation();
@@ -156,7 +205,7 @@ class AIService {
         }).toList();
 
     for (var transaction in thisMonthTransactions) {
-      final amount = (transaction['amount'] ?? 0).toDouble();
+      final amount = (transaction['amount'] as num?)?.toDouble() ?? 0.0;
       final type = transaction['type']?.toString().toLowerCase() ?? 'expense';
       final category = transaction['category_name']?.toString() ?? 'Lainnya';
 
@@ -180,7 +229,10 @@ class AIService {
     });
 
     // Calculate savings rate
-    final savingsRate = totalIncome > 0 ? ((totalIncome - totalExpense) / totalIncome) * 100 : 0;
+    final savingsRate =
+        totalIncome > 0
+            ? ((totalIncome - totalExpense) / totalIncome) * 100
+            : 0;
 
     return {
       'totalIncome': totalIncome,
@@ -206,19 +258,26 @@ class AIService {
     final totalExpense = (analysis['totalExpense'] as num?)?.toDouble() ?? 0.0;
     final totalIncome = (analysis['totalIncome'] as num?)?.toDouble() ?? 0.0;
     final highestCategory = analysis['highestCategory'] as String?;
-    final highestAmount = (analysis['highestAmount'] as num?)?.toDouble() ?? 0.0;
+    final highestAmount =
+        (analysis['highestAmount'] as num?)?.toDouble() ?? 0.0;
     final transactionCount = analysis['transactionCount'] as int? ?? 0;
 
     // Enhanced analysis data
     final trendsRaw = analysis['trends'];
     final trends =
         trendsRaw is Map
-            ? Map<String, dynamic>.from(trendsRaw.map((key, value) => MapEntry(key.toString(), value)))
+            ? Map<String, dynamic>.from(
+              trendsRaw.map((key, value) => MapEntry(key.toString(), value)),
+            )
             : <String, dynamic>{};
     final dayOfWeekPatternsRaw = analysis['day_of_week_patterns'];
     final dayOfWeekPatterns =
         dayOfWeekPatternsRaw is Map
-            ? Map<String, dynamic>.from(dayOfWeekPatternsRaw.map((key, value) => MapEntry(key.toString(), value)))
+            ? Map<String, dynamic>.from(
+              dayOfWeekPatternsRaw.map(
+                (key, value) => MapEntry(key.toString(), value),
+              ),
+            )
             : <String, dynamic>{};
 
     // Add all the recommendation logic here (same as _selectBestRecommendation)
@@ -230,8 +289,14 @@ class AIService {
         patternStrength: (10 - savingsRate) / 10,
         urgency: 1.0,
       );
-      final impact = _calculateImpactScore(potentialSavings: potentialSavings, totalIncome: totalIncome);
-      final actionability = _calculateActionabilityScore(action: 'review_budget', category: 'savings');
+      final impact = _calculateImpactScore(
+        potentialSavings: potentialSavings,
+        totalIncome: totalIncome,
+      );
+      final actionability = _calculateActionabilityScore(
+        action: 'review_budget',
+        category: 'savings',
+      );
       final score = _calculateRecommendationScore(
         confidence: confidence,
         impact: impact,
@@ -255,16 +320,26 @@ class AIService {
     }
 
     // Recommendation 2: High spending in one category
-    if (highestCategory != null && totalExpense > 0 && (highestAmount / totalExpense) > 0.4) {
-      final percentage = ((highestAmount / totalExpense) * 100).toStringAsFixed(0);
+    if (highestCategory != null &&
+        totalExpense > 0 &&
+        (highestAmount / totalExpense) > 0.4) {
+      final percentage = ((highestAmount / totalExpense) * 100).toStringAsFixed(
+        0,
+      );
       final confidence = _calculateConfidence(
         dataQuality: transactionCount > 5 ? 0.8 : 0.5,
         patternStrength: (highestAmount / totalExpense).clamp(0.0, 1.0),
         urgency: 0.7,
       );
       final potentialSavings = highestAmount * 0.15;
-      final impact = _calculateImpactScore(potentialSavings: potentialSavings, totalIncome: totalIncome);
-      final actionability = _calculateActionabilityScore(action: 'create_budget', category: highestCategory);
+      final impact = _calculateImpactScore(
+        potentialSavings: potentialSavings,
+        totalIncome: totalIncome,
+      );
+      final actionability = _calculateActionabilityScore(
+        action: 'create_budget',
+        category: highestCategory,
+      );
       final score = _calculateRecommendationScore(
         confidence: confidence,
         impact: impact,
@@ -289,7 +364,10 @@ class AIService {
 
     // Recommendation 3: No active goals
     if (goals.isEmpty) {
-      final actionability = _calculateActionabilityScore(action: 'set_goal', category: 'goals');
+      final actionability = _calculateActionabilityScore(
+        action: 'set_goal',
+        category: 'goals',
+      );
       final score = _calculateRecommendationScore(
         confidence: 0.9,
         impact: 0.5,
@@ -316,19 +394,27 @@ class AIService {
     for (var budget in budgets) {
       // Map database field names to expected field names
       final spentAmount = budget['spent_amount_232143'] ?? budget['spent'];
-      final budgetAmount = budget['amount_232143'] ?? budget['limit'] ?? budget['amount'];
+      final budgetAmount =
+          budget['amount_232143'] ?? budget['limit'] ?? budget['amount'];
       final spent = ((spentAmount as num?) ?? 0).toDouble();
       final limit = ((budgetAmount as num?) ?? 1).toDouble();
       if (spent > limit) {
-        final categoryName = budget['category_name'] ?? budget['name_232143'] ?? 'Unknown';
+        final categoryName =
+            budget['category_name'] ?? budget['name_232143'] ?? 'Unknown';
         final confidence = _calculateConfidence(
           dataQuality: 0.9,
           patternStrength: ((spent - limit) / limit).clamp(0.0, 1.0),
           urgency: 1.0,
         );
         final potentialSavings = spent - limit;
-        final impact = _calculateImpactScore(potentialSavings: potentialSavings, totalIncome: totalIncome);
-        final actionability = _calculateActionabilityScore(action: 'review_budget', category: categoryName);
+        final impact = _calculateImpactScore(
+          potentialSavings: potentialSavings,
+          totalIncome: totalIncome,
+        );
+        final actionability = _calculateActionabilityScore(
+          action: 'review_budget',
+          category: categoryName,
+        );
         final score = _calculateRecommendationScore(
           confidence: confidence,
           impact: impact,
@@ -354,11 +440,18 @@ class AIService {
 
     // Add trend-based recommendations
     final expenseTrend = trends['expense_trend'] as String?;
-    final expenseChangePercent = (trends['expense_change_percent'] as num?)?.toDouble() ?? 0.0;
+    final expenseChangePercent =
+        (trends['expense_change_percent'] as num?)?.toDouble() ?? 0.0;
     if (expenseTrend == 'increasing' && expenseChangePercent > 15) {
       final potentialSavings = totalExpense * 0.1;
-      final impact = _calculateImpactScore(potentialSavings: potentialSavings, totalIncome: totalIncome);
-      final actionability = _calculateActionabilityScore(action: 'review_spending', category: 'trend_alert');
+      final impact = _calculateImpactScore(
+        potentialSavings: potentialSavings,
+        totalIncome: totalIncome,
+      );
+      final actionability = _calculateActionabilityScore(
+        action: 'review_spending',
+        category: 'trend_alert',
+      );
       final score = _calculateRecommendationScore(
         confidence: transactionCount > 20 ? 0.9 : 0.7,
         impact: impact,
@@ -383,17 +476,28 @@ class AIService {
 
     // Day-of-week pattern recommendation
     final peakDay = dayOfWeekPatterns['peak_day'] as String?;
-    final peakDayAmount = (dayOfWeekPatterns['peak_day_amount'] as num?)?.toDouble() ?? 0.0;
-    final avgPerDay = (dayOfWeekPatterns['average_per_day'] as num?)?.toDouble() ?? 0.0;
+    final peakDayAmount =
+        (dayOfWeekPatterns['peak_day_amount'] as num?)?.toDouble() ?? 0.0;
+    final avgPerDay =
+        (dayOfWeekPatterns['average_per_day'] as num?)?.toDouble() ?? 0.0;
     if (peakDay != null && peakDayAmount > avgPerDay * 1.3) {
       final confidence = _calculateConfidence(
         dataQuality: transactionCount > 15 ? 0.8 : 0.6,
-        patternStrength: ((peakDayAmount - avgPerDay) / avgPerDay).clamp(0.0, 1.0),
+        patternStrength: ((peakDayAmount - avgPerDay) / avgPerDay).clamp(
+          0.0,
+          1.0,
+        ),
         urgency: 0.6,
       );
       final potentialSavings = (peakDayAmount - avgPerDay) * 0.2;
-      final impact = _calculateImpactScore(potentialSavings: potentialSavings, totalIncome: totalIncome);
-      final actionability = _calculateActionabilityScore(action: 'plan_spending', category: 'pattern_insight');
+      final impact = _calculateImpactScore(
+        potentialSavings: potentialSavings,
+        totalIncome: totalIncome,
+      );
+      final actionability = _calculateActionabilityScore(
+        action: 'plan_spending',
+        category: 'pattern_insight',
+      );
       final score = _calculateRecommendationScore(
         confidence: confidence,
         impact: impact,
@@ -435,28 +539,37 @@ class AIService {
     final totalExpense = (analysis['totalExpense'] as num?)?.toDouble() ?? 0.0;
     final totalIncome = (analysis['totalIncome'] as num?)?.toDouble() ?? 0.0;
     final highestCategory = analysis['highestCategory'] as String?;
-    final highestAmount = (analysis['highestAmount'] as num?)?.toDouble() ?? 0.0;
+    final highestAmount =
+        (analysis['highestAmount'] as num?)?.toDouble() ?? 0.0;
     final transactionCount = analysis['transactionCount'] as int? ?? 0;
 
     // Enhanced analysis data
     final trendsRaw = analysis['trends'];
     final trends =
         trendsRaw is Map
-            ? Map<String, dynamic>.from(trendsRaw.map((key, value) => MapEntry(key.toString(), value)))
+            ? Map<String, dynamic>.from(
+              trendsRaw.map((key, value) => MapEntry(key.toString(), value)),
+            )
             : <String, dynamic>{};
     final dayOfWeekPatternsRaw = analysis['day_of_week_patterns'];
     final dayOfWeekPatterns =
         dayOfWeekPatternsRaw is Map
-            ? Map<String, dynamic>.from(dayOfWeekPatternsRaw.map((key, value) => MapEntry(key.toString(), value)))
+            ? Map<String, dynamic>.from(
+              dayOfWeekPatternsRaw.map(
+                (key, value) => MapEntry(key.toString(), value),
+              ),
+            )
             : <String, dynamic>{};
-    final frequentMerchants = analysis['frequent_merchants'] as List<dynamic>? ?? [];
+    final frequentMerchants =
+        analysis['frequent_merchants'] as List<dynamic>? ?? [];
 
     // Calculate confidence scores for each recommendation
     final recommendations = <Map<String, dynamic>>[];
 
     // Enhanced recommendation: Trend-based alerts
     final expenseTrend = trends['expense_trend'] as String?;
-    final expenseChangePercent = (trends['expense_change_percent'] as num?)?.toDouble() ?? 0.0;
+    final expenseChangePercent =
+        (trends['expense_change_percent'] as num?)?.toDouble() ?? 0.0;
     if (expenseTrend == 'increasing' && expenseChangePercent > 15) {
       final confidence = _calculateConfidence(
         dataQuality: transactionCount > 20 ? 0.9 : 0.7,
@@ -477,12 +590,17 @@ class AIService {
 
     // Enhanced recommendation: Day-of-week pattern
     final peakDay = dayOfWeekPatterns['peak_day'] as String?;
-    final peakDayAmount = (dayOfWeekPatterns['peak_day_amount'] as num?)?.toDouble() ?? 0.0;
-    final avgPerDay = (dayOfWeekPatterns['average_per_day'] as num?)?.toDouble() ?? 0.0;
+    final peakDayAmount =
+        (dayOfWeekPatterns['peak_day_amount'] as num?)?.toDouble() ?? 0.0;
+    final avgPerDay =
+        (dayOfWeekPatterns['average_per_day'] as num?)?.toDouble() ?? 0.0;
     if (peakDay != null && peakDayAmount > avgPerDay * 1.3) {
       final confidence = _calculateConfidence(
         dataQuality: transactionCount > 15 ? 0.8 : 0.6,
-        patternStrength: ((peakDayAmount - avgPerDay) / avgPerDay).clamp(0.0, 1.0),
+        patternStrength: ((peakDayAmount - avgPerDay) / avgPerDay).clamp(
+          0.0,
+          1.0,
+        ),
         urgency: 0.6,
       );
       recommendations.add({
@@ -525,11 +643,18 @@ class AIService {
       final potentialSavings = totalIncome * 0.2 - (totalIncome - totalExpense);
       final confidence = _calculateConfidence(
         dataQuality: transactionCount > 10 ? 0.9 : 0.6,
-        patternStrength: (10 - savingsRate) / 10, // Lower savings = higher confidence
+        patternStrength:
+            (10 - savingsRate) / 10, // Lower savings = higher confidence
         urgency: 1.0,
       );
-      final impact = _calculateImpactScore(potentialSavings: potentialSavings, totalIncome: totalIncome);
-      final actionability = _calculateActionabilityScore(action: 'review_budget', category: 'savings');
+      final impact = _calculateImpactScore(
+        potentialSavings: potentialSavings,
+        totalIncome: totalIncome,
+      );
+      final actionability = _calculateActionabilityScore(
+        action: 'review_budget',
+        category: 'savings',
+      );
       final score = _calculateRecommendationScore(
         confidence: confidence,
         impact: impact,
@@ -553,8 +678,12 @@ class AIService {
     }
 
     // Recommendation 2: High spending in one category
-    if (highestCategory != null && totalExpense > 0 && (highestAmount / totalExpense) > 0.4) {
-      final percentage = ((highestAmount / totalExpense) * 100).toStringAsFixed(0);
+    if (highestCategory != null &&
+        totalExpense > 0 &&
+        (highestAmount / totalExpense) > 0.4) {
+      final percentage = ((highestAmount / totalExpense) * 100).toStringAsFixed(
+        0,
+      );
       final confidence = _calculateConfidence(
         dataQuality: transactionCount > 5 ? 0.8 : 0.5,
         patternStrength: (highestAmount / totalExpense).clamp(0.0, 1.0),
@@ -588,11 +717,13 @@ class AIService {
     for (var budget in budgets) {
       // Map database field names to expected field names
       final spentAmount = budget['spent_amount_232143'] ?? budget['spent'];
-      final budgetAmount = budget['amount_232143'] ?? budget['limit'] ?? budget['amount'];
+      final budgetAmount =
+          budget['amount_232143'] ?? budget['limit'] ?? budget['amount'];
       final spent = ((spentAmount as num?) ?? 0).toDouble();
       final limit = ((budgetAmount as num?) ?? 1).toDouble();
       if (spent > limit) {
-        final categoryName = budget['category_name'] ?? budget['name_232143'] ?? 'Unknown';
+        final categoryName =
+            budget['category_name'] ?? budget['name_232143'] ?? 'Unknown';
         final confidence = _calculateConfidence(
           dataQuality: 0.9,
           patternStrength: ((spent - limit) / limit).clamp(0.0, 1.0),
@@ -639,10 +770,14 @@ class AIService {
     // Calculate scores for all recommendations if not already calculated
     for (var rec in recommendations) {
       if (!rec.containsKey('score')) {
-        final potentialSavings = (rec['potential_savings'] as num?)?.toDouble() ?? 0.0;
+        final potentialSavings =
+            (rec['potential_savings'] as num?)?.toDouble() ?? 0.0;
         final impact =
             (rec['impact'] as num?)?.toDouble() ??
-            _calculateImpactScore(potentialSavings: potentialSavings, totalIncome: totalIncome);
+            _calculateImpactScore(
+              potentialSavings: potentialSavings,
+              totalIncome: totalIncome,
+            );
         final actionability =
             (rec['actionability'] as num?)?.toDouble() ??
             _calculateActionabilityScore(
@@ -665,8 +800,14 @@ class AIService {
     // Sort by score (highest first) and return best
     if (recommendations.isNotEmpty) {
       recommendations.sort((a, b) {
-        final scoreA = (a['score'] as num?)?.toDouble() ?? (a['confidence'] as num?)?.toDouble() ?? 0.0;
-        final scoreB = (b['score'] as num?)?.toDouble() ?? (b['confidence'] as num?)?.toDouble() ?? 0.0;
+        final scoreA =
+            (a['score'] as num?)?.toDouble() ??
+            (a['confidence'] as num?)?.toDouble() ??
+            0.0;
+        final scoreB =
+            (b['score'] as num?)?.toDouble() ??
+            (b['confidence'] as num?)?.toDouble() ??
+            0.0;
         return scoreB.compareTo(scoreA);
       });
       return recommendations.first;
@@ -677,13 +818,20 @@ class AIService {
   }
 
   /// Calculate confidence score for a recommendation
-  double _calculateConfidence({required double dataQuality, required double patternStrength, required double urgency}) {
+  double _calculateConfidence({
+    required double dataQuality,
+    required double patternStrength,
+    required double urgency,
+  }) {
     // Weighted average: data quality (40%), pattern strength (30%), urgency (30%)
     return (dataQuality * 0.4) + (patternStrength * 0.3) + (urgency * 0.3);
   }
 
   /// Calculate impact score (potential savings impact)
-  double _calculateImpactScore({required double potentialSavings, required double totalIncome}) {
+  double _calculateImpactScore({
+    required double potentialSavings,
+    required double totalIncome,
+  }) {
     if (totalIncome == 0) return 0.0;
     // Impact is higher if potential savings is a larger percentage of income
     final savingsPercent = (potentialSavings / totalIncome) * 100;
@@ -691,7 +839,10 @@ class AIService {
   }
 
   /// Calculate actionability score (how easy it is to act on)
-  double _calculateActionabilityScore({required String? action, required String category}) {
+  double _calculateActionabilityScore({
+    required String? action,
+    required String category,
+  }) {
     double score = 0.5; // Base score
 
     // Higher score for specific actions
@@ -722,7 +873,10 @@ class AIService {
     double timing = 0.5,
   }) {
     // Formula: impact (40%) + actionability (30%) + relevance (20%) + timing (10%)
-    return (impact * 0.4) + (actionability * 0.3) + (relevance * 0.2) + (timing * 0.1);
+    return (impact * 0.4) +
+        (actionability * 0.3) +
+        (relevance * 0.2) +
+        (timing * 0.1);
   }
 
   Map<String, dynamic> _getDefaultRecommendation() {
@@ -746,14 +900,21 @@ class AIService {
 
       // Extract amount (look for numbers followed by M, K, or plain numbers)
       double? amount;
-      final amountRegex = RegExp(r'(\d+(?:\.\d+)?)\s*(?:m|jt|juta|k|rb|ribu)?', caseSensitive: false);
+      final amountRegex = RegExp(
+        r'(\d+(?:\.\d+)?)\s*(?:m|jt|juta|k|rb|ribu)?',
+        caseSensitive: false,
+      );
       final match = amountRegex.firstMatch(lowerQuery);
       if (match != null) {
         final number = double.parse(match.group(1)!);
         final unit = match.group(2)?.toLowerCase() ?? '';
-        if (unit.contains('m') || unit.contains('juta') || unit.contains('jt')) {
+        if (unit.contains('m') ||
+            unit.contains('juta') ||
+            unit.contains('jt')) {
           amount = number * 1000000;
-        } else if (unit.contains('k') || unit.contains('rb') || unit.contains('ribu')) {
+        } else if (unit.contains('k') ||
+            unit.contains('rb') ||
+            unit.contains('ribu')) {
           amount = number * 1000;
         } else {
           amount = number;
@@ -770,14 +931,19 @@ class AIService {
       if (!hasAffordKeyword || amount == null) {
         return {
           'canAfford': null,
-          'reasoning': 'Tidak dapat memahami pertanyaan. Coba: "Bisakah saya beli [jumlah]?"',
+          'reasoning':
+              'Tidak dapat memahami pertanyaan. Coba: "Bisakah saya beli [jumlah]?"',
           'amount': null,
         };
       }
 
       // Get current balance
-      final transactionsData = await _transactionData.getTransactions(limit: 100);
-      final transactions = List<Map<String, dynamic>>.from(transactionsData['transactions'] ?? []);
+      final transactionsData = await _transactionData.getTransactions(
+        limit: 100,
+      );
+      final transactions = List<Map<String, dynamic>>.from(
+        transactionsData['transactions'] ?? [],
+      );
       final now = DateTime.now();
       final thisMonthTransactions =
           transactions.where((t) {
@@ -805,8 +971,11 @@ class AIService {
       final canAfford = currentBalance >= amount;
 
       // Get forecast for next 30 days
-      final forecast = await _expensePredictor.predictNext30Days(transactions: thisMonthTransactions);
-      final forecastAmount = (forecast['forecastAmount'] as num?)?.toDouble() ?? 0.0;
+      final forecast = await _expensePredictor.predictNext30Days(
+        transactions: thisMonthTransactions,
+      );
+      final forecastAmount =
+          (forecast['forecastAmount'] as num?)?.toDouble() ?? 0.0;
       final projectedBalance = currentBalance - forecastAmount;
 
       String reasoning;
@@ -832,16 +1001,26 @@ class AIService {
       };
     } catch (e) {
       LoggerService.error('Error parsing natural language query', error: e);
-      return {'canAfford': null, 'reasoning': 'Terjadi kesalahan saat memproses pertanyaan.', 'amount': null};
+      return {
+        'canAfford': null,
+        'reasoning': 'Terjadi kesalahan saat memproses pertanyaan.',
+        'amount': null,
+      };
     }
   }
 
   /// Get expense forecast for next 30 days
   Future<Map<String, dynamic>> getExpenseForecast() async {
     try {
-      final transactionsData = await _transactionData.getTransactions(limit: 100);
-      final transactions = List<Map<String, dynamic>>.from(transactionsData['transactions'] ?? []);
-      return await _expensePredictor.predictNext30Days(transactions: transactions);
+      final transactionsData = await _transactionData.getTransactions(
+        limit: 100,
+      );
+      final transactions = List<Map<String, dynamic>>.from(
+        transactionsData['transactions'] ?? [],
+      );
+      return await _expensePredictor.predictNext30Days(
+        transactions: transactions,
+      );
     } catch (e) {
       LoggerService.error('Error getting expense forecast', error: e);
       return {
@@ -857,8 +1036,12 @@ class AIService {
   /// Get spending insights for a specific period
   Future<Map<String, dynamic>> getSpendingInsights(String period) async {
     try {
-      final transactionsData = await _transactionData.getTransactions(limit: 200);
-      final transactions = List<Map<String, dynamic>>.from(transactionsData['transactions'] ?? []);
+      final transactionsData = await _transactionData.getTransactions(
+        limit: 200,
+      );
+      final transactions = List<Map<String, dynamic>>.from(
+        transactionsData['transactions'] ?? [],
+      );
       final now = DateTime.now();
 
       List<Map<String, dynamic>> periodTransactions;
@@ -933,9 +1116,11 @@ class AIService {
 
     // Month-end budget alerts
     if (dayOfMonth >= 25) {
-      final totalExpense = (analysis['totalExpense'] as num?)?.toDouble() ?? 0.0;
+      final totalExpense =
+          (analysis['totalExpense'] as num?)?.toDouble() ?? 0.0;
       final totalIncome = (analysis['totalIncome'] as num?)?.toDouble() ?? 0.0;
-      final remainingDays = DateTime(now.year, now.month + 1, 0).day - dayOfMonth;
+      final remainingDays =
+          DateTime(now.year, now.month + 1, 0).day - dayOfMonth;
       final dailyAverage = totalExpense / dayOfMonth;
       final projectedMonthEnd = totalExpense + (dailyAverage * remainingDays);
 
@@ -955,7 +1140,8 @@ class AIService {
     }
 
     // Payday recommendations (assuming payday is around 25th-28th or 1st-5th)
-    if ((dayOfMonth >= 25 && dayOfMonth <= 28) || (dayOfMonth >= 1 && dayOfMonth <= 5)) {
+    if ((dayOfMonth >= 25 && dayOfMonth <= 28) ||
+        (dayOfMonth >= 1 && dayOfMonth <= 5)) {
       final savingsRate = (analysis['savingsRate'] as num?)?.toDouble() ?? 0.0;
       if (savingsRate < 20) {
         contextualRecs.add({
@@ -977,7 +1163,11 @@ class AIService {
       final dayOfWeekPatternsRaw = analysis['day_of_week_patterns'];
       final dayOfWeekPatterns =
           dayOfWeekPatternsRaw is Map
-              ? Map<String, dynamic>.from(dayOfWeekPatternsRaw.map((key, value) => MapEntry(key.toString(), value)))
+              ? Map<String, dynamic>.from(
+                dayOfWeekPatternsRaw.map(
+                  (key, value) => MapEntry(key.toString(), value),
+                ),
+              )
               : <String, dynamic>{};
       final peakDay = dayOfWeekPatterns['peak_day'] as String?;
       if (peakDay != null && (dayOfWeek == 6 || dayOfWeek == 7)) {
@@ -999,7 +1189,8 @@ class AIService {
     for (var goal in goals) {
       final goalProgress = (goal['current_amount'] as num?)?.toDouble() ?? 0.0;
       final goalTarget = (goal['target_amount'] as num?)?.toDouble() ?? 0.0;
-      final progressPercent = goalTarget > 0 ? (goalProgress / goalTarget) * 100 : 0;
+      final progressPercent =
+          goalTarget > 0 ? (goalProgress / goalTarget) * 100 : 0;
 
       if (progressPercent > 50 && progressPercent < 80) {
         // Mid-way through goal
@@ -1028,7 +1219,11 @@ class AIService {
         final daysUntilDue = dueDate.difference(today).inDays;
 
         if (daysUntilDue >= 0 && daysUntilDue <= 7) {
-          upcomingBills.add({'name': obligation.name, 'amount': obligation.monthlyAmount, 'days_until': daysUntilDue});
+          upcomingBills.add({
+            'name': obligation.name,
+            'amount': obligation.monthlyAmount,
+            'days_until': daysUntilDue,
+          });
         }
       }
 
@@ -1037,7 +1232,9 @@ class AIService {
           0.0,
           (sum, bill) => sum + ((bill['amount'] as num?)?.toDouble() ?? 0.0),
         );
-        final nearestBill = upcomingBills.reduce((a, b) => (a['days_until'] as int) < (b['days_until'] as int) ? a : b);
+        final nearestBill = upcomingBills.reduce(
+          (a, b) => (a['days_until'] as int) < (b['days_until'] as int) ? a : b,
+        );
 
         contextualRecs.add({
           'recommendation':
@@ -1052,7 +1249,10 @@ class AIService {
         });
       }
     } catch (e) {
-      LoggerService.warning('Could not fetch obligations for contextual recommendations', error: e);
+      LoggerService.warning(
+        'Could not fetch obligations for contextual recommendations',
+        error: e,
+      );
     }
 
     return contextualRecs;
@@ -1075,7 +1275,8 @@ class AIService {
   List<String> generateSmartTips(Map<String, dynamic> analysis) {
     final tips = <String>[];
     final savingsRate = (analysis['savingsRate'] as num?)?.toDouble() ?? 0.0;
-    final categorySpending = analysis['categorySpending'] as Map<String, double>? ?? {};
+    final categorySpending =
+        analysis['categorySpending'] as Map<String, double>? ?? {};
 
     // Tip 1: Savings rate based
     if (savingsRate < 10) {

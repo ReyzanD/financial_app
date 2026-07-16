@@ -42,8 +42,9 @@ class BudgetForecastService {
       final forecastedSpent = currentSpent + forecastedRemaining;
 
       // Calculate percentage
-      final forecastedPercentage = (forecastedSpent / budgetAmount) * 100;
-      final isOverBudget = forecastedSpent > budgetAmount;
+      final forecastedPercentage =
+          budgetAmount > 0 ? (forecastedSpent / budgetAmount) * 100 : 0.0;
+      final isOverBudget = budgetAmount > 0 && forecastedSpent > budgetAmount;
 
       // Calculate trend (increasing, decreasing, stable)
       String trend = 'stable';
@@ -211,11 +212,11 @@ class BudgetForecastService {
       final trends = <Map<String, dynamic>>[];
       final now = DateTime.now();
 
+      // Fetch budgets once instead of per-month (they are not month-specific).
+      final budgetModels = await _budgetData.getBudgets(activeOnly: false);
+
       for (int i = months - 1; i >= 0; i--) {
         final monthDate = DateTime(now.year, now.month - i, 1);
-
-        // Get budget untuk bulan ini
-        final budgetModels = await _budgetData.getBudgets(activeOnly: false);
 
         // Find budget untuk category
         final budget = budgetModels.where((b) => b.categoryId == categoryId);

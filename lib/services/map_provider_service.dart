@@ -27,7 +27,9 @@ class MapProviderService {
         _mapboxAccessToken = env['MAPBOX_ACCESS_TOKEN'];
 
         // Debug logging
-        LoggerService.debug('[MapProvider] Env map loaded: ${env.keys.length} keys');
+        LoggerService.debug(
+          '[MapProvider] Env map loaded: ${env.keys.length} keys',
+        );
         LoggerService.debug(
           '[MapProvider] MAPTILER_API_KEY found: ${_maptilerApiKey != null && _maptilerApiKey!.isNotEmpty}',
         );
@@ -47,11 +49,15 @@ class MapProviderService {
         LoggerService.info('[MapProvider] Using Mapbox as primary provider');
       } else {
         _currentProvider = MapProvider.openstreetmap;
-        LoggerService.info('[MapProvider] No API keys found, using OpenStreetMap');
+        LoggerService.info(
+          '[MapProvider] No API keys found, using OpenStreetMap',
+        );
       }
       _initialized = true;
     } catch (e) {
-      LoggerService.warning('[MapProvider] Error initializing, using OpenStreetMap: $e');
+      LoggerService.warning(
+        '[MapProvider] Error initializing, using OpenStreetMap: $e',
+      );
       _currentProvider = MapProvider.openstreetmap;
       _initialized = true;
     }
@@ -91,7 +97,8 @@ class MapProviderService {
     final cacheKey = '${query}_$countryCode';
     if (_geocodingCache.containsKey(cacheKey)) {
       final timestamp = _cacheTimestamps[cacheKey];
-      if (timestamp != null && DateTime.now().difference(timestamp) < _cacheDuration) {
+      if (timestamp != null &&
+          DateTime.now().difference(timestamp) < _cacheDuration) {
         LoggerService.cache('HIT', 'geocoding_$cacheKey');
         return _geocodingCache[cacheKey]!;
       }
@@ -104,12 +111,16 @@ class MapProviderService {
       try {
         results = await _searchMapTiler(query, countryCode, limit);
         if (results.isNotEmpty) {
-          LoggerService.info('[MapProvider] Found ${results.length} results from MapTiler');
+          LoggerService.info(
+            '[MapProvider] Found ${results.length} results from MapTiler',
+          );
           _cacheResult(cacheKey, results);
           return results;
         }
       } catch (e) {
-        LoggerService.warning('[MapProvider] MapTiler search failed, trying fallback: $e');
+        LoggerService.warning(
+          '[MapProvider] MapTiler search failed, trying fallback: $e',
+        );
       }
     }
 
@@ -118,12 +129,16 @@ class MapProviderService {
       try {
         results = await _searchMapbox(query, countryCode, limit);
         if (results.isNotEmpty) {
-          LoggerService.info('[MapProvider] Found ${results.length} results from Mapbox');
+          LoggerService.info(
+            '[MapProvider] Found ${results.length} results from Mapbox',
+          );
           _cacheResult(cacheKey, results);
           return results;
         }
       } catch (e) {
-        LoggerService.warning('[MapProvider] Mapbox search failed, trying fallback: $e');
+        LoggerService.warning(
+          '[MapProvider] Mapbox search failed, trying fallback: $e',
+        );
       }
     }
 
@@ -131,12 +146,17 @@ class MapProviderService {
     try {
       results = await _searchOpenStreetMap(query, countryCode, limit);
       if (results.isNotEmpty) {
-        LoggerService.info('[MapProvider] Found ${results.length} results from OpenStreetMap');
+        LoggerService.info(
+          '[MapProvider] Found ${results.length} results from OpenStreetMap',
+        );
         _cacheResult(cacheKey, results);
         return results;
       }
     } catch (e) {
-      LoggerService.error('[MapProvider] OpenStreetMap search also failed: $e', error: e);
+      LoggerService.error(
+        '[MapProvider] OpenStreetMap search also failed: $e',
+        error: e,
+      );
     }
 
     LoggerService.warning('[MapProvider] No results found for: $query');
@@ -144,7 +164,11 @@ class MapProviderService {
   }
 
   /// Search using MapTiler Geocoding API
-  static Future<List<Map<String, dynamic>>> _searchMapTiler(String query, String? countryCode, int limit) async {
+  static Future<List<Map<String, dynamic>>> _searchMapTiler(
+    String query,
+    String? countryCode,
+    int limit,
+  ) async {
     if (_maptilerApiKey == null) {
       throw Exception('MapTiler API key not available');
     }
@@ -160,7 +184,10 @@ class MapProviderService {
 
     final response = await http
         .get(url, headers: {'Accept': 'application/json'})
-        .timeout(const Duration(seconds: 10), onTimeout: () => throw Exception('MapTiler request timeout'));
+        .timeout(
+          const Duration(seconds: 10),
+          onTimeout: () => throw Exception('MapTiler request timeout'),
+        );
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body) as Map<String, dynamic>;
@@ -178,17 +205,26 @@ class MapProviderService {
         return {
           'lat': (coordinates[1] as num).toDouble(),
           'lng': (coordinates[0] as num).toDouble(),
-          'displayName': properties['name'] as String? ?? properties['place_name'] as String? ?? query,
+          'displayName':
+              properties['name'] as String? ??
+              properties['place_name'] as String? ??
+              query,
           'type': properties['type'] as String? ?? 'place',
         };
       }).toList();
     } else {
-      throw Exception('MapTiler API error: ${response.statusCode} - ${response.body}');
+      throw Exception(
+        'MapTiler API error: ${response.statusCode} - ${response.body}',
+      );
     }
   }
 
   /// Search using Mapbox Geocoding API
-  static Future<List<Map<String, dynamic>>> _searchMapbox(String query, String? countryCode, int limit) async {
+  static Future<List<Map<String, dynamic>>> _searchMapbox(
+    String query,
+    String? countryCode,
+    int limit,
+  ) async {
     if (_mapboxAccessToken == null) {
       throw Exception('Mapbox access token not available');
     }
@@ -204,7 +240,10 @@ class MapProviderService {
 
     final response = await http
         .get(url, headers: {'Accept': 'application/json'})
-        .timeout(const Duration(seconds: 10), onTimeout: () => throw Exception('Mapbox request timeout'));
+        .timeout(
+          const Duration(seconds: 10),
+          onTimeout: () => throw Exception('Mapbox request timeout'),
+        );
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body) as Map<String, dynamic>;
@@ -224,20 +263,28 @@ class MapProviderService {
         };
       }).toList();
     } else {
-      throw Exception('Mapbox API error: ${response.statusCode} - ${response.body}');
+      throw Exception(
+        'Mapbox API error: ${response.statusCode} - ${response.body}',
+      );
     }
   }
 
   /// Search using OpenStreetMap Nominatim API
-  static Future<List<Map<String, dynamic>>> _searchOpenStreetMap(String query, String? countryCode, int limit) async {
+  static Future<List<Map<String, dynamic>>> _searchOpenStreetMap(
+    String query,
+    String? countryCode,
+    int limit,
+  ) async {
     // Add location context for better results in Indonesia
     final searchQuery =
-        query.toLowerCase().contains('makassar') || query.toLowerCase().contains('indonesia')
+        query.toLowerCase().contains('makassar') ||
+                query.toLowerCase().contains('indonesia')
             ? query
             : '$query, Makassar, Sulawesi Selatan, Indonesia';
 
     final encodedQuery = Uri.encodeComponent(searchQuery);
-    final countryParam = countryCode != null ? '&countrycodes=$countryCode' : '';
+    final countryParam =
+        countryCode != null ? '&countrycodes=$countryCode' : '';
     final url = Uri.parse(
       'https://nominatim.openstreetmap.org/search?q=$encodedQuery'
       '&format=json'
@@ -246,8 +293,17 @@ class MapProviderService {
     );
 
     final response = await http
-        .get(url, headers: {'User-Agent': 'FinancialApp/1.0 (financial.app.makassar)', 'Accept': 'application/json'})
-        .timeout(const Duration(seconds: 10), onTimeout: () => throw Exception('Nominatim request timeout'));
+        .get(
+          url,
+          headers: {
+            'User-Agent': 'FinancialApp/1.0 (financial.app.makassar)',
+            'Accept': 'application/json',
+          },
+        )
+        .timeout(
+          const Duration(seconds: 10),
+          onTimeout: () => throw Exception('Nominatim request timeout'),
+        );
 
     if (response.statusCode == 200) {
       final results = json.decode(response.body) as List;
@@ -256,16 +312,25 @@ class MapProviderService {
         return [];
       }
 
-      return results.map((result) {
-        return {
-          'lat': double.parse(result['lat'] as String),
-          'lng': double.parse(result['lon'] as String),
-          'displayName': result['display_name'] as String,
-          'type': result['type'] as String? ?? 'place',
-        };
-      }).toList();
+      return results
+          .map((result) {
+            final lat = double.tryParse(result['lat']?.toString() ?? '');
+            final lng = double.tryParse(result['lon']?.toString() ?? '');
+            // Skip entries without valid coordinates.
+            if (lat == null || lng == null) return <String, dynamic>{};
+            return {
+              'lat': lat,
+              'lng': lng,
+              'displayName': result['display_name']?.toString() ?? '',
+              'type': result['type']?.toString() ?? 'place',
+            };
+          })
+          .where((m) => m.isNotEmpty)
+          .toList();
     } else {
-      throw Exception('Nominatim API error: ${response.statusCode} - ${response.body}');
+      throw Exception(
+        'Nominatim API error: ${response.statusCode} - ${response.body}',
+      );
     }
   }
 
@@ -286,8 +351,10 @@ class MapProviderService {
   static MapProvider getCurrentProvider() => _currentProvider;
 
   /// Check if MapTiler is available
-  static bool isMapTilerAvailable() => _maptilerApiKey != null && _maptilerApiKey!.isNotEmpty;
+  static bool isMapTilerAvailable() =>
+      _maptilerApiKey != null && _maptilerApiKey!.isNotEmpty;
 
   /// Check if Mapbox is available
-  static bool isMapboxAvailable() => _mapboxAccessToken != null && _mapboxAccessToken!.isNotEmpty;
+  static bool isMapboxAvailable() =>
+      _mapboxAccessToken != null && _mapboxAccessToken!.isNotEmpty;
 }
