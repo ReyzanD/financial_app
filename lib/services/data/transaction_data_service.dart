@@ -13,9 +13,11 @@ class TransactionDataService {
   final LocalAuthService _authService;
   final _uuid = const Uuid();
 
-  TransactionDataService({LocalDatabaseService? dbService, LocalAuthService? authService})
-    : _dbService = dbService ?? LocalDatabaseService(),
-      _authService = authService ?? LocalAuthService();
+  TransactionDataService({
+    LocalDatabaseService? dbService,
+    LocalAuthService? authService,
+  }) : _dbService = dbService ?? LocalDatabaseService(),
+       _authService = authService ?? LocalAuthService();
 
   /// Get current user ID
   Future<String?> getCurrentUserId() async {
@@ -103,6 +105,38 @@ class TransactionDataService {
     }
   }
 
+  /// Fetches every transaction matching the given filters by paging through
+  /// [getTransactions], so callers that aggregate over the full history are
+  /// never silently truncated by a fixed LIMIT.
+  Future<List<Map<String, dynamic>>> getAllTransactions({
+    String? type,
+    String? categoryId,
+    String? startDate,
+    String? endDate,
+    String? search,
+  }) async {
+    const pageSize = 1000;
+    final all = <Map<String, dynamic>>[];
+    int offset = 0;
+    while (true) {
+      final page = await getTransactions(
+        limit: pageSize,
+        offset: offset,
+        type: type,
+        categoryId: categoryId,
+        startDate: startDate,
+        endDate: endDate,
+        search: search,
+      );
+      final rows = List<Map<String, dynamic>>.from(page['transactions'] ?? []);
+      all.addAll(rows);
+      final hasMore = page['hasMore'] as bool? ?? false;
+      if (!hasMore || rows.isEmpty) break;
+      offset += rows.length;
+    }
+    return all;
+  }
+
   /// Get single transaction
   Future<TransactionModel?> getTransaction(String id) async {
     final userId = await getCurrentUserId();
@@ -125,11 +159,15 @@ class TransactionDataService {
       [id, userId],
     );
 
-    return transactions.isNotEmpty ? TransactionModel.fromMap(transactions.first) : null;
+    return transactions.isNotEmpty
+        ? TransactionModel.fromMap(transactions.first)
+        : null;
   }
 
   /// Add transaction
-  Future<TransactionModel> addTransaction(Map<String, dynamic> transactionData) async {
+  Future<TransactionModel> addTransaction(
+    Map<String, dynamic> transactionData,
+  ) async {
     final userId = await getCurrentUserId();
     if (userId == null) throw Exception('Not authenticated');
 
@@ -160,7 +198,9 @@ class TransactionDataService {
       'is_recurring_232143': transactionData['is_recurring'] == true ? 1 : 0,
       'recurring_pattern_232143': transactionData['recurring_pattern'],
       'tags_232143': transactionData['tags'],
-      'transaction_date_232143': transactionData['transaction_date'] ?? DateTime.now().toIso8601String().split('T')[0],
+      'transaction_date_232143':
+          transactionData['transaction_date'] ??
+          DateTime.now().toIso8601String().split('T')[0],
       'transaction_time_232143': transactionData['transaction_time'],
       'created_at_232143': now,
       'updated_at_232143': now,
@@ -200,7 +240,10 @@ class TransactionDataService {
   }
 
   /// Update transaction
-  Future<TransactionModel> updateTransaction(String id, Map<String, dynamic> transactionData) async {
+  Future<TransactionModel> updateTransaction(
+    String id,
+    Map<String, dynamic> transactionData,
+  ) async {
     final userId = await getCurrentUserId();
     if (userId == null) throw Exception('Not authenticated');
 
@@ -217,7 +260,8 @@ class TransactionDataService {
 
     if (oldTxn.isNotEmpty) {
       final oldAccountId = oldTxn.first['account_id_232143'] as String?;
-      final oldAmount = (oldTxn.first['amount_232143'] as num?)?.toDouble() ?? 0.0;
+      final oldAmount =
+          (oldTxn.first['amount_232143'] as num?)?.toDouble() ?? 0.0;
       final oldType = oldTxn.first['type_232143'] as String? ?? '';
 
       // Reverse old balance effect
@@ -249,16 +293,20 @@ class TransactionDataService {
       updateData['description_232143'] = transactionData['description'];
     }
     if (transactionData.containsKey('location_data')) {
-      updateData['location_data_232143'] = json.encode(transactionData['location_data']);
+      updateData['location_data_232143'] = json.encode(
+        transactionData['location_data'],
+      );
     }
     if (transactionData.containsKey('transaction_date')) {
-      updateData['transaction_date_232143'] = transactionData['transaction_date'];
+      updateData['transaction_date_232143'] =
+          transactionData['transaction_date'];
     }
     if (transactionData.containsKey('account_id')) {
       updateData['account_id_232143'] = transactionData['account_id'];
     }
     if (transactionData.containsKey('is_recurring')) {
-      updateData['is_recurring_232143'] = transactionData['is_recurring'] == true ? 1 : 0;
+      updateData['is_recurring_232143'] =
+          transactionData['is_recurring'] == true ? 1 : 0;
     }
 
     await db.update(
@@ -272,7 +320,10 @@ class TransactionDataService {
     final newAccountId = transactionData['account_id'] as String?;
     final newAmount = (transactionData['amount'] as num?)?.toDouble();
     final newType = transactionData['type'] as String?;
-    if (newAccountId != null && newAccountId.isNotEmpty && newAmount != null && newType != null) {
+    if (newAccountId != null &&
+        newAccountId.isNotEmpty &&
+        newAmount != null &&
+        newType != null) {
       double newChange = 0;
       if (newType == 'income') {
         newChange = newAmount;
@@ -307,7 +358,8 @@ class TransactionDataService {
       if (oldTxn.isNotEmpty) {
         final accountId = oldTxn.first['account_id_232143'] as String?;
         if (accountId != null && accountId.isNotEmpty) {
-          final amount = (oldTxn.first['amount_232143'] as num?)?.toDouble() ?? 0.0;
+          final amount =
+              (oldTxn.first['amount_232143'] as num?)?.toDouble() ?? 0.0;
           final type = oldTxn.first['type_232143'] as String? ?? '';
           double balanceChange = 0;
           if (type == 'income') {
@@ -336,7 +388,11 @@ class TransactionDataService {
   }
 
   /// Adjust an account's balance by a delta amount
-  Future<void> _adjustAccountBalance(Database db, String accountId, double delta) async {
+  Future<void> _adjustAccountBalance(
+    Database db,
+    String accountId,
+    double delta,
+  ) async {
     final accountResult = await db.query(
       'accounts_232143',
       where: 'account_id_232143 = ?',
@@ -345,20 +401,29 @@ class TransactionDataService {
     );
 
     if (accountResult.isNotEmpty) {
-      final currentBalance = (accountResult.first['balance_232143'] as num?)?.toDouble() ?? 0.0;
+      final currentBalance =
+          (accountResult.first['balance_232143'] as num?)?.toDouble() ?? 0.0;
       final newBalance = currentBalance + delta;
       await db.update(
         'accounts_232143',
-        {'balance_232143': newBalance, 'updated_at_232143': DateTime.now().toIso8601String()},
+        {
+          'balance_232143': newBalance,
+          'updated_at_232143': DateTime.now().toIso8601String(),
+        },
         where: 'account_id_232143 = ?',
         whereArgs: [accountId],
       );
-      LoggerService.info('✅ Account balance adjusted: $accountId ${delta >= 0 ? '+' : ''}$delta (new: $newBalance)');
+      LoggerService.info(
+        '✅ Account balance adjusted: $accountId ${delta >= 0 ? '+' : ''}$delta (new: $newBalance)',
+      );
     }
   }
 
   /// Get financial summary
-  Future<Map<String, dynamic>> getFinancialSummary({int? year, int? month}) async {
+  Future<Map<String, dynamic>> getFinancialSummary({
+    int? year,
+    int? month,
+  }) async {
     try {
       final userId = await getCurrentUserId();
       if (userId == null) throw Exception('Not authenticated');
@@ -369,8 +434,10 @@ class TransactionDataService {
       final targetMonth = month ?? now.month;
 
       // Build date filter
-      final startDate = '$targetYear-${targetMonth.toString().padLeft(2, '0')}-01';
-      final endDate = '$targetYear-${targetMonth.toString().padLeft(2, '0')}-31';
+      final startDate =
+          '$targetYear-${targetMonth.toString().padLeft(2, '0')}-01';
+      final endDate =
+          '$targetYear-${targetMonth.toString().padLeft(2, '0')}-31';
 
       final result = await db.rawQuery(
         '''
@@ -391,7 +458,8 @@ class TransactionDataService {
       for (var row in result) {
         final type = row['type_232143'] as String;
         summaryMap[type] = {
-          'total_amount': (row['total_amount_232143'] as num?)?.toDouble() ?? 0.0,
+          'total_amount':
+              (row['total_amount_232143'] as num?)?.toDouble() ?? 0.0,
           'transaction_count': row['transaction_count'] as int? ?? 0,
         };
       }

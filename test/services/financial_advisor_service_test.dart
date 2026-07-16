@@ -1,6 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
-import 'package:financial_app/core/di/service_locator.dart';
 import 'package:financial_app/models/goal_model.dart';
 import 'package:financial_app/services/data/goal_data_service.dart';
 import 'package:financial_app/services/financial_advisor_service.dart';

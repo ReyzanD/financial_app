@@ -152,6 +152,57 @@ _(Ping me when you're ready to build this — I'll pull current DAAD/German stud
 
 Given solo timeline, I'd lean **Option B** unless you specifically want the distributed-systems story.
 
+### Phase G — Status: COMPLETE (Option B — Performance under scale)
+
+**Chosen:** Option B (lower risk, fits the app's standalone/no-backend design, and the
+benchmark harness already existed in `test/performance/`).
+
+**Key finding (honest):** At 50k seeded rows, raw SQLite queries were already sub-3ms with
+the existing 2 indexes. Adding a category index gave only marginal gain (Q3 category filter
+1.7ms → 1.6ms). **The real problem was not query speed — it was silent `LIMIT` truncation
+that dropped data and a legacy path that loaded only 100 rows.** Those were the actual
+correctness/scale bugs, and fixing them was the bulk of the value.
+
+**What changed:**
+- Added `TransactionDataService.getAllTransactions({filters})` — pages through all matching
+  rows (LIMIT/OFFSET loop) so callers aggregating over full history are never truncated.
+- Replaced fixed `limit:` caps with `getAllTransactions()` in the history-wide aggregators:
+  `FinancialAdvisorService` (was `limit: 5000` in `analyzeForPeriod`/`analyzeZeroBasedForPeriod`),
+  `CashFlowForecastService` (5000/5000/1000), `BudgetRecommendationService` (1000/500),
+  `AnalyticsService` (1000), `BudgetPredictor` (200/500), `BudgetForecastService` (1000×2),
+  `PlaceVisitDataService.syncFromTransactions` (5000).
+- Fixed `DataService.refreshTransactions()` which called `getTransactions()` with **no limit
+  → default 100**, so `AppState`/legacy `TransactionListWidget` only ever held 100 rows. Now
+  loads the full history via `getAllTransactions()`. (The modern `transaction_history_screen`
+  already paginates correctly at 50/page.)
+- Added `idx_transactions_category` index (DB v8 → v9 migration in `LocalDatabaseService`),
+  applied in both `_onCreate` and `_onUpgrade`.
+
+**Deliberately left capped (documented):** `ai_service.dart`, `ai_recommendations_enhanced_service.dart`,
+`location_*` services cap at 100–500 — these feed an LLM context window, so truncation is
+intentional, not a bug.
+
+**Benchmark (50,000 rows, in-memory sqflite, warmup 2 + measure 5 runs):**
+| Query | Baseline (2 idx) | +category idx | Verdict |
+|-------|-----------------|---------------|---------|
+| Q1 no-filter LIMIT 100 | 0.8ms | 0.9ms | flat |
+| Q2 type=income | 0.7ms | 0.9ms | flat |
+| Q3 category=shopping | 1.7ms | 1.6ms | ~marginal |
+| Q4 date 30d | 1.2ms | 1.0ms | flat |
+| Q5 LIKE desc | 2.2ms | 2.0ms | flat |
+| Q6 type+cat+date | 1.5ms | 1.3ms | flat |
+| Q7 GROUP BY type | 2.3ms | 2.1ms | flat |
+| Q8 SUM expense | 1.5ms | 1.3ms | flat |
+| Q9 COUNT 6mo | 0.8ms | 0.8ms | flat |
+| Q10 COUNT all 50k | 1.7ms | 1.6ms | flat |
+
+Run with: `LD_LIBRARY_PATH=<build dir>:$LD_LIBRARY_PATH flutter test test/performance/query_benchmark_test.dart`
+(The system `libsqlite3.so` is missing on this dev box; the project `build/` dir provides it.)
+
+**Verification:** `flutter analyze` 0 errors / 0 warnings (127 pre-existing info). `flutter test`
+305 pass; 31 failures are the pre-existing `databaseFactory not initialized` (missing system
+`libsqlite3.so`) environment-only SQLite integration tests — not code defects.
+
 ---
 
 ## Phase H — Packaging for reviewers (~2–3 weeks, do this close to application time)

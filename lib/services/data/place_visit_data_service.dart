@@ -241,10 +241,7 @@ class PlaceVisitDataService {
   /// rather than duplicated. This is safe to call on every startup.
   Future<int> syncFromTransactions(TransactionDataService txnService) async {
     try {
-      final data = await txnService.getTransactions(limit: 5000);
-      final transactions = List<Map<String, dynamic>>.from(
-        data['transactions'] ?? [],
-      );
+      final transactions = await txnService.getAllTransactions();
 
       LoggerService.info(
         'PlaceVisitSync: scanning ${transactions.length} transactions...',

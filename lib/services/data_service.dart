@@ -5,18 +5,21 @@ import 'package:financial_app/services/data/category_data_service.dart';
 import 'package:financial_app/core/di/service_locator.dart';
 
 class DataService {
-  final TransactionDataService _transactionData = getIt<TransactionDataService>();
+  final TransactionDataService _transactionData =
+      getIt<TransactionDataService>();
   final CategoryDataService _categoryData = getIt<CategoryDataService>();
 
   // Stream controllers for real-time data
   final _transactionsController = StreamController<List<dynamic>>.broadcast();
   final _categoriesController = StreamController<List<dynamic>>.broadcast();
-  final _financialSummaryController = StreamController<Map<String, dynamic>>.broadcast();
+  final _financialSummaryController =
+      StreamController<Map<String, dynamic>>.broadcast();
 
   // Getters for streams
   Stream<List<dynamic>> get transactions => _transactionsController.stream;
   Stream<List<dynamic>> get categories => _categoriesController.stream;
-  Stream<Map<String, dynamic>> get financialSummary => _financialSummaryController.stream;
+  Stream<Map<String, dynamic>> get financialSummary =>
+      _financialSummaryController.stream;
 
   // Timer for periodic updates
   Timer? _updateTimer;
@@ -24,7 +27,9 @@ class DataService {
   DataService() {
     // Don't start periodic updates immediately
     // Wait for explicit data load after authentication
-    LoggerService.info('[DataService] Service initialized, waiting for data load');
+    LoggerService.info(
+      '[DataService] Service initialized, waiting for data load',
+    );
   }
 
   void startPeriodicUpdates() {
@@ -39,7 +44,9 @@ class DataService {
       refreshAllData();
     });
 
-    LoggerService.info('[DataService] Periodic updates started (every 2 minutes)');
+    LoggerService.info(
+      '[DataService] Periodic updates started (every 2 minutes)',
+    );
   }
 
   bool _isRefreshing = false;
@@ -61,7 +68,9 @@ class DataService {
       if (_isRefreshing) return;
 
       // Don't refresh more often than every 2 seconds (reduced from 5)
-      if (_lastRefresh != null && DateTime.now().difference(_lastRefresh!) < const Duration(seconds: 2)) {
+      if (_lastRefresh != null &&
+          DateTime.now().difference(_lastRefresh!) <
+              const Duration(seconds: 2)) {
         LoggerService.debug(
           'Skipping refresh - throttled (last refresh: ${DateTime.now().difference(_lastRefresh!).inSeconds}s ago)',
         );
@@ -79,7 +88,11 @@ class DataService {
       }
 
       // Fetch all data types in parallel
-      await Future.wait([refreshTransactions(), refreshCategories(), refreshFinancialSummary()]);
+      await Future.wait([
+        refreshTransactions(),
+        refreshCategories(),
+        refreshFinancialSummary(),
+      ]);
       _lastRefresh = DateTime.now();
     } catch (e) {
       LoggerService.error('Error refreshing data', error: e);
@@ -91,18 +104,19 @@ class DataService {
   Future<void> refreshTransactions() async {
     try {
       LoggerService.info('[DataService] Fetching transactions from API...');
-      final transactionsData = await _transactionData.getTransactions();
-      final transactionsList = transactionsData['transactions'] ?? [];
-      final transactions = List<Map<String, dynamic>>.from(
-        transactionsList.map((t) => Map<String, dynamic>.from(t as Map)),
+      final transactions = await _transactionData.getAllTransactions();
+      LoggerService.success(
+        '[DataService] Received ${transactions.length} transactions from API',
       );
-      LoggerService.success('[DataService] Received ${transactions.length} transactions from API');
       if (!_transactionsController.isClosed) {
         _transactionsController.add(transactions);
         LoggerService.debug('[DataService] Transactions pushed to stream');
       }
     } catch (e) {
-      LoggerService.error('[DataService] Error fetching transactions', error: e);
+      LoggerService.error(
+        '[DataService] Error fetching transactions',
+        error: e,
+      );
       if (!_transactionsController.isClosed) {
         _transactionsController.add([]); // Add empty list on error
       }

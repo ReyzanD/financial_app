@@ -8,15 +8,18 @@ class CashFlowForecastService {
   final TransactionDataService _transactionData;
   final AccountService _accountService;
 
-  CashFlowForecastService({TransactionDataService? transactionData, AccountService? accountService})
-    : _transactionData = transactionData ?? getIt<TransactionDataService>(),
-      _accountService = accountService ?? getIt<AccountService>();
+  CashFlowForecastService({
+    TransactionDataService? transactionData,
+    AccountService? accountService,
+  }) : _transactionData = transactionData ?? getIt<TransactionDataService>(),
+       _accountService = accountService ?? getIt<AccountService>();
 
-  Future<List<Map<String, dynamic>>> forecastDailyCashFlow({int days = 30}) async {
+  Future<List<Map<String, dynamic>>> forecastDailyCashFlow({
+    int days = 30,
+  }) async {
     try {
       final now = DateTime.now();
-      final txData = await _transactionData.getTransactions(limit: 5000);
-      final transactions = List<Map<String, dynamic>>.from(txData['transactions'] ?? []);
+      final transactions = await _transactionData.getAllTransactions();
 
       final dailyData = _analyzeDailyPatterns(transactions);
       final forecast = <Map<String, dynamic>>[];
@@ -27,8 +30,10 @@ class CashFlowForecastService {
         final forecastDate = now.add(Duration(days: i));
         final dayOfWeek = forecastDate.weekday;
 
-        final avgIncome = dailyData['income_by_weekday']?[dayOfWeek]?.toDouble() ?? 0.0;
-        final avgExpense = dailyData['expense_by_weekday']?[dayOfWeek]?.toDouble() ?? 0.0;
+        final avgIncome =
+            dailyData['income_by_weekday']?[dayOfWeek]?.toDouble() ?? 0.0;
+        final avgExpense =
+            dailyData['expense_by_weekday']?[dayOfWeek]?.toDouble() ?? 0.0;
 
         runningBalance += avgIncome - avgExpense;
 
@@ -49,11 +54,12 @@ class CashFlowForecastService {
     }
   }
 
-  Future<Map<String, dynamic>> getWeeklyCashFlowForecast({int weeks = 4}) async {
+  Future<Map<String, dynamic>> getWeeklyCashFlowForecast({
+    int weeks = 4,
+  }) async {
     try {
       final now = DateTime.now();
-      final txData = await _transactionData.getTransactions(limit: 5000);
-      final transactions = List<Map<String, dynamic>>.from(txData['transactions'] ?? []);
+      final transactions = await _transactionData.getAllTransactions();
 
       final weeklyData = _analyzeWeeklyPatterns(transactions);
       double runningBalance = await _accountService.getTotalBalance();
@@ -78,15 +84,26 @@ class CashFlowForecastService {
         });
       }
 
-      final riskWeeks = forecast.where((w) => (w['projected_balance'] as double) < 0).toList();
+      final riskWeeks =
+          forecast
+              .where((w) => (w['projected_balance'] as double) < 0)
+              .toList();
 
       return {
         'weekly_forecast': forecast,
         'risk_weeks': riskWeeks.length,
         'lowest_balance':
-            forecast.isNotEmpty ? forecast.map((w) => w['projected_balance'] as double).reduce(math.min) : 0.0,
+            forecast.isNotEmpty
+                ? forecast
+                    .map((w) => w['projected_balance'] as double)
+                    .reduce(math.min)
+                : 0.0,
         'highest_balance':
-            forecast.isNotEmpty ? forecast.map((w) => w['projected_balance'] as double).reduce(math.max) : 0.0,
+            forecast.isNotEmpty
+                ? forecast
+                    .map((w) => w['projected_balance'] as double)
+                    .reduce(math.max)
+                : 0.0,
       };
     } catch (e) {
       LoggerService.error('Error getting weekly cash flow forecast', error: e);
@@ -96,8 +113,7 @@ class CashFlowForecastService {
 
   Future<Map<String, dynamic>> getCashFlowSummary() async {
     try {
-      final txData = await _transactionData.getTransactions(limit: 1000);
-      final transactions = List<Map<String, dynamic>>.from(txData['transactions'] ?? []);
+      final transactions = await _transactionData.getAllTransactions();
       final now = DateTime.now();
 
       double currentIncome = 0;
@@ -106,16 +122,24 @@ class CashFlowForecastService {
       double previousExpense = 0;
 
       for (var t in transactions) {
-        final dateStr = t['transaction_date_232143']?.toString() ?? t['transaction_date']?.toString() ?? '';
+        final dateStr =
+            t['transaction_date_232143']?.toString() ??
+            t['transaction_date']?.toString() ??
+            '';
         if (dateStr.isEmpty) continue;
 
         final date = DateTime.parse(dateStr);
-        final type = t['type_232143']?.toString() ?? t['type']?.toString() ?? '';
-        final amount = (t['amount_232143'] as num?)?.toDouble() ?? (t['amount'] as num?)?.toDouble() ?? 0.0;
+        final type =
+            t['type_232143']?.toString() ?? t['type']?.toString() ?? '';
+        final amount =
+            (t['amount_232143'] as num?)?.toDouble() ??
+            (t['amount'] as num?)?.toDouble() ??
+            0.0;
 
         final isCurrentMonth = date.year == now.year && date.month == now.month;
         final prevMonth = DateTime(now.year, now.month - 1, 1);
-        final isPreviousMonth = date.year == prevMonth.year && date.month == prevMonth.month;
+        final isPreviousMonth =
+            date.year == prevMonth.year && date.month == prevMonth.month;
 
         if (isCurrentMonth) {
           if (type == 'income') currentIncome += amount;
@@ -133,8 +157,14 @@ class CashFlowForecastService {
         'previous_month_income': previousIncome,
         'previous_month_expense': previousExpense,
         'previous_month_net': previousIncome - previousExpense,
-        'income_change': previousIncome > 0 ? ((currentIncome - previousIncome) / previousIncome) * 100 : 0,
-        'expense_change': previousExpense > 0 ? ((currentExpense - previousExpense) / previousExpense) * 100 : 0,
+        'income_change':
+            previousIncome > 0
+                ? ((currentIncome - previousIncome) / previousIncome) * 100
+                : 0,
+        'expense_change':
+            previousExpense > 0
+                ? ((currentExpense - previousExpense) / previousExpense) * 100
+                : 0,
       };
     } catch (e) {
       LoggerService.error('Error getting cash flow summary', error: e);
@@ -142,22 +172,31 @@ class CashFlowForecastService {
     }
   }
 
-  Map<String, dynamic> _analyzeDailyPatterns(List<Map<String, dynamic>> transactions) {
+  Map<String, dynamic> _analyzeDailyPatterns(
+    List<Map<String, dynamic>> transactions,
+  ) {
     final incomeByWeekday = <int, double>{};
     final expenseByWeekday = <int, double>{};
     final weekdayCounts = <int, int>{};
 
     for (final transaction in transactions) {
       final dateStr =
-          transaction['transaction_date_232143']?.toString() ?? transaction['transaction_date']?.toString() ?? '';
+          transaction['transaction_date_232143']?.toString() ??
+          transaction['transaction_date']?.toString() ??
+          '';
       if (dateStr.isEmpty) continue;
 
       try {
         final date = DateTime.parse(dateStr);
         final weekday = date.weekday;
         final amount =
-            (transaction['amount_232143'] as num?)?.toDouble() ?? (transaction['amount'] as num?)?.toDouble() ?? 0.0;
-        final type = transaction['type_232143']?.toString() ?? transaction['type']?.toString() ?? '';
+            (transaction['amount_232143'] as num?)?.toDouble() ??
+            (transaction['amount'] as num?)?.toDouble() ??
+            0.0;
+        final type =
+            transaction['type_232143']?.toString() ??
+            transaction['type']?.toString() ??
+            '';
 
         weekdayCounts[weekday] = (weekdayCounts[weekday] ?? 0) + 1;
 
@@ -180,10 +219,15 @@ class CashFlowForecastService {
       expenseByWeekday[weekday] = expenseByWeekday[weekday]! / count;
     }
 
-    return {'income_by_weekday': incomeByWeekday, 'expense_by_weekday': expenseByWeekday};
+    return {
+      'income_by_weekday': incomeByWeekday,
+      'expense_by_weekday': expenseByWeekday,
+    };
   }
 
-  Map<String, dynamic> _analyzeWeeklyPatterns(List<Map<String, dynamic>> transactions) {
+  Map<String, dynamic> _analyzeWeeklyPatterns(
+    List<Map<String, dynamic>> transactions,
+  ) {
     final now = DateTime.now();
     final weeklyIncome = <double>[];
     final weeklyExpense = <double>[];
@@ -197,7 +241,9 @@ class CashFlowForecastService {
 
       for (final transaction in transactions) {
         final dateStr =
-            transaction['transaction_date_232143']?.toString() ?? transaction['transaction_date']?.toString() ?? '';
+            transaction['transaction_date_232143']?.toString() ??
+            transaction['transaction_date']?.toString() ??
+            '';
         if (dateStr.isEmpty) continue;
 
         try {
@@ -207,7 +253,10 @@ class CashFlowForecastService {
                 (transaction['amount_232143'] as num?)?.toDouble() ??
                 (transaction['amount'] as num?)?.toDouble() ??
                 0.0;
-            final type = transaction['type_232143']?.toString() ?? transaction['type']?.toString() ?? '';
+            final type =
+                transaction['type_232143']?.toString() ??
+                transaction['type']?.toString() ??
+                '';
 
             if (type == 'income') weekIncome += amount;
             if (type == 'expense') weekExpense += amount;
@@ -222,9 +271,14 @@ class CashFlowForecastService {
     }
 
     return {
-      'avg_weekly_income': weeklyIncome.isNotEmpty ? weeklyIncome.reduce((a, b) => a + b) / weeklyIncome.length : 0.0,
+      'avg_weekly_income':
+          weeklyIncome.isNotEmpty
+              ? weeklyIncome.reduce((a, b) => a + b) / weeklyIncome.length
+              : 0.0,
       'avg_weekly_expense':
-          weeklyExpense.isNotEmpty ? weeklyExpense.reduce((a, b) => a + b) / weeklyExpense.length : 0.0,
+          weeklyExpense.isNotEmpty
+              ? weeklyExpense.reduce((a, b) => a + b) / weeklyExpense.length
+              : 0.0,
     };
   }
 

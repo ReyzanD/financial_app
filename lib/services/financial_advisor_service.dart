@@ -190,22 +190,26 @@ class FinancialAdvisorService {
   }
 
   /// Run 50/30/20 analysis for a specific date range.
+  /// Fetches every transaction in [start]–[end] by paging through the data
+  /// service, so analysis is never silently truncated by a fixed LIMIT.
+  Future<List<Map<String, dynamic>>> _getAllTransactionsInRange(
+    DateTime start,
+    DateTime end,
+  ) async {
+    final startStr = start.toIso8601String().split('T')[0];
+    final endStr = end.toIso8601String().split('T')[0];
+    return _transactionData.getAllTransactions(
+      startDate: startStr,
+      endDate: endStr,
+    );
+  }
+
   Future<FiftyThirtyTwentyAnalysis> analyzeForPeriod({
     required DateTime start,
     required DateTime end,
   }) async {
     try {
-      final startStr = start.toIso8601String().split('T')[0];
-      final endStr = end.toIso8601String().split('T')[0];
-
-      final txData = await _transactionData.getTransactions(
-        startDate: startStr,
-        endDate: endStr,
-        limit: 5000,
-      );
-      final transactions = List<Map<String, dynamic>>.from(
-        txData['transactions'] ?? [],
-      );
+      final transactions = await _getAllTransactionsInRange(start, end);
 
       final goalRunRates = await _computeGoalRunRates();
 
@@ -222,16 +226,7 @@ class FinancialAdvisorService {
     required DateTime end,
   }) async {
     try {
-      final startStr = start.toIso8601String().split('T')[0];
-      final endStr = end.toIso8601String().split('T')[0];
-      final txData = await _transactionData.getTransactions(
-        startDate: startStr,
-        endDate: endStr,
-        limit: 5000,
-      );
-      final transactions = List<Map<String, dynamic>>.from(
-        txData['transactions'] ?? [],
-      );
+      final transactions = await _getAllTransactionsInRange(start, end);
       return computeZeroBased(transactions);
     } catch (e) {
       LoggerService.error('Error in zero-based analysis', error: e);

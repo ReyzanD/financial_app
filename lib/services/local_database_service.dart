@@ -478,6 +478,9 @@ class LocalDatabaseService {
       'CREATE INDEX IF NOT EXISTS idx_transactions_type_date ON transactions_232143(type_232143, transaction_date_232143)',
     );
     await db.execute(
+      'CREATE INDEX IF NOT EXISTS idx_transactions_category ON transactions_232143(category_id_232143)',
+    );
+    await db.execute(
       'CREATE INDEX IF NOT EXISTS idx_categories_user ON categories_232143(user_id_232143)',
     );
     await db.execute(
@@ -615,7 +618,7 @@ class LocalDatabaseService {
   }
 
   /// Get current database version
-  static int get currentVersion => 8;
+  static int get currentVersion => 9;
 
   /// Upgrade database schema
   Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
@@ -1103,6 +1106,18 @@ class LocalDatabaseService {
         );
         LoggerService.info(
           '✅ Migrated to version 8: added observation_count to alternative_suggestions',
+        );
+      }
+
+      if (oldVersion < 9) {
+        // Add a category index to speed up category-filtered queries
+        // (budget predictor, analytics, place-visit sync) at scale.
+        await db.execute(
+          'CREATE INDEX IF NOT EXISTS idx_transactions_category '
+          'ON transactions_232143(category_id_232143)',
+        );
+        LoggerService.info(
+          '✅ Migrated to version 9: added idx_transactions_category',
         );
       }
     });
