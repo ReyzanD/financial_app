@@ -87,6 +87,10 @@ class AlternativeRecommendationEngine {
       final knownPlacePrices = await _priceObservationDataService
           .getPriceObservations(category: placeVisit.category);
 
+      // Number of price reports behind the median/price basis — surfaced in
+      // the UI as "based on N reports" so the honesty story is visible.
+      final observationCount = knownPlacePrices.length;
+
       // Build a map: place_name -> lowest price observed
       final lowestPrices = <String, double>{};
       for (final obs in knownPlacePrices) {
@@ -181,6 +185,7 @@ class AlternativeRecommendationEngine {
                   basis: s.basis,
                   category: placeVisit.category,
                   confidenceLevel: s.confidence,
+                  observationCount: observationCount,
                   generatedAt: now,
                 ),
               )

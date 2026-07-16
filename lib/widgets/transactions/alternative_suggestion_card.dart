@@ -15,14 +15,22 @@ class AlternativeSuggestionCard extends StatelessWidget {
   final AlternativeSuggestion suggestion;
   final bool isCompact;
 
-  const AlternativeSuggestionCard({super.key, required this.suggestion, this.isCompact = false});
+  const AlternativeSuggestionCard({
+    super.key,
+    required this.suggestion,
+    this.isCompact = false,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final hasSavings = suggestion.estimatedSavings != null && suggestion.estimatedSavings! > 0;
+    final hasSavings =
+        suggestion.estimatedSavings != null && suggestion.estimatedSavings! > 0;
     final distanceText = _formatDistance(suggestion.distanceMeters);
     final confidenceColor = _confidenceColor(suggestion.confidenceLevel);
-    final savingsText = hasSavings ? 'Hemat ${CurrencyFormatter.formatRupiah(suggestion.estimatedSavings!)}' : null;
+    final savingsText =
+        hasSavings
+            ? 'Hemat ${CurrencyFormatter.formatRupiah(suggestion.estimatedSavings!)}'
+            : null;
 
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
@@ -58,7 +66,10 @@ class AlternativeSuggestionCard extends StatelessWidget {
               ),
               if (hasSavings)
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 3,
+                  ),
                   decoration: BoxDecoration(
                     color: DesignTokens.successColor.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(8),
@@ -80,8 +91,14 @@ class AlternativeSuggestionCard extends StatelessWidget {
               _infoChip(Iconsax.location, distanceText),
               const SizedBox(width: 8),
               _infoChip(Iconsax.shield_tick, '${suggestion.confidenceLevel}%'),
-              if (suggestion.basis == 'price' && !hasSavings) const SizedBox(width: 8),
-              if (suggestion.basis == 'price' && !hasSavings) _infoChip(Iconsax.dollar_square, 'Price'),
+              if (suggestion.basis == 'price') const SizedBox(width: 8),
+              if (suggestion.basis == 'price')
+                _infoChip(
+                  Iconsax.dollar_square,
+                  suggestion.observationCount > 0
+                      ? '${suggestion.observationCount} laporan'
+                      : 'Price',
+                ),
             ],
           ),
           SizedBox(height: isCompact ? 6 : 10),
@@ -105,12 +122,18 @@ class AlternativeSuggestionCard extends StatelessWidget {
                 child: ElevatedButton.icon(
                   onPressed: () => _openInMaps(context),
                   icon: const Icon(Iconsax.map, size: 14),
-                  label: Text(AppLocalizations.of(context)?.visit ?? 'Lihat', style: GoogleFonts.poppins(fontSize: 11)),
+                  label: Text(
+                    AppLocalizations.of(context)?.visit ?? 'Lihat',
+                    style: GoogleFonts.poppins(fontSize: 11),
+                  ),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: DesignTokens.primaryColor,
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(horizontal: 12),
-                    textStyle: GoogleFonts.poppins(fontSize: 11, fontWeight: FontWeight.w500),
+                    textStyle: GoogleFonts.poppins(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
                 ),
               ),
@@ -127,7 +150,10 @@ class AlternativeSuggestionCard extends StatelessWidget {
       children: [
         Icon(icon, color: Colors.grey[500], size: 12),
         const SizedBox(width: 3),
-        Text(text, style: GoogleFonts.poppins(color: Colors.grey[500], fontSize: 11)),
+        Text(
+          text,
+          style: GoogleFonts.poppins(color: Colors.grey[500], fontSize: 11),
+        ),
       ],
     );
   }
@@ -161,10 +187,16 @@ class AlternativeSuggestionCard extends StatelessWidget {
       if (await canLaunchUrl(uri)) {
         await launchUrl(uri, mode: LaunchMode.externalApplication);
       } else {
-        ErrorHandlerService.showInfoSnackbar(context, 'Membuka navigasi ke $name');
+        ErrorHandlerService.showInfoSnackbar(
+          context,
+          'Membuka navigasi ke $name',
+        );
       }
     } catch (e) {
-      ErrorHandlerService.showErrorSnackbar(context, 'Tidak dapat membuka navigasi');
+      ErrorHandlerService.showErrorSnackbar(
+        context,
+        'Tidak dapat membuka navigasi',
+      );
     }
   }
 }

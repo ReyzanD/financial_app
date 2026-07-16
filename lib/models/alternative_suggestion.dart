@@ -11,6 +11,8 @@ class AlternativeSuggestion {
   final String basis; // "price" | "distance_only"
   final String category;
   final int confidenceLevel; // 0–100
+  final int
+  observationCount; // # of price observations behind the median/price basis
   final DateTime generatedAt;
   final DateTime createdAt;
 
@@ -26,6 +28,7 @@ class AlternativeSuggestion {
     required this.basis,
     required this.category,
     this.confidenceLevel = 0,
+    this.observationCount = 0,
     required this.generatedAt,
     DateTime? createdAt,
   }) : createdAt = createdAt ?? DateTime.now();
@@ -42,6 +45,7 @@ class AlternativeSuggestion {
     'basis': basis,
     'category': category,
     'confidence_level': confidenceLevel,
+    'observation_count': observationCount,
     'generated_at': generatedAt.toIso8601String(),
     'created_at': createdAt.toIso8601String(),
   };
@@ -54,12 +58,14 @@ class AlternativeSuggestion {
       suggestedPlaceName: map['suggested_place_name']?.toString() ?? '',
       suggestedOsmNodeId: map['suggested_osm_node_id']?.toString() ?? '',
       suggestedLatitude: (map['suggested_latitude'] as num?)?.toDouble() ?? 0.0,
-      suggestedLongitude: (map['suggested_longitude'] as num?)?.toDouble() ?? 0.0,
+      suggestedLongitude:
+          (map['suggested_longitude'] as num?)?.toDouble() ?? 0.0,
       distanceMeters: (map['distance_meters'] as num?)?.toDouble() ?? 0.0,
       estimatedSavings: (map['estimated_savings'] as num?)?.toDouble(),
       basis: map['basis']?.toString() ?? 'distance_only',
       category: map['category']?.toString() ?? '',
       confidenceLevel: (map['confidence_level'] as num?)?.toInt() ?? 0,
+      observationCount: (map['observation_count'] as num?)?.toInt() ?? 0,
       generatedAt: _parseDate(map['generated_at']),
       createdAt: _parseDate(map['created_at']),
     );

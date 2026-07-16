@@ -200,6 +200,11 @@ void main() {
         expect(results[1].basis, 'price');
         expect(results[2].suggestedPlaceName, 'NearNoPrice');
         expect(results[3].suggestedPlaceName, 'FarNoPrice');
+
+        // Observation count (2 known price reports) is propagated to every
+        // suggestion so the "based on N reports" honesty signal is persisted.
+        expect(results[0].observationCount, 2);
+        expect(results[2].observationCount, 2);
       },
     );
   });
