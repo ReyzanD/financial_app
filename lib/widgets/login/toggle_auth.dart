@@ -22,11 +22,7 @@ class ToggleAuth extends StatelessWidget {
           onTap: onToggle,
           child: Text(
             isLogin ? 'Register Now >' : 'Log in >',
-            style: GoogleFonts.poppins(
-              color: DesignTokens.primaryColor,
-              fontSize: 12,
-              fontWeight: FontWeight.w600,
-            ),
+            style: GoogleFonts.poppins(color: DesignTokens.primaryColor, fontSize: 12, fontWeight: FontWeight.w600),
           ),
         ),
       ],

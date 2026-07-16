@@ -42,9 +42,7 @@ class _AIRecommendationsState extends State<AIRecommendations> {
         return;
       }
 
-      final recommendations = await _aiService.generateMultipleRecommendations(
-        limit: 5,
-      );
+      final recommendations = await _aiService.generateMultipleRecommendations(limit: 5);
       if (mounted) {
         setState(() {
           _recommendations = recommendations;
@@ -97,13 +95,9 @@ class _AIRecommendationsState extends State<AIRecommendations> {
         decoration: BoxDecoration(
           color: DesignTokens.surfaceDark,
           borderRadius: BorderRadius.circular(DesignTokens.radiusLarge),
-          border: Border.all(
-            color: DesignTokens.primaryColor.withValues(alpha: 0.3),
-          ),
+          border: Border.all(color: DesignTokens.primaryColor.withValues(alpha: 0.3)),
         ),
-        child: const Center(
-          child: CircularProgressIndicator(color: DesignTokens.primaryColor),
-        ),
+        child: const Center(child: CircularProgressIndicator(color: DesignTokens.primaryColor)),
       );
     }
 
@@ -113,14 +107,11 @@ class _AIRecommendationsState extends State<AIRecommendations> {
         decoration: BoxDecoration(
           color: DesignTokens.surfaceDark,
           borderRadius: BorderRadius.circular(DesignTokens.radiusLarge),
-          border: Border.all(
-            color: DesignTokens.primaryColor.withValues(alpha: 0.3),
-          ),
+          border: Border.all(color: DesignTokens.primaryColor.withValues(alpha: 0.3)),
         ),
         child: Center(
           child: Text(
-            _l10n?.no_recommendations_available ??
-                'Belum ada rekomendasi AI tersedia',
+            _l10n?.no_recommendations_available ?? 'Belum ada rekomendasi AI tersedia',
             style: GoogleFonts.poppins(color: Colors.grey[500], fontSize: 13),
           ),
         ),
@@ -129,9 +120,7 @@ class _AIRecommendationsState extends State<AIRecommendations> {
 
     final currentRec = _recommendations[_currentIndex];
     final recommendation =
-        currentRec['recommendation'] ??
-        (_l10n?.no_recommendations_available ??
-            'Belum ada rekomendasi AI tersedia');
+        currentRec['recommendation'] ?? (_l10n?.no_recommendations_available ?? 'Belum ada rekomendasi AI tersedia');
     final savings = (currentRec['potential_savings'] ?? 0).toDouble();
     final priority = currentRec['priority'];
     final category = currentRec['category'];
@@ -161,13 +150,8 @@ class _AIRecommendationsState extends State<AIRecommendations> {
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
                   color: priorityColor.withValues(alpha: 0.15),
-                  borderRadius: BorderRadius.circular(
-                    DesignTokens.radiusMedium,
-                  ),
-                  border: Border.all(
-                    color: priorityColor.withValues(alpha: 0.3),
-                    width: 1,
-                  ),
+                  borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                  border: Border.all(color: priorityColor.withValues(alpha: 0.3), width: 1),
                 ),
                 child: Icon(priorityIcon, color: priorityColor, size: 22),
               ),
@@ -178,34 +162,19 @@ class _AIRecommendationsState extends State<AIRecommendations> {
                   children: [
                     Text(
                       'AI Smart Insights',
-                      style: GoogleFonts.poppins(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
+                      style: GoogleFonts.poppins(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
                     ),
                     if (category != null)
-                      Text(
-                        category,
-                        style: GoogleFonts.poppins(
-                          color: Colors.grey[500],
-                          fontSize: 11,
-                        ),
-                      ),
+                      Text(category, style: GoogleFonts.poppins(color: Colors.grey[500], fontSize: 11)),
                   ],
                 ),
               ),
               if (priority != null)
                 Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 4,
-                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
                     color: priorityColor.withValues(alpha: 0.2),
-                    borderRadius: BorderRadius.circular(
-                      DesignTokens.radiusMedium,
-                    ),
+                    borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
                   ),
                   child: Text(
                     priority == 'high'
@@ -213,62 +182,34 @@ class _AIRecommendationsState extends State<AIRecommendations> {
                         : priority == 'medium'
                         ? 'PENTING'
                         : 'INFO',
-                    style: GoogleFonts.poppins(
-                      color: priorityColor,
-                      fontSize: 10,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: GoogleFonts.poppins(color: priorityColor, fontSize: 10, fontWeight: FontWeight.bold),
                   ),
                 ),
             ],
           ),
-          const SizedBox(height: 12),
-          Text(
-            recommendation,
-            style: GoogleFonts.poppins(
-              color: Colors.white,
-              fontSize: 13,
-              height: 1.5,
-            ),
-          ),
+          const SizedBox(height: DesignTokens.spacing3),
+          Text(recommendation, style: GoogleFonts.poppins(color: Colors.white, fontSize: 13, height: 1.5)),
           if (savings > 0) ...[
-            const SizedBox(height: 12),
+            const SizedBox(height: DesignTokens.spacing3),
             Container(
               padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(
                 color: Colors.green.withValues(alpha: 0.12),
                 borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
-                border: Border.all(
-                  color: Colors.green.withValues(alpha: 0.4),
-                  width: 1.5,
-                ),
+                border: Border.all(color: Colors.green.withValues(alpha: 0.4), width: 1.5),
               ),
               child: Row(
                 children: [
-                  const Icon(
-                    Icons.savings_rounded,
-                    color: Colors.green,
-                    size: 18,
-                  ),
+                  const Icon(Icons.savings_rounded, color: Colors.green, size: 18),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          'Potensi Penghematan',
-                          style: GoogleFonts.poppins(
-                            color: Colors.grey[400],
-                            fontSize: 11,
-                          ),
-                        ),
+                        Text('Potensi Penghematan', style: GoogleFonts.poppins(color: Colors.grey[400], fontSize: 11)),
                         Text(
                           '${CurrencyFormatter.formatRupiah(savings)}/bulan',
-                          style: GoogleFonts.poppins(
-                            color: Colors.green,
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                          ),
+                          style: GoogleFonts.poppins(color: Colors.green, fontSize: 14, fontWeight: FontWeight.bold),
                         ),
                       ],
                     ),
@@ -278,7 +219,7 @@ class _AIRecommendationsState extends State<AIRecommendations> {
             ),
           ],
           if (_recommendations.length > 1) ...[
-            const SizedBox(height: 12),
+            const SizedBox(height: DesignTokens.spacing3),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -287,30 +228,21 @@ class _AIRecommendationsState extends State<AIRecommendations> {
                     icon: const Icon(Icons.chevron_left, color: Colors.white70),
                     onPressed: () {
                       setState(() {
-                        _currentIndex =
-                            (_currentIndex - 1 + _recommendations.length) %
-                            _recommendations.length;
+                        _currentIndex = (_currentIndex - 1 + _recommendations.length) % _recommendations.length;
                       });
                     },
                     iconSize: 20,
                   ),
                 Text(
                   '${_currentIndex + 1} / ${_recommendations.length}',
-                  style: GoogleFonts.poppins(
-                    color: Colors.grey[500],
-                    fontSize: 11,
-                  ),
+                  style: GoogleFonts.poppins(color: Colors.grey[500], fontSize: 11),
                 ),
                 if (_currentIndex < _recommendations.length - 1)
                   IconButton(
-                    icon: const Icon(
-                      Icons.chevron_right,
-                      color: Colors.white70,
-                    ),
+                    icon: const Icon(Icons.chevron_right, color: Colors.white70),
                     onPressed: () {
                       setState(() {
-                        _currentIndex =
-                            (_currentIndex + 1) % _recommendations.length;
+                        _currentIndex = (_currentIndex + 1) % _recommendations.length;
                       });
                     },
                     iconSize: 20,
@@ -319,7 +251,7 @@ class _AIRecommendationsState extends State<AIRecommendations> {
             ),
           ],
           if (action != null) ...[
-            const SizedBox(height: 12),
+            const SizedBox(height: DesignTokens.spacing3),
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
@@ -327,24 +259,16 @@ class _AIRecommendationsState extends State<AIRecommendations> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: priorityColor,
                   padding: const EdgeInsets.symmetric(vertical: 12),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(
-                      DesignTokens.radiusMedium,
-                    ),
-                  ),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(DesignTokens.radiusMedium)),
                 ),
                 child: Text(
                   _getActionLabel(action),
-                  style: GoogleFonts.poppins(
-                    color: Colors.white,
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600,
-                  ),
+                  style: GoogleFonts.poppins(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w600),
                 ),
               ),
             ),
           ],
-          const SizedBox(height: 8),
+          const SizedBox(height: DesignTokens.spacing2),
           GestureDetector(
             onTap: _loadAIRecommendations,
             child: Row(
@@ -352,13 +276,7 @@ class _AIRecommendationsState extends State<AIRecommendations> {
               children: [
                 Icon(Icons.refresh_rounded, color: Colors.grey[600], size: 14),
                 const SizedBox(width: 4),
-                Text(
-                  'Refresh Rekomendasi',
-                  style: GoogleFonts.poppins(
-                    color: Colors.grey[600],
-                    fontSize: 11,
-                  ),
-                ),
+                Text('Refresh Rekomendasi', style: GoogleFonts.poppins(color: Colors.grey[600], fontSize: 11)),
               ],
             ),
           ),
@@ -403,9 +321,6 @@ class _AIRecommendationsState extends State<AIRecommendations> {
     // Navigate based on action
     // Note: This would need proper navigation context
     // For now, just show a snackbar
-    ErrorHandlerService.showInfoSnackbar(
-      context,
-      'Aksi: ${_getActionLabel(action)}',
-    );
+    ErrorHandlerService.showInfoSnackbar(context, 'Aksi: ${_getActionLabel(action)}');
   }
 }

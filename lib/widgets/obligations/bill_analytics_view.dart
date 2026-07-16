@@ -38,8 +38,7 @@ class _BillAnalyticsViewState extends State<BillAnalyticsView> {
       final categoryBreakdown = <String, double>{};
       for (var obligation in obligations) {
         final category = obligation.category ?? 'other';
-        categoryBreakdown[category] =
-            (categoryBreakdown[category] ?? 0.0) + obligation.monthlyAmount;
+        categoryBreakdown[category] = (categoryBreakdown[category] ?? 0.0) + obligation.monthlyAmount;
       }
 
       // Calculate monthly trends (last 6 months)
@@ -81,9 +80,7 @@ class _BillAnalyticsViewState extends State<BillAnalyticsView> {
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
-      return const Center(
-        child: CircularProgressIndicator(color: DesignTokens.primaryColor),
-      );
+      return const Center(child: CircularProgressIndicator(color: DesignTokens.primaryColor));
     }
 
     return SingleChildScrollView(
@@ -93,15 +90,15 @@ class _BillAnalyticsViewState extends State<BillAnalyticsView> {
         children: [
           // Summary Cards
           _buildSummaryCards(),
-          const SizedBox(height: 24),
+          const SizedBox(height: DesignTokens.spacing6),
 
           // Category Breakdown
           _buildCategoryBreakdown(),
-          const SizedBox(height: 24),
+          const SizedBox(height: DesignTokens.spacing6),
 
           // Monthly Trends
           _buildMonthlyTrends(),
-          const SizedBox(height: 24),
+          const SizedBox(height: DesignTokens.spacing6),
 
           // Spending Forecast
           _buildSpendingForecast(),
@@ -116,9 +113,7 @@ class _BillAnalyticsViewState extends State<BillAnalyticsView> {
         Expanded(
           child: _buildStatCard(
             AppLocalizations.of(context)!.monthly_total_label,
-            CurrencyFormatter.formatRupiah(
-              (_analytics['monthlyTotal'] as num?)?.toDouble() ?? 0.0,
-            ),
+            CurrencyFormatter.formatRupiah((_analytics['monthlyTotal'] as num?)?.toDouble() ?? 0.0),
             Iconsax.wallet_3,
             Colors.blue,
           ),
@@ -127,9 +122,7 @@ class _BillAnalyticsViewState extends State<BillAnalyticsView> {
         Expanded(
           child: _buildStatCard(
             AppLocalizations.of(context)!.total_debt,
-            CurrencyFormatter.formatRupiah(
-              (_analytics['totalDebt'] as num?)?.toDouble() ?? 0.0,
-            ),
+            CurrencyFormatter.formatRupiah((_analytics['totalDebt'] as num?)?.toDouble() ?? 0.0),
             Iconsax.card,
             Colors.red,
           ),
@@ -138,12 +131,7 @@ class _BillAnalyticsViewState extends State<BillAnalyticsView> {
     );
   }
 
-  Widget _buildStatCard(
-    String title,
-    String value,
-    IconData icon,
-    Color color,
-  ) {
+  Widget _buildStatCard(String title, String value, IconData icon, Color color) {
     return Container(
       padding: const EdgeInsets.all(DesignTokens.spacing4),
       decoration: BoxDecoration(
@@ -155,19 +143,12 @@ class _BillAnalyticsViewState extends State<BillAnalyticsView> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Icon(icon, color: color, size: 24),
-          const SizedBox(height: 12),
-          Text(
-            title,
-            style: GoogleFonts.poppins(color: Colors.grey[400], fontSize: 12),
-          ),
-          const SizedBox(height: 4),
+          const SizedBox(height: DesignTokens.spacing3),
+          Text(title, style: GoogleFonts.poppins(color: Colors.grey[400], fontSize: 12)),
+          const SizedBox(height: DesignTokens.spacing1),
           Text(
             value,
-            style: GoogleFonts.poppins(
-              color: Colors.white,
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
+            style: GoogleFonts.poppins(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
@@ -177,8 +158,7 @@ class _BillAnalyticsViewState extends State<BillAnalyticsView> {
   }
 
   Widget _buildCategoryBreakdown() {
-    final breakdown =
-        _analytics['categoryBreakdown'] as Map<String, double>? ?? {};
+    final breakdown = _analytics['categoryBreakdown'] as Map<String, double>? ?? {};
 
     if (breakdown.isEmpty) {
       return const SizedBox.shrink();
@@ -198,13 +178,9 @@ class _BillAnalyticsViewState extends State<BillAnalyticsView> {
         children: [
           Text(
             AppLocalizations.of(context)!.category_breakdown,
-            style: GoogleFonts.poppins(
-              color: Colors.white,
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
+            style: GoogleFonts.poppins(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: DesignTokens.spacing4),
           ...breakdown.entries.map((entry) {
             final percentage = total > 0 ? (entry.value / total * 100) : 0.0;
             return Padding(
@@ -217,14 +193,11 @@ class _BillAnalyticsViewState extends State<BillAnalyticsView> {
                     children: [
                       Text(
                         _getCategoryName(entry.key),
-                        style: GoogleFonts.poppins(
-                          color: Colors.white70,
-                          fontSize: 14,
-                        ),
+                        style: GoogleFonts.poppins(color: Colors.white70, fontSize: 14),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: DesignTokens.spacing1),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -234,9 +207,7 @@ class _BillAnalyticsViewState extends State<BillAnalyticsView> {
                           child: LinearProgressIndicator(
                             value: percentage / 100,
                             backgroundColor: Colors.grey[800],
-                            valueColor: AlwaysStoppedAnimation<Color>(
-                              _getCategoryColor(entry.key),
-                            ),
+                            valueColor: AlwaysStoppedAnimation<Color>(_getCategoryColor(entry.key)),
                             minHeight: 6,
                           ),
                         ),
@@ -244,19 +215,12 @@ class _BillAnalyticsViewState extends State<BillAnalyticsView> {
                       const SizedBox(width: 12),
                       Text(
                         '${percentage.toStringAsFixed(1)}%',
-                        style: GoogleFonts.poppins(
-                          color: Colors.grey[400],
-                          fontSize: 12,
-                        ),
+                        style: GoogleFonts.poppins(color: Colors.grey[400], fontSize: 12),
                       ),
                       const SizedBox(width: 8),
                       Text(
                         CurrencyFormatter.formatRupiah(entry.value.toInt()),
-                        style: GoogleFonts.poppins(
-                          color: Colors.white,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                        ),
+                        style: GoogleFonts.poppins(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w600),
                       ),
                     ],
                   ),
@@ -270,8 +234,7 @@ class _BillAnalyticsViewState extends State<BillAnalyticsView> {
   }
 
   Widget _buildMonthlyTrends() {
-    final trends =
-        _analytics['monthlyTrends'] as List<Map<String, dynamic>>? ?? [];
+    final trends = _analytics['monthlyTrends'] as List<Map<String, dynamic>>? ?? [];
 
     return Container(
       padding: const EdgeInsets.all(DesignTokens.spacing4),
@@ -285,23 +248,16 @@ class _BillAnalyticsViewState extends State<BillAnalyticsView> {
         children: [
           Text(
             AppLocalizations.of(context)!.monthly_trends,
-            style: GoogleFonts.poppins(
-              color: Colors.white,
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
+            style: GoogleFonts.poppins(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: DesignTokens.spacing4),
           if (trends.isEmpty)
             Center(
               child: Padding(
                 padding: const EdgeInsets.all(32),
                 child: Text(
                   AppLocalizations.of(context)!.no_trend_data,
-                  style: GoogleFonts.poppins(
-                    color: Colors.grey[400],
-                    fontSize: 14,
-                  ),
+                  style: GoogleFonts.poppins(color: Colors.grey[400], fontSize: 14),
                 ),
               ),
             )
@@ -314,20 +270,11 @@ class _BillAnalyticsViewState extends State<BillAnalyticsView> {
                   children: [
                     Text(
                       trend['month']?.toString() ?? '',
-                      style: GoogleFonts.poppins(
-                        color: Colors.white70,
-                        fontSize: 14,
-                      ),
+                      style: GoogleFonts.poppins(color: Colors.white70, fontSize: 14),
                     ),
                     Text(
-                      CurrencyFormatter.formatRupiah(
-                        ((trend['amount'] as num?)?.toDouble() ?? 0.0).toInt(),
-                      ),
-                      style: GoogleFonts.poppins(
-                        color: Colors.white,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                      ),
+                      CurrencyFormatter.formatRupiah(((trend['amount'] as num?)?.toDouble() ?? 0.0).toInt()),
+                      style: GoogleFonts.poppins(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w600),
                     ),
                   ],
                 ),
@@ -339,8 +286,7 @@ class _BillAnalyticsViewState extends State<BillAnalyticsView> {
   }
 
   Widget _buildSpendingForecast() {
-    final monthlyTotal =
-        (_analytics['monthlyTotal'] as num?)?.toDouble() ?? 0.0;
+    final monthlyTotal = (_analytics['monthlyTotal'] as num?)?.toDouble() ?? 0.0;
     final obligations = _analytics['obligations'] as List? ?? [];
 
     final now = DateTime.now();
@@ -350,8 +296,7 @@ class _BillAnalyticsViewState extends State<BillAnalyticsView> {
     final upcomingObligations =
         obligations.where((o) {
           final obligation = o as dynamic;
-          return obligation.daysUntilDue >= 0 &&
-              obligation.daysUntilDue <= daysRemaining;
+          return obligation.daysUntilDue >= 0 && obligation.daysUntilDue <= daysRemaining;
         }).toList();
 
     double upcomingTotal = 0.0;
@@ -376,21 +321,17 @@ class _BillAnalyticsViewState extends State<BillAnalyticsView> {
               const SizedBox(width: 8),
               Text(
                 AppLocalizations.of(context)!.spending_forecast,
-                style: GoogleFonts.poppins(
-                  color: Colors.white,
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: GoogleFonts.poppins(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
               ),
             ],
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: DesignTokens.spacing4),
           _buildForecastItem(
             AppLocalizations.of(context)!.remaining_this_month,
             CurrencyFormatter.formatRupiah(upcomingTotal.toInt()),
             Colors.orange,
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: DesignTokens.spacing3),
           _buildForecastItem(
             AppLocalizations.of(context)!.monthly_total_label,
             CurrencyFormatter.formatRupiah(monthlyTotal.toInt()),
@@ -405,10 +346,7 @@ class _BillAnalyticsViewState extends State<BillAnalyticsView> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(
-          label,
-          style: GoogleFonts.poppins(color: Colors.white70, fontSize: 14),
-        ),
+        Text(label, style: GoogleFonts.poppins(color: Colors.white70, fontSize: 14)),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
           decoration: BoxDecoration(
@@ -416,14 +354,7 @@ class _BillAnalyticsViewState extends State<BillAnalyticsView> {
             borderRadius: BorderRadius.circular(8),
             border: Border.all(color: color.withValues(alpha: 0.5)),
           ),
-          child: Text(
-            value,
-            style: GoogleFonts.poppins(
-              color: color,
-              fontSize: 14,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
+          child: Text(value, style: GoogleFonts.poppins(color: color, fontSize: 14, fontWeight: FontWeight.bold)),
         ),
       ],
     );

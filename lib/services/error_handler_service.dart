@@ -16,8 +16,7 @@ class ErrorHandlerService {
       return 'Tidak ada koneksi internet. Periksa koneksi Anda dan coba lagi.';
     }
 
-    if (errorString.contains('connection timeout') ||
-        errorString.contains('timeout')) {
+    if (errorString.contains('connection timeout') || errorString.contains('timeout')) {
       return 'Koneksi timeout. Server tidak merespons. Silakan coba lagi.';
     }
 
@@ -26,8 +25,7 @@ class ErrorHandlerService {
       return 'Sesi Anda telah berakhir. Silakan login kembali.';
     }
 
-    if (errorString.contains('not authenticated') ||
-        errorString.contains('login required')) {
+    if (errorString.contains('not authenticated') || errorString.contains('login required')) {
       return 'Silakan login terlebih dahulu untuk mengakses fitur ini.';
     }
 
@@ -43,19 +41,16 @@ class ErrorHandlerService {
       return 'Data yang Anda masukkan tidak valid. Periksa kembali.';
     }
 
-    if (errorString.contains('500') ||
-        errorString.contains('internal server error')) {
+    if (errorString.contains('500') || errorString.contains('internal server error')) {
       return 'Server sedang mengalami masalah. Silakan coba lagi nanti.';
     }
 
-    if (errorString.contains('503') ||
-        errorString.contains('service unavailable')) {
+    if (errorString.contains('503') || errorString.contains('service unavailable')) {
       return 'Layanan sedang tidak tersedia. Silakan coba lagi nanti.';
     }
 
     // Generic errors
-    if (errorString.contains('format exception') ||
-        errorString.contains('invalid format')) {
+    if (errorString.contains('format exception') || errorString.contains('invalid format')) {
       return 'Format data tidak valid. Periksa kembali input Anda.';
     }
 
@@ -80,9 +75,7 @@ class ErrorHandlerService {
   /// Check if error is authentication-related
   static bool isAuthError(dynamic error) {
     final errorString = error.toString().toLowerCase();
-    return errorString.contains('401') ||
-        errorString.contains('unauthorized') ||
-        errorString.contains('token');
+    return errorString.contains('401') || errorString.contains('unauthorized') || errorString.contains('token');
   }
 
   /// Show error snackbar dengan retry option
@@ -100,12 +93,7 @@ class ErrorHandlerService {
           children: [
             const Icon(Icons.error_outline, color: Colors.white, size: 20),
             const SizedBox(width: 12),
-            Expanded(
-              child: Text(
-                message,
-                style: GoogleFonts.poppins(color: Colors.white, fontSize: 14),
-              ),
-            ),
+            Expanded(child: Text(message, style: GoogleFonts.poppins(color: Colors.white, fontSize: 14))),
             if (onRetry != null) ...[
               const SizedBox(width: 8),
               TextButton(
@@ -115,11 +103,7 @@ class ErrorHandlerService {
                 },
                 child: Text(
                   'Coba Lagi',
-                  style: GoogleFonts.poppins(
-                    color: Colors.white,
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: GoogleFonts.poppins(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
                 ),
               ),
             ],
@@ -145,18 +129,9 @@ class ErrorHandlerService {
       SnackBar(
         content: Row(
           children: [
-            const Icon(
-              Icons.check_circle_outline,
-              color: Colors.white,
-              size: 20,
-            ),
+            const Icon(Icons.check_circle_outline, color: Colors.white, size: 20),
             const SizedBox(width: 12),
-            Expanded(
-              child: Text(
-                message,
-                style: GoogleFonts.poppins(color: Colors.white, fontSize: 14),
-              ),
-            ),
+            Expanded(child: Text(message, style: GoogleFonts.poppins(color: Colors.white, fontSize: 14))),
           ],
         ),
         backgroundColor: Colors.green[700],
@@ -179,18 +154,9 @@ class ErrorHandlerService {
       SnackBar(
         content: Row(
           children: [
-            const Icon(
-              Icons.warning_amber_rounded,
-              color: Colors.white,
-              size: 20,
-            ),
+            const Icon(Icons.warning_amber_rounded, color: Colors.white, size: 20),
             const SizedBox(width: 12),
-            Expanded(
-              child: Text(
-                message,
-                style: GoogleFonts.poppins(color: Colors.white, fontSize: 14),
-              ),
-            ),
+            Expanded(child: Text(message, style: GoogleFonts.poppins(color: Colors.white, fontSize: 14))),
           ],
         ),
         backgroundColor: Colors.orange[700],
@@ -202,11 +168,7 @@ class ErrorHandlerService {
   }
 
   /// Show info snackbar
-  static void showInfoSnackbar(
-    BuildContext context,
-    String message, {
-    Duration duration = const Duration(seconds: 3),
-  }) {
+  static void showInfoSnackbar(BuildContext context, String message, {Duration duration = const Duration(seconds: 3)}) {
     if (!context.mounted) return;
 
     ScaffoldMessenger.of(context).showSnackBar(
@@ -215,12 +177,7 @@ class ErrorHandlerService {
           children: [
             const Icon(Icons.info_outline, color: Colors.white, size: 20),
             const SizedBox(width: 12),
-            Expanded(
-              child: Text(
-                message,
-                style: GoogleFonts.poppins(color: Colors.white, fontSize: 14),
-              ),
-            ),
+            Expanded(child: Text(message, style: GoogleFonts.poppins(color: Colors.white, fontSize: 14))),
           ],
         ),
         backgroundColor: Colors.blue[700],
@@ -246,9 +203,7 @@ class ErrorHandlerService {
       builder:
           (context) => AlertDialog(
             backgroundColor: DesignTokens.surfaceDark,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(DesignTokens.radiusLarge),
-            ),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(DesignTokens.radiusLarge)),
             title: Row(
               children: [
                 const Icon(Icons.error_outline, color: Colors.red, size: 24),
@@ -256,19 +211,12 @@ class ErrorHandlerService {
                 Expanded(
                   child: Text(
                     title,
-                    style: GoogleFonts.poppins(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: GoogleFonts.poppins(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                 ),
               ],
             ),
-            content: Text(
-              message,
-              style: GoogleFonts.poppins(color: Colors.white70, fontSize: 14),
-            ),
+            content: Text(message, style: GoogleFonts.poppins(color: Colors.white70, fontSize: 14)),
             actions: [
               if (onDismiss != null)
                 TextButton(
@@ -276,10 +224,7 @@ class ErrorHandlerService {
                     Navigator.pop(context);
                     onDismiss();
                   },
-                  child: Text(
-                    'Tutup',
-                    style: GoogleFonts.poppins(color: Colors.grey[400]),
-                  ),
+                  child: Text('Tutup', style: GoogleFonts.poppins(color: Colors.grey[400])),
                 ),
               if (onRetry != null)
                 ElevatedButton(
@@ -289,16 +234,11 @@ class ErrorHandlerService {
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: DesignTokens.primaryColor,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                   ),
                   child: Text(
                     'Coba Lagi',
-                    style: GoogleFonts.poppins(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w600,
-                    ),
+                    style: GoogleFonts.poppins(color: Colors.white, fontWeight: FontWeight.w600),
                   ),
                 ),
             ],

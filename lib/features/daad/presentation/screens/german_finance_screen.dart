@@ -29,8 +29,7 @@ class GermanFinanceScreen extends StatefulWidget {
 
 class _GermanFinanceScreenState extends State<GermanFinanceScreen> {
   final ExchangeRateService _exchangeService = getIt<ExchangeRateService>();
-  final FinancialAdvisorService _advisorService =
-      getIt<FinancialAdvisorService>();
+  final FinancialAdvisorService _advisorService = getIt<FinancialAdvisorService>();
 
   // 2026 Sperrkonto requirement (tied to BAföG §13, reviewed annually)
   static const double _sperrRequiredEur = 11904.0;
@@ -111,15 +110,10 @@ class _GermanFinanceScreenState extends State<GermanFinanceScreen> {
     _isUpdatingEur = false;
   }
 
-  double get _requiredInIdr =>
-      _rateEurToIdr != null ? _sperrRequiredEur * _rateEurToIdr! : 0;
-  double get _monthlyInIdr =>
-      _rateEurToIdr != null ? _sperrMonthlyEur * _rateEurToIdr! : 0;
+  double get _requiredInIdr => _rateEurToIdr != null ? _sperrRequiredEur * _rateEurToIdr! : 0;
+  double get _monthlyInIdr => _rateEurToIdr != null ? _sperrMonthlyEur * _rateEurToIdr! : 0;
   int get _monthsToGoal =>
-      _monthlySavings > 0
-          ? (_sperrRequiredEur * (_rateEurToIdr ?? 17500) / _monthlySavings)
-              .ceil()
-          : -1;
+      _monthlySavings > 0 ? (_sperrRequiredEur * (_rateEurToIdr ?? 17500) / _monthlySavings).ceil() : -1;
 
   String get _assessmentText {
     if (_monthlyIncome <= 0) return 'Belum ada data pemasukan bulan ini.';
@@ -157,30 +151,21 @@ class _GermanFinanceScreenState extends State<GermanFinanceScreen> {
               'name': 'Sperrkonto Studi Jerman',
               'target_amount': idrTarget,
               'monthly_target': monthlyTarget,
-              'target_date':
-                  DateTime.now()
-                      .add(const Duration(days: 365))
-                      .toIso8601String(),
+              'target_date': DateTime.now().add(const Duration(days: 365)).toIso8601String(),
               'type': 'education',
             },
           ),
     );
 
     if (goal != null && mounted) {
-      ErrorHandlerService.showSuccessSnackbar(
-        context,
-        'Goal Sperrkonto berhasil dibuat!',
-      );
+      ErrorHandlerService.showSuccessSnackbar(context, 'Goal Sperrkonto berhasil dibuat!');
     }
   }
 
   void _copyToClipboard(String text, String label) {
     Clipboard.setData(ClipboardData(text: text));
     if (mounted) {
-      ErrorHandlerService.showSuccessSnackbar(
-        context,
-        '$label disalin ke clipboard',
-      );
+      ErrorHandlerService.showSuccessSnackbar(context, '$label disalin ke clipboard');
     }
   }
 
@@ -194,11 +179,7 @@ class _GermanFinanceScreenState extends State<GermanFinanceScreen> {
         backgroundColor: DesignTokens.backgroundDark,
         title: Text(
           'Perencanaan Studi Jerman',
-          style: GoogleFonts.poppins(
-            color: Colors.white,
-            fontWeight: FontWeight.w600,
-            fontSize: 18,
-          ),
+          style: GoogleFonts.poppins(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 18),
         ),
         leading: IconButton(
           icon: const Icon(Iconsax.arrow_left, color: Colors.white),
@@ -206,19 +187,13 @@ class _GermanFinanceScreenState extends State<GermanFinanceScreen> {
           onPressed: () => Navigator.pop(context),
         ),
       ),
-      body: ResponsiveContent(
-        child: Column(
-          children: [const OfflineIndicator(), Expanded(child: _buildBody())],
-        ),
-      ),
+      body: ResponsiveContent(child: Column(children: [const OfflineIndicator(), Expanded(child: _buildBody())])),
     );
   }
 
   Widget _buildBody() {
     if (_isLoading) {
-      return const Center(
-        child: CircularProgressIndicator(color: DesignTokens.primaryColor),
-      );
+      return const Center(child: CircularProgressIndicator(color: DesignTokens.primaryColor));
     }
 
     if (_errorMessage != null) {
@@ -229,16 +204,13 @@ class _GermanFinanceScreenState extends State<GermanFinanceScreen> {
             mainAxisSize: MainAxisSize.min,
             children: [
               const Icon(Iconsax.warning_2, size: 48, color: Colors.orange),
-              const SizedBox(height: 16),
+              const SizedBox(height: DesignTokens.spacing4),
               Text(
                 _errorMessage!,
                 textAlign: TextAlign.center,
-                style: GoogleFonts.poppins(
-                  color: Colors.grey[400],
-                  fontSize: 14,
-                ),
+                style: GoogleFonts.poppins(color: Colors.grey[400], fontSize: 14),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: DesignTokens.spacing4),
               FilledButton.icon(
                 onPressed: _loadData,
                 icon: const Icon(Iconsax.refresh),
@@ -259,11 +231,11 @@ class _GermanFinanceScreenState extends State<GermanFinanceScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildInfoBanner(),
-            const SizedBox(height: 20),
+            const SizedBox(height: DesignTokens.spacing5),
             _buildSperrkontoCard(),
-            const SizedBox(height: 20),
+            const SizedBox(height: DesignTokens.spacing5),
             _buildSavingsProgressCard(),
-            const SizedBox(height: 20),
+            const SizedBox(height: DesignTokens.spacing5),
             _buildConverterCard(),
           ],
         ),
@@ -286,27 +258,17 @@ class _GermanFinanceScreenState extends State<GermanFinanceScreen> {
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
-        border: Border.all(
-          color: DesignTokens.primaryColor.withValues(alpha: 0.2),
-        ),
+        border: Border.all(color: DesignTokens.primaryColor.withValues(alpha: 0.2)),
       ),
       child: Row(
         children: [
-          const Icon(
-            Iconsax.info_circle,
-            color: DesignTokens.primaryColor,
-            size: 20,
-          ),
+          const Icon(Iconsax.info_circle, color: DesignTokens.primaryColor, size: 20),
           const SizedBox(width: 12),
           Expanded(
             child: Text(
               'Sperrkonto (rekening terblokir) adalah syarat visa pelajar Jerman. '
               'Dana €11.904 (2026) disetor di muka dan dicairkan €992/bulan.',
-              style: GoogleFonts.poppins(
-                color: Colors.grey[300],
-                fontSize: 12,
-                height: 1.5,
-              ),
+              style: GoogleFonts.poppins(color: Colors.grey[300], fontSize: 12, height: 1.5),
             ),
           ),
         ],
@@ -324,19 +286,17 @@ class _GermanFinanceScreenState extends State<GermanFinanceScreen> {
         _buildAmountRow(
           label: 'Jumlah Dibutuhkan',
           eurAmount: '€ ${_formatEur(_sperrRequiredEur)}',
-          idrAmount:
-              'Rp ${CurrencyFormatter.formatRupiah(_requiredInIdr.toInt())}',
+          idrAmount: 'Rp ${CurrencyFormatter.formatRupiah(_requiredInIdr.toInt())}',
           primary: true,
         ),
         const Divider(color: DesignTokens.borderDark, height: 24),
         _buildAmountRow(
           label: 'Pencairan Bulanan',
           eurAmount: '€ ${_formatEur(_sperrMonthlyEur)}',
-          idrAmount:
-              'Rp ${CurrencyFormatter.formatRupiah(_monthlyInIdr.toInt())}',
+          idrAmount: 'Rp ${CurrencyFormatter.formatRupiah(_monthlyInIdr.toInt())}',
           primary: false,
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: DesignTokens.spacing3),
         Row(
           children: [
             const Icon(Iconsax.calendar, size: 14, color: Colors.grey),
@@ -361,25 +321,14 @@ class _GermanFinanceScreenState extends State<GermanFinanceScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          label,
-          style: GoogleFonts.poppins(
-            color: Colors.grey[500],
-            fontSize: 12,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-        const SizedBox(height: 8),
+        Text(label, style: GoogleFonts.poppins(color: Colors.grey[500], fontSize: 12, fontWeight: FontWeight.w500)),
+        const SizedBox(height: DesignTokens.spacing2),
         Row(
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
             Text(
               eurAmount,
-              style: GoogleFonts.poppins(
-                color: color,
-                fontSize: primary ? 28 : 20,
-                fontWeight: FontWeight.w700,
-              ),
+              style: GoogleFonts.poppins(color: color, fontSize: primary ? 28 : 20, fontWeight: FontWeight.w700),
             ),
             const SizedBox(width: 8),
             Padding(
@@ -429,10 +378,7 @@ class _GermanFinanceScreenState extends State<GermanFinanceScreen> {
   // ── Savings Progress Card ───────────────────────────────────────
 
   Widget _buildSavingsProgressCard() {
-    final progress =
-        _requiredInIdr > 0
-            ? (_monthlySavings * 12 / _requiredInIdr * 100).clamp(0, 100)
-            : 0.0;
+    final progress = _requiredInIdr > 0 ? (_monthlySavings * 12 / _requiredInIdr * 100).clamp(0, 100) : 0.0;
 
     return _Card(
       title: 'Progres Tabungan Saya',
@@ -465,17 +411,13 @@ class _GermanFinanceScreenState extends State<GermanFinanceScreen> {
               Expanded(
                 child: Text(
                   _assessmentText,
-                  style: GoogleFonts.poppins(
-                    color: Colors.grey[300],
-                    fontSize: 12,
-                    height: 1.5,
-                  ),
+                  style: GoogleFonts.poppins(color: Colors.grey[300], fontSize: 12, height: 1.5),
                 ),
               ),
             ],
           ),
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: DesignTokens.spacing4),
 
         // Stats row
         Row(
@@ -483,8 +425,7 @@ class _GermanFinanceScreenState extends State<GermanFinanceScreen> {
             _buildStatItem(
               icon: Iconsax.money_send,
               label: 'Tabungan/Bulan',
-              value:
-                  'Rp ${CurrencyFormatter.formatRupiah(_monthlySavings.toInt())}',
+              value: 'Rp ${CurrencyFormatter.formatRupiah(_monthlySavings.toInt())}',
               valueColor: DesignTokens.successColor,
             ),
             const SizedBox(width: 16),
@@ -501,7 +442,7 @@ class _GermanFinanceScreenState extends State<GermanFinanceScreen> {
             ),
           ],
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: DesignTokens.spacing4),
 
         // Progress bar
         ClipRRect(
@@ -521,7 +462,7 @@ class _GermanFinanceScreenState extends State<GermanFinanceScreen> {
             style: GoogleFonts.poppins(color: Colors.grey[500], fontSize: 11),
           ),
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: DesignTokens.spacing4),
 
         // Create goal button
         SizedBox(
@@ -529,17 +470,12 @@ class _GermanFinanceScreenState extends State<GermanFinanceScreen> {
           child: OutlinedButton.icon(
             onPressed: _createDaadGoal,
             icon: const Icon(Iconsax.flag, size: 18),
-            label: Text(
-              'Buat Goal Sperrkonto',
-              style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
-            ),
+            label: Text('Buat Goal Sperrkonto', style: GoogleFonts.poppins(fontWeight: FontWeight.w600)),
             style: OutlinedButton.styleFrom(
               foregroundColor: DesignTokens.primaryColor,
               side: const BorderSide(color: DesignTokens.primaryColor),
               padding: const EdgeInsets.symmetric(vertical: 12),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
-              ),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(DesignTokens.radiusMedium)),
             ),
           ),
         ),
@@ -564,20 +500,10 @@ class _GermanFinanceScreenState extends State<GermanFinanceScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Icon(icon, color: valueColor, size: 18),
-            const SizedBox(height: 8),
-            Text(
-              value,
-              style: GoogleFonts.poppins(
-                color: valueColor,
-                fontSize: 15,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
+            const SizedBox(height: DesignTokens.spacing2),
+            Text(value, style: GoogleFonts.poppins(color: valueColor, fontSize: 15, fontWeight: FontWeight.w700)),
             const SizedBox(height: 2),
-            Text(
-              label,
-              style: GoogleFonts.poppins(color: Colors.grey[500], fontSize: 11),
-            ),
+            Text(label, style: GoogleFonts.poppins(color: Colors.grey[500], fontSize: 11)),
           ],
         ),
       ),
@@ -612,11 +538,7 @@ class _GermanFinanceScreenState extends State<GermanFinanceScreen> {
             ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 12),
-              child: Icon(
-                Iconsax.arrow_right_2,
-                color: Colors.grey[500],
-                size: 20,
-              ),
+              child: Icon(Iconsax.arrow_right_2, color: Colors.grey[500], size: 20),
             ),
             Expanded(
               child: _buildCurrencyField(
@@ -629,7 +551,7 @@ class _GermanFinanceScreenState extends State<GermanFinanceScreen> {
             ),
           ],
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: DesignTokens.spacing3),
         // Quick converter chips
         Wrap(
           spacing: 8,
@@ -661,11 +583,7 @@ class _GermanFinanceScreenState extends State<GermanFinanceScreen> {
         labelText: label,
         labelStyle: GoogleFonts.poppins(color: Colors.grey[500], fontSize: 12),
         prefixText: '$symbol ',
-        prefixStyle: GoogleFonts.poppins(
-          color: Colors.grey[400],
-          fontSize: 16,
-          fontWeight: FontWeight.w600,
-        ),
+        prefixStyle: GoogleFonts.poppins(color: Colors.grey[400], fontSize: 16, fontWeight: FontWeight.w600),
         hintText: hint,
         hintStyle: GoogleFonts.poppins(color: Colors.grey[700]),
         filled: true,
@@ -680,15 +598,9 @@ class _GermanFinanceScreenState extends State<GermanFinanceScreen> {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(DesignTokens.radiusSmall),
-          borderSide: const BorderSide(
-            color: DesignTokens.primaryColor,
-            width: 2,
-          ),
+          borderSide: const BorderSide(color: DesignTokens.primaryColor, width: 2),
         ),
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 12,
-          vertical: 14,
-        ),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
       ),
     );
   }
@@ -698,27 +610,15 @@ class _GermanFinanceScreenState extends State<GermanFinanceScreen> {
       label: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text(
-            eurAmount,
-            style: GoogleFonts.poppins(
-              color: Colors.white,
-              fontSize: 12,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
+          Text(eurAmount, style: GoogleFonts.poppins(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w600)),
           if (label != null) ...[
             const SizedBox(width: 4),
-            Text(
-              label,
-              style: GoogleFonts.poppins(color: Colors.grey[400], fontSize: 10),
-            ),
+            Text(label, style: GoogleFonts.poppins(color: Colors.grey[400], fontSize: 10)),
           ],
         ],
       ),
       onPressed: () {
-        final eur = double.tryParse(
-          eurAmount.replaceAll('.', '').replaceAll(',', '.'),
-        );
+        final eur = double.tryParse(eurAmount.replaceAll('.', '').replaceAll(',', '.'));
         if (eur != null) {
           _eurController.text = eur.toStringAsFixed(2);
         }
@@ -737,11 +637,7 @@ class _Card extends StatelessWidget {
   final IconData icon;
   final List<Widget> children;
 
-  const _Card({
-    required this.title,
-    required this.icon,
-    required this.children,
-  });
+  const _Card({required this.title, required this.icon, required this.children});
 
   @override
   Widget build(BuildContext context) {
@@ -760,17 +656,10 @@ class _Card extends StatelessWidget {
             children: [
               Icon(icon, color: DesignTokens.primaryColor, size: 20),
               const SizedBox(width: 10),
-              Text(
-                title,
-                style: GoogleFonts.poppins(
-                  color: Colors.white,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
+              Text(title, style: GoogleFonts.poppins(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600)),
             ],
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: DesignTokens.spacing4),
           ...children,
         ],
       ),

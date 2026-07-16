@@ -11,10 +11,7 @@ class PageTransitions {
         const end = Offset.zero;
         const curve = Curves.easeInOutCubic;
 
-        var tween = Tween(
-          begin: begin,
-          end: end,
-        ).chain(CurveTween(curve: curve));
+        var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
 
         return SlideTransition(position: animation.drive(tween), child: child);
       },
@@ -31,10 +28,7 @@ class PageTransitions {
         const end = Offset.zero;
         const curve = Curves.easeInOutCubic;
 
-        var tween = Tween(
-          begin: begin,
-          end: end,
-        ).chain(CurveTween(curve: curve));
+        var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
 
         return SlideTransition(position: animation.drive(tween), child: child);
       },
@@ -59,21 +53,12 @@ class PageTransitions {
       pageBuilder: (context, animation, secondaryAnimation) => page,
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
         const curve = Curves.easeInOutCubic;
-        var scaleTween = Tween(
-          begin: 0.9,
-          end: 1.0,
-        ).chain(CurveTween(curve: curve));
-        var fadeTween = Tween(
-          begin: 0.0,
-          end: 1.0,
-        ).chain(CurveTween(curve: curve));
+        var scaleTween = Tween(begin: 0.9, end: 1.0).chain(CurveTween(curve: curve));
+        var fadeTween = Tween(begin: 0.0, end: 1.0).chain(CurveTween(curve: curve));
 
         return ScaleTransition(
           scale: animation.drive(scaleTween),
-          child: FadeTransition(
-            opacity: animation.drive(fadeTween),
-            child: child,
-          ),
+          child: FadeTransition(opacity: animation.drive(fadeTween), child: child),
         );
       },
       transitionDuration: const Duration(milliseconds: 300),
@@ -86,21 +71,12 @@ class PageTransitions {
       pageBuilder: (context, animation, secondaryAnimation) => page,
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
         const curve = Curves.easeInOutCubic;
-        var rotationTween = Tween(
-          begin: 0.95,
-          end: 1.0,
-        ).chain(CurveTween(curve: curve));
-        var fadeTween = Tween(
-          begin: 0.0,
-          end: 1.0,
-        ).chain(CurveTween(curve: curve));
+        var rotationTween = Tween(begin: 0.95, end: 1.0).chain(CurveTween(curve: curve));
+        var fadeTween = Tween(begin: 0.0, end: 1.0).chain(CurveTween(curve: curve));
 
         return ScaleTransition(
           scale: animation.drive(rotationTween),
-          child: FadeTransition(
-            opacity: animation.drive(fadeTween),
-            child: child,
-          ),
+          child: FadeTransition(opacity: animation.drive(fadeTween), child: child),
         );
       },
       transitionDuration: const Duration(milliseconds: 250),
@@ -135,10 +111,7 @@ class StaggeredListAnimation extends StatelessWidget {
       duration: duration,
       curve: Curves.easeOutCubic,
       builder: (context, value, child) {
-        return Transform.translate(
-          offset: Offset(0, (1 - value) * 20),
-          child: Opacity(opacity: value, child: child),
-        );
+        return Transform.translate(offset: Offset(0, (1 - value) * 20), child: Opacity(opacity: value, child: child));
       },
       child: child,
     );
@@ -162,8 +135,7 @@ class AnimatedPressButton extends StatefulWidget {
   State<AnimatedPressButton> createState() => _AnimatedPressButtonState();
 }
 
-class _AnimatedPressButtonState extends State<AnimatedPressButton>
-    with SingleTickerProviderStateMixin {
+class _AnimatedPressButtonState extends State<AnimatedPressButton> with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _scaleAnimation;
 
@@ -192,9 +164,6 @@ class _AnimatedPressButtonState extends State<AnimatedPressButton>
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: _handleTap,
-      child: ScaleTransition(scale: _scaleAnimation, child: widget.child),
-    );
+    return GestureDetector(onTap: _handleTap, child: ScaleTransition(scale: _scaleAnimation, child: widget.child));
   }
 }

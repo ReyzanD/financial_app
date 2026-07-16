@@ -10,18 +10,14 @@ class ReceiptScanDataService {
   final LocalAuthService _authService;
   final _uuid = const Uuid();
 
-  ReceiptScanDataService({
-    LocalDatabaseService? dbService,
-    LocalAuthService? authService,
-  }) : _dbService = dbService ?? LocalDatabaseService(),
-       _authService = authService ?? LocalAuthService();
+  ReceiptScanDataService({LocalDatabaseService? dbService, LocalAuthService? authService})
+    : _dbService = dbService ?? LocalDatabaseService(),
+      _authService = authService ?? LocalAuthService();
 
   Future<String?> getCurrentUserId() async => _authService.getCurrentUserId();
 
   /// Save a receipt scan record
-  Future<Map<String, dynamic>> saveReceiptScan(
-    Map<String, dynamic> receiptData,
-  ) async {
+  Future<Map<String, dynamic>> saveReceiptScan(Map<String, dynamic> receiptData) async {
     try {
       final userId = await getCurrentUserId();
       if (userId == null) throw Exception('Not authenticated');
@@ -30,10 +26,7 @@ class ReceiptScanDataService {
       final receiptId = _uuid.v4();
       final now = DateTime.now().toIso8601String();
 
-      final itemsJson =
-          receiptData['items'] != null
-              ? jsonEncode(receiptData['items'])
-              : null;
+      final itemsJson = receiptData['items'] != null ? jsonEncode(receiptData['items']) : null;
 
       final data = {
         'receipt_id_232143': receiptId,
@@ -62,11 +55,7 @@ class ReceiptScanDataService {
   }
 
   /// Get all receipt scans
-  Future<List<Map<String, dynamic>>> getReceiptScans({
-    int limit = 50,
-    int offset = 0,
-    bool? processedOnly,
-  }) async {
+  Future<List<Map<String, dynamic>>> getReceiptScans({int limit = 50, int offset = 0, bool? processedOnly}) async {
     try {
       final userId = await getCurrentUserId();
       if (userId == null) throw Exception('Not authenticated');
@@ -183,10 +172,7 @@ class ReceiptScanDataService {
   }
 
   /// Update receipt scan linked transaction
-  Future<Map<String, dynamic>> linkReceiptToTransaction(
-    String receiptId,
-    String transactionId,
-  ) async {
+  Future<Map<String, dynamic>> linkReceiptToTransaction(String receiptId, String transactionId) async {
     try {
       final userId = await getCurrentUserId();
       if (userId == null) throw Exception('Not authenticated');
@@ -196,19 +182,13 @@ class ReceiptScanDataService {
 
       final rowsUpdated = await db.update(
         'receipt_scans_232143',
-        {
-          'transaction_id_232143': transactionId,
-          'is_processed_232143': 1,
-          'updated_at_232143': now,
-        },
+        {'transaction_id_232143': transactionId, 'is_processed_232143': 1, 'updated_at_232143': now},
         where: 'receipt_id_232143 = ? AND user_id_232143 = ?',
         whereArgs: [receiptId, userId],
       );
 
       if (rowsUpdated > 0) {
-        LoggerService.info(
-          '✅ Receipt linked to transaction: $receiptId -> $transactionId',
-        );
+        LoggerService.info('✅ Receipt linked to transaction: $receiptId -> $transactionId');
         return {'success': true, 'message': 'Receipt linked successfully'};
       } else {
         return {'success': false, 'message': 'Receipt not found'};

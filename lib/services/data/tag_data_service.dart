@@ -11,11 +11,9 @@ class TagDataService {
   final LocalAuthService _authService;
   final _uuid = const Uuid();
 
-  TagDataService({
-    LocalDatabaseService? dbService,
-    LocalAuthService? authService,
-  }) : _dbService = dbService ?? LocalDatabaseService(),
-       _authService = authService ?? LocalAuthService();
+  TagDataService({LocalDatabaseService? dbService, LocalAuthService? authService})
+    : _dbService = dbService ?? LocalDatabaseService(),
+      _authService = authService ?? LocalAuthService();
 
   /// Get current user ID
   Future<String?> getCurrentUserId() async {
@@ -44,10 +42,7 @@ class TagDataService {
   }
 
   /// Add a tag
-  Future<TransactionTagModel> addTag(
-    String name, {
-    String color = '#8B5FBF',
-  }) async {
+  Future<TransactionTagModel> addTag(String name, {String color = '#8B5FBF'}) async {
     try {
       final userId = await getCurrentUserId();
       if (userId == null) throw Exception('Not authenticated');
@@ -65,12 +60,7 @@ class TagDataService {
       });
 
       LoggerService.info('✅ Tag added: $tagId');
-      return TransactionTagModel(
-        id: tagId,
-        name: name,
-        color: color,
-        createdAt: now,
-      );
+      return TransactionTagModel(id: tagId, name: name, color: color, createdAt: now);
     } catch (e) {
       LoggerService.error('Error adding tag', error: e);
       rethrow;
@@ -102,9 +92,7 @@ class TagDataService {
   }
 
   /// Get tags for a specific transaction
-  Future<List<TransactionTagModel>> getTransactionTags(
-    String transactionId,
-  ) async {
+  Future<List<TransactionTagModel>> getTransactionTags(String transactionId) async {
     try {
       final db = await _dbService.database;
       final result = await db.rawQuery(
@@ -127,10 +115,7 @@ class TagDataService {
   Future<void> addTransactionTag(String transactionId, String tagId) async {
     try {
       final db = await _dbService.database;
-      await db.insert('transaction_tags_232143', {
-        'transaction_id_232143': transactionId,
-        'tag_id_232143': tagId,
-      });
+      await db.insert('transaction_tags_232143', {'transaction_id_232143': transactionId, 'tag_id_232143': tagId});
     } catch (e) {
       LoggerService.error('Error adding transaction tag', error: e);
       rethrow;

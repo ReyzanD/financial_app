@@ -17,17 +17,11 @@ class SubscriptionItem extends StatelessWidget {
         leading: Container(
           width: 40,
           height: 40,
-          decoration: BoxDecoration(
-            color: Colors.pink.withValues(alpha: 0.2),
-            borderRadius: BorderRadius.circular(8),
-          ),
+          decoration: BoxDecoration(color: Colors.pink.withValues(alpha: 0.2), borderRadius: BorderRadius.circular(8)),
           child: Icon(Icons.subscriptions, color: Colors.pink),
         ),
         title: Text(subscription.name, style: TextStyle(color: Colors.white)),
-        subtitle: Text(
-          '${subscription.subscriptionCycle}',
-          style: TextStyle(color: Colors.grey),
-        ),
+        subtitle: Text('${subscription.subscriptionCycle}', style: TextStyle(color: Colors.grey)),
         trailing: Text(
           CurrencyFormatter.formatRupiah(subscription.monthlyAmount.toInt()),
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),

@@ -21,26 +21,13 @@ class AnalyticsHubScreen extends StatefulWidget {
   State<AnalyticsHubScreen> createState() => _AnalyticsHubScreenState();
 }
 
-class _AnalyticsHubScreenState extends State<AnalyticsHubScreen>
-    with SingleTickerProviderStateMixin {
+class _AnalyticsHubScreenState extends State<AnalyticsHubScreen> with SingleTickerProviderStateMixin {
   late final TabController _tabController;
   int _currentIndex = 0;
 
-  static const _tabKeys = [
-    'analytics',
-    'insights',
-    'networth',
-    'cashflow',
-    'reports',
-  ];
+  static const _tabKeys = ['analytics', 'insights', 'networth', 'cashflow', 'reports'];
 
-  static const _tabLabels = [
-    'Analitik',
-    'Wawasan',
-    'Kekayaan',
-    'Arus Kas',
-    'Laporan',
-  ];
+  static const _tabLabels = ['Analitik', 'Wawasan', 'Kekayaan', 'Arus Kas', 'Laporan'];
 
   static const _tabIcons = [
     Icons.analytics_outlined,
@@ -59,11 +46,7 @@ class _AnalyticsHubScreenState extends State<AnalyticsHubScreen>
   void initState() {
     super.initState();
     _currentIndex = _initialIndex(widget.initialTab);
-    _tabController = TabController(
-      length: 5,
-      vsync: this,
-      initialIndex: _currentIndex,
-    );
+    _tabController = TabController(length: 5, vsync: this, initialIndex: _currentIndex);
     _tabController.addListener(() {
       if (!_tabController.indexIsChanging) {
         setState(() => _currentIndex = _tabController.index);
@@ -95,11 +78,7 @@ class _AnalyticsHubScreenState extends State<AnalyticsHubScreen>
         ),
         title: Text(
           _tabLabels[_currentIndex],
-          style: GoogleFonts.poppins(
-            color: Colors.white,
-            fontWeight: FontWeight.w600,
-            fontSize: 18,
-          ),
+          style: GoogleFonts.poppins(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 18),
         ),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(48),
@@ -111,24 +90,14 @@ class _AnalyticsHubScreenState extends State<AnalyticsHubScreen>
               indicatorColor: DesignTokens.primaryColor,
               labelColor: DesignTokens.primaryColor,
               unselectedLabelColor: Colors.grey,
-              labelStyle: GoogleFonts.poppins(
-                fontSize: 13,
-                fontWeight: FontWeight.w600,
-              ),
-              unselectedLabelStyle: GoogleFonts.poppins(
-                fontSize: 13,
-                fontWeight: FontWeight.w400,
-              ),
+              labelStyle: GoogleFonts.poppins(fontSize: 13, fontWeight: FontWeight.w600),
+              unselectedLabelStyle: GoogleFonts.poppins(fontSize: 13, fontWeight: FontWeight.w400),
               indicatorSize: TabBarIndicatorSize.label,
               tabs: List.generate(5, (i) {
                 return Tab(
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(_tabIcons[i], size: 16),
-                      const SizedBox(width: 6),
-                      Text(_tabLabels[i]),
-                    ],
+                    children: [Icon(_tabIcons[i], size: 16), const SizedBox(width: 6), Text(_tabLabels[i])],
                   ),
                 );
               }),

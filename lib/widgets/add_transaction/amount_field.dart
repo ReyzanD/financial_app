@@ -15,20 +15,12 @@ class AmountField extends StatelessWidget {
     return TextFormField(
       controller: controller,
       keyboardType: TextInputType.number,
-      style: GoogleFonts.poppins(
-        color: Colors.white,
-        fontSize: 24,
-        fontWeight: FontWeight.bold,
-      ),
+      style: GoogleFonts.poppins(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
       decoration: InputDecoration(
         labelText: l10n?.amount ?? 'Jumlah',
         labelStyle: GoogleFonts.poppins(color: Colors.grey[400]),
         prefixText: 'Rp ',
-        prefixStyle: GoogleFonts.poppins(
-          color: Colors.white,
-          fontSize: 24,
-          fontWeight: FontWeight.bold,
-        ),
+        prefixStyle: GoogleFonts.poppins(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
           borderSide: BorderSide(color: Colors.grey[700]!),

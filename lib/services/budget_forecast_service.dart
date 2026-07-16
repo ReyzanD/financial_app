@@ -6,8 +6,7 @@ import 'package:financial_app/core/di/service_locator.dart';
 
 /// Service untuk budget forecasting dan analytics
 class BudgetForecastService {
-  final TransactionDataService _transactionData =
-      getIt<TransactionDataService>();
+  final TransactionDataService _transactionData = getIt<TransactionDataService>();
   final BudgetDataService _budgetData = getIt<BudgetDataService>();
   final NotificationService _notificationService = getIt<NotificationService>();
 
@@ -66,17 +65,11 @@ class BudgetForecastService {
         'daysRemaining': daysRemaining,
         'averageDailySpending': averageDailySpending,
         'trend': trend,
-        'projectedOverspend':
-            isOverBudget ? forecastedSpent - budgetAmount : 0.0,
+        'projectedOverspend': isOverBudget ? forecastedSpent - budgetAmount : 0.0,
       };
     } catch (e) {
       LoggerService.error('Error calculating forecast', error: e);
-      return {
-        'forecastedSpent': currentSpent,
-        'forecastedPercentage': 0.0,
-        'isOverBudget': false,
-        'daysRemaining': 0,
-      };
+      return {'forecastedSpent': currentSpent, 'forecastedPercentage': 0.0, 'isOverBudget': false, 'daysRemaining': 0};
     }
   }
 
@@ -92,9 +85,7 @@ class BudgetForecastService {
         endDate: endDate.toIso8601String().split('T')[0],
         limit: 1000,
       );
-      final transactions = List<Map<String, dynamic>>.from(
-        transactionsData['transactions'] ?? [],
-      );
+      final transactions = List<Map<String, dynamic>>.from(transactionsData['transactions'] ?? []);
 
       // Filter by budget category dan sum
       double total = 0.0;
@@ -124,9 +115,7 @@ class BudgetForecastService {
           endDate: endDate.toIso8601String().split('T')[0],
           limit: 1000,
         );
-        final transactions = List<Map<String, dynamic>>.from(
-          transactionsData['transactions'] ?? [],
-        );
+        final transactions = List<Map<String, dynamic>>.from(transactionsData['transactions'] ?? []);
 
         double total = 0.0;
         for (var transaction in transactions) {
@@ -177,11 +166,7 @@ class BudgetForecastService {
   }
 
   /// Send budget alert notification
-  Future<void> _sendBudgetAlert(
-    Map<String, dynamic> budget,
-    String level,
-    String title,
-  ) async {
+  Future<void> _sendBudgetAlert(Map<String, dynamic> budget, String level, String title) async {
     try {
       final categoryId = budget['category_id'] as String?;
       final spent = (budget['spent'] as num?)?.toDouble() ?? 0.0;
@@ -199,10 +184,7 @@ class BudgetForecastService {
         id: 'budget_${categoryId}_$level'.hashCode,
         title: '$emoji $title',
         body: body,
-        priority:
-            level == 'over'
-                ? NotificationPriority.high
-                : NotificationPriority.medium,
+        priority: level == 'over' ? NotificationPriority.high : NotificationPriority.medium,
         payload: 'budget:$categoryId',
       );
     } catch (e) {
@@ -211,10 +193,7 @@ class BudgetForecastService {
   }
 
   /// Get budget history trends
-  Future<List<Map<String, dynamic>>> getBudgetHistoryTrends({
-    required String categoryId,
-    int months = 6,
-  }) async {
+  Future<List<Map<String, dynamic>>> getBudgetHistoryTrends({required String categoryId, int months = 6}) async {
     try {
       final trends = <Map<String, dynamic>>[];
       final now = DateTime.now();
@@ -248,9 +227,7 @@ class BudgetForecastService {
   }
 
   /// Group budgets by category
-  Map<String, List<Map<String, dynamic>>> groupBudgetsByCategory(
-    List<Map<String, dynamic>> budgets,
-  ) {
+  Map<String, List<Map<String, dynamic>>> groupBudgetsByCategory(List<Map<String, dynamic>> budgets) {
     final grouped = <String, List<Map<String, dynamic>>>{};
 
     for (var budget in budgets) {

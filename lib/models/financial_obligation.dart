@@ -80,49 +80,28 @@ class FinancialObligation {
 
   factory FinancialObligation.fromJson(Map<String, dynamic> json) {
     return FinancialObligation(
-      id:
-          json['id']?.toString() ??
-          json['obligation_id_232143']?.toString() ??
-          '',
+      id: json['id']?.toString() ?? json['obligation_id_232143']?.toString() ?? '',
       name: json['name']?.toString() ?? json['name_232143']?.toString() ?? '',
       monthlyAmount:
-          (json['monthly_amount'] as num?)?.toDouble() ??
-          (json['monthly_amount_232143'] as num?)?.toDouble() ??
-          0.0,
-      dueDate:
-          _parseDate(json['due_date']) ??
-          _parseDate(json['due_date_232143']) ??
-          DateTime.now(),
-      type: _parseObligationType(
-        json['type']?.toString() ?? json['type_232143']?.toString(),
-      ),
-      category:
-          json['category']?.toString() ?? json['category_232143']?.toString(),
+          (json['monthly_amount'] as num?)?.toDouble() ?? (json['monthly_amount_232143'] as num?)?.toDouble() ?? 0.0,
+      dueDate: _parseDate(json['due_date']) ?? _parseDate(json['due_date_232143']) ?? DateTime.now(),
+      type: _parseObligationType(json['type']?.toString() ?? json['type_232143']?.toString()),
+      category: json['category']?.toString() ?? json['category_232143']?.toString(),
       originalAmount:
-          (json['original_amount'] as num?)?.toDouble() ??
-          (json['original_amount_232143'] as num?)?.toDouble(),
+          (json['original_amount'] as num?)?.toDouble() ?? (json['original_amount_232143'] as num?)?.toDouble(),
       currentBalance:
-          (json['current_balance'] as num?)?.toDouble() ??
-          (json['current_balance_232143'] as num?)?.toDouble(),
-      interestRate:
-          (json['interest_rate'] as num?)?.toDouble() ??
-          (json['interest_rate_232143'] as num?)?.toDouble(),
+          (json['current_balance'] as num?)?.toDouble() ?? (json['current_balance_232143'] as num?)?.toDouble(),
+      interestRate: (json['interest_rate'] as num?)?.toDouble() ?? (json['interest_rate_232143'] as num?)?.toDouble(),
       isSubscription:
           json['is_subscription'] == true ||
           json['is_subscription'] == 1 ||
           json['is_subscription_232143'] == 1 ||
           json['is_subscription_232143'] == true,
-      subscriptionCycle:
-          json['subscription_cycle']?.toString() ??
-          json['subscription_cycle_232143']?.toString(),
+      subscriptionCycle: json['subscription_cycle']?.toString() ?? json['subscription_cycle_232143']?.toString(),
       minimumPayment:
-          (json['minimum_payment'] as num?)?.toDouble() ??
-          (json['minimum_payment_232143'] as num?)?.toDouble(),
-      payoffStrategy:
-          json['payoff_strategy']?.toString() ??
-          json['payoff_strategy_232143']?.toString(),
-      debtType:
-          json['debt_type']?.toString() ?? json['debt_type_232143']?.toString(),
+          (json['minimum_payment'] as num?)?.toDouble() ?? (json['minimum_payment_232143'] as num?)?.toDouble(),
+      payoffStrategy: json['payoff_strategy']?.toString() ?? json['payoff_strategy_232143']?.toString(),
+      debtType: json['debt_type']?.toString() ?? json['debt_type_232143']?.toString(),
       daysUntilDue: (json['days_until_due'] as num?)?.toInt() ?? 0,
     );
   }
@@ -166,22 +145,15 @@ class FinancialObligation {
     return FinancialObligation(
       id: map['obligation_id_232143']?.toString() ?? '',
       name: map['name_232143']?.toString() ?? '',
-      monthlyAmount:
-          parseDecimal(map['monthly_amount_232143']) ??
-          parseDecimal(map['amount_232143']) ??
-          0.0,
+      monthlyAmount: parseDecimal(map['monthly_amount_232143']) ?? parseDecimal(map['amount_232143']) ?? 0.0,
       dueDate: dueDate ?? DateTime.now(),
       type: type,
-      daysUntilDue:
-          map['days_until_due'] as int? ??
-          (dueDate != null ? dueDate.difference(DateTime.now()).inDays : 0),
+      daysUntilDue: map['days_until_due'] as int? ?? (dueDate != null ? dueDate.difference(DateTime.now()).inDays : 0),
       category: map['category_232143']?.toString(),
       originalAmount: parseDecimal(map['original_amount_232143']),
       currentBalance: parseDecimal(map['current_balance_232143']),
       interestRate: parseDecimal(map['interest_rate_232143']),
-      isSubscription:
-          map['is_subscription_232143'] == 1 ||
-          map['is_subscription_232143'] == true,
+      isSubscription: map['is_subscription_232143'] == 1 || map['is_subscription_232143'] == true,
       subscriptionCycle: map['subscription_cycle_232143']?.toString(),
       minimumPayment: parseDecimal(map['minimum_payment_232143']),
       payoffStrategy: map['payoff_strategy_232143']?.toString(),
@@ -191,10 +163,7 @@ class FinancialObligation {
 
   static ObligationType _parseObligationType(String? value) {
     if (value == null) return ObligationType.bill;
-    return ObligationType.values.firstWhere(
-      (e) => e.name == value,
-      orElse: () => ObligationType.bill,
-    );
+    return ObligationType.values.firstWhere((e) => e.name == value, orElse: () => ObligationType.bill);
   }
 
   static DateTime? _parseDate(dynamic value) {
@@ -212,9 +181,5 @@ class DebtSummary {
   final double totalDebt;
   final double monthlyPayments;
 
-  DebtSummary({
-    required this.debts,
-    required this.totalDebt,
-    required this.monthlyPayments,
-  });
+  DebtSummary({required this.debts, required this.totalDebt, required this.monthlyPayments});
 }

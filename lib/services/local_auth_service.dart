@@ -27,9 +27,7 @@ class LocalAuthService {
   /// Generate cryptographically random salt bytes
   Uint8List _generateSalt([int length = _saltLength]) {
     final random = Random.secure();
-    return Uint8List.fromList(
-      List<int>.generate(length, (_) => random.nextInt(256)),
-    );
+    return Uint8List.fromList(List<int>.generate(length, (_) => random.nextInt(256)));
   }
 
   /// PBKDF2-HMAC-SHA256 single-block derivation (output = 32 bytes).
@@ -74,11 +72,7 @@ class LocalAuthService {
       final parts = storedHash.split(':');
       final salt = base64.decode(parts[0]);
       final expectedKey = base64.decode(parts[1]);
-      final actualKey = _pbkdf2DeriveKey(
-        password,
-        Uint8List.fromList(salt),
-        _pbkdf2Iterations,
-      );
+      final actualKey = _pbkdf2DeriveKey(password, Uint8List.fromList(salt), _pbkdf2Iterations);
       return _constantTimeEquals(actualKey.toList(), expectedKey);
     } else {
       // Legacy SHA-256 (no salt) — backward compatibility for existing users
@@ -127,11 +121,7 @@ class LocalAuthService {
       final db = await _dbService.database;
 
       // Check if user already exists
-      final existingUser = await db.query(
-        'users_232143',
-        where: 'email_232143 = ?',
-        whereArgs: [email],
-      );
+      final existingUser = await db.query('users_232143', where: 'email_232143 = ?', whereArgs: [email]);
 
       if (existingUser.isNotEmpty) {
         throw Exception('User already exists');
@@ -168,12 +158,7 @@ class LocalAuthService {
 
       LoggerService.info('User registered successfully');
 
-      return {
-        'user_id': userId,
-        'access_token': sessionToken,
-        'email': email,
-        'full_name': fullName,
-      };
+      return {'user_id': userId, 'access_token': sessionToken, 'email': email, 'full_name': fullName};
     } catch (e) {
       LoggerService.error('Registration error', error: e);
       rethrow;
@@ -186,11 +171,7 @@ class LocalAuthService {
       final db = await _dbService.database;
 
       // Find user by email
-      final users = await db.query(
-        'users_232143',
-        where: 'email_232143 = ?',
-        whereArgs: [email],
-      );
+      final users = await db.query('users_232143', where: 'email_232143 = ?', whereArgs: [email]);
 
       if (users.isEmpty) {
         throw Exception('User not found');
@@ -225,9 +206,7 @@ class LocalAuthService {
       );
 
       // Generate session token (not user_id directly)
-      final sessionToken = await _createSession(
-        user['user_id_232143'] as String,
-      );
+      final sessionToken = await _createSession(user['user_id_232143'] as String);
 
       LoggerService.info('User logged in successfully');
 
@@ -265,11 +244,7 @@ class LocalAuthService {
       if (userId == null) return null;
 
       final db = await _dbService.database;
-      final users = await db.query(
-        'users_232143',
-        where: 'user_id_232143 = ?',
-        whereArgs: [userId],
-      );
+      final users = await db.query('users_232143', where: 'user_id_232143 = ?', whereArgs: [userId]);
 
       if (users.isEmpty) return null;
 
@@ -290,9 +265,7 @@ class LocalAuthService {
   }
 
   /// Update user profile
-  Future<Map<String, dynamic>> updateProfile(
-    Map<String, dynamic> profileData,
-  ) async {
+  Future<Map<String, dynamic>> updateProfile(Map<String, dynamic> profileData) async {
     try {
       final userId = await getCurrentUserId();
       if (userId == null) throw Exception('Not authenticated');
@@ -335,24 +308,14 @@ class LocalAuthService {
         updateData['risk_tolerance_232143'] = profileData['risk_tolerance'];
       }
       if (profileData.containsKey('notification_settings')) {
-        updateData['notification_settings_232143'] =
-            profileData['notification_settings'];
+        updateData['notification_settings_232143'] = profileData['notification_settings'];
       }
 
       // Update user in database
-      await db.update(
-        'users_232143',
-        updateData,
-        where: 'user_id_232143 = ?',
-        whereArgs: [userId],
-      );
+      await db.update('users_232143', updateData, where: 'user_id_232143 = ?', whereArgs: [userId]);
 
       // Get updated user
-      final users = await db.query(
-        'users_232143',
-        where: 'user_id_232143 = ?',
-        whereArgs: [userId],
-      );
+      final users = await db.query('users_232143', where: 'user_id_232143 = ?', whereArgs: [userId]);
 
       if (users.isEmpty) {
         throw Exception('User not found after update');
@@ -396,85 +359,19 @@ class LocalAuthService {
   Future<void> _createDefaultCategories(Database db, String userId) async {
     final defaultCategories = [
       // Income Categories
-      {
-        'name': 'Gaji',
-        'type': 'income',
-        'color': '#2ecc71',
-        'icon': 'work',
-        'order': 1,
-      },
-      {
-        'name': 'Investasi',
-        'type': 'income',
-        'color': '#27ae60',
-        'icon': 'trending_up',
-        'order': 2,
-      },
-      {
-        'name': 'Freelance',
-        'type': 'income',
-        'color': '#1abc9c',
-        'icon': 'computer',
-        'order': 3,
-      },
+      {'name': 'Gaji', 'type': 'income', 'color': '#2ecc71', 'icon': 'work', 'order': 1},
+      {'name': 'Investasi', 'type': 'income', 'color': '#27ae60', 'icon': 'trending_up', 'order': 2},
+      {'name': 'Freelance', 'type': 'income', 'color': '#1abc9c', 'icon': 'computer', 'order': 3},
 
       // Expense Categories
-      {
-        'name': 'Makanan & Minuman',
-        'type': 'expense',
-        'color': '#e74c3c',
-        'icon': 'restaurant',
-        'order': 1,
-      },
-      {
-        'name': 'Transportasi',
-        'type': 'expense',
-        'color': '#f39c12',
-        'icon': 'directions_car',
-        'order': 2,
-      },
-      {
-        'name': 'Belanja',
-        'type': 'expense',
-        'color': '#9b59b6',
-        'icon': 'shopping_cart',
-        'order': 3,
-      },
-      {
-        'name': 'Hiburan',
-        'type': 'expense',
-        'color': '#34495e',
-        'icon': 'movie',
-        'order': 4,
-      },
-      {
-        'name': 'Kesehatan',
-        'type': 'expense',
-        'color': '#e67e22',
-        'icon': 'local_hospital',
-        'order': 5,
-      },
-      {
-        'name': 'Pendidikan',
-        'type': 'expense',
-        'color': '#2980b9',
-        'icon': 'school',
-        'order': 6,
-      },
-      {
-        'name': 'Tabungan',
-        'type': 'expense',
-        'color': '#16a085',
-        'icon': 'savings',
-        'order': 7,
-      },
-      {
-        'name': 'Tagihan & Utilitas',
-        'type': 'expense',
-        'color': '#95a5a6',
-        'icon': 'receipt',
-        'order': 8,
-      },
+      {'name': 'Makanan & Minuman', 'type': 'expense', 'color': '#e74c3c', 'icon': 'restaurant', 'order': 1},
+      {'name': 'Transportasi', 'type': 'expense', 'color': '#f39c12', 'icon': 'directions_car', 'order': 2},
+      {'name': 'Belanja', 'type': 'expense', 'color': '#9b59b6', 'icon': 'shopping_cart', 'order': 3},
+      {'name': 'Hiburan', 'type': 'expense', 'color': '#34495e', 'icon': 'movie', 'order': 4},
+      {'name': 'Kesehatan', 'type': 'expense', 'color': '#e67e22', 'icon': 'local_hospital', 'order': 5},
+      {'name': 'Pendidikan', 'type': 'expense', 'color': '#2980b9', 'icon': 'school', 'order': 6},
+      {'name': 'Tabungan', 'type': 'expense', 'color': '#16a085', 'icon': 'savings', 'order': 7},
+      {'name': 'Tagihan & Utilitas', 'type': 'expense', 'color': '#95a5a6', 'icon': 'receipt', 'order': 8},
     ];
 
     final now = DateTime.now().toIso8601String();
@@ -502,27 +399,9 @@ class LocalAuthService {
 
   Future<void> _createDefaultAccounts(Database db, String userId) async {
     final defaultAccounts = [
-      {
-        'name': 'Cash',
-        'type': 'cash',
-        'icon': 'wallet',
-        'color': '#4CAF50',
-        'is_default': 1,
-      },
-      {
-        'name': 'Bank Account',
-        'type': 'bank',
-        'icon': 'account_balance',
-        'color': '#2196F3',
-        'is_default': 0,
-      },
-      {
-        'name': 'E-Wallet',
-        'type': 'e_wallet',
-        'icon': 'phone_android',
-        'color': '#FF9800',
-        'is_default': 0,
-      },
+      {'name': 'Cash', 'type': 'cash', 'icon': 'wallet', 'color': '#4CAF50', 'is_default': 1},
+      {'name': 'Bank Account', 'type': 'bank', 'icon': 'account_balance', 'color': '#2196F3', 'is_default': 0},
+      {'name': 'E-Wallet', 'type': 'e_wallet', 'icon': 'phone_android', 'color': '#FF9800', 'is_default': 0},
     ];
 
     final now = DateTime.now().toIso8601String();

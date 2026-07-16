@@ -12,11 +12,7 @@ class AddAccountModal extends StatefulWidget {
   final AccountModel? account;
   final VoidCallback onAccountAdded;
 
-  const AddAccountModal({
-    super.key,
-    this.account,
-    required this.onAccountAdded,
-  });
+  const AddAccountModal({super.key, this.account, required this.onAccountAdded});
 
   @override
   State<AddAccountModal> createState() => _AddAccountModalState();
@@ -36,14 +32,7 @@ class _AddAccountModalState extends State<AddAccountModal> {
     {'value': 'e_wallet', 'label': 'E-Wallet', 'icon': 'mobile'},
   ];
 
-  final List<String> _colors = [
-    '#4CAF50',
-    '#2196F3',
-    '#FF9800',
-    '#9C27B0',
-    '#F44336',
-    '#8B5FBF',
-  ];
+  final List<String> _colors = ['#4CAF50', '#2196F3', '#FF9800', '#9C27B0', '#F44336', '#8B5FBF'];
 
   @override
   void initState() {
@@ -70,12 +59,7 @@ class _AddAccountModalState extends State<AddAccountModal> {
     final isEditing = widget.account != null;
 
     return Padding(
-      padding: EdgeInsets.only(
-        bottom: MediaQuery.of(context).viewInsets.bottom,
-        left: 20,
-        right: 20,
-        top: 20,
-      ),
+      padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom, left: 20, right: 20, top: 20),
       child: SingleChildScrollView(
         child: Form(
           key: _formKey,
@@ -93,32 +77,26 @@ class _AddAccountModalState extends State<AddAccountModal> {
                   ),
                 ),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: DesignTokens.spacing5),
               Text(
-                isEditing
-                    ? (l10n?.edit_account ?? 'Edit Akun')
-                    : (l10n?.add ?? 'Tambah Akun'),
+                isEditing ? (l10n?.edit_account ?? 'Edit Akun') : (l10n?.add ?? 'Tambah Akun'),
                 style: GoogleFonts.poppins(
                   color: DesignTokens.textPrimaryDark,
                   fontSize: 18,
                   fontWeight: FontWeight.w600,
                 ),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: DesignTokens.spacing5),
               TextFormField(
                 controller: _nameController,
                 style: GoogleFonts.poppins(color: DesignTokens.textPrimaryDark),
                 decoration: InputDecoration(
                   labelText: l10n?.name ?? 'Nama',
-                  labelStyle: GoogleFonts.poppins(
-                    color: DesignTokens.textSecondaryDark,
-                  ),
+                  labelStyle: GoogleFonts.poppins(color: DesignTokens.textSecondaryDark),
                   filled: true,
                   fillColor: DesignTokens.surfaceDark,
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(
-                      DesignTokens.radiusMedium,
-                    ),
+                    borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
                     borderSide: BorderSide(color: DesignTokens.borderDark),
                   ),
                 ),
@@ -129,15 +107,9 @@ class _AddAccountModalState extends State<AddAccountModal> {
                   return null;
                 },
               ),
-              const SizedBox(height: 16),
-              Text(
-                'Tipe Akun',
-                style: GoogleFonts.poppins(
-                  color: DesignTokens.textSecondaryDark,
-                  fontSize: 12,
-                ),
-              ),
-              const SizedBox(height: 8),
+              const SizedBox(height: DesignTokens.spacing4),
+              Text('Tipe Akun', style: GoogleFonts.poppins(color: DesignTokens.textSecondaryDark, fontSize: 12)),
+              const SizedBox(height: DesignTokens.spacing2),
               Wrap(
                 spacing: 8,
                 children:
@@ -147,10 +119,7 @@ class _AddAccountModalState extends State<AddAccountModal> {
                         label: Text(
                           type['label'],
                           style: GoogleFonts.poppins(
-                            color:
-                                isSelected
-                                    ? Colors.white
-                                    : DesignTokens.textSecondaryDark,
+                            color: isSelected ? Colors.white : DesignTokens.textSecondaryDark,
                             fontSize: 12,
                           ),
                         ),
@@ -166,22 +135,18 @@ class _AddAccountModalState extends State<AddAccountModal> {
                       );
                     }).toList(),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: DesignTokens.spacing4),
               TextFormField(
                 controller: _balanceController,
                 style: GoogleFonts.poppins(color: DesignTokens.textPrimaryDark),
                 keyboardType: TextInputType.number,
                 decoration: InputDecoration(
                   labelText: l10n?.balance ?? 'Saldo',
-                  labelStyle: GoogleFonts.poppins(
-                    color: DesignTokens.textSecondaryDark,
-                  ),
+                  labelStyle: GoogleFonts.poppins(color: DesignTokens.textSecondaryDark),
                   filled: true,
                   fillColor: DesignTokens.surfaceDark,
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(
-                      DesignTokens.radiusMedium,
-                    ),
+                    borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
                     borderSide: BorderSide(color: DesignTokens.borderDark),
                   ),
                 ),
@@ -195,15 +160,9 @@ class _AddAccountModalState extends State<AddAccountModal> {
                   return null;
                 },
               ),
-              const SizedBox(height: 16),
-              Text(
-                'Warna',
-                style: GoogleFonts.poppins(
-                  color: DesignTokens.textSecondaryDark,
-                  fontSize: 12,
-                ),
-              ),
-              const SizedBox(height: 8),
+              const SizedBox(height: DesignTokens.spacing4),
+              Text('Warna', style: GoogleFonts.poppins(color: DesignTokens.textSecondaryDark, fontSize: 12)),
+              const SizedBox(height: DesignTokens.spacing2),
               Wrap(
                 spacing: 8,
                 children:
@@ -226,17 +185,9 @@ class _AddAccountModalState extends State<AddAccountModal> {
                                 width: 36,
                                 height: 36,
                                 decoration: BoxDecoration(
-                                  color: Color(
-                                    int.parse(color.replaceFirst('#', '0xFF')),
-                                  ),
+                                  color: Color(int.parse(color.replaceFirst('#', '0xFF'))),
                                   shape: BoxShape.circle,
-                                  border:
-                                      isSelected
-                                          ? Border.all(
-                                            color: Colors.white,
-                                            width: 3,
-                                          )
-                                          : null,
+                                  border: isSelected ? Border.all(color: Colors.white, width: 3) : null,
                                 ),
                               ),
                             ),
@@ -245,7 +196,7 @@ class _AddAccountModalState extends State<AddAccountModal> {
                       );
                     }).toList(),
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: DesignTokens.spacing6),
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
@@ -253,25 +204,15 @@ class _AddAccountModalState extends State<AddAccountModal> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: DesignTokens.primaryColor,
                     padding: const EdgeInsets.symmetric(vertical: 14),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(
-                        DesignTokens.radiusMedium,
-                      ),
-                    ),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(DesignTokens.radiusMedium)),
                   ),
                   child: Text(
-                    isEditing
-                        ? (l10n?.save ?? 'Simpan')
-                        : (l10n?.add ?? 'Tambah'),
-                    style: GoogleFonts.poppins(
-                      color: Colors.white,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                    ),
+                    isEditing ? (l10n?.save ?? 'Simpan') : (l10n?.add ?? 'Tambah'),
+                    style: GoogleFonts.poppins(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w600),
                   ),
                 ),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: DesignTokens.spacing5),
             ],
           ),
         ),
@@ -314,10 +255,7 @@ class _AddAccountModalState extends State<AddAccountModal> {
       widget.onAccountAdded();
     } catch (e) {
       if (!mounted) return;
-      ErrorHandlerService.showErrorSnackbar(
-        context,
-        ErrorHandlerService.getUserFriendlyMessage(e),
-      );
+      ErrorHandlerService.showErrorSnackbar(context, ErrorHandlerService.getUserFriendlyMessage(e));
     }
   }
 }

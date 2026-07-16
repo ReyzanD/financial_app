@@ -24,10 +24,7 @@ class SplitController extends ChangeNotifier {
     _errorMessage = null;
     notifyListeners();
     try {
-      final r = await Future.wait([
-        _r.getSplits(activeOnly: _activeOnly),
-        _r.getSplitSummary(),
-      ]);
+      final r = await Future.wait([_r.getSplits(activeOnly: _activeOnly), _r.getSplitSummary()]);
       _splits = r[0] as List<SplitModel>;
       _summary = r[1] as Map<String, dynamic>;
     } catch (e) {

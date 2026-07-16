@@ -1,9 +1,4 @@
-enum RecommendationType {
-  priceAlert,
-  alternativeLocation,
-  spendingPattern,
-  general,
-}
+enum RecommendationType { priceAlert, alternativeLocation, spendingPattern, general }
 
 class LocationRecommendation {
   final String id;
@@ -34,9 +29,7 @@ class LocationRecommendation {
         orElse: () => RecommendationType.general,
       ),
       estimatedSavings: map['estimatedSavings'] as int? ?? 0,
-      createdAt:
-          DateTime.tryParse(map['createdAt'] as String? ?? '') ??
-          DateTime.now(),
+      createdAt: DateTime.tryParse(map['createdAt'] as String? ?? '') ?? DateTime.now(),
       metadata: map['metadata'] as Map<String, dynamic>?,
     );
   }
@@ -93,10 +86,7 @@ class LocationRecommendationService {
   }
 
   // Method to get recommendations based on user location
-  Future<List<LocationRecommendation>> getLocationBasedRecommendations(
-    double latitude,
-    double longitude,
-  ) async {
+  Future<List<LocationRecommendation>> getLocationBasedRecommendations(double latitude, double longitude) async {
     // In real implementation, this would call a backend API
     // with user's current location to get nearby recommendations
     // Note: Removed artificial delay for better performance
@@ -105,16 +95,11 @@ class LocationRecommendationService {
       LocationRecommendation(
         id: 'nearby_1',
         title: 'Restoran Terdekat Lebih Murah',
-        description:
-            'Warung makan di dekat kantor Anda menawarkan menu serupa dengan harga 20% lebih rendah',
+        description: 'Warung makan di dekat kantor Anda menawarkan menu serupa dengan harga 20% lebih rendah',
         type: RecommendationType.priceAlert,
         estimatedSavings: 15000,
         createdAt: DateTime.now(),
-        metadata: {
-          'location': 'Warung Bu Siti',
-          'distance': '0.5 km',
-          'category': 'food',
-        },
+        metadata: {'location': 'Warung Bu Siti', 'distance': '0.5 km', 'category': 'food'},
       ),
     ];
   }
@@ -132,8 +117,7 @@ class LocationRecommendationService {
           LocationRecommendation(
             id: 'alt_shop_1',
             title: 'Diskon 25% di Toko Sebelah',
-            description:
-                'Toko grosir di Jl. Malioboro menawarkan produk serupa dengan diskon hingga 25%',
+            description: 'Toko grosir di Jl. Malioboro menawarkan produk serupa dengan diskon hingga 25%',
             type: RecommendationType.priceAlert,
             estimatedSavings: 75000,
             createdAt: DateTime.now(),
@@ -147,8 +131,7 @@ class LocationRecommendationService {
           LocationRecommendation(
             id: 'alt_shop_2',
             title: 'Pasar Tradisional Lebih Murah',
-            description:
-                'Pasar tradisional menawarkan harga 30% lebih rendah untuk kebutuhan sehari-hari',
+            description: 'Pasar tradisional menawarkan harga 30% lebih rendah untuk kebutuhan sehari-hari',
             type: RecommendationType.alternativeLocation,
             estimatedSavings: 45000,
             createdAt: DateTime.now(),
@@ -166,31 +149,20 @@ class LocationRecommendationService {
           LocationRecommendation(
             id: 'alt_transport_1',
             title: 'Bensin Lebih Murah 3km Jauhnya',
-            description:
-                'SPBU di Jl. Sudirman menawarkan harga premium Rp 2.000 lebih murah per liter',
+            description: 'SPBU di Jl. Sudirman menawarkan harga premium Rp 2.000 lebih murah per liter',
             type: RecommendationType.priceAlert,
             estimatedSavings: 10000,
             createdAt: DateTime.now(),
-            metadata: {
-              'location': 'SPBU Sudirman',
-              'distance': '3.1 km',
-              'priceDifference': 2000,
-              'category': 'fuel',
-            },
+            metadata: {'location': 'SPBU Sudirman', 'distance': '3.1 km', 'priceDifference': 2000, 'category': 'fuel'},
           ),
           LocationRecommendation(
             id: 'alt_transport_2',
             title: 'Alternatif Transportasi Hemat',
-            description:
-                'Gunakan angkutan umum untuk perjalanan ini, bisa hemat hingga Rp 15.000',
+            description: 'Gunakan angkutan umum untuk perjalanan ini, bisa hemat hingga Rp 15.000',
             type: RecommendationType.alternativeLocation,
             estimatedSavings: 15000,
             createdAt: DateTime.now(),
-            metadata: {
-              'location': 'Halte Bus Terdekat',
-              'distance': '0.3 km',
-              'category': 'public_transport',
-            },
+            metadata: {'location': 'Halte Bus Terdekat', 'distance': '0.3 km', 'category': 'public_transport'},
           ),
         ];
 
@@ -200,8 +172,7 @@ class LocationRecommendationService {
           LocationRecommendation(
             id: 'alt_food_1',
             title: 'Warung Makan Diskon Siang',
-            description:
-                'Warung makan di dekat sini menawarkan diskon 20% untuk makan siang',
+            description: 'Warung makan di dekat sini menawarkan diskon 20% untuk makan siang',
             type: RecommendationType.priceAlert,
             estimatedSavings: 20000,
             createdAt: DateTime.now(),
@@ -216,8 +187,7 @@ class LocationRecommendationService {
           LocationRecommendation(
             id: 'alt_food_2',
             title: 'Restoran Padang Promo',
-            description:
-                'Restoran Padang menawarkan paket makan dengan harga Rp 25.000 (normal Rp 35.000)',
+            description: 'Restoran Padang menawarkan paket makan dengan harga Rp 25.000 (normal Rp 35.000)',
             type: RecommendationType.alternativeLocation,
             estimatedSavings: 10000,
             createdAt: DateTime.now(),
@@ -236,8 +206,7 @@ class LocationRecommendationService {
           LocationRecommendation(
             id: 'alt_bill_1',
             title: 'Pembayaran Online Lebih Murah',
-            description:
-                'Bayar tagihan listrik via aplikasi digital untuk dapat potongan biaya admin Rp 2.500',
+            description: 'Bayar tagihan listrik via aplikasi digital untuk dapat potongan biaya admin Rp 2.500',
             type: RecommendationType.priceAlert,
             estimatedSavings: 2500,
             createdAt: DateTime.now(),
@@ -255,16 +224,11 @@ class LocationRecommendationService {
           LocationRecommendation(
             id: 'alt_general_1',
             title: 'Cek Promo di Aplikasi',
-            description:
-                'Banyak tempat menawarkan diskon melalui aplikasi. Cek aplikasi favorit Anda!',
+            description: 'Banyak tempat menawarkan diskon melalui aplikasi. Cek aplikasi favorit Anda!',
             type: RecommendationType.general,
             estimatedSavings: 0,
             createdAt: DateTime.now(),
-            metadata: {
-              'location': 'Aplikasi Promo',
-              'distance': '0 km',
-              'category': 'general',
-            },
+            metadata: {'location': 'Aplikasi Promo', 'distance': '0 km', 'category': 'general'},
           ),
         ];
     }

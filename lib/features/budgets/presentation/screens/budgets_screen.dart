@@ -71,11 +71,7 @@ class _BudgetsScreenState extends State<BudgetsScreen> {
   Widget _buildHeader(BuildContext context, BudgetController ctrl) {
     final controller = ctrl;
     return Container(
-      padding: ResponsiveHelper.symmetricPadding(
-        context,
-        horizontal: 16,
-        vertical: 12,
-      ),
+      padding: ResponsiveHelper.symmetricPadding(context, horizontal: 16, vertical: 12),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -100,13 +96,8 @@ class _BudgetsScreenState extends State<BudgetsScreen> {
               ),
               const Spacer(),
               Text(
-                controller.activeOnly
-                    ? AppLocalizations.of(context)!.active
-                    : AppLocalizations.of(context)!.all,
-                style: GoogleFonts.poppins(
-                  color: Colors.grey[400],
-                  fontSize: ResponsiveHelper.fontSize(context, 12),
-                ),
+                controller.activeOnly ? AppLocalizations.of(context)!.active : AppLocalizations.of(context)!.all,
+                style: GoogleFonts.poppins(color: Colors.grey[400], fontSize: ResponsiveHelper.fontSize(context, 12)),
               ),
               Switch(
                 value: controller.activeOnly,
@@ -118,10 +109,7 @@ class _BudgetsScreenState extends State<BudgetsScreen> {
                 },
               ),
               IconButton(
-                icon: const Icon(
-                  Icons.auto_awesome,
-                  color: DesignTokens.primaryColor,
-                ),
+                icon: const Icon(Icons.auto_awesome, color: DesignTokens.primaryColor),
                 onPressed: _showSmartBudgetSuggestions,
                 tooltip: 'Saran Budget AI',
               ),
@@ -141,23 +129,11 @@ class _BudgetsScreenState extends State<BudgetsScreen> {
 
     return Row(
       children: [
-        _buildSummaryChip(
-          context,
-          AppLocalizations.of(context)!.total_budget,
-          totalBudget,
-        ),
+        _buildSummaryChip(context, AppLocalizations.of(context)!.total_budget, totalBudget),
         SizedBox(width: ResponsiveHelper.horizontalSpacing(context, 8)),
-        _buildSummaryChip(
-          context,
-          AppLocalizations.of(context)!.spent,
-          totalSpent,
-        ),
+        _buildSummaryChip(context, AppLocalizations.of(context)!.spent, totalSpent),
         SizedBox(width: ResponsiveHelper.horizontalSpacing(context, 8)),
-        _buildSummaryChip(
-          context,
-          AppLocalizations.of(context)!.remaining,
-          totalRemaining,
-        ),
+        _buildSummaryChip(context, AppLocalizations.of(context)!.remaining, totalRemaining),
       ],
     );
   }
@@ -165,16 +141,10 @@ class _BudgetsScreenState extends State<BudgetsScreen> {
   Widget _buildSummaryChip(BuildContext context, String label, double amount) {
     return Expanded(
       child: Container(
-        padding: ResponsiveHelper.symmetricPadding(
-          context,
-          horizontal: 12,
-          vertical: 8,
-        ),
+        padding: ResponsiveHelper.symmetricPadding(context, horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
           color: DesignTokens.surfaceDark,
-          borderRadius: BorderRadius.circular(
-            ResponsiveHelper.borderRadius(context, 12),
-          ),
+          borderRadius: BorderRadius.circular(ResponsiveHelper.borderRadius(context, 12)),
           border: Border.all(color: DesignTokens.borderDark),
         ),
         child: Column(
@@ -182,10 +152,7 @@ class _BudgetsScreenState extends State<BudgetsScreen> {
           children: [
             Text(
               label,
-              style: GoogleFonts.poppins(
-                color: Colors.grey[500],
-                fontSize: ResponsiveHelper.fontSize(context, 11),
-              ),
+              style: GoogleFonts.poppins(color: Colors.grey[500], fontSize: ResponsiveHelper.fontSize(context, 11)),
             ),
             SizedBox(height: ResponsiveHelper.verticalSpacing(context, 4)),
             Text(
@@ -217,18 +184,11 @@ class _BudgetsScreenState extends State<BudgetsScreen> {
 
     return ListView.builder(
       physics: const AlwaysScrollableScrollPhysics(),
-      padding: ResponsiveHelper.symmetricPadding(
-        context,
-        horizontal: 16,
-        vertical: 8,
-      ),
+      padding: ResponsiveHelper.symmetricPadding(context, horizontal: 16, vertical: 8),
       itemCount: controller.budgets.length,
       itemBuilder: (context, index) {
         final budget = controller.budgets[index];
-        return StaggeredListAnimation(
-          index: index,
-          child: _buildBudgetItem(context, budget, controller.categories),
-        );
+        return StaggeredListAnimation(index: index, child: _buildBudgetItem(context, budget, controller.categories));
       },
     );
   }
@@ -243,8 +203,7 @@ class _BudgetsScreenState extends State<BudgetsScreen> {
       'period_start_232143': b.periodStart.toIso8601String(),
       'period_end_232143': b.periodEnd.toIso8601String(),
       'is_active_232143': b.isActive ? 1 : 0,
-      'period_232143':
-          '${b.periodStart.day}/${b.periodStart.month} - ${b.periodEnd.day}/${b.periodEnd.month}',
+      'period_232143': '${b.periodStart.day}/${b.periodStart.month} - ${b.periodEnd.day}/${b.periodEnd.month}',
       // Non-suffixed fallbacks for legacy code paths
       'id': b.id,
       'category_id': b.categoryId,
@@ -254,35 +213,21 @@ class _BudgetsScreenState extends State<BudgetsScreen> {
     };
   }
 
-  Widget _buildBudgetItem(
-    BuildContext context,
-    BudgetModel budgetEntity,
-    Map<String, String> categories,
-  ) {
+  Widget _buildBudgetItem(BuildContext context, BudgetModel budgetEntity, Map<String, String> categories) {
     final budget = _budgetToMap(budgetEntity);
-    final categoryId =
-        (budget['category_id_232143'] ?? budget['category_id'])?.toString();
+    final categoryId = (budget['category_id_232143'] ?? budget['category_id'])?.toString();
     final category =
         categoryId != null && categories.containsKey(categoryId)
             ? categories[categoryId]!
             : AppLocalizations.of(context)!.all_categories;
 
-    final amount =
-        (budget['amount_232143'] ?? budget['amount'] as num?)?.toDouble() ??
-        0.0;
-    final spent =
-        (budget['spent_amount_232143'] ?? budget['spent'] as num?)
-            ?.toDouble() ??
-        0.0;
+    final amount = (budget['amount_232143'] ?? budget['amount'] as num?)?.toDouble() ?? 0.0;
+    final spent = (budget['spent_amount_232143'] ?? budget['spent'] as num?)?.toDouble() ?? 0.0;
     final remaining = amount - spent;
-    final period =
-        (budget['period_232143'] ?? budget['period'] as String?) ?? '-';
+    final period = (budget['period_232143'] ?? budget['period'] as String?) ?? '-';
     // Handle is_active: in SQLite it's stored as int (0 or 1), not bool
     final isActiveValue = budget['is_active_232143'] ?? budget['is_active'];
-    final isActive =
-        isActiveValue is bool
-            ? isActiveValue
-            : (isActiveValue is int ? isActiveValue == 1 : true);
+    final isActive = isActiveValue is bool ? isActiveValue : (isActiveValue is int ? isActiveValue == 1 : true);
 
     final percentage = amount > 0 ? (spent / amount).clamp(0.0, 1.0) : 0.0;
     final isOverBudget = spent > amount && amount > 0;
@@ -301,20 +246,13 @@ class _BudgetsScreenState extends State<BudgetsScreen> {
         },
         child: Container(
           width: double.infinity,
-          margin: EdgeInsets.only(
-            bottom: ResponsiveHelper.verticalSpacing(context, 12),
-          ),
+          margin: EdgeInsets.only(bottom: ResponsiveHelper.verticalSpacing(context, 12)),
           padding: ResponsiveHelper.padding(context),
           decoration: BoxDecoration(
             color: DesignTokens.surfaceDark,
-            borderRadius: BorderRadius.circular(
-              ResponsiveHelper.borderRadius(context, 16),
-            ),
+            borderRadius: BorderRadius.circular(ResponsiveHelper.borderRadius(context, 16)),
             border: Border.all(
-              color:
-                  isOverBudget
-                      ? Colors.red.withValues(alpha: 0.4)
-                      : DesignTokens.borderDark,
+              color: isOverBudget ? Colors.red.withValues(alpha: 0.4) : DesignTokens.borderDark,
               width: isOverBudget ? 1.5 : 1,
             ),
           ),
@@ -329,19 +267,11 @@ class _BudgetsScreenState extends State<BudgetsScreen> {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Container(
-                          padding: ResponsiveHelper.padding(
-                            context,
-                            multiplier: 0.375,
-                          ),
+                          padding: ResponsiveHelper.padding(context, multiplier: 0.375),
                           decoration: BoxDecoration(
                             color: displayColor.withValues(alpha: 0.15),
-                            borderRadius: BorderRadius.circular(
-                              ResponsiveHelper.borderRadius(context, 8),
-                            ),
-                            border: Border.all(
-                              color: displayColor.withValues(alpha: 0.3),
-                              width: 1,
-                            ),
+                            borderRadius: BorderRadius.circular(ResponsiveHelper.borderRadius(context, 8)),
+                            border: Border.all(color: displayColor.withValues(alpha: 0.3), width: 1),
                           ),
                           child: Icon(
                             Icons.account_balance_wallet_rounded,
@@ -349,12 +279,7 @@ class _BudgetsScreenState extends State<BudgetsScreen> {
                             size: ResponsiveHelper.iconSize(context, 16),
                           ),
                         ),
-                        SizedBox(
-                          width: ResponsiveHelper.horizontalSpacing(
-                            context,
-                            10,
-                          ),
-                        ),
+                        SizedBox(width: ResponsiveHelper.horizontalSpacing(context, 10)),
                         Flexible(
                           child: Text(
                             category,
@@ -367,23 +292,12 @@ class _BudgetsScreenState extends State<BudgetsScreen> {
                           ),
                         ),
                         if (isOverBudget) ...[
-                          SizedBox(
-                            width: ResponsiveHelper.horizontalSpacing(
-                              context,
-                              8,
-                            ),
-                          ),
+                          SizedBox(width: ResponsiveHelper.horizontalSpacing(context, 8)),
                           Container(
-                            padding: ResponsiveHelper.symmetricPadding(
-                              context,
-                              horizontal: 6,
-                              vertical: 2,
-                            ),
+                            padding: ResponsiveHelper.symmetricPadding(context, horizontal: 6, vertical: 2),
                             decoration: BoxDecoration(
                               color: Colors.red.withValues(alpha: 0.2),
-                              borderRadius: BorderRadius.circular(
-                                ResponsiveHelper.borderRadius(context, 8),
-                              ),
+                              borderRadius: BorderRadius.circular(ResponsiveHelper.borderRadius(context, 8)),
                             ),
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
@@ -393,20 +307,12 @@ class _BudgetsScreenState extends State<BudgetsScreen> {
                                   color: Colors.red,
                                   size: ResponsiveHelper.iconSize(context, 14),
                                 ),
-                                SizedBox(
-                                  width: ResponsiveHelper.horizontalSpacing(
-                                    context,
-                                    4,
-                                  ),
-                                ),
+                                SizedBox(width: ResponsiveHelper.horizontalSpacing(context, 4)),
                                 Text(
                                   AppLocalizations.of(context)!.over,
                                   style: GoogleFonts.poppins(
                                     color: Colors.red,
-                                    fontSize: ResponsiveHelper.fontSize(
-                                      context,
-                                      10,
-                                    ),
+                                    fontSize: ResponsiveHelper.fontSize(context, 10),
                                     fontWeight: FontWeight.w600,
                                   ),
                                 ),
@@ -453,16 +359,10 @@ class _BudgetsScreenState extends State<BudgetsScreen> {
                   ),
                   if (!isActive)
                     Container(
-                      padding: ResponsiveHelper.symmetricPadding(
-                        context,
-                        horizontal: 8,
-                        vertical: 4,
-                      ),
+                      padding: ResponsiveHelper.symmetricPadding(context, horizontal: 8, vertical: 4),
                       decoration: BoxDecoration(
                         color: Colors.grey[800],
-                        borderRadius: BorderRadius.circular(
-                          ResponsiveHelper.borderRadius(context, 12),
-                        ),
+                        borderRadius: BorderRadius.circular(ResponsiveHelper.borderRadius(context, 12)),
                       ),
                       child: Text(
                         AppLocalizations.of(context)!.inactive,
@@ -476,9 +376,7 @@ class _BudgetsScreenState extends State<BudgetsScreen> {
               ),
               SizedBox(height: ResponsiveHelper.verticalSpacing(context, 12)),
               ClipRRect(
-                borderRadius: BorderRadius.circular(
-                  ResponsiveHelper.borderRadius(context, 10),
-                ),
+                borderRadius: BorderRadius.circular(ResponsiveHelper.borderRadius(context, 10)),
                 child: LinearProgressIndicator(
                   value: percentage,
                   backgroundColor: Colors.grey[850],
@@ -536,12 +434,7 @@ class _BudgetsScreenState extends State<BudgetsScreen> {
       final l10n = AppLocalizations.of(context);
       showDialog(
         context: context,
-        builder:
-            (context) => const Center(
-              child: CircularProgressIndicator(
-                color: DesignTokens.primaryColor,
-              ),
-            ),
+        builder: (context) => const Center(child: CircularProgressIndicator(color: DesignTokens.primaryColor)),
       );
 
       final predictor = BudgetPredictor();
@@ -565,9 +458,7 @@ class _BudgetsScreenState extends State<BudgetsScreen> {
                   (context, scrollController) => Container(
                     decoration: const BoxDecoration(
                       color: DesignTokens.surfaceDark,
-                      borderRadius: BorderRadius.vertical(
-                        top: Radius.circular(20),
-                      ),
+                      borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
                     ),
                     padding: const EdgeInsets.all(20),
                     child: ListView(
@@ -577,19 +468,13 @@ class _BudgetsScreenState extends State<BudgetsScreen> {
                           child: Container(
                             width: 40,
                             height: 4,
-                            decoration: BoxDecoration(
-                              color: Colors.grey[600],
-                              borderRadius: BorderRadius.circular(2),
-                            ),
+                            decoration: BoxDecoration(color: Colors.grey[600], borderRadius: BorderRadius.circular(2)),
                           ),
                         ),
-                        const SizedBox(height: 16),
+                        const SizedBox(height: DesignTokens.spacing4),
                         Row(
                           children: [
-                            const Icon(
-                              Icons.auto_awesome,
-                              color: DesignTokens.primaryColor,
-                            ),
+                            const Icon(Icons.auto_awesome, color: DesignTokens.primaryColor),
                             const SizedBox(width: 8),
                             Text(
                               'Saran Budget Optimal',
@@ -601,46 +486,30 @@ class _BudgetsScreenState extends State<BudgetsScreen> {
                             ),
                           ],
                         ),
-                        const SizedBox(height: 8),
+                        const SizedBox(height: DesignTokens.spacing2),
                         Text(
                           'Berdasarkan rata-rata pengeluaran 3 bulan terakhir + buffer 10%',
-                          style: GoogleFonts.poppins(
-                            color: Colors.grey[400],
-                            fontSize: 12,
-                          ),
+                          style: GoogleFonts.poppins(color: Colors.grey[400], fontSize: 12),
                         ),
-                        const SizedBox(height: 16),
+                        const SizedBox(height: DesignTokens.spacing4),
                         if (suggestedBudgets.isNotEmpty) ...[
-                          ...suggestedBudgets.entries.map(
-                            (e) => _buildSuggestionItem(e.key, e.value),
-                          ),
+                          ...suggestedBudgets.entries.map((e) => _buildSuggestionItem(e.key, e.value)),
                         ] else
                           Center(
                             child: Text(
-                              l10n?.no_data_for_recommendation ??
-                                  'Belum ada data untuk rekomendasi',
-                              style: GoogleFonts.poppins(
-                                color: Colors.grey[500],
-                              ),
+                              l10n?.no_data_for_recommendation ?? 'Belum ada data untuk rekomendasi',
+                              style: GoogleFonts.poppins(color: Colors.grey[500]),
                             ),
                           ),
                         if (risks.isNotEmpty) ...[
-                          const SizedBox(height: 20),
+                          const SizedBox(height: DesignTokens.spacing5),
                           Text(
                             l10n?.budget_warning ?? 'Peringatan Budget',
-                            style: GoogleFonts.poppins(
-                              color: Colors.white,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                            ),
+                            style: GoogleFonts.poppins(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600),
                           ),
-                          const SizedBox(height: 8),
+                          const SizedBox(height: DesignTokens.spacing2),
                           ...risks
-                              .where(
-                                (r) =>
-                                    r['risk_level'] == 'critical' ||
-                                    r['risk_level'] == 'high',
-                              )
+                              .where((r) => r['risk_level'] == 'critical' || r['risk_level'] == 'high')
                               .map((risk) => _buildRiskItem(risk)),
                         ],
                       ],
@@ -650,9 +519,7 @@ class _BudgetsScreenState extends State<BudgetsScreen> {
       );
     } catch (e) {
       if (mounted) {
-        final msg =
-            AppLocalizations.of(context)?.failed_to_load_budget_suggestions ??
-            'Gagal memuat saran budget';
+        final msg = AppLocalizations.of(context)?.failed_to_load_budget_suggestions ?? 'Gagal memuat saran budget';
         Navigator.pop(context);
         ErrorHandlerService.showErrorSnackbar(context, msg);
       }
@@ -666,26 +533,15 @@ class _BudgetsScreenState extends State<BudgetsScreen> {
       decoration: BoxDecoration(
         color: DesignTokens.borderDark,
         borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
-        border: Border.all(
-          color: DesignTokens.primaryColor.withValues(alpha: 0.3),
-        ),
+        border: Border.all(color: DesignTokens.primaryColor.withValues(alpha: 0.3)),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Expanded(
-            child: Text(
-              category,
-              style: GoogleFonts.poppins(color: Colors.white, fontSize: 14),
-            ),
-          ),
+          Expanded(child: Text(category, style: GoogleFonts.poppins(color: Colors.white, fontSize: 14))),
           Text(
             CurrencyFormatter.formatRupiah(amount.toInt()),
-            style: GoogleFonts.poppins(
-              color: DesignTokens.primaryColor,
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-            ),
+            style: GoogleFonts.poppins(color: DesignTokens.primaryColor, fontSize: 14, fontWeight: FontWeight.w600),
           ),
         ],
       ),
@@ -698,8 +554,7 @@ class _BudgetsScreenState extends State<BudgetsScreen> {
     final riskLevel = risk['risk_level'] as String? ?? 'unknown';
     final remaining = (risk['remaining'] as num?)?.toDouble() ?? 0.0;
 
-    final color =
-        riskLevel == 'critical' ? Colors.red[400] : Colors.orange[400];
+    final color = riskLevel == 'critical' ? Colors.red[400] : Colors.orange[400];
 
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
@@ -718,33 +573,20 @@ class _BudgetsScreenState extends State<BudgetsScreen> {
               Expanded(
                 child: Text(
                   category,
-                  style: GoogleFonts.poppins(
-                    color: Colors.white,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                  ),
+                  style: GoogleFonts.poppins(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w600),
                 ),
               ),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                decoration: BoxDecoration(
-                  color: color,
-                  borderRadius: BorderRadius.circular(
-                    DesignTokens.radiusMedium,
-                  ),
-                ),
+                decoration: BoxDecoration(color: color, borderRadius: BorderRadius.circular(DesignTokens.radiusMedium)),
                 child: Text(
                   '${usagePercent.toInt()}%',
-                  style: GoogleFonts.poppins(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.white,
-                  ),
+                  style: GoogleFonts.poppins(fontSize: 12, fontWeight: FontWeight.w600, color: Colors.white),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 4),
+          const SizedBox(height: DesignTokens.spacing1),
           Text(
             'Sisa: ${CurrencyFormatter.formatRupiah(remaining.toInt())}',
             style: GoogleFonts.poppins(color: Colors.grey[400], fontSize: 12),
@@ -763,15 +605,10 @@ class _BudgetsScreenState extends State<BudgetsScreen> {
       context: context,
       backgroundColor: DesignTokens.backgroundDark,
       isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
       builder: (context) {
         final ctrl = context.read<BudgetController>();
-        return AddBudgetModal(
-          categories: ctrl.categories,
-          initialBudget: budget,
-        );
+        return AddBudgetModal(categories: ctrl.categories, initialBudget: budget);
       },
     );
     if (result == true && mounted) {
@@ -792,11 +629,7 @@ class _BudgetsScreenState extends State<BudgetsScreen> {
           backgroundColor: DesignTokens.surfaceDark,
           title: Text(
             AppLocalizations.of(context)!.delete_budget,
-            style: GoogleFonts.poppins(
-              color: Colors.white,
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-            ),
+            style: GoogleFonts.poppins(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600),
           ),
           content: Text(
             AppLocalizations.of(context)!.confirm_delete_budget,
@@ -809,10 +642,7 @@ class _BudgetsScreenState extends State<BudgetsScreen> {
             ),
             TextButton(
               onPressed: () => Navigator.pop(context, true),
-              child: Text(
-                AppLocalizations.of(context)!.delete,
-                style: const TextStyle(color: Colors.red),
-              ),
+              child: Text(AppLocalizations.of(context)!.delete, style: const TextStyle(color: Colors.red)),
             ),
           ],
         );
@@ -824,10 +654,7 @@ class _BudgetsScreenState extends State<BudgetsScreen> {
       try {
         await ctrl.deleteBudget(id);
         if (!mounted) return;
-        ErrorHandlerService.showSuccessSnackbar(
-          context,
-          AppLocalizations.of(context)!.budget_deleted_successfully,
-        );
+        ErrorHandlerService.showSuccessSnackbar(context, AppLocalizations.of(context)!.budget_deleted_successfully);
       } catch (e) {
         LoggerService.error('Error deleting budget', error: e);
         if (!mounted) return;
@@ -839,16 +666,10 @@ class _BudgetsScreenState extends State<BudgetsScreen> {
               await ctrl.deleteBudget(id);
               if (!mounted) return;
               if (context.mounted) {
-                ErrorHandlerService.showSuccessSnackbar(
-                  context,
-                  l10n?.budget_deleted ?? 'Budget berhasil dihapus.',
-                );
+                ErrorHandlerService.showSuccessSnackbar(context, l10n?.budget_deleted ?? 'Budget berhasil dihapus.');
               }
             } catch (retryError) {
-              LoggerService.error(
-                'Error retrying delete budget',
-                error: retryError,
-              );
+              LoggerService.error('Error retrying delete budget', error: retryError);
             }
           },
         );

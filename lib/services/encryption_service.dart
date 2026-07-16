@@ -43,23 +43,16 @@ class EncryptionService {
         _encryptionKey = key;
         _encrypter = Encrypter(AES(key));
 
-        LoggerService.success(
-          '[EncryptionService] New AES-256 encryption key generated',
-        );
+        LoggerService.success('[EncryptionService] New AES-256 encryption key generated');
       } else {
         // Load existing key
         _encryptionKey = Key.fromBase64(existingKey);
         _encrypter = Encrypter(AES(_encryptionKey!));
 
-        LoggerService.debug(
-          '[EncryptionService] AES-256 encryption key loaded',
-        );
+        LoggerService.debug('[EncryptionService] AES-256 encryption key loaded');
       }
     } catch (e) {
-      LoggerService.error(
-        '[EncryptionService] Error initializing encryption',
-        error: e,
-      );
+      LoggerService.error('[EncryptionService] Error initializing encryption', error: e);
       rethrow;
     }
   }
@@ -67,18 +60,14 @@ class EncryptionService {
   /// Generate AES-256 key (32 bytes = 256 bits)
   Key _generateAESKey() {
     final random = Random.secure();
-    final keyBytes = Uint8List.fromList(
-      List<int>.generate(32, (_) => random.nextInt(256)),
-    );
+    final keyBytes = Uint8List.fromList(List<int>.generate(32, (_) => random.nextInt(256)));
     return Key(keyBytes);
   }
 
   /// Generate a fresh random IV (Initialization Vector) — 16 bytes for AES-CBC
   Uint8List _generateIV() {
     final random = Random.secure();
-    return Uint8List.fromList(
-      List<int>.generate(_ivLengthBytes, (_) => random.nextInt(256)),
-    );
+    return Uint8List.fromList(List<int>.generate(_ivLengthBytes, (_) => random.nextInt(256)));
   }
 
   /// Get encryption key (ensure initialized)
@@ -110,9 +99,7 @@ class EncryptionService {
       final combined = Uint8List.fromList([...ivBytes, ...encrypted.bytes]);
       final combinedBase64 = base64Encode(combined);
 
-      LoggerService.debug(
-        '[EncryptionService] Data encrypted using AES-256 (length: ${combinedBase64.length})',
-      );
+      LoggerService.debug('[EncryptionService] Data encrypted using AES-256 (length: ${combinedBase64.length})');
       return combinedBase64;
     } catch (e) {
       LoggerService.error('[EncryptionService] Encryption failed', error: e);
@@ -198,10 +185,7 @@ class EncryptionService {
       await _ensureInitialized();
       return _encrypter != null && _encryptionKey != null;
     } catch (e) {
-      LoggerService.error(
-        '[EncryptionService] Error checking availability',
-        error: e,
-      );
+      LoggerService.error('[EncryptionService] Error checking availability', error: e);
       return false;
     }
   }
@@ -211,16 +195,9 @@ class EncryptionService {
   Future<Map<String, String>> encryptForStorage(String data) async {
     try {
       final encrypted = await encrypt(data);
-      return {
-        'data': encrypted,
-        'algorithm': 'AES-256',
-        'timestamp': DateTime.now().toIso8601String(),
-      };
+      return {'data': encrypted, 'algorithm': 'AES-256', 'timestamp': DateTime.now().toIso8601String()};
     } catch (e) {
-      LoggerService.error(
-        '[EncryptionService] Error encrypting for storage',
-        error: e,
-      );
+      LoggerService.error('[EncryptionService] Error encrypting for storage', error: e);
       rethrow;
     }
   }
@@ -231,10 +208,7 @@ class EncryptionService {
       final data = encryptedData['data'] as String;
       return await decrypt(data);
     } catch (e) {
-      LoggerService.error(
-        '[EncryptionService] Error decrypting from storage',
-        error: e,
-      );
+      LoggerService.error('[EncryptionService] Error decrypting from storage', error: e);
       rethrow;
     }
   }
@@ -243,10 +217,7 @@ class EncryptionService {
   /// Note: This is a best-effort approach. True secure deletion requires OS-level support
   String secureWipe(String data) {
     final random = Random.secure();
-    final randomData = List<int>.generate(
-      data.length,
-      (_) => random.nextInt(256),
-    );
+    final randomData = List<int>.generate(data.length, (_) => random.nextInt(256));
     return String.fromCharCodes(randomData);
   }
 }

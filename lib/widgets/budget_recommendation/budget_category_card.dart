@@ -22,9 +22,7 @@ class BudgetCategoryCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final categoryName = category['name'] as String;
-    final percentage =
-        editedPercentages[categoryName] ??
-        ((category['percentage'] as num?)?.toDouble() ?? 0.0);
+    final percentage = editedPercentages[categoryName] ?? ((category['percentage'] as num?)?.toDouble() ?? 0.0);
     final currentPercentage = percentage.toInt();
     final currentAmount = totalIncome * (percentage / 100);
 
@@ -45,11 +43,7 @@ class BudgetCategoryCard extends StatelessWidget {
               color: (category['color'] as Color).withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
             ),
-            child: Icon(
-              category['icon'] as IconData,
-              color: category['color'] as Color,
-              size: 24,
-            ),
+            child: Icon(category['icon'] as IconData, color: category['color'] as Color, size: 24),
           ),
           trailing: Row(
             mainAxisSize: MainAxisSize.min,
@@ -67,35 +61,23 @@ class BudgetCategoryCard extends StatelessWidget {
           ),
           title: Text(
             categoryName,
-            style: GoogleFonts.poppins(
-              color: Colors.white,
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-            ),
+            style: GoogleFonts.poppins(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600),
           ),
           subtitle: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SizedBox(height: 4),
+              const SizedBox(height: DesignTokens.spacing1),
               Text(
                 category['description'] as String,
-                style: GoogleFonts.poppins(
-                  color: Colors.grey[500],
-                  fontSize: 12,
-                ),
+                style: GoogleFonts.poppins(color: Colors.grey[500], fontSize: 12),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: DesignTokens.spacing2),
               Row(
                 children: [
                   Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 4,
-                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
-                      color: (category['color'] as Color).withValues(
-                        alpha: 0.2,
-                      ),
+                      color: (category['color'] as Color).withValues(alpha: 0.2),
                       borderRadius: BorderRadius.circular(6),
                     ),
                     child: Text(
@@ -110,11 +92,7 @@ class BudgetCategoryCard extends StatelessWidget {
                   const SizedBox(width: 12),
                   Text(
                     CurrencyFormatter.formatRupiah(currentAmount),
-                    style: GoogleFonts.poppins(
-                      color: Colors.white,
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: GoogleFonts.poppins(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
                   ),
                 ],
               ),
@@ -126,7 +104,7 @@ class BudgetCategoryCard extends StatelessWidget {
               child: Column(
                 children: [
                   const Divider(color: Colors.grey),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: DesignTokens.spacing2),
                   ...((category['subcategories'] as List?) ?? <dynamic>[]).map(
                     (sub) => Padding(
                       padding: const EdgeInsets.symmetric(vertical: 6),
@@ -139,19 +117,13 @@ class BudgetCategoryCard extends StatelessWidget {
                                 Container(
                                   width: 6,
                                   height: 6,
-                                  decoration: BoxDecoration(
-                                    color: category['color'] as Color,
-                                    shape: BoxShape.circle,
-                                  ),
+                                  decoration: BoxDecoration(color: category['color'] as Color, shape: BoxShape.circle),
                                 ),
                                 const SizedBox(width: 12),
                                 Expanded(
                                   child: Text(
                                     sub['name'] as String,
-                                    style: GoogleFonts.poppins(
-                                      color: Colors.white70,
-                                      fontSize: 13,
-                                    ),
+                                    style: GoogleFonts.poppins(color: Colors.white70, fontSize: 13),
                                   ),
                                 ),
                               ],
@@ -161,9 +133,7 @@ class BudgetCategoryCard extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
                               Text(
-                                CurrencyFormatter.formatRupiah(
-                                  ((sub['amount'] as num?)?.toDouble() ?? 0.0),
-                                ),
+                                CurrencyFormatter.formatRupiah(((sub['amount'] as num?)?.toDouble() ?? 0.0)),
                                 style: GoogleFonts.poppins(
                                   color: Colors.white,
                                   fontSize: 13,
@@ -172,10 +142,7 @@ class BudgetCategoryCard extends StatelessWidget {
                               ),
                               Text(
                                 '${sub['percentage']}%',
-                                style: GoogleFonts.poppins(
-                                  color: Colors.grey[600],
-                                  fontSize: 10,
-                                ),
+                                style: GoogleFonts.poppins(color: Colors.grey[600], fontSize: 10),
                               ),
                             ],
                           ),

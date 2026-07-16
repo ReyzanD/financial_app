@@ -3,8 +3,7 @@ import 'package:financial_app/services/data/transaction_data_service.dart';
 import 'package:financial_app/core/di/service_locator.dart';
 
 class AnalyticsService {
-  final TransactionDataService _transactionData =
-      getIt<TransactionDataService>();
+  final TransactionDataService _transactionData = getIt<TransactionDataService>();
 
   /// Get analytics data for a specific period
   Future<Map<String, dynamic>> getAnalytics({
@@ -13,9 +12,7 @@ class AnalyticsService {
     try {
       // Get transactions for the period
       final txData = await _transactionData.getTransactions(limit: 1000);
-      final transactions = List<Map<String, dynamic>>.from(
-        txData['transactions'] ?? [],
-      );
+      final transactions = List<Map<String, dynamic>>.from(txData['transactions'] ?? []);
 
       // Filter by period
       final now = DateTime.now();
@@ -29,11 +26,7 @@ class AnalyticsService {
     }
   }
 
-  List<Map<String, dynamic>> _filterByPeriod(
-    List<Map<String, dynamic>> transactions,
-    String period,
-    DateTime now,
-  ) {
+  List<Map<String, dynamic>> _filterByPeriod(List<Map<String, dynamic>> transactions, String period, DateTime now) {
     return transactions.where((t) {
       try {
         final dateStr =
@@ -60,11 +53,7 @@ class AnalyticsService {
     }).toList();
   }
 
-  Map<String, dynamic> _calculateAnalytics(
-    List<Map<String, dynamic>> transactions,
-    String period,
-    DateTime now,
-  ) {
+  Map<String, dynamic> _calculateAnalytics(List<Map<String, dynamic>> transactions, String period, DateTime now) {
     double totalIncome = 0;
     double totalExpense = 0;
     Map<String, double> categoryExpenses = {};
@@ -74,9 +63,7 @@ class AnalyticsService {
     // Process transactions
     for (var transaction in transactions) {
       final amount =
-          (transaction['amount_232143'] as num?)?.toDouble() ??
-          (transaction['amount'] as num?)?.toDouble() ??
-          0.0;
+          (transaction['amount_232143'] as num?)?.toDouble() ?? (transaction['amount'] as num?)?.toDouble() ?? 0.0;
       final type =
           transaction['type_232143']?.toString().toLowerCase() ??
           transaction['type']?.toString().toLowerCase() ??
@@ -104,11 +91,7 @@ class AnalyticsService {
     final savingsRate = totalIncome > 0 ? (savings / totalIncome) * 100 : 0;
 
     // Get previous period data for comparison
-    final previousPeriodData = _getPreviousPeriodComparison(
-      transactions,
-      period,
-      now,
-    );
+    final previousPeriodData = _getPreviousPeriodComparison(transactions, period, now);
 
     return {
       'period': period,
@@ -122,17 +105,12 @@ class AnalyticsService {
       'topExpenseCategories': topExpenseCategories,
       'topIncomeCategories': topIncomeCategories,
       'dailyData': dailyData,
-      'averageDailyExpense':
-          dailyData.isNotEmpty ? totalExpense / dailyData.length : 0,
+      'averageDailyExpense': dailyData.isNotEmpty ? totalExpense / dailyData.length : 0,
       'previousPeriod': previousPeriodData,
     };
   }
 
-  List<Map<String, dynamic>> _calculateTrendData(
-    List<Map<String, dynamic>> transactions,
-    String period,
-    DateTime now,
-  ) {
+  List<Map<String, dynamic>> _calculateTrendData(List<Map<String, dynamic>> transactions, String period, DateTime now) {
     Map<String, Map<String, double>> dataByDate = {};
 
     for (var transaction in transactions) {
@@ -144,9 +122,7 @@ class AnalyticsService {
             '';
         final date = DateTime.parse(dateStr);
         final amount =
-            (transaction['amount_232143'] as num?)?.toDouble() ??
-            (transaction['amount'] as num?)?.toDouble() ??
-            0.0;
+            (transaction['amount_232143'] as num?)?.toDouble() ?? (transaction['amount'] as num?)?.toDouble() ?? 0.0;
         final type =
             transaction['type_232143']?.toString().toLowerCase() ??
             transaction['type']?.toString().toLowerCase() ??
@@ -154,8 +130,7 @@ class AnalyticsService {
 
         String key;
         if (period == 'week' || period == 'month') {
-          key =
-              '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
+          key = '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
         } else {
           key = '${date.year}-${date.month.toString().padLeft(2, '0')}';
         }
@@ -165,11 +140,9 @@ class AnalyticsService {
         }
 
         if (type == 'income') {
-          dataByDate[key]!['income'] =
-              (dataByDate[key]!['income'] ?? 0) + amount;
+          dataByDate[key]!['income'] = (dataByDate[key]!['income'] ?? 0) + amount;
         } else if (type == 'expense') {
-          dataByDate[key]!['expense'] =
-              (dataByDate[key]!['expense'] ?? 0) + amount;
+          dataByDate[key]!['expense'] = (dataByDate[key]!['expense'] ?? 0) + amount;
         }
       } catch (e) {
         continue;
@@ -179,23 +152,15 @@ class AnalyticsService {
     // Convert to list and sort
     final result =
         dataByDate.entries.map((e) {
-          return {
-            'date': e.key,
-            'income': e.value['income'] ?? 0,
-            'expense': e.value['expense'] ?? 0,
-          };
+          return {'date': e.key, 'income': e.value['income'] ?? 0, 'expense': e.value['expense'] ?? 0};
         }).toList();
 
     result.sort((a, b) => a['date'].toString().compareTo(b['date'].toString()));
     return result;
   }
 
-  List<Map<String, dynamic>> _getTopCategories(
-    Map<String, double> categories,
-    int limit,
-  ) {
-    final sorted =
-        categories.entries.toList()..sort((a, b) => b.value.compareTo(a.value));
+  List<Map<String, dynamic>> _getTopCategories(Map<String, double> categories, int limit) {
+    final sorted = categories.entries.toList()..sort((a, b) => b.value.compareTo(a.value));
 
     return sorted.take(limit).map((e) {
       return {'category': e.key, 'amount': e.value};
@@ -218,11 +183,7 @@ class AnalyticsService {
       case 'month':
         final lastMonth = DateTime(now.year, now.month - 1, 1);
         startDate = lastMonth;
-        endDate = DateTime(
-          now.year,
-          now.month,
-          0,
-        ); // Last day of previous month
+        endDate = DateTime(now.year, now.month, 0); // Last day of previous month
         break;
       case 'year':
         startDate = DateTime(now.year - 1, 1, 1);
@@ -241,8 +202,7 @@ class AnalyticsService {
                 t['date']?.toString() ??
                 '';
             final date = DateTime.parse(dateStr);
-            return date.isAfter(startDate) &&
-                date.isBefore(endDate.add(const Duration(days: 1)));
+            return date.isAfter(startDate) && date.isBefore(endDate.add(const Duration(days: 1)));
           } catch (e) {
             return false;
           }
@@ -253,9 +213,7 @@ class AnalyticsService {
 
     for (var transaction in previousTransactions) {
       final amount =
-          (transaction['amount_232143'] as num?)?.toDouble() ??
-          (transaction['amount'] as num?)?.toDouble() ??
-          0.0;
+          (transaction['amount_232143'] as num?)?.toDouble() ?? (transaction['amount'] as num?)?.toDouble() ?? 0.0;
       final type =
           transaction['type_232143']?.toString().toLowerCase() ??
           transaction['type']?.toString().toLowerCase() ??
@@ -268,11 +226,7 @@ class AnalyticsService {
       }
     }
 
-    return {
-      'totalIncome': totalIncome,
-      'totalExpense': totalExpense,
-      'savings': totalIncome - totalExpense,
-    };
+    return {'totalIncome': totalIncome, 'totalExpense': totalExpense, 'savings': totalIncome - totalExpense};
   }
 
   /// Calculate percentage change from previous period

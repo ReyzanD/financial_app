@@ -3,8 +3,7 @@ import 'package:financial_app/core/di/service_locator.dart';
 
 class ReportRepository {
   final TransactionDataService _s;
-  ReportRepository({TransactionDataService? service})
-    : _s = service ?? getIt<TransactionDataService>();
+  ReportRepository({TransactionDataService? service}) : _s = service ?? getIt<TransactionDataService>();
   Future<Map<String, dynamic>> generateReport({
     required DateTime start,
     required DateTime end,

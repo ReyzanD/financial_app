@@ -9,11 +9,8 @@ class SocialLogin extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Text(
-          'Or Continue with',
-          style: GoogleFonts.poppins(color: Colors.grey[500], fontSize: 12),
-        ),
-        const SizedBox(height: 20),
+        Text('Or Continue with', style: GoogleFonts.poppins(color: Colors.grey[500], fontSize: 12)),
+        const SizedBox(height: DesignTokens.spacing5),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [

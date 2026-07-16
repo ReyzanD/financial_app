@@ -55,10 +55,7 @@ class _ReportScreenState extends State<ReportScreen> {
   Future<void> _generateReport() async {
     final l10n = AppLocalizations.of(context);
     if (_selectedMonth == null && _selectedYear == null) {
-      ErrorHandlerService.showWarningSnackbar(
-        context,
-        AppLocalizations.of(context)!.please_select_period_first,
-      );
+      ErrorHandlerService.showWarningSnackbar(context, AppLocalizations.of(context)!.please_select_period_first);
       return;
     }
 
@@ -69,38 +66,21 @@ class _ReportScreenState extends State<ReportScreen> {
 
     if (_selectedPeriodType == 'monthly') {
       if (_selectedMonth == null) {
-        ErrorHandlerService.showWarningSnackbar(
-          context,
-          AppLocalizations.of(context)!.please_select_month,
-        );
+        ErrorHandlerService.showWarningSnackbar(context, AppLocalizations.of(context)!.please_select_month);
         return;
       }
       startDate = DateTime(_selectedMonth!.year, _selectedMonth!.month, 1);
-      endDate = DateTime(
-        _selectedMonth!.year,
-        _selectedMonth!.month + 1,
-        0,
-        23,
-        59,
-        59,
-      );
+      endDate = DateTime(_selectedMonth!.year, _selectedMonth!.month + 1, 0, 23, 59, 59);
     } else {
       if (_selectedYear == null) {
-        ErrorHandlerService.showWarningSnackbar(
-          context,
-          AppLocalizations.of(context)!.please_select_year,
-        );
+        ErrorHandlerService.showWarningSnackbar(context, AppLocalizations.of(context)!.please_select_year);
         return;
       }
       startDate = DateTime(_selectedYear!, 1, 1);
       endDate = DateTime(_selectedYear!, 12, 31, 23, 59, 59);
     }
 
-    await ctrl.generate(
-      start: startDate,
-      end: endDate,
-      type: _selectedTypeFilter ?? 'all',
-    );
+    await ctrl.generate(start: startDate, end: endDate, type: _selectedTypeFilter ?? 'all');
     if (!mounted) return;
 
     final data = ctrl.reportData;
@@ -108,10 +88,7 @@ class _ReportScreenState extends State<ReportScreen> {
 
     final transactions = List<dynamic>.from(data['transactions'] ?? []);
     if (transactions.isEmpty) {
-      ErrorHandlerService.showWarningSnackbar(
-        context,
-        AppLocalizations.of(context)!.no_transactions_for_period,
-      );
+      ErrorHandlerService.showWarningSnackbar(context, AppLocalizations.of(context)!.no_transactions_for_period);
       return;
     }
 
@@ -120,12 +97,7 @@ class _ReportScreenState extends State<ReportScreen> {
       File file;
       if (_selectedFormat == 'pdf') {
         file = await reportService.generatePdfReport(
-          transactions:
-              transactions
-                  .map(
-                    (j) => TransactionModel.fromJson(j as Map<String, dynamic>),
-                  )
-                  .toList(),
+          transactions: transactions.map((j) => TransactionModel.fromJson(j as Map<String, dynamic>)).toList(),
           periodType: _selectedPeriodType,
           startDate: startDate,
           endDate: endDate,
@@ -133,12 +105,7 @@ class _ReportScreenState extends State<ReportScreen> {
         await _showPdfPreview(file);
       } else {
         file = await reportService.generateCsvExport(
-          transactions:
-              transactions
-                  .map(
-                    (j) => TransactionModel.fromJson(j as Map<String, dynamic>),
-                  )
-                  .toList(),
+          transactions: transactions.map((j) => TransactionModel.fromJson(j as Map<String, dynamic>)).toList(),
           typeFilter: _selectedTypeFilter,
           categoryFilter: _selectedCategoryFilter,
           startDate: startDate,
@@ -173,37 +140,23 @@ class _ReportScreenState extends State<ReportScreen> {
           backgroundColor: DesignTokens.surfaceDark,
           title: Text(
             l10n?.report_created_successfully ?? 'Laporan Berhasil Dibuat',
-            style: GoogleFonts.poppins(
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-            ),
+            style: GoogleFonts.poppins(color: Colors.white, fontWeight: FontWeight.bold),
           ),
-          content: Text(
-            AppLocalizations.of(c)!.select_action,
-            style: GoogleFonts.poppins(color: Colors.white70),
-          ),
+          content: Text(AppLocalizations.of(c)!.select_action, style: GoogleFonts.poppins(color: Colors.white70)),
           actions: [
             TextButton(
               onPressed: () {
                 Navigator.pop(c);
                 _shareFile(file);
               },
-              child: Text(
-                l10n?.share ?? 'Bagikan',
-                style: GoogleFonts.poppins(color: DesignTokens.primaryColor),
-              ),
+              child: Text(l10n?.share ?? 'Bagikan', style: GoogleFonts.poppins(color: DesignTokens.primaryColor)),
             ),
             TextButton(
               onPressed: () async {
                 Navigator.pop(c);
-                await Printing.layoutPdf(
-                  onLayout: (PdfPageFormat format) async => bytes,
-                );
+                await Printing.layoutPdf(onLayout: (PdfPageFormat format) async => bytes);
               },
-              child: Text(
-                'Preview & Print',
-                style: GoogleFonts.poppins(color: DesignTokens.primaryColor),
-              ),
+              child: Text('Preview & Print', style: GoogleFonts.poppins(color: DesignTokens.primaryColor)),
             ),
           ],
         );
@@ -221,11 +174,7 @@ class _ReportScreenState extends State<ReportScreen> {
       );
     } catch (e) {
       LoggerService.error('Error sharing file', error: e);
-      if (mounted)
-        ErrorHandlerService.showErrorSnackbar(
-          context,
-          ErrorHandlerService.getUserFriendlyMessage(e),
-        );
+      if (mounted) ErrorHandlerService.showErrorSnackbar(context, ErrorHandlerService.getUserFriendlyMessage(e));
     }
   }
 
@@ -233,8 +182,7 @@ class _ReportScreenState extends State<ReportScreen> {
     final l10n = AppLocalizations.of(context);
     if (_selectedPeriodType == 'monthly' && _selectedMonth != null)
       return DateFormat('MMMM yyyy', 'id_ID').format(_selectedMonth!);
-    if (_selectedPeriodType == 'yearly' && _selectedYear != null)
-      return _selectedYear.toString();
+    if (_selectedPeriodType == 'yearly' && _selectedYear != null) return _selectedYear.toString();
     return l10n?.period ?? 'Periode';
   }
 
@@ -249,8 +197,7 @@ class _ReportScreenState extends State<ReportScreen> {
       helpText: AppLocalizations.of(context)?.select_month ?? 'Pilih Bulan',
       locale: const Locale('id', 'ID'),
     );
-    if (picked != null && mounted)
-      setState(() => _selectedMonth = DateTime(picked.year, picked.month));
+    if (picked != null && mounted) setState(() => _selectedMonth = DateTime(picked.year, picked.month));
   }
 
   Future<void> _selectYear() async {
@@ -262,10 +209,7 @@ class _ReportScreenState extends State<ReportScreen> {
             backgroundColor: DesignTokens.surfaceDark,
             title: Text(
               AppLocalizations.of(c)!.select_year,
-              style: GoogleFonts.poppins(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-              ),
+              style: GoogleFonts.poppins(color: Colors.white, fontWeight: FontWeight.bold),
             ),
             content: SizedBox(
               width: double.maxFinite,
@@ -275,10 +219,7 @@ class _ReportScreenState extends State<ReportScreen> {
                 itemBuilder: (_, index) {
                   final year = now.year - index;
                   return ListTile(
-                    title: Text(
-                      year.toString(),
-                      style: GoogleFonts.poppins(color: Colors.white),
-                    ),
+                    title: Text(year.toString(), style: GoogleFonts.poppins(color: Colors.white)),
                     onTap: () => Navigator.pop(c, year),
                   );
                 },
@@ -308,23 +249,13 @@ class _ReportScreenState extends State<ReportScreen> {
                   ),
                   title: Text(
                     l10n?.create_report ?? 'Buat Laporan',
-                    style: GoogleFonts.poppins(
-                      color: Colors.white,
-                      fontSize: 20,
-                      fontWeight: FontWeight.w600,
-                    ),
+                    style: GoogleFonts.poppins(color: Colors.white, fontSize: 20, fontWeight: FontWeight.w600),
                   ),
                 ),
         body: const Column(
           children: [
             OfflineIndicator(),
-            Expanded(
-              child: Center(
-                child: CircularProgressIndicator(
-                  color: DesignTokens.primaryColor,
-                ),
-              ),
-            ),
+            Expanded(child: Center(child: CircularProgressIndicator(color: DesignTokens.primaryColor))),
           ],
         ),
       );
@@ -345,11 +276,7 @@ class _ReportScreenState extends State<ReportScreen> {
                 ),
                 title: Text(
                   l10n?.create_report ?? 'Buat Laporan',
-                  style: GoogleFonts.poppins(
-                    color: Colors.white,
-                    fontSize: 20,
-                    fontWeight: FontWeight.w600,
-                  ),
+                  style: GoogleFonts.poppins(color: Colors.white, fontSize: 20, fontWeight: FontWeight.w600),
                 ),
               ),
       body: Column(
@@ -362,7 +289,7 @@ class _ReportScreenState extends State<ReportScreen> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   _buildSectionTitle(l10n?.period_type ?? 'Jenis Periode'),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: DesignTokens.spacing3),
                   Row(
                     children: [
                       Expanded(
@@ -382,19 +309,14 @@ class _ReportScreenState extends State<ReportScreen> {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 24),
-                  _buildSectionTitle(
-                    AppLocalizations.of(context)!.select_period,
-                  ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: DesignTokens.spacing6),
+                  _buildSectionTitle(AppLocalizations.of(context)!.select_period),
+                  const SizedBox(height: DesignTokens.spacing3),
                   if (_selectedPeriodType == 'monthly')
                     _buildDateSelector(
                       l10n?.month ?? 'Bulan',
                       _selectedMonth != null
-                          ? DateFormat(
-                            'MMMM yyyy',
-                            'id_ID',
-                          ).format(_selectedMonth!)
+                          ? DateFormat('MMMM yyyy', 'id_ID').format(_selectedMonth!)
                           : AppLocalizations.of(context)!.select_month,
                       _selectMonth,
                       Icons.calendar_month_rounded,
@@ -402,55 +324,34 @@ class _ReportScreenState extends State<ReportScreen> {
                   else
                     _buildDateSelector(
                       l10n?.year ?? 'Tahun',
-                      _selectedYear?.toString() ??
-                          AppLocalizations.of(context)!.select_year,
+                      _selectedYear?.toString() ?? AppLocalizations.of(context)!.select_year,
                       _selectYear,
                       Icons.calendar_today_rounded,
                     ),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: DesignTokens.spacing6),
                   _buildSectionTitle(l10n?.report_format ?? 'Format Report'),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: DesignTokens.spacing3),
                   Row(
                     children: [
-                      Expanded(
-                        child: _buildFormatButton(
-                          'PDF',
-                          'pdf',
-                          Icons.picture_as_pdf_rounded,
-                        ),
-                      ),
+                      Expanded(child: _buildFormatButton('PDF', 'pdf', Icons.picture_as_pdf_rounded)),
                       const SizedBox(width: 12),
-                      Expanded(
-                        child: _buildFormatButton(
-                          'CSV',
-                          'csv',
-                          Icons.table_chart_rounded,
-                        ),
-                      ),
+                      Expanded(child: _buildFormatButton('CSV', 'csv', Icons.table_chart_rounded)),
                     ],
                   ),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: DesignTokens.spacing6),
                   if (_selectedFormat == 'csv') ...[
-                    _buildSectionTitle(
-                      AppLocalizations.of(context)!.filter_optional,
-                    ),
-                    const SizedBox(height: 12),
+                    _buildSectionTitle(AppLocalizations.of(context)!.filter_optional),
+                    const SizedBox(height: DesignTokens.spacing3),
                     _buildFilterDropdown(
                       l10n?.transaction_type ?? 'Tipe Transaksi',
                       _selectedTypeFilter,
-                      [
-                        l10n?.all ?? 'Semua',
-                        l10n?.income ?? 'Pemasukan',
-                        l10n?.expense ?? 'Pengeluaran',
-                      ],
+                      [l10n?.all ?? 'Semua', l10n?.income ?? 'Pemasukan', l10n?.expense ?? 'Pengeluaran'],
                       ['all', 'income', 'expense'],
-                      (v) => setState(
-                        () => _selectedTypeFilter = v == 'all' ? null : v,
-                      ),
+                      (v) => setState(() => _selectedTypeFilter = v == 'all' ? null : v),
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: DesignTokens.spacing3),
                   ],
-                  const SizedBox(height: 32),
+                  const SizedBox(height: DesignTokens.spacing7),
                   Consumer<ReportController>(
                     builder:
                         (context, ctrl, _) => ElevatedButton(
@@ -459,9 +360,7 @@ class _ReportScreenState extends State<ReportScreen> {
                             backgroundColor: DesignTokens.primaryColor,
                             padding: const EdgeInsets.symmetric(vertical: 16),
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(
-                                DesignTokens.radiusMedium,
-                              ),
+                              borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
                             ),
                             elevation: 0,
                           ),
@@ -472,18 +371,13 @@ class _ReportScreenState extends State<ReportScreen> {
                                     width: 20,
                                     child: CircularProgressIndicator(
                                       strokeWidth: 2,
-                                      valueColor: AlwaysStoppedAnimation<Color>(
-                                        Colors.white,
-                                      ),
+                                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                                     ),
                                   )
                                   : Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
-                                      const Icon(
-                                        Icons.description_rounded,
-                                        color: Colors.white,
-                                      ),
+                                      const Icon(Icons.description_rounded, color: Colors.white),
                                       const SizedBox(width: 8),
                                       Text(
                                         l10n?.create_report ?? 'Buat Laporan',
@@ -497,28 +391,20 @@ class _ReportScreenState extends State<ReportScreen> {
                                   ),
                         ),
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: DesignTokens.spacing4),
                   Container(
                     padding: const EdgeInsets.all(DesignTokens.spacing4),
                     decoration: BoxDecoration(
                       color: DesignTokens.surfaceDark,
-                      borderRadius: BorderRadius.circular(
-                        DesignTokens.radiusMedium,
-                      ),
-                      border: Border.all(
-                        color: DesignTokens.primaryColor.withValues(alpha: 0.3),
-                      ),
+                      borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                      border: Border.all(color: DesignTokens.primaryColor.withValues(alpha: 0.3)),
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Row(
                           children: [
-                            Icon(
-                              Icons.info_outline_rounded,
-                              color: DesignTokens.primaryColor,
-                              size: 20,
-                            ),
+                            Icon(Icons.info_outline_rounded, color: DesignTokens.primaryColor, size: 20),
                             const SizedBox(width: 8),
                             Text(
                               l10n?.information ?? 'Informasi',
@@ -530,15 +416,12 @@ class _ReportScreenState extends State<ReportScreen> {
                             ),
                           ],
                         ),
-                        const SizedBox(height: 8),
+                        const SizedBox(height: DesignTokens.spacing2),
                         Text(
                           _selectedFormat == 'pdf'
                               ? '• PDF report akan menampilkan summary, breakdown kategori, dan daftar transaksi\n• Anda dapat preview dan print langsung dari aplikasi\n• Report dapat dibagikan via email atau WhatsApp'
                               : '• CSV export berisi semua data transaksi dalam format spreadsheet\n• Dapat dibuka dengan Excel, Google Sheets, atau aplikasi spreadsheet lainnya\n• File dapat dibagikan via email atau WhatsApp',
-                          style: GoogleFonts.poppins(
-                            color: Colors.grey[400],
-                            fontSize: 12,
-                          ),
+                          style: GoogleFonts.poppins(color: Colors.grey[400], fontSize: 12),
                         ),
                       ],
                     ),
@@ -552,14 +435,8 @@ class _ReportScreenState extends State<ReportScreen> {
     );
   }
 
-  Widget _buildSectionTitle(String title) => Text(
-    title,
-    style: GoogleFonts.poppins(
-      color: Colors.white,
-      fontSize: 16,
-      fontWeight: FontWeight.w600,
-    ),
-  );
+  Widget _buildSectionTitle(String title) =>
+      Text(title, style: GoogleFonts.poppins(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600));
 
   Widget _buildPeriodTypeButton(String label, String value, IconData icon) {
     final isSelected = _selectedPeriodType == value;
@@ -568,27 +445,17 @@ class _ReportScreenState extends State<ReportScreen> {
       child: Container(
         padding: const EdgeInsets.all(DesignTokens.spacing4),
         decoration: BoxDecoration(
-          color:
-              isSelected
-                  ? DesignTokens.primaryColor.withValues(alpha: 0.2)
-                  : DesignTokens.surfaceDark,
+          color: isSelected ? DesignTokens.primaryColor.withValues(alpha: 0.2) : DesignTokens.surfaceDark,
           borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
           border: Border.all(
-            color:
-                isSelected
-                    ? DesignTokens.primaryColor
-                    : Colors.grey.withValues(alpha: 0.3),
+            color: isSelected ? DesignTokens.primaryColor : Colors.grey.withValues(alpha: 0.3),
             width: isSelected ? 2 : 1,
           ),
         ),
         child: Column(
           children: [
-            Icon(
-              icon,
-              color: isSelected ? DesignTokens.primaryColor : Colors.grey[400],
-              size: 32,
-            ),
-            const SizedBox(height: 8),
+            Icon(icon, color: isSelected ? DesignTokens.primaryColor : Colors.grey[400], size: 32),
+            const SizedBox(height: DesignTokens.spacing2),
             Text(
               label,
               style: GoogleFonts.poppins(
@@ -610,27 +477,17 @@ class _ReportScreenState extends State<ReportScreen> {
       child: Container(
         padding: const EdgeInsets.all(DesignTokens.spacing4),
         decoration: BoxDecoration(
-          color:
-              isSelected
-                  ? DesignTokens.primaryColor.withValues(alpha: 0.2)
-                  : DesignTokens.surfaceDark,
+          color: isSelected ? DesignTokens.primaryColor.withValues(alpha: 0.2) : DesignTokens.surfaceDark,
           borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
           border: Border.all(
-            color:
-                isSelected
-                    ? DesignTokens.primaryColor
-                    : Colors.grey.withValues(alpha: 0.3),
+            color: isSelected ? DesignTokens.primaryColor : Colors.grey.withValues(alpha: 0.3),
             width: isSelected ? 2 : 1,
           ),
         ),
         child: Column(
           children: [
-            Icon(
-              icon,
-              color: isSelected ? DesignTokens.primaryColor : Colors.grey[400],
-              size: 32,
-            ),
-            const SizedBox(height: 8),
+            Icon(icon, color: isSelected ? DesignTokens.primaryColor : Colors.grey[400], size: 32),
+            const SizedBox(height: DesignTokens.spacing2),
             Text(
               label,
               style: GoogleFonts.poppins(
@@ -645,12 +502,7 @@ class _ReportScreenState extends State<ReportScreen> {
     );
   }
 
-  Widget _buildDateSelector(
-    String label,
-    String value,
-    VoidCallback onTap,
-    IconData icon,
-  ) {
+  Widget _buildDateSelector(String label, String value, VoidCallback onTap, IconData icon) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -658,9 +510,7 @@ class _ReportScreenState extends State<ReportScreen> {
         decoration: BoxDecoration(
           color: DesignTokens.surfaceDark,
           borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
-          border: Border.all(
-            color: DesignTokens.primaryColor.withValues(alpha: 0.3),
-          ),
+          border: Border.all(color: DesignTokens.primaryColor.withValues(alpha: 0.3)),
         ),
         child: Row(
           children: [
@@ -670,30 +520,16 @@ class _ReportScreenState extends State<ReportScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    label,
-                    style: GoogleFonts.poppins(
-                      color: Colors.grey[400],
-                      fontSize: 12,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
+                  Text(label, style: GoogleFonts.poppins(color: Colors.grey[400], fontSize: 12)),
+                  const SizedBox(height: DesignTokens.spacing1),
                   Text(
                     value,
-                    style: GoogleFonts.poppins(
-                      color: Colors.white,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                    ),
+                    style: GoogleFonts.poppins(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600),
                   ),
                 ],
               ),
             ),
-            Icon(
-              Icons.arrow_forward_ios_rounded,
-              color: Colors.grey[400],
-              size: 16,
-            ),
+            Icon(Icons.arrow_forward_ios_rounded, color: Colors.grey[400], size: 16),
           ],
         ),
       ),
@@ -712,24 +548,16 @@ class _ReportScreenState extends State<ReportScreen> {
       decoration: BoxDecoration(
         color: DesignTokens.surfaceDark,
         borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
-        border: Border.all(
-          color: DesignTokens.primaryColor.withValues(alpha: 0.3),
-        ),
+        border: Border.all(color: DesignTokens.primaryColor.withValues(alpha: 0.3)),
       ),
       child: DropdownButtonHideUnderline(
         child: DropdownButton<String>(
           value: value ?? 'all',
           dropdownColor: DesignTokens.surfaceDark,
-          icon: const Icon(
-            Icons.keyboard_arrow_down_rounded,
-            color: Colors.white70,
-          ),
+          icon: const Icon(Icons.keyboard_arrow_down_rounded, color: Colors.white70),
           style: GoogleFonts.poppins(color: Colors.white, fontSize: 14),
           onChanged: (v) => onChanged(v),
-          items: List.generate(
-            options.length,
-            (i) => DropdownMenuItem(value: values[i], child: Text(options[i])),
-          ),
+          items: List.generate(options.length, (i) => DropdownMenuItem(value: values[i], child: Text(options[i]))),
         ),
       ),
     );

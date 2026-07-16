@@ -11,12 +11,7 @@ class ApiSecurityService {
   final Map<String, int> _requestCounts = {};
 
   /// Sign request dengan HMAC
-  String signRequest(
-    String method,
-    String endpoint,
-    Map<String, dynamic>? body,
-    String secret,
-  ) {
+  String signRequest(String method, String endpoint, Map<String, dynamic>? body, String secret) {
     try {
       final timestamp = DateTime.now().millisecondsSinceEpoch.toString();
       final nonce = DateTime.now().microsecondsSinceEpoch.toString();
@@ -52,18 +47,13 @@ class ApiSecurityService {
 
       // Clean old requests (older than 1 hour)
       if (_requestHistory.containsKey(key)) {
-        _requestHistory[key]!.removeWhere(
-          (time) => now.difference(time).inHours > 1,
-        );
+        _requestHistory[key]!.removeWhere((time) => now.difference(time).inHours > 1);
       } else {
         _requestHistory[key] = [];
       }
 
       // Check per-minute limit
-      final recentRequests =
-          _requestHistory[key]!
-              .where((time) => now.difference(time).inMinutes < 1)
-              .length;
+      final recentRequests = _requestHistory[key]!.where((time) => now.difference(time).inMinutes < 1).length;
 
       if (recentRequests >= _maxRequestsPerMinute) {
         LoggerService.warning('Rate limit exceeded for $endpoint');
@@ -71,10 +61,7 @@ class ApiSecurityService {
       }
 
       // Check per-hour limit
-      final hourlyRequests =
-          _requestHistory[key]!
-              .where((time) => now.difference(time).inHours < 1)
-              .length;
+      final hourlyRequests = _requestHistory[key]!.where((time) => now.difference(time).inHours < 1).length;
 
       if (hourlyRequests >= _maxRequestsPerHour) {
         LoggerService.warning('Hourly rate limit exceeded for $endpoint');
@@ -104,15 +91,9 @@ class ApiSecurityService {
       };
     }
 
-    final recentRequests =
-        _requestHistory[key]!
-            .where((time) => now.difference(time).inMinutes < 1)
-            .length;
+    final recentRequests = _requestHistory[key]!.where((time) => now.difference(time).inMinutes < 1).length;
 
-    final hourlyRequests =
-        _requestHistory[key]!
-            .where((time) => now.difference(time).inHours < 1)
-            .length;
+    final hourlyRequests = _requestHistory[key]!.where((time) => now.difference(time).inHours < 1).length;
 
     return {
       'remaining_per_minute': _maxRequestsPerMinute - recentRequests,
@@ -167,15 +148,11 @@ class ApiSecurityService {
         // Set kDebugMode to false in production or use a build flag
         const bool isProduction = bool.fromEnvironment('dart.vm.product');
         if (isProduction) {
-          LoggerService.warning(
-            'No certificate pinning configured for $hostname in production build',
-          );
+          LoggerService.warning('No certificate pinning configured for $hostname in production build');
           // In production, you may want to reject connections without pinning
           // For now, we allow it but log a warning
         } else {
-          LoggerService.debug(
-            'No certificate pinning configured for $hostname (development mode)',
-          );
+          LoggerService.debug('No certificate pinning configured for $hostname (development mode)');
         }
         return true;
       }
@@ -188,9 +165,7 @@ class ApiSecurityService {
       // Compare with pinned certificate
       final pinnedHash = _pinnedCertificates[hostname];
       if (certificateHash != pinnedHash) {
-        LoggerService.error(
-          'Certificate pinning failed for $hostname: hash mismatch',
-        );
+        LoggerService.error('Certificate pinning failed for $hostname: hash mismatch');
         return false;
       }
 

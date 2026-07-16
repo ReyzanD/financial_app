@@ -33,8 +33,7 @@ class TransactionModel {
     this.accountType,
   });
 
-  factory TransactionModel.fromMap(Map<String, dynamic> map) =>
-      TransactionModel.fromJson(map);
+  factory TransactionModel.fromMap(Map<String, dynamic> map) => TransactionModel.fromJson(map);
 
   Map<String, dynamic> toJson() => {
     'id': id,
@@ -61,18 +60,11 @@ class TransactionModel {
     final type = json['type_232143'] ?? json['type'] ?? 'expense';
     final description = json['description_232143'] ?? json['description'] ?? '';
     final categoryId = json['category_id_232143'] ?? json['category_id'] ?? '';
-    final categoryName =
-        json['category_name'] ?? json['category'] ?? 'Uncategorized';
-    final categoryColor =
-        json['category_color'] ?? json['color_232143'] ?? '#808080';
-    final paymentMethod =
-        json['payment_method_232143'] ?? json['payment_method'] ?? 'cash';
-    final dateStr =
-        json['transaction_date_232143'] ??
-        json['date'] ??
-        json['transaction_date'];
-    final createdAtStr =
-        json['created_at_232143'] ?? json['created_at'] ?? dateStr;
+    final categoryName = json['category_name'] ?? json['category'] ?? 'Uncategorized';
+    final categoryColor = json['category_color'] ?? json['color_232143'] ?? '#808080';
+    final paymentMethod = json['payment_method_232143'] ?? json['payment_method'] ?? 'cash';
+    final dateStr = json['transaction_date_232143'] ?? json['date'] ?? json['transaction_date'];
+    final createdAtStr = json['created_at_232143'] ?? json['created_at'] ?? dateStr;
 
     return TransactionModel(
       id: id,
@@ -83,12 +75,8 @@ class TransactionModel {
       categoryName: categoryName,
       categoryColor: categoryColor,
       paymentMethod: paymentMethod,
-      transactionDate:
-          dateStr != null ? _parseDate(dateStr.toString()) : DateTime.now(),
-      createdAt:
-          createdAtStr != null
-              ? _parseDate(createdAtStr.toString())
-              : DateTime.now(),
+      transactionDate: dateStr != null ? _parseDate(dateStr.toString()) : DateTime.now(),
+      createdAt: createdAtStr != null ? _parseDate(createdAtStr.toString()) : DateTime.now(),
       locationData: _parseLocationData(json),
       accountId: json['account_id_232143'] ?? json['account_id'],
       accountName: json['account_name'],
@@ -121,9 +109,7 @@ class TransactionModel {
       return DateTime.parse(dateString);
     } catch (e) {
       // Try parsing date in format "Mon, 03 Nov 2025 00:00:00 GMT"
-      final dateFormat = RegExp(
-        r'^[A-Za-z]+, (\d{2}) ([A-Za-z]+) (\d{4}) (\d{2}):(\d{2}):(\d{2}) GMT$',
-      );
+      final dateFormat = RegExp(r'^[A-Za-z]+, (\d{2}) ([A-Za-z]+) (\d{4}) (\d{2}):(\d{2}):(\d{2}) GMT$');
       final match = dateFormat.firstMatch(dateString);
 
       if (match != null) {

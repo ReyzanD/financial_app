@@ -10,18 +10,13 @@ class ExpenseSplitDataService {
   final LocalAuthService _authService;
   final _uuid = const Uuid();
 
-  ExpenseSplitDataService({
-    LocalDatabaseService? dbService,
-    LocalAuthService? authService,
-  }) : _dbService = dbService ?? LocalDatabaseService(),
-       _authService = authService ?? LocalAuthService();
+  ExpenseSplitDataService({LocalDatabaseService? dbService, LocalAuthService? authService})
+    : _dbService = dbService ?? LocalDatabaseService(),
+      _authService = authService ?? LocalAuthService();
 
   Future<String?> getCurrentUserId() async => _authService.getCurrentUserId();
 
-  Future<List<SplitModel>> getSplits({
-    String? transactionId,
-    bool activeOnly = true,
-  }) async {
+  Future<List<SplitModel>> getSplits({String? transactionId, bool activeOnly = true}) async {
     try {
       final userId = await getCurrentUserId();
       if (userId == null) throw Exception('Not authenticated');

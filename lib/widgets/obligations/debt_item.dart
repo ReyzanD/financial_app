@@ -18,10 +18,7 @@ class DebtItem extends StatelessWidget {
         leading: Container(
           width: 40,
           height: 40,
-          decoration: BoxDecoration(
-            color: Colors.red.withValues(alpha: 0.2),
-            borderRadius: BorderRadius.circular(8),
-          ),
+          decoration: BoxDecoration(color: Colors.red.withValues(alpha: 0.2), borderRadius: BorderRadius.circular(8)),
           child: Icon(Iconsax.card, color: Colors.red),
         ),
         title: Text(debt.name, style: TextStyle(color: Colors.white)),

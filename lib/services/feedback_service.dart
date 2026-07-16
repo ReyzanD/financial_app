@@ -7,11 +7,7 @@ import 'package:financial_app/utils/design_tokens.dart';
 /// Unified feedback service for snackbars, toasts, and haptic feedback
 class FeedbackService {
   /// Show success message
-  static void showSuccess(
-    BuildContext context,
-    String message, {
-    VoidCallback? onUndo,
-  }) {
+  static void showSuccess(BuildContext context, String message, {VoidCallback? onUndo}) {
     _showHapticFeedback(HapticType.success);
 
     ScaffoldMessenger.of(context).showSnackBar(
@@ -20,25 +16,14 @@ class FeedbackService {
           children: [
             Container(
               padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: Colors.green.withValues(alpha: 0.2),
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(
-                Iconsax.tick_circle,
-                color: Colors.green,
-                size: 20,
-              ),
+              decoration: BoxDecoration(color: Colors.green.withValues(alpha: 0.2), shape: BoxShape.circle),
+              child: const Icon(Iconsax.tick_circle, color: Colors.green, size: 20),
             ),
             const SizedBox(width: 12),
             Expanded(
               child: Text(
                 message,
-                style: GoogleFonts.poppins(
-                  color: Colors.white,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                ),
+                style: GoogleFonts.poppins(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w500),
               ),
             ),
           ],
@@ -64,11 +49,7 @@ class FeedbackService {
   }
 
   /// Show error message
-  static void showError(
-    BuildContext context,
-    String message, {
-    VoidCallback? onRetry,
-  }) {
+  static void showError(BuildContext context, String message, {VoidCallback? onRetry}) {
     _showHapticFeedback(HapticType.error);
 
     ScaffoldMessenger.of(context).showSnackBar(
@@ -77,25 +58,14 @@ class FeedbackService {
           children: [
             Container(
               padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: Colors.red.withValues(alpha: 0.2),
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(
-                Iconsax.close_circle,
-                color: Colors.red,
-                size: 20,
-              ),
+              decoration: BoxDecoration(color: Colors.red.withValues(alpha: 0.2), shape: BoxShape.circle),
+              child: const Icon(Iconsax.close_circle, color: Colors.red, size: 20),
             ),
             const SizedBox(width: 12),
             Expanded(
               child: Text(
                 message,
-                style: GoogleFonts.poppins(
-                  color: Colors.white,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                ),
+                style: GoogleFonts.poppins(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w500),
               ),
             ),
           ],
@@ -130,25 +100,14 @@ class FeedbackService {
           children: [
             Container(
               padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: Colors.orange.withValues(alpha: 0.2),
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(
-                Iconsax.warning_2,
-                color: Colors.orange,
-                size: 20,
-              ),
+              decoration: BoxDecoration(color: Colors.orange.withValues(alpha: 0.2), shape: BoxShape.circle),
+              child: const Icon(Iconsax.warning_2, color: Colors.orange, size: 20),
             ),
             const SizedBox(width: 12),
             Expanded(
               child: Text(
                 message,
-                style: GoogleFonts.poppins(
-                  color: Colors.white,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                ),
+                style: GoogleFonts.poppins(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w500),
               ),
             ),
           ],
@@ -178,21 +137,13 @@ class FeedbackService {
                 color: DesignTokens.primaryColor.withValues(alpha: 0.2),
                 shape: BoxShape.circle,
               ),
-              child: const Icon(
-                Iconsax.info_circle,
-                color: DesignTokens.primaryColor,
-                size: 20,
-              ),
+              child: const Icon(Iconsax.info_circle, color: DesignTokens.primaryColor, size: 20),
             ),
             const SizedBox(width: 12),
             Expanded(
               child: Text(
                 message,
-                style: GoogleFonts.poppins(
-                  color: Colors.white,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                ),
+                style: GoogleFonts.poppins(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w500),
               ),
             ),
           ],
@@ -219,29 +170,21 @@ class FeedbackService {
               height: 20,
               child: CircularProgressIndicator(
                 strokeWidth: 2,
-                valueColor: AlwaysStoppedAnimation<Color>(
-                  DesignTokens.primaryColor,
-                ),
+                valueColor: AlwaysStoppedAnimation<Color>(DesignTokens.primaryColor),
               ),
             ),
             const SizedBox(width: 16),
             Expanded(
               child: Text(
                 message,
-                style: GoogleFonts.poppins(
-                  color: Colors.white,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                ),
+                style: GoogleFonts.poppins(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w500),
               ),
             ),
           ],
         ),
         backgroundColor: DesignTokens.surfaceDark,
         behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(DesignTokens.radiusMedium)),
         duration: const Duration(days: 365), // Long duration for loading
       ),
     );

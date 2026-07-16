@@ -7,19 +7,11 @@ class QuickAmountSelector extends StatelessWidget {
   final List<double> amounts;
   final Function(double) onAmountSelected;
 
-  const QuickAmountSelector({
-    super.key,
-    required this.amounts,
-    required this.onAmountSelected,
-  });
+  const QuickAmountSelector({super.key, required this.amounts, required this.onAmountSelected});
 
   @override
   Widget build(BuildContext context) {
-    return Wrap(
-      spacing: 8,
-      runSpacing: 8,
-      children: amounts.map((amount) => _buildAmountChip(amount)).toList(),
-    );
+    return Wrap(spacing: 8, runSpacing: 8, children: amounts.map((amount) => _buildAmountChip(amount)).toList());
   }
 
   Widget _buildAmountChip(double amount) {
@@ -31,17 +23,11 @@ class QuickAmountSelector extends StatelessWidget {
         decoration: BoxDecoration(
           color: DesignTokens.primaryColor.withValues(alpha: 0.2),
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(
-            color: DesignTokens.primaryColor.withValues(alpha: 0.5),
-          ),
+          border: Border.all(color: DesignTokens.primaryColor.withValues(alpha: 0.5)),
         ),
         child: Text(
           CurrencyFormatter.formatRupiah(amount.toInt()),
-          style: GoogleFonts.poppins(
-            color: DesignTokens.primaryColor,
-            fontSize: 12,
-            fontWeight: FontWeight.w600,
-          ),
+          style: GoogleFonts.poppins(color: DesignTokens.primaryColor, fontSize: 12, fontWeight: FontWeight.w600),
         ),
       ),
     );

@@ -60,9 +60,7 @@ class OnboardingFlowManager {
       final prefs = await SharedPreferences.getInstance();
       final progress = currentPage / totalPages;
       await prefs.setDouble(_onboardingProgressKey, progress);
-      LoggerService.debug(
-        'Onboarding progress saved: ${(progress * 100).toStringAsFixed(0)}%',
-      );
+      LoggerService.debug('Onboarding progress saved: ${(progress * 100).toStringAsFixed(0)}%');
     } catch (e) {
       LoggerService.error('Error saving onboarding progress', error: e);
     }

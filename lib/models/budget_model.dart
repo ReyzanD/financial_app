@@ -38,16 +38,10 @@ class BudgetModel {
   /// From DB map (suffixed keys)
   factory BudgetModel.fromMap(Map<String, dynamic> map) {
     return BudgetModel(
-      id:
-          (map['budget_id_232143'] ?? map['budget_id'] ?? map['id'] ?? '')
-              .toString(),
+      id: (map['budget_id_232143'] ?? map['budget_id'] ?? map['id'] ?? '').toString(),
       userId: (map['user_id_232143'] ?? map['user_id'] ?? '').toString(),
-      categoryId:
-          (map['category_id_232143'] ?? map['category_id'] ?? '').toString(),
-      amount:
-          (map['amount_232143'] as num?)?.toDouble() ??
-          (map['amount'] as num?)?.toDouble() ??
-          0.0,
+      categoryId: (map['category_id_232143'] ?? map['category_id'] ?? '').toString(),
+      amount: (map['amount_232143'] as num?)?.toDouble() ?? (map['amount'] as num?)?.toDouble() ?? 0.0,
       spent:
           (map['spent_amount_232143'] as num?)?.toDouble() ??
           (map['spent_amount'] as num?)?.toDouble() ??
@@ -72,31 +66,16 @@ class BudgetModel {
               ? DateTime.parse(map['period_end'].toString())
               : DateTime.now(),
       rolloverEnabled:
-          (map['rollover_enabled_232143'] ?? map['rollover_enabled'] ?? 0) ==
-              1 ||
-          (map['rollover_enabled_232143'] ??
-                  map['rollover_enabled'] ??
-                  false) ==
-              true,
+          (map['rollover_enabled_232143'] ?? map['rollover_enabled'] ?? 0) == 1 ||
+          (map['rollover_enabled_232143'] ?? map['rollover_enabled'] ?? false) == true,
       alertThreshold:
-          (map['alert_threshold_232143'] as num?)?.toInt() ??
-          (map['alert_threshold'] as num?)?.toInt() ??
-          80,
-      isActive:
-          map['is_active_232143'] != null
-              ? map['is_active_232143'] == 1
-              : (map['is_active'] as bool?) ?? true,
-      recommendationReason:
-          (map['recommendation_reason_232143'] ?? map['recommendation_reason'])
-              ?.toString(),
+          (map['alert_threshold_232143'] as num?)?.toInt() ?? (map['alert_threshold'] as num?)?.toInt() ?? 80,
+      isActive: map['is_active_232143'] != null ? map['is_active_232143'] == 1 : (map['is_active'] as bool?) ?? true,
+      recommendationReason: (map['recommendation_reason_232143'] ?? map['recommendation_reason'])?.toString(),
       createdAt:
-          map['created_at_232143'] != null
-              ? DateTime.parse(map['created_at_232143'].toString())
-              : DateTime.now(),
+          map['created_at_232143'] != null ? DateTime.parse(map['created_at_232143'].toString()) : DateTime.now(),
       updatedAt:
-          map['updated_at_232143'] != null
-              ? DateTime.parse(map['updated_at_232143'].toString())
-              : DateTime.now(),
+          map['updated_at_232143'] != null ? DateTime.parse(map['updated_at_232143'].toString()) : DateTime.now(),
     );
   }
 
@@ -115,8 +94,7 @@ class BudgetModel {
       'rollover_enabled_232143': rolloverEnabled ? 1 : 0,
       'alert_threshold_232143': alertThreshold,
       'is_active_232143': isActive ? 1 : 0,
-      if (recommendationReason != null)
-        'recommendation_reason_232143': recommendationReason,
+      if (recommendationReason != null) 'recommendation_reason_232143': recommendationReason,
       'created_at_232143': createdAt.toIso8601String(),
       'updated_at_232143': updatedAt.toIso8601String(),
     };

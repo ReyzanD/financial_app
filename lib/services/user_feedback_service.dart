@@ -83,8 +83,7 @@ class UserFeedbackService {
 
       if (queueJson == null) return;
 
-      final queue =
-          (json.decode(queueJson) as List).cast<Map<String, dynamic>>();
+      final queue = (json.decode(queueJson) as List).cast<Map<String, dynamic>>();
 
       for (var feedbackData in queue) {
         try {
@@ -110,10 +109,7 @@ class UserFeedbackService {
     try {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setInt(_ratingKey, rating);
-      await prefs.setString(
-        '${_ratingKey}_date',
-        DateTime.now().toIso8601String(),
-      );
+      await prefs.setString('${_ratingKey}_date', DateTime.now().toIso8601String());
     } catch (e) {
       LoggerService.error('Error saving rating', error: e);
     }
@@ -157,11 +153,7 @@ class UserFeedbackService {
   }
 
   /// Submit feature request
-  Future<bool> submitFeatureRequest({
-    required String feature,
-    String? description,
-    String? useCase,
-  }) async {
+  Future<bool> submitFeatureRequest({required String feature, String? description, String? useCase}) async {
     return await submitFeedback(
       type: 'feature',
       message: feature,
@@ -170,15 +162,8 @@ class UserFeedbackService {
   }
 
   /// Submit general feedback
-  Future<bool> submitGeneralFeedback({
-    required String message,
-    String? email,
-  }) async {
-    return await submitFeedback(
-      type: 'general',
-      message: message,
-      email: email,
-    );
+  Future<bool> submitGeneralFeedback({required String message, String? email}) async {
+    return await submitFeedback(type: 'general', message: message, email: email);
   }
 
   /// Submit app rating
@@ -186,11 +171,7 @@ class UserFeedbackService {
     required int rating, // 1-5
     String? comment,
   }) async {
-    return await submitFeedback(
-      type: 'rating',
-      message: comment ?? '',
-      rating: rating,
-    );
+    return await submitFeedback(type: 'rating', message: comment ?? '', rating: rating);
   }
 
   /// Check if should prompt for rating
@@ -229,10 +210,7 @@ class UserFeedbackService {
   Future<void> recordRatingPromptShown() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      await prefs.setString(
-        'last_rating_prompt_date',
-        DateTime.now().toIso8601String(),
-      );
+      await prefs.setString('last_rating_prompt_date', DateTime.now().toIso8601String());
     } catch (e) {
       LoggerService.error('Error recording rating prompt', error: e);
     }

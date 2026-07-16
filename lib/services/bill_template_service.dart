@@ -105,9 +105,7 @@ class BillTemplateService {
 
   /// Get templates by category
   List<Map<String, dynamic>> getTemplatesByCategory(String category) {
-    return getPredefinedTemplates()
-        .where((template) => template['category'] == category)
-        .toList();
+    return getPredefinedTemplates().where((template) => template['category'] == category).toList();
   }
 
   /// Get custom templates (saved by user)
@@ -132,9 +130,7 @@ class BillTemplateService {
       final customTemplates = await getCustomTemplates();
 
       // Check if template with same ID exists
-      final existingIndex = customTemplates.indexWhere(
-        (t) => t['id'] == template['id'],
-      );
+      final existingIndex = customTemplates.indexWhere((t) => t['id'] == template['id']);
 
       if (existingIndex >= 0) {
         customTemplates[existingIndex] = template;
@@ -188,18 +184,14 @@ class BillTemplateService {
   }
 
   /// Convert template to obligation data
-  Map<String, dynamic> templateToObligationData(
-    Map<String, dynamic> template, {
-    double? amount,
-  }) {
+  Map<String, dynamic> templateToObligationData(Map<String, dynamic> template, {double? amount}) {
     return {
       'name_232143': template['name'],
       'type_232143': template['type'] ?? 'bill',
       'category_232143': template['category'] ?? 'other',
       'due_date_232143': template['default_due_date'] ?? 1,
       'monthly_amount_232143': amount ?? 0.0,
-      if (template['subscription_cycle'] != null)
-        'subscription_cycle_232143': template['subscription_cycle'],
+      if (template['subscription_cycle'] != null) 'subscription_cycle_232143': template['subscription_cycle'],
       if (template['type'] == 'subscription') 'is_subscription_232143': true,
     };
   }

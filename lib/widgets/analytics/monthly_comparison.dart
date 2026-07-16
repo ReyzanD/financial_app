@@ -38,15 +38,12 @@ class MonthlyComparison extends StatelessWidget {
         try {
           final dateStr = transaction['date']?.toString() ?? '';
           final transDate = DateTime.parse(dateStr);
-          final amount =
-              double.tryParse(transaction['amount']?.toString() ?? '0') ?? 0.0;
+          final amount = double.tryParse(transaction['amount']?.toString() ?? '0') ?? 0.0;
           final key = '${transDate.year}-${transDate.month}';
 
-          if (transDate.year == currentYear &&
-              transDate.month == currentMonth) {
+          if (transDate.year == currentYear && transDate.month == currentMonth) {
             thisMonthSpending += amount;
-          } else if (transDate.year == lastMonthYear &&
-              transDate.month == lastMonth) {
+          } else if (transDate.year == lastMonthYear && transDate.month == lastMonth) {
             lastMonthSpending += amount;
           }
 
@@ -60,19 +57,11 @@ class MonthlyComparison extends StatelessWidget {
       }
     }
 
-    final change =
-        lastMonthSpending > 0
-            ? ((thisMonthSpending - lastMonthSpending) /
-                lastMonthSpending *
-                100)
-            : 0.0;
+    final change = lastMonthSpending > 0 ? ((thisMonthSpending - lastMonthSpending) / lastMonthSpending * 100) : 0.0;
     final isIncrease = change > 0;
     final l10n = AppLocalizations.of(context);
 
-    final maxSpending = monthlySpending.values.fold<double>(
-      0,
-      (max, val) => val > max ? val : max,
-    );
+    final maxSpending = monthlySpending.values.fold<double>(0, (max, val) => val > max ? val : max);
 
     return Container(
       padding: const EdgeInsets.all(DesignTokens.spacing4),
@@ -86,13 +75,9 @@ class MonthlyComparison extends StatelessWidget {
         children: [
           Text(
             'Perbandingan Bulanan',
-            style: GoogleFonts.poppins(
-              color: Colors.white,
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-            ),
+            style: GoogleFonts.poppins(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: DesignTokens.spacing4),
           // Text summary row
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -117,7 +102,7 @@ class MonthlyComparison extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: DesignTokens.spacing5),
           // Visual chart: last 6 months spending
           SizedBox(
             height: 180,
@@ -142,13 +127,7 @@ class MonthlyComparison extends StatelessWidget {
                         final monthLabel = _monthLabel(int.parse(keyParts[1]));
                         return Padding(
                           padding: const EdgeInsets.only(top: 4),
-                          child: Text(
-                            monthLabel,
-                            style: GoogleFonts.poppins(
-                              color: Colors.grey[500],
-                              fontSize: 10,
-                            ),
-                          ),
+                          child: Text(monthLabel, style: GoogleFonts.poppins(color: Colors.grey[500], fontSize: 10)),
                         );
                       },
                     ),
@@ -161,39 +140,26 @@ class MonthlyComparison extends StatelessWidget {
                         if (value == 0) return const SizedBox();
                         return Text(
                           '${(value / 1000).toStringAsFixed(0)}k',
-                          style: GoogleFonts.poppins(
-                            color: Colors.grey[500],
-                            fontSize: 10,
-                          ),
+                          style: GoogleFonts.poppins(color: Colors.grey[500], fontSize: 10),
                         );
                       },
                     ),
                   ),
-                  topTitles: const AxisTitles(
-                    sideTitles: SideTitles(showTitles: false),
-                  ),
-                  rightTitles: const AxisTitles(
-                    sideTitles: SideTitles(showTitles: false),
-                  ),
+                  topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                  rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
                 ),
                 gridData: FlGridData(
                   show: true,
                   drawVerticalLine: false,
                   getDrawingHorizontalLine: (value) {
-                    return FlLine(
-                      color: DesignTokens.borderDark,
-                      strokeWidth: 1,
-                    );
+                    return FlLine(color: DesignTokens.borderDark, strokeWidth: 1);
                   },
                 ),
                 borderData: FlBorderData(show: false),
                 barGroups:
-                    monthlySpending.entries.toList().asMap().entries.map((
-                      idxEntry,
-                    ) {
+                    monthlySpending.entries.toList().asMap().entries.map((idxEntry) {
                       final spending = idxEntry.value.value;
-                      final isCurrentMonth =
-                          idxEntry.value.key == '$currentYear-$currentMonth';
+                      final isCurrentMonth = idxEntry.value.key == '$currentYear-$currentMonth';
                       return BarChartGroupData(
                         x: idxEntry.key,
                         barRods: [
@@ -202,13 +168,9 @@ class MonthlyComparison extends StatelessWidget {
                             color:
                                 isCurrentMonth
                                     ? DesignTokens.primaryColor
-                                    : DesignTokens.primaryColor.withValues(
-                                      alpha: 0.4,
-                                    ),
+                                    : DesignTokens.primaryColor.withValues(alpha: 0.4),
                             width: 18,
-                            borderRadius: const BorderRadius.vertical(
-                              top: Radius.circular(4),
-                            ),
+                            borderRadius: const BorderRadius.vertical(top: Radius.circular(4)),
                           ),
                         ],
                       );
@@ -222,52 +184,20 @@ class MonthlyComparison extends StatelessWidget {
   }
 
   static String _monthLabel(int month) {
-    const months = [
-      '',
-      'Jan',
-      'Feb',
-      'Mar',
-      'Apr',
-      'Mei',
-      'Jun',
-      'Jul',
-      'Agu',
-      'Sep',
-      'Okt',
-      'Nov',
-      'Des',
-    ];
+    const months = ['', 'Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
     return month >= 1 && month <= 12 ? months[month] : '';
   }
 
-  Widget _buildComparisonItem(
-    String label,
-    String value,
-    Color color,
-    IconData? icon,
-  ) {
+  Widget _buildComparisonItem(String label, String value, Color color, IconData? icon) {
     return Column(
       children: [
-        Text(
-          label,
-          style: GoogleFonts.poppins(color: Colors.grey[500], fontSize: 12),
-        ),
-        const SizedBox(height: 4),
+        Text(label, style: GoogleFonts.poppins(color: Colors.grey[500], fontSize: 12)),
+        const SizedBox(height: DesignTokens.spacing1),
         Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            if (icon != null) ...[
-              Icon(icon, color: color, size: 14),
-              const SizedBox(width: 4),
-            ],
-            Text(
-              value,
-              style: GoogleFonts.poppins(
-                color: color,
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
+            if (icon != null) ...[Icon(icon, color: color, size: 14), const SizedBox(width: 4)],
+            Text(value, style: GoogleFonts.poppins(color: color, fontSize: 14, fontWeight: FontWeight.w600)),
           ],
         ),
       ],

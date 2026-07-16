@@ -7,8 +7,7 @@ import 'package:financial_app/services/logger_service.dart';
 class AccountController extends ChangeNotifier {
   final AccountRepository _repository;
 
-  AccountController({required AccountRepository repository})
-    : _repository = repository;
+  AccountController({required AccountRepository repository}) : _repository = repository;
 
   List<AccountModel> _accounts = [];
   double _totalBalance = 0.0;

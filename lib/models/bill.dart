@@ -1,13 +1,4 @@
-enum BillType {
-  electricity,
-  water,
-  internet,
-  phone,
-  rent,
-  insurance,
-  subscription,
-  other,
-}
+enum BillType { electricity, water, internet, phone, rent, insurance, subscription, other }
 
 class Bill {
   final String id;
@@ -49,23 +40,15 @@ class Bill {
 
   factory Bill.fromJson(Map<String, dynamic> json) {
     return Bill(
-      id:
-          json['id']?.toString() ??
-          json['obligation_id_232143']?.toString() ??
-          '',
+      id: json['id']?.toString() ?? json['obligation_id_232143']?.toString() ?? '',
       name: json['name']?.toString() ?? json['name_232143']?.toString() ?? '',
-      amount:
-          (json['amount'] as num?)?.toDouble() ??
-          (json['amount_232143'] as num?)?.toDouble() ??
-          0.0,
+      amount: (json['amount'] as num?)?.toDouble() ?? (json['amount_232143'] as num?)?.toDouble() ?? 0.0,
       dueDate:
           _parseDate(json['due_date']) ??
           _parseDate(json['due_date_232143']) ??
           DateTime.now().add(const Duration(days: 30)),
       type: BillType.values.firstWhere(
-        (e) =>
-            e.name == json['type']?.toString() ||
-            e.name == json['type_232143']?.toString(),
+        (e) => e.name == json['type']?.toString() || e.name == json['type_232143']?.toString(),
         orElse: () => BillType.other,
       ),
       isPaid:
@@ -82,10 +65,7 @@ class Bill {
       name: map['name_232143']?.toString() ?? '',
       amount: (map['amount_232143'] as num?)?.toDouble() ?? 0.0,
       dueDate: _parseDate(map['due_date_232143']) ?? DateTime.now(),
-      type: BillType.values.firstWhere(
-        (e) => e.name == map['type_232143']?.toString(),
-        orElse: () => BillType.other,
-      ),
+      type: BillType.values.firstWhere((e) => e.name == map['type_232143']?.toString(), orElse: () => BillType.other),
       isPaid: map['is_paid_232143'] == 1 || map['is_paid_232143'] == true,
     );
   }

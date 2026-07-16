@@ -44,13 +44,8 @@ class FinancialFacade {
 
       // Get default rates if not provided
       final effectiveInflationRate =
-          inflationRate ??
-          (await _getInflationRate()) ??
-          _calculator.getIndonesiaDefaultRates()['inflationRate']!;
-      final effectiveTaxRate =
-          taxRate ??
-          (await _getTaxRate()) ??
-          _calculator.getIndonesiaDefaultRates()['taxRate']!;
+          inflationRate ?? (await _getInflationRate()) ?? _calculator.getIndonesiaDefaultRates()['inflationRate']!;
+      final effectiveTaxRate = taxRate ?? (await _getTaxRate()) ?? _calculator.getIndonesiaDefaultRates()['taxRate']!;
 
       // Calculate income and expenses
       double totalIncome = 0;
@@ -61,31 +56,19 @@ class FinancialFacade {
       for (var transaction in transactions) {
         if (transaction.type.toLowerCase() == 'income') {
           totalIncome += transaction.amount;
-          incomeList.add({
-            'amount': transaction.amount,
-            'category': transaction.categoryName,
-          });
+          incomeList.add({'amount': transaction.amount, 'category': transaction.categoryName});
         } else {
           totalExpenses += transaction.amount;
-          expenseList.add({
-            'amount': transaction.amount,
-            'category': transaction.categoryName,
-          });
+          expenseList.add({'amount': transaction.amount, 'category': transaction.categoryName});
         }
       }
 
       // Calculate balance
-      final balanceData = _calculator.calculateBalance(
-        income: totalIncome,
-        expenses: totalExpenses,
-      );
+      final balanceData = _calculator.calculateBalance(income: totalIncome, expenses: totalExpenses);
       final balanceMoney = balanceData['balance'] as Money;
 
       // Calculate savings rate
-      final savingsRate = _calculator.calculateSavingsRate(
-        income: totalIncome,
-        expenses: totalExpenses,
-      );
+      final savingsRate = _calculator.calculateSavingsRate(income: totalIncome, expenses: totalExpenses);
 
       // Calculate financial health score
       final healthScoreData = _calculator.calculateFinancialHealthScore(
@@ -101,12 +84,8 @@ class FinancialFacade {
       final realSavings = healthScoreData['realSavings'] as Money?;
 
       // Calculate breakdowns
-      final expenseBreakdown = _calculator.calculateExpenseBreakdown(
-        expenses: expenseList,
-      );
-      final incomeBreakdown = _calculator.calculateIncomeBreakdown(
-        incomes: incomeList,
-      );
+      final expenseBreakdown = _calculator.calculateExpenseBreakdown(expenses: expenseList);
+      final incomeBreakdown = _calculator.calculateIncomeBreakdown(incomes: incomeList);
 
       // Get AI recommendations
       List<Map<String, dynamic>>? recommendations;
@@ -130,10 +109,7 @@ class FinancialFacade {
       try {
         final budgets = await _budgetData.getBudgets();
         if (budgets.isNotEmpty) {
-          budgetStatus = {
-            'totalBudgets': budgets.length,
-            'overBudget': budgets.where((b) => b.isOverBudget).length,
-          };
+          budgetStatus = {'totalBudgets': budgets.length, 'overBudget': budgets.where((b) => b.isOverBudget).length};
         }
       } catch (e) {
         LoggerService.warning('Error getting budget status', error: e);
@@ -210,10 +186,7 @@ class FinancialFacade {
 
       // Also store timestamp in regular prefs for TTL checking
       final prefs = await SharedPreferences.getInstance();
-      await prefs.setString(
-        '${_cacheKey}_timestamp',
-        DateTime.now().toIso8601String(),
-      );
+      await prefs.setString('${_cacheKey}_timestamp', DateTime.now().toIso8601String());
     } catch (e) {
       LoggerService.warning('Error caching overview', error: e);
     }
@@ -253,9 +226,7 @@ class FinancialFacade {
   /// Store Money value securely (encrypted)
   Future<void> storeSecure(String key, Money value) async {
     try {
-      final encrypted = await _encryptionService.encrypt(
-        value.minorUnits.toString(),
-      );
+      final encrypted = await _encryptionService.encrypt(value.minorUnits.toString());
       await _secureStorage.write(key: key, value: encrypted);
     } catch (e) {
       LoggerService.warning('Error storing secure Money value', error: e);

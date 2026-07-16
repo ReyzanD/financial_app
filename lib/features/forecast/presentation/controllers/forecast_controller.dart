@@ -48,28 +48,19 @@ class ForecastController extends ChangeNotifier {
     try {
       final transactionsData = await _r.getTransactions(limit: 1000);
       // Normalize keys early so all downstream code uses clean keys consistently
-      final rawTransactions =
-          transactionsData['transactions'] as List<dynamic>? ?? [];
+      final rawTransactions = transactionsData['transactions'] as List<dynamic>? ?? [];
       final transactions = KeyNormalizer.normalizeTransactions(rawTransactions);
 
-      final expenseTx =
-          transactions.where((t) => t['type'] == 'expense').toList();
+      final expenseTx = transactions.where((t) => t['type'] == 'expense').toList();
 
       if (expenseTx.isNotEmpty) {
-        _expenseForecast = await _expensePredictor.predictNext30Days(
-          transactions: expenseTx,
-        );
-        _patternAnalysis = _patternAnalyzer.analyzeMultiPeriod(
-          transactions: transactions,
-          monthsToAnalyze: 3,
-        );
+        _expenseForecast = await _expensePredictor.predictNext30Days(transactions: expenseTx);
+        _patternAnalysis = _patternAnalyzer.analyzeMultiPeriod(transactions: transactions, monthsToAnalyze: 3);
         _budgetRisks = await _budgetPredictor.assessOverspendingRisk();
         _suggestedBudgets = await _budgetPredictor.suggestOptimalBudgets();
 
         try {
-          _categoryForecasts = await _expensePredictor.predictByCategory(
-            transactions: expenseTx,
-          );
+          _categoryForecasts = await _expensePredictor.predictByCategory(transactions: expenseTx);
         } catch (e) {
           LoggerService.warning('Category forecast failed', error: e);
           _categoryForecasts = {};

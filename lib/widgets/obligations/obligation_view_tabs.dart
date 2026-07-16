@@ -6,11 +6,7 @@ class ObligationViewTabs extends StatelessWidget {
   final String selectedView;
   final Function(String) onViewChanged;
 
-  const ObligationViewTabs({
-    super.key,
-    required this.selectedView,
-    required this.onViewChanged,
-  });
+  const ObligationViewTabs({super.key, required this.selectedView, required this.onViewChanged});
 
   @override
   Widget build(BuildContext context) {
@@ -42,11 +38,7 @@ class ObligationViewTabs extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
         decoration: BoxDecoration(
           border: Border(
-            bottom: BorderSide(
-              color:
-                  isSelected ? DesignTokens.primaryColor : Colors.transparent,
-              width: 2,
-            ),
+            bottom: BorderSide(color: isSelected ? DesignTokens.primaryColor : Colors.transparent, width: 2),
           ),
         ),
         child: Text(

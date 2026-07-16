@@ -23,15 +23,10 @@ class GoalForecastingService {
       double trend = 0.0;
       double confidence = 0.7;
 
-      if (historicalContributions != null &&
-          historicalContributions.isNotEmpty) {
-        final sorted = List<Map<String, dynamic>>.from(
-          historicalContributions,
-        )..sort((a, b) {
-          final aDate =
-              DateTime.tryParse(a['date']?.toString() ?? '') ?? DateTime.now();
-          final bDate =
-              DateTime.tryParse(b['date']?.toString() ?? '') ?? DateTime.now();
+      if (historicalContributions != null && historicalContributions.isNotEmpty) {
+        final sorted = List<Map<String, dynamic>>.from(historicalContributions)..sort((a, b) {
+          final aDate = DateTime.tryParse(a['date']?.toString() ?? '') ?? DateTime.now();
+          final bDate = DateTime.tryParse(b['date']?.toString() ?? '') ?? DateTime.now();
           return aDate.compareTo(bDate);
         });
 
@@ -77,12 +72,9 @@ class GoalForecastingService {
       }
 
       final monthsToCompletion = (remaining / avgContribution).ceil();
-      final completionDate = DateTime.now().add(
-        Duration(days: (monthsToCompletion * 30).toInt()),
-      );
+      final completionDate = DateTime.now().add(Duration(days: (monthsToCompletion * 30).toInt()));
 
-      double projectedTotal =
-          currentAmount + (avgContribution * monthsToCompletion);
+      double projectedTotal = currentAmount + (avgContribution * monthsToCompletion);
 
       if (trend > 10) {
         projectedTotal *= 1.05;
@@ -93,11 +85,9 @@ class GoalForecastingService {
 
       String? warning;
       if (monthsToCompletion > 60) {
-        warning =
-            'Diperlukan $monthsToCompletion bulan. Pertimbangkan untuk meningkatkan kontribusi.';
+        warning = 'Diperlukan $monthsToCompletion bulan. Pertimbangkan untuk meningkatkan kontribusi.';
       } else if (trend < -15) {
-        warning =
-            'Kontribusi menurun ${trend.toStringAsFixed(0)}%. Berhati-hatilah agar tidak melewatkan target.';
+        warning = 'Kontribusi menurun ${trend.toStringAsFixed(0)}%. Berhati-hatilah agar tidak melewatkan target.';
       }
 
       return {
@@ -123,10 +113,7 @@ class GoalForecastingService {
     }
   }
 
-  List<Map<String, dynamic>> generateMilestones({
-    required double targetAmount,
-    required int monthsToCompletion,
-  }) {
+  List<Map<String, dynamic>> generateMilestones({required double targetAmount, required int monthsToCompletion}) {
     final milestones = <Map<String, dynamic>>[];
     final checkpointPercentages = [0.25, 0.5, 0.75, 1.0];
 

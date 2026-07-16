@@ -21,8 +21,7 @@ class GlobalSearchSheet extends StatefulWidget {
 
 class _GlobalSearchSheetState extends State<GlobalSearchSheet> {
   final TextEditingController _searchController = TextEditingController();
-  final TransactionDataService _transactionData =
-      getIt<TransactionDataService>();
+  final TransactionDataService _transactionData = getIt<TransactionDataService>();
   final BudgetDataService _budgetData = getIt<BudgetDataService>();
   final GoalDataService _goalData = getIt<GoalDataService>();
   Timer? _debounceTimer;
@@ -75,14 +74,9 @@ class _GlobalSearchSheetState extends State<GlobalSearchSheet> {
       if (!mounted) return;
       setState(() {
         final txnData = results[0] as Map<String, dynamic>? ?? {};
-        _transactions =
-            (txnData['transactions'] as List<dynamic>?)
-                ?.cast<Map<String, dynamic>>() ??
-            [];
-        _budgets =
-            (results[1] as List<dynamic>?)?.cast<Map<String, dynamic>>() ?? [];
-        _goals =
-            (results[2] as List<dynamic>?)?.cast<Map<String, dynamic>>() ?? [];
+        _transactions = (txnData['transactions'] as List<dynamic>?)?.cast<Map<String, dynamic>>() ?? [];
+        _budgets = (results[1] as List<dynamic>?)?.cast<Map<String, dynamic>>() ?? [];
+        _goals = (results[2] as List<dynamic>?)?.cast<Map<String, dynamic>>() ?? [];
         _isLoading = false;
         _filterResults();
       });
@@ -104,9 +98,7 @@ class _GlobalSearchSheetState extends State<GlobalSearchSheet> {
           final desc = (t['description'] as String? ?? '').toLowerCase();
           final cat = (t['category_name'] as String? ?? '').toLowerCase();
           final amount = (t['amount'] as num?)?.toDouble() ?? 0;
-          return desc.contains(_query) ||
-              cat.contains(_query) ||
-              amount.toString().contains(_query);
+          return desc.contains(_query) || cat.contains(_query) || amount.toString().contains(_query);
         }).toList();
 
     _filteredBudgets =
@@ -121,16 +113,11 @@ class _GlobalSearchSheetState extends State<GlobalSearchSheet> {
           final name = (g['name'] as String? ?? '').toLowerCase();
           final desc = (g['description'] as String? ?? '').toLowerCase();
           final target = (g['target_amount'] as num?)?.toDouble() ?? 0;
-          return name.contains(_query) ||
-              desc.contains(_query) ||
-              target.toString().contains(_query);
+          return name.contains(_query) || desc.contains(_query) || target.toString().contains(_query);
         }).toList();
   }
 
-  int get _totalResults =>
-      _filteredTransactions.length +
-      _filteredBudgets.length +
-      _filteredGoals.length;
+  int get _totalResults => _filteredTransactions.length + _filteredBudgets.length + _filteredGoals.length;
 
   @override
   Widget build(BuildContext context) {
@@ -147,12 +134,9 @@ class _GlobalSearchSheetState extends State<GlobalSearchSheet> {
             margin: const EdgeInsets.only(top: 8),
             width: 40,
             height: 4,
-            decoration: BoxDecoration(
-              color: Colors.grey[600],
-              borderRadius: BorderRadius.circular(2),
-            ),
+            decoration: BoxDecoration(color: Colors.grey[600], borderRadius: BorderRadius.circular(2)),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: DesignTokens.spacing3),
           // Search field
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -163,17 +147,11 @@ class _GlobalSearchSheetState extends State<GlobalSearchSheet> {
               decoration: InputDecoration(
                 hintText: 'Cari transaksi, anggaran, tujuan...',
                 hintStyle: GoogleFonts.poppins(color: Colors.grey[600]),
-                prefixIcon: const Icon(
-                  Iconsax.search_normal_1,
-                  color: Colors.grey,
-                ),
+                prefixIcon: const Icon(Iconsax.search_normal_1, color: Colors.grey),
                 suffixIcon:
                     _searchController.text.isNotEmpty
                         ? IconButton(
-                          icon: const Icon(
-                            Iconsax.close_circle,
-                            color: Colors.grey,
-                          ),
+                          icon: const Icon(Iconsax.close_circle, color: Colors.grey),
                           onPressed: () {
                             _searchController.clear();
                           },
@@ -182,25 +160,19 @@ class _GlobalSearchSheetState extends State<GlobalSearchSheet> {
                 filled: true,
                 fillColor: DesignTokens.surfaceDark,
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(
-                    DesignTokens.radiusMedium,
-                  ),
+                  borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
                   borderSide: BorderSide.none,
                 ),
                 contentPadding: const EdgeInsets.symmetric(vertical: 14),
               ),
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: DesignTokens.spacing2),
           // Results
           Expanded(
             child:
                 _isLoading
-                    ? const Center(
-                      child: CircularProgressIndicator(
-                        color: DesignTokens.primaryColor,
-                      ),
-                    )
+                    ? const Center(child: CircularProgressIndicator(color: DesignTokens.primaryColor))
                     : _query.isEmpty
                     ? _buildEmptyHint()
                     : _totalResults == 0
@@ -218,7 +190,7 @@ class _GlobalSearchSheetState extends State<GlobalSearchSheet> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(Iconsax.search_normal_1, size: 48, color: Colors.grey[600]),
-          const SizedBox(height: 12),
+          const SizedBox(height: DesignTokens.spacing3),
           Text(
             'Cari transaksi, anggaran, atau tujuan',
             style: GoogleFonts.poppins(color: Colors.grey[600], fontSize: 14),
@@ -234,11 +206,8 @@ class _GlobalSearchSheetState extends State<GlobalSearchSheet> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(Iconsax.document_text, size: 48, color: Colors.grey[600]),
-          const SizedBox(height: 12),
-          Text(
-            'Tidak ditemukan untuk "$_query"',
-            style: GoogleFonts.poppins(color: Colors.grey[600], fontSize: 14),
-          ),
+          const SizedBox(height: DesignTokens.spacing3),
+          Text('Tidak ditemukan untuk "$_query"', style: GoogleFonts.poppins(color: Colors.grey[600], fontSize: 14)),
         ],
       ),
     );
@@ -258,66 +227,46 @@ class _GlobalSearchSheetState extends State<GlobalSearchSheet> {
         ),
         // Transactions
         if (_filteredTransactions.isNotEmpty) ...[
-          _buildSectionHeader(
-            Iconsax.receipt,
-            'Transaksi (${_filteredTransactions.length})',
-          ),
-          ..._filteredTransactions
-              .take(10)
-              .map((t) => _buildTransactionTile(t)),
+          _buildSectionHeader(Iconsax.receipt, 'Transaksi (${_filteredTransactions.length})'),
+          ..._filteredTransactions.take(10).map((t) => _buildTransactionTile(t)),
           if (_filteredTransactions.length > 10)
             Padding(
               padding: const EdgeInsets.only(top: 4, bottom: 8),
               child: Text(
                 '+${_filteredTransactions.length - 10} transaksi lainnya',
-                style: GoogleFonts.poppins(
-                  color: DesignTokens.primaryColor,
-                  fontSize: 12,
-                ),
+                style: GoogleFonts.poppins(color: DesignTokens.primaryColor, fontSize: 12),
               ),
             ),
         ],
         // Budgets
         if (_filteredBudgets.isNotEmpty) ...[
-          const SizedBox(height: 8),
-          _buildSectionHeader(
-            Iconsax.wallet,
-            'Anggaran (${_filteredBudgets.length})',
-          ),
+          const SizedBox(height: DesignTokens.spacing2),
+          _buildSectionHeader(Iconsax.wallet, 'Anggaran (${_filteredBudgets.length})'),
           ..._filteredBudgets.take(10).map((b) => _buildBudgetTile(b)),
           if (_filteredBudgets.length > 10)
             Padding(
               padding: const EdgeInsets.only(top: 4, bottom: 8),
               child: Text(
                 '+${_filteredBudgets.length - 10} anggaran lainnya',
-                style: GoogleFonts.poppins(
-                  color: DesignTokens.primaryColor,
-                  fontSize: 12,
-                ),
+                style: GoogleFonts.poppins(color: DesignTokens.primaryColor, fontSize: 12),
               ),
             ),
         ],
         // Goals
         if (_filteredGoals.isNotEmpty) ...[
-          const SizedBox(height: 8),
-          _buildSectionHeader(
-            Iconsax.flag,
-            'Tujuan (${_filteredGoals.length})',
-          ),
+          const SizedBox(height: DesignTokens.spacing2),
+          _buildSectionHeader(Iconsax.flag, 'Tujuan (${_filteredGoals.length})'),
           ..._filteredGoals.take(10).map((g) => _buildGoalTile(g)),
           if (_filteredGoals.length > 10)
             Padding(
               padding: const EdgeInsets.only(top: 4, bottom: 8),
               child: Text(
                 '+${_filteredGoals.length - 10} tujuan lainnya',
-                style: GoogleFonts.poppins(
-                  color: DesignTokens.primaryColor,
-                  fontSize: 12,
-                ),
+                style: GoogleFonts.poppins(color: DesignTokens.primaryColor, fontSize: 12),
               ),
             ),
         ],
-        const SizedBox(height: 24),
+        const SizedBox(height: DesignTokens.spacing6),
       ],
     );
   }
@@ -329,14 +278,7 @@ class _GlobalSearchSheetState extends State<GlobalSearchSheet> {
         children: [
           Icon(icon, size: 16, color: DesignTokens.primaryColor),
           const SizedBox(width: 6),
-          Text(
-            title,
-            style: GoogleFonts.poppins(
-              color: Colors.white,
-              fontSize: 13,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
+          Text(title, style: GoogleFonts.poppins(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w600)),
         ],
       ),
     );
@@ -354,10 +296,7 @@ class _GlobalSearchSheetState extends State<GlobalSearchSheet> {
         width: 36,
         height: 36,
         decoration: BoxDecoration(
-          color: (isIncome
-                  ? DesignTokens.successColor
-                  : DesignTokens.errorColor)
-              .withValues(alpha: 0.15),
+          color: (isIncome ? DesignTokens.successColor : DesignTokens.errorColor).withValues(alpha: 0.15),
           borderRadius: BorderRadius.circular(10),
         ),
         child: Icon(
@@ -378,11 +317,7 @@ class _GlobalSearchSheetState extends State<GlobalSearchSheet> {
       ),
       onTap: () {
         Navigator.pop(context);
-        Navigator.pushNamed(
-          context,
-          '/transaction-detail',
-          arguments: {'id': t['transaction_id_232143'] ?? t['id']},
-        );
+        Navigator.pushNamed(context, '/transaction-detail', arguments: {'id': t['transaction_id_232143'] ?? t['id']});
       },
     );
   }
@@ -399,11 +334,7 @@ class _GlobalSearchSheetState extends State<GlobalSearchSheet> {
           color: DesignTokens.primaryColor.withValues(alpha: 0.15),
           borderRadius: BorderRadius.circular(10),
         ),
-        child: const Icon(
-          Iconsax.wallet,
-          color: DesignTokens.primaryColor,
-          size: 18,
-        ),
+        child: const Icon(Iconsax.wallet, color: DesignTokens.primaryColor, size: 18),
       ),
       title: catName,
       subtitle: 'Anggaran ${CurrencyFormatter.formatRupiah(amount.toInt())}',
@@ -426,11 +357,7 @@ class _GlobalSearchSheetState extends State<GlobalSearchSheet> {
           color: DesignTokens.warningColor.withValues(alpha: 0.15),
           borderRadius: BorderRadius.circular(10),
         ),
-        child: const Icon(
-          Iconsax.flag,
-          color: DesignTokens.warningColor,
-          size: 18,
-        ),
+        child: const Icon(Iconsax.flag, color: DesignTokens.warningColor, size: 18),
       ),
       title: name,
       subtitle: 'Target ${CurrencyFormatter.formatRupiah(target.toInt())}',
@@ -458,11 +385,7 @@ class _GlobalSearchSheetState extends State<GlobalSearchSheet> {
         leading: leading,
         title: Text(
           title,
-          style: GoogleFonts.poppins(
-            color: Colors.white,
-            fontSize: 13,
-            fontWeight: FontWeight.w500,
-          ),
+          style: GoogleFonts.poppins(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w500),
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
         ),
@@ -470,19 +393,14 @@ class _GlobalSearchSheetState extends State<GlobalSearchSheet> {
             subtitle != null
                 ? Text(
                   subtitle,
-                  style: GoogleFonts.poppins(
-                    color: Colors.grey[500],
-                    fontSize: 11,
-                  ),
+                  style: GoogleFonts.poppins(color: Colors.grey[500], fontSize: 11),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 )
                 : null,
         trailing: trailing,
         onTap: onTap,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(DesignTokens.radiusMedium)),
         contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
       ),
     );

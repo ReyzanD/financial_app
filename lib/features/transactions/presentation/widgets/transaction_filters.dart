@@ -7,25 +7,14 @@ class TransactionFilters extends StatefulWidget {
   final String selectedFilter;
   final ValueChanged<String> onFilterChanged;
 
-  const TransactionFilters({
-    super.key,
-    required this.selectedFilter,
-    required this.onFilterChanged,
-  });
+  const TransactionFilters({super.key, required this.selectedFilter, required this.onFilterChanged});
 
   @override
   State<TransactionFilters> createState() => _TransactionFiltersState();
 }
 
 class _TransactionFiltersState extends State<TransactionFilters> {
-  final List<String> _filterKeys = [
-    'Semua',
-    'Pemasukan',
-    'Pengeluaran',
-    'Hari Ini',
-    'Minggu Ini',
-    'Bulan Ini',
-  ];
+  final List<String> _filterKeys = ['Semua', 'Pemasukan', 'Pengeluaran', 'Hari Ini', 'Minggu Ini', 'Bulan Ini'];
 
   String _getFilterLabel(String key, AppLocalizations? l10n) {
     switch (key) {
@@ -64,10 +53,7 @@ class _TransactionFiltersState extends State<TransactionFilters> {
             child: FilterChip(
               label: Text(
                 _getFilterLabel(filter, l10n),
-                style: GoogleFonts.poppins(
-                  color: isSelected ? Colors.white : Colors.grey[400],
-                  fontSize: 12,
-                ),
+                style: GoogleFonts.poppins(color: isSelected ? Colors.white : Colors.grey[400], fontSize: 12),
               ),
               selected: isSelected,
               onSelected: (selected) {

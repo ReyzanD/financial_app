@@ -24,8 +24,7 @@ class InvestmentModel {
   double get totalValue => quantity * currentPrice;
   double get totalCost => quantity * buyPrice;
   double get profitLoss => totalValue - totalCost;
-  double get profitLossPercentage =>
-      totalCost > 0 ? (profitLoss / totalCost) * 100 : 0;
+  double get profitLossPercentage => totalCost > 0 ? (profitLoss / totalCost) * 100 : 0;
 
   Map<String, dynamic> toJson() {
     return {
@@ -55,69 +54,31 @@ class InvestmentModel {
 
   factory InvestmentModel.fromJson(Map<String, dynamic> json) {
     return InvestmentModel(
-      id:
-          json['id']?.toString() ??
-          json['investment_id_232143']?.toString() ??
-          '',
+      id: json['id']?.toString() ?? json['investment_id_232143']?.toString() ?? '',
       name: json['name']?.toString() ?? json['name_232143']?.toString() ?? '',
-      type:
-          json['type']?.toString() ??
-          json['type_232143']?.toString() ??
-          'other',
-      quantity:
-          (json['quantity'] as num?)?.toDouble() ??
-          (json['quantity_232143'] as num?)?.toDouble() ??
-          0.0,
-      buyPrice:
-          (json['buy_price'] as num?)?.toDouble() ??
-          (json['buy_price_232143'] as num?)?.toDouble() ??
-          0.0,
+      type: json['type']?.toString() ?? json['type_232143']?.toString() ?? 'other',
+      quantity: (json['quantity'] as num?)?.toDouble() ?? (json['quantity_232143'] as num?)?.toDouble() ?? 0.0,
+      buyPrice: (json['buy_price'] as num?)?.toDouble() ?? (json['buy_price_232143'] as num?)?.toDouble() ?? 0.0,
       currentPrice:
-          (json['current_price'] as num?)?.toDouble() ??
-          (json['current_price_232143'] as num?)?.toDouble() ??
-          0.0,
-      buyDate:
-          _parseDate(json['buy_date']) ??
-          _parseDate(json['buy_date_232143']) ??
-          DateTime.now(),
+          (json['current_price'] as num?)?.toDouble() ?? (json['current_price_232143'] as num?)?.toDouble() ?? 0.0,
+      buyDate: _parseDate(json['buy_date']) ?? _parseDate(json['buy_date_232143']) ?? DateTime.now(),
       ticker: json['ticker']?.toString() ?? json['ticker_232143']?.toString(),
-      createdAt:
-          _parseDate(json['created_at']) ??
-          _parseDate(json['created_at_232143']) ??
-          DateTime.now(),
+      createdAt: _parseDate(json['created_at']) ?? _parseDate(json['created_at_232143']) ?? DateTime.now(),
     );
   }
 
   factory InvestmentModel.fromMap(Map<String, dynamic> map) {
     return InvestmentModel(
-      id:
-          map['investment_id_232143']?.toString() ??
-          map['id']?.toString() ??
-          '',
+      id: map['investment_id_232143']?.toString() ?? map['id']?.toString() ?? '',
       name: map['name_232143']?.toString() ?? map['name']?.toString() ?? '',
-      type:
-          map['type_232143']?.toString() ?? map['type']?.toString() ?? 'other',
-      quantity:
-          (map['quantity_232143'] as num?)?.toDouble() ??
-          (map['quantity'] as num?)?.toDouble() ??
-          0.0,
-      buyPrice:
-          (map['buy_price_232143'] as num?)?.toDouble() ??
-          (map['buy_price'] as num?)?.toDouble() ??
-          0.0,
+      type: map['type_232143']?.toString() ?? map['type']?.toString() ?? 'other',
+      quantity: (map['quantity_232143'] as num?)?.toDouble() ?? (map['quantity'] as num?)?.toDouble() ?? 0.0,
+      buyPrice: (map['buy_price_232143'] as num?)?.toDouble() ?? (map['buy_price'] as num?)?.toDouble() ?? 0.0,
       currentPrice:
-          (map['current_price_232143'] as num?)?.toDouble() ??
-          (map['current_price'] as num?)?.toDouble() ??
-          0.0,
-      buyDate:
-          _parseDate(map['buy_date_232143']) ??
-          _parseDate(map['buy_date']) ??
-          DateTime.now(),
+          (map['current_price_232143'] as num?)?.toDouble() ?? (map['current_price'] as num?)?.toDouble() ?? 0.0,
+      buyDate: _parseDate(map['buy_date_232143']) ?? _parseDate(map['buy_date']) ?? DateTime.now(),
       ticker: map['ticker_232143']?.toString() ?? map['ticker']?.toString(),
-      createdAt:
-          _parseDate(map['created_at_232143']) ??
-          _parseDate(map['created_at']) ??
-          DateTime.now(),
+      createdAt: _parseDate(map['created_at_232143']) ?? _parseDate(map['created_at']) ?? DateTime.now(),
     );
   }
 
@@ -130,13 +91,5 @@ class InvestmentModel {
     }
   }
 
-  static List<String> get types => [
-    'stock',
-    'mutual_fund',
-    'crypto',
-    'bond',
-    'gold',
-    'deposit',
-    'other',
-  ];
+  static List<String> get types => ['stock', 'mutual_fund', 'crypto', 'bond', 'gold', 'deposit', 'other'];
 }

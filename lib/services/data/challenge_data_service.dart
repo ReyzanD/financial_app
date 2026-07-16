@@ -10,11 +10,9 @@ class ChallengeDataService {
   final LocalAuthService _authService;
   final _uuid = const Uuid();
 
-  ChallengeDataService({
-    LocalDatabaseService? dbService,
-    LocalAuthService? authService,
-  }) : _dbService = dbService ?? LocalDatabaseService(),
-       _authService = authService ?? LocalAuthService();
+  ChallengeDataService({LocalDatabaseService? dbService, LocalAuthService? authService})
+    : _dbService = dbService ?? LocalDatabaseService(),
+      _authService = authService ?? LocalAuthService();
 
   Future<String?> getCurrentUserId() async => _authService.getCurrentUserId();
 
@@ -44,9 +42,7 @@ class ChallengeDataService {
     }
   }
 
-  Future<ChallengeModel> addChallenge(
-    Map<String, dynamic> challengeData,
-  ) async {
+  Future<ChallengeModel> addChallenge(Map<String, dynamic> challengeData) async {
     try {
       final userId = await getCurrentUserId();
       if (userId == null) throw Exception('Not authenticated');
@@ -81,10 +77,7 @@ class ChallengeDataService {
     }
   }
 
-  Future<void> updateChallenge(
-    String challengeId,
-    Map<String, dynamic> challengeData,
-  ) async {
+  Future<void> updateChallenge(String challengeId, Map<String, dynamic> challengeData) async {
     try {
       final userId = await getCurrentUserId();
       if (userId == null) throw Exception('Not authenticated');
@@ -110,8 +103,7 @@ class ChallengeDataService {
         updateData['is_active_232143'] = challengeData['is_active'] ? 1 : 0;
       }
       if (challengeData.containsKey('is_completed')) {
-        updateData['is_completed_232143'] =
-            challengeData['is_completed'] ? 1 : 0;
+        updateData['is_completed_232143'] = challengeData['is_completed'] ? 1 : 0;
         if (challengeData['is_completed'] == true) {
           updateData['completed_date_232143'] = now.split('T')[0];
         }

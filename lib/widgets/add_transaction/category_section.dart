@@ -68,29 +68,21 @@ class CategorySection extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     // Filter categories by type
-    final filteredCategories =
-        categories.where((cat) => cat.type == selectedType).toList();
+    final filteredCategories = categories.where((cat) => cat.type == selectedType).toList();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           l10n?.category ?? 'Kategori',
-          style: GoogleFonts.poppins(
-            color: Colors.white,
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-          ),
+          style: GoogleFonts.poppins(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600),
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: DesignTokens.spacing3),
         if (isLoading)
           Center(
             child: Padding(
               padding: const EdgeInsets.all(20),
-              child: CircularProgressIndicator(
-                color: DesignTokens.primaryColor,
-                strokeWidth: 2,
-              ),
+              child: CircularProgressIndicator(color: DesignTokens.primaryColor, strokeWidth: 2),
             ),
           )
         else if (filteredCategories.isEmpty)
@@ -119,19 +111,11 @@ class CategorySection extends StatelessWidget {
                   return GestureDetector(
                     onTap: () => onCategorySelected(category.id),
                     child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 8,
-                      ),
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                       decoration: BoxDecoration(
-                        color:
-                            isSelected
-                                ? categoryColor.withValues(alpha: 0.2)
-                                : DesignTokens.surfaceDark,
+                        color: isSelected ? categoryColor.withValues(alpha: 0.2) : DesignTokens.surfaceDark,
                         borderRadius: BorderRadius.circular(20),
-                        border: Border.all(
-                          color: isSelected ? categoryColor : Colors.grey[700]!,
-                        ),
+                        border: Border.all(color: isSelected ? categoryColor : Colors.grey[700]!),
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
@@ -139,20 +123,15 @@ class CategorySection extends StatelessWidget {
                           Icon(
                             _getCategoryIcon(category.name),
                             size: 16,
-                            color:
-                                isSelected ? categoryColor : Colors.grey[500],
+                            color: isSelected ? categoryColor : Colors.grey[500],
                           ),
                           const SizedBox(width: 6),
                           Text(
                             category.name,
                             style: GoogleFonts.poppins(
-                              color:
-                                  isSelected ? categoryColor : Colors.grey[500],
+                              color: isSelected ? categoryColor : Colors.grey[500],
                               fontSize: 12,
-                              fontWeight:
-                                  isSelected
-                                      ? FontWeight.w600
-                                      : FontWeight.normal,
+                              fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
                             ),
                           ),
                         ],

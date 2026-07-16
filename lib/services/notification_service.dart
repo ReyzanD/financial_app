@@ -9,8 +9,7 @@ class NotificationService {
   factory NotificationService() => _instance;
   NotificationService._internal();
 
-  final FlutterLocalNotificationsPlugin _notifications =
-      FlutterLocalNotificationsPlugin();
+  final FlutterLocalNotificationsPlugin _notifications = FlutterLocalNotificationsPlugin();
 
   bool _isInitialized = false;
 
@@ -23,9 +22,7 @@ class NotificationService {
     tz.setLocalLocation(tz.getLocation('Asia/Jakarta'));
 
     // Android settings
-    const androidSettings = AndroidInitializationSettings(
-      '@mipmap/ic_launcher',
-    );
+    const androidSettings = AndroidInitializationSettings('@mipmap/ic_launcher');
 
     // iOS settings
     const iosSettings = DarwinInitializationSettings(
@@ -34,15 +31,9 @@ class NotificationService {
       requestSoundPermission: true,
     );
 
-    const initSettings = InitializationSettings(
-      android: androidSettings,
-      iOS: iosSettings,
-    );
+    const initSettings = InitializationSettings(android: androidSettings, iOS: iosSettings);
 
-    await _notifications.initialize(
-      initSettings,
-      onDidReceiveNotificationResponse: _onNotificationTapped,
-    );
+    await _notifications.initialize(initSettings, onDidReceiveNotificationResponse: _onNotificationTapped);
 
     _isInitialized = true;
   }
@@ -83,11 +74,7 @@ class NotificationService {
           priority: Priority.high,
           icon: '@mipmap/ic_launcher',
         ),
-        iOS: const DarwinNotificationDetails(
-          presentAlert: true,
-          presentBadge: true,
-          presentSound: true,
-        ),
+        iOS: const DarwinNotificationDetails(presentAlert: true, presentBadge: true, presentSound: true),
       ),
       payload: payload,
     );
@@ -115,15 +102,10 @@ class NotificationService {
           priority: Priority.high,
           icon: '@mipmap/ic_launcher',
         ),
-        iOS: const DarwinNotificationDetails(
-          presentAlert: true,
-          presentBadge: true,
-          presentSound: true,
-        ),
+        iOS: const DarwinNotificationDetails(presentAlert: true, presentBadge: true, presentSound: true),
       ),
       androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-      uiLocalNotificationDateInterpretation:
-          UILocalNotificationDateInterpretation.absoluteTime,
+      uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
       payload: payload,
     );
   }
@@ -137,14 +119,7 @@ class NotificationService {
     String? payload,
   }) async {
     final now = tz.TZDateTime.now(tz.local);
-    var scheduledDate = tz.TZDateTime(
-      tz.local,
-      now.year,
-      now.month,
-      now.day,
-      time.hour,
-      time.minute,
-    );
+    var scheduledDate = tz.TZDateTime(tz.local, now.year, now.month, now.day, time.hour, time.minute);
 
     // If scheduled time is in the past, schedule for tomorrow
     if (scheduledDate.isBefore(now)) {
@@ -165,15 +140,10 @@ class NotificationService {
           priority: Priority.high,
           icon: '@mipmap/ic_launcher',
         ),
-        iOS: const DarwinNotificationDetails(
-          presentAlert: true,
-          presentBadge: true,
-          presentSound: true,
-        ),
+        iOS: const DarwinNotificationDetails(presentAlert: true, presentBadge: true, presentSound: true),
       ),
       androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-      uiLocalNotificationDateInterpretation:
-          UILocalNotificationDateInterpretation.absoluteTime,
+      uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
       matchDateTimeComponents: DateTimeComponents.time,
       payload: payload,
     );
@@ -230,8 +200,7 @@ class NotificationService {
       await scheduleNotification(
         id: billName.hashCode + daysBeforeReminder,
         title: '💰 Bill Reminder',
-        body:
-            '$billName due in $daysBeforeReminder days: Rp ${amount.toStringAsFixed(0)}',
+        body: '$billName due in $daysBeforeReminder days: Rp ${amount.toStringAsFixed(0)}',
         scheduledDate: reminderDate,
         payload: 'bill:$billName',
       );
@@ -253,8 +222,7 @@ class NotificationService {
       body = 'Congratulations! You\'ve reached your goal: $goalName';
     } else if (percentage >= 75) {
       title = '🎯 Almost There!';
-      body =
-          '$goalName: ${percentage.toStringAsFixed(0)}% complete. Keep going!';
+      body = '$goalName: ${percentage.toStringAsFixed(0)}% complete. Keep going!';
     } else if (percentage >= 50) {
       title = '📈 Halfway There!';
       body = '$goalName: ${percentage.toStringAsFixed(0)}% complete.';
@@ -281,10 +249,7 @@ class NotificationService {
     required int transactionCount,
   }) async {
     final balance = totalIncome - totalExpense;
-    final balanceText =
-        balance >= 0
-            ? '+Rp ${balance.toStringAsFixed(0)}'
-            : '-Rp ${balance.abs().toStringAsFixed(0)}';
+    final balanceText = balance >= 0 ? '+Rp ${balance.toStringAsFixed(0)}' : '-Rp ${balance.abs().toStringAsFixed(0)}';
 
     await showNotification(
       id: 999,
@@ -307,8 +272,7 @@ class NotificationService {
     await showNotification(
       id: 998,
       title: '📈 Weekly Summary',
-      body:
-          '$transactionCount transactions. Top spending: $topCategory. Balance: Rp ${balance.toStringAsFixed(0)}',
+      body: '$transactionCount transactions. Top spending: $topCategory. Balance: Rp ${balance.toStringAsFixed(0)}',
       priority: NotificationPriority.medium,
       payload: 'summary:weekly',
     );
@@ -332,10 +296,7 @@ class NotificationService {
   }
 
   /// AI Insight Notification
-  Future<void> sendAIInsight({
-    required String insight,
-    required double potentialSavings,
-  }) async {
+  Future<void> sendAIInsight({required String insight, required double potentialSavings}) async {
     await showNotification(
       id: 997,
       title: '💡 AI Insight',
@@ -380,8 +341,7 @@ class NotificationService {
     final daysLeft = endDate.difference(DateTime.now()).inDays;
 
     if (daysLeft > 0 && daysLeft <= 3) {
-      final percentage =
-          target > 0 ? (progress / target * 100).toStringAsFixed(0) : '0';
+      final percentage = target > 0 ? (progress / target * 100).toStringAsFixed(0) : '0';
 
       await scheduleNotification(
         id: 'challenge_$name'.hashCode,
@@ -394,11 +354,7 @@ class NotificationService {
   }
 
   /// Challenge Completion Notification
-  Future<void> sendChallengeCompleted({
-    required String name,
-    required double progress,
-    required double target,
-  }) async {
+  Future<void> sendChallengeCompleted({required String name, required double progress, required double target}) async {
     await showNotification(
       id: 'challenge_complete_$name'.hashCode,
       title: '🏆 Challenge Complete!',
@@ -421,8 +377,7 @@ class NotificationService {
       await scheduleNotification(
         id: 'debt_$name'.hashCode,
         title: '💳 Debt Payment Reminder',
-        body:
-            '$name payment due in $daysLeft days: Rp ${amount.toStringAsFixed(0)}',
+        body: '$name payment due in $daysLeft days: Rp ${amount.toStringAsFixed(0)}',
         scheduledDate: dueDate.subtract(const Duration(days: 1)),
         payload: 'debt:$name',
       );
@@ -438,8 +393,7 @@ class NotificationService {
     await showNotification(
       id: 'split_$participantName'.hashCode,
       title: '💸 Split Payment Reminder',
-      body:
-          '$participantName owes you Rp ${amount.toStringAsFixed(0)} for $description',
+      body: '$participantName owes you Rp ${amount.toStringAsFixed(0)} for $description',
       priority: NotificationPriority.medium,
       payload: 'split:$participantName',
     );
@@ -483,8 +437,5 @@ class NotificationServiceTimeOfDay {
   final int hour;
   final int minute;
 
-  const NotificationServiceTimeOfDay({
-    required this.hour,
-    required this.minute,
-  });
+  const NotificationServiceTimeOfDay({required this.hour, required this.minute});
 }

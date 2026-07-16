@@ -38,13 +38,7 @@ class _TagsScreenState extends State<TagsScreen> {
                   tooltip: 'Kembali',
                   onPressed: () => Navigator.pop(context),
                 ),
-                title: Text(
-                  'Tags',
-                  style: GoogleFonts.poppins(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
+                title: Text('Tags', style: GoogleFonts.poppins(color: Colors.white, fontWeight: FontWeight.w600)),
               )
               : null,
       body: Column(
@@ -54,48 +48,25 @@ class _TagsScreenState extends State<TagsScreen> {
             child: Consumer<TagController>(
               builder: (context, ctrl, _) {
                 if (ctrl.isLoading)
-                  return const Center(
-                    child: CircularProgressIndicator(
-                      color: DesignTokens.primaryColor,
-                    ),
-                  );
+                  return const Center(child: CircularProgressIndicator(color: DesignTokens.primaryColor));
                 if (ctrl.errorMessage != null) {
                   return Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Icon(
-                          Iconsax.warning_2,
-                          size: 64,
-                          color: DesignTokens.errorColor,
-                        ),
-                        const SizedBox(height: 16),
+                        const Icon(Iconsax.warning_2, size: 64, color: DesignTokens.errorColor),
+                        const SizedBox(height: DesignTokens.spacing4),
                         Text(
                           'Gagal memuat tags',
-                          style: GoogleFonts.poppins(
-                            color: Colors.white,
-                            fontSize: 18,
-                            fontWeight: FontWeight.w600,
-                          ),
+                          style: GoogleFonts.poppins(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w600),
                         ),
-                        const SizedBox(height: 8),
-                        Text(
-                          ctrl.errorMessage!,
-                          style: GoogleFonts.poppins(
-                            color: Colors.grey[500],
-                            fontSize: 14,
-                          ),
-                        ),
-                        const SizedBox(height: 16),
+                        const SizedBox(height: DesignTokens.spacing2),
+                        Text(ctrl.errorMessage!, style: GoogleFonts.poppins(color: Colors.grey[500], fontSize: 14)),
+                        const SizedBox(height: DesignTokens.spacing4),
                         ElevatedButton(
                           onPressed: ctrl.refresh,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: DesignTokens.primaryColor,
-                          ),
-                          child: Text(
-                            'Coba Lagi',
-                            style: GoogleFonts.poppins(color: Colors.white),
-                          ),
+                          style: ElevatedButton.styleFrom(backgroundColor: DesignTokens.primaryColor),
+                          child: Text('Coba Lagi', style: GoogleFonts.poppins(color: Colors.white)),
                         ),
                       ],
                     ),
@@ -107,14 +78,8 @@ class _TagsScreenState extends State<TagsScreen> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Icon(Iconsax.tag, size: 64, color: Colors.grey[600]),
-                        const SizedBox(height: 16),
-                        Text(
-                          'Belum ada tags',
-                          style: GoogleFonts.poppins(
-                            color: Colors.grey[500],
-                            fontSize: 16,
-                          ),
-                        ),
+                        const SizedBox(height: DesignTokens.spacing4),
+                        Text('Belum ada tags', style: GoogleFonts.poppins(color: Colors.grey[500], fontSize: 16)),
                       ],
                     ),
                   );
@@ -126,15 +91,10 @@ class _TagsScreenState extends State<TagsScreen> {
                     final tag = ctrl.tags[i];
                     return Container(
                       margin: const EdgeInsets.only(bottom: 8),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 14,
-                      ),
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                       decoration: BoxDecoration(
                         color: DesignTokens.surfaceDark,
-                        borderRadius: BorderRadius.circular(
-                          DesignTokens.radiusMedium,
-                        ),
+                        borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
                         border: Border.all(color: DesignTokens.borderDark),
                       ),
                       child: Row(
@@ -143,16 +103,10 @@ class _TagsScreenState extends State<TagsScreen> {
                             width: 36,
                             height: 36,
                             decoration: BoxDecoration(
-                              color: (_getTagColor(
-                                tag.color,
-                              )).withValues(alpha: 0.2),
+                              color: (_getTagColor(tag.color)).withValues(alpha: 0.2),
                               borderRadius: BorderRadius.circular(8),
                             ),
-                            child: Icon(
-                              Iconsax.tag,
-                              color: _getTagColor(tag.color),
-                              size: 18,
-                            ),
+                            child: Icon(Iconsax.tag, color: _getTagColor(tag.color), size: 18),
                           ),
                           const SizedBox(width: 12),
                           Expanded(
@@ -167,20 +121,14 @@ class _TagsScreenState extends State<TagsScreen> {
                           ),
                           if (tag.usageCount > 0)
                             Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 8,
-                                vertical: 4,
-                              ),
+                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                               decoration: BoxDecoration(
                                 color: DesignTokens.borderDark,
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               child: Text(
                                 '${tag.usageCount}',
-                                style: GoogleFonts.poppins(
-                                  color: Colors.grey[400],
-                                  fontSize: 11,
-                                ),
+                                style: GoogleFonts.poppins(color: Colors.grey[400], fontSize: 11),
                               ),
                             ),
                         ],

@@ -14,9 +14,7 @@ class AppConfig {
   static Future<void> initialize() async {
     if (_initialized) return;
 
-    LoggerService.info(
-      '📱 App running in standalone mode (no backend required)',
-    );
+    LoggerService.info('📱 App running in standalone mode (no backend required)');
     _initialized = true;
   }
 

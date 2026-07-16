@@ -18,8 +18,7 @@ class FinancialInsightsScreen extends StatefulWidget {
   const FinancialInsightsScreen({super.key, this.embedded = false});
 
   @override
-  State<FinancialInsightsScreen> createState() =>
-      _FinancialInsightsScreenState();
+  State<FinancialInsightsScreen> createState() => _FinancialInsightsScreenState();
 }
 
 class _FinancialInsightsScreenState extends State<FinancialInsightsScreen> {
@@ -42,34 +41,21 @@ class _FinancialInsightsScreenState extends State<FinancialInsightsScreen> {
               : AppBar(
                 title: Text(
                   'Wawasan Keuangan',
-                  style: GoogleFonts.poppins(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                  ),
+                  style: GoogleFonts.poppins(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w600),
                 ),
                 backgroundColor: DesignTokens.surfaceDark,
                 actions: [
                   Consumer<InsightsController>(
                     builder:
-                        (_, ctrl, __) => IconButton(
-                          icon: const Icon(
-                            Iconsax.refresh,
-                            color: Colors.white,
-                          ),
-                          onPressed: ctrl.refresh,
-                        ),
+                        (_, ctrl, __) =>
+                            IconButton(icon: const Icon(Iconsax.refresh, color: Colors.white), onPressed: ctrl.refresh),
                   ),
                 ],
               ),
       body: Consumer<InsightsController>(
         builder: (context, ctrl, _) {
           if (ctrl.isLoading) {
-            return const Center(
-              child: CircularProgressIndicator(
-                color: DesignTokens.primaryColor,
-              ),
-            );
+            return const Center(child: CircularProgressIndicator(color: DesignTokens.primaryColor));
           }
           if (ctrl.errorMessage != null) {
             return _buildErrorState(ctrl, l10n);
@@ -90,17 +76,17 @@ class _FinancialInsightsScreenState extends State<FinancialInsightsScreen> {
                     ),
                   ),
                 const OfflineIndicator(),
-                const SizedBox(height: 16),
+                const SizedBox(height: DesignTokens.spacing4),
                 _buildHealthScoreCard(ctrl),
-                const SizedBox(height: 16),
+                const SizedBox(height: DesignTokens.spacing4),
                 _buildInsightsCard(ctrl, l10n),
-                const SizedBox(height: 16),
+                const SizedBox(height: DesignTokens.spacing4),
                 _buildSpendingTrendCard(ctrl),
-                const SizedBox(height: 16),
+                const SizedBox(height: DesignTokens.spacing4),
                 _buildGoalForecastsCard(ctrl, l10n),
-                const SizedBox(height: 16),
+                const SizedBox(height: DesignTokens.spacing4),
                 _buildCategoryDistributionCard(ctrl, l10n),
-                const SizedBox(height: 16),
+                const SizedBox(height: DesignTokens.spacing4),
               ],
             ),
           );
@@ -142,15 +128,11 @@ class _FinancialInsightsScreenState extends State<FinancialInsightsScreen> {
               const SizedBox(width: 8),
               Text(
                 'Skor Kesehatan Keuangan',
-                style: GoogleFonts.poppins(
-                  color: Colors.white,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                ),
+                style: GoogleFonts.poppins(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600),
               ),
             ],
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: DesignTokens.spacing5),
           Stack(
             alignment: Alignment.center,
             children: [
@@ -169,19 +151,11 @@ class _FinancialInsightsScreenState extends State<FinancialInsightsScreen> {
                 children: [
                   Text(
                     ctrl.healthScore.toInt().toString(),
-                    style: GoogleFonts.poppins(
-                      color: Colors.white,
-                      fontSize: 36,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: GoogleFonts.poppins(color: Colors.white, fontSize: 36, fontWeight: FontWeight.bold),
                   ),
                   Text(
                     ctrl.getHealthScoreLabel(),
-                    style: GoogleFonts.poppins(
-                      color: color,
-                      fontSize: 12,
-                      fontWeight: FontWeight.w500,
-                    ),
+                    style: GoogleFonts.poppins(color: color, fontSize: 12, fontWeight: FontWeight.w500),
                   ),
                 ],
               ),
@@ -198,32 +172,22 @@ class _FinancialInsightsScreenState extends State<FinancialInsightsScreen> {
       decoration: BoxDecoration(
         color: DesignTokens.surfaceDark,
         borderRadius: BorderRadius.circular(DesignTokens.radiusLarge),
-        border: Border.all(
-          color: DesignTokens.primaryColor.withValues(alpha: 0.3),
-        ),
+        border: Border.all(color: DesignTokens.primaryColor.withValues(alpha: 0.3)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Icon(
-                Iconsax.lamp_charge,
-                color: DesignTokens.primaryColor,
-                size: 20,
-              ),
+              Icon(Iconsax.lamp_charge, color: DesignTokens.primaryColor, size: 20),
               const SizedBox(width: 8),
               Text(
                 'Wawasan AI',
-                style: GoogleFonts.poppins(
-                  color: Colors.white,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                ),
+                style: GoogleFonts.poppins(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600),
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: DesignTokens.spacing3),
           if (ctrl.insights.isEmpty)
             Text(
               l10n?.no_insights_available ??
@@ -270,20 +234,10 @@ class _FinancialInsightsScreenState extends State<FinancialInsightsScreen> {
               children: [
                 Text(
                   insight['title'] as String,
-                  style: GoogleFonts.poppins(
-                    color: Colors.white,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                  ),
+                  style: GoogleFonts.poppins(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w600),
                 ),
-                const SizedBox(height: 4),
-                Text(
-                  insight['description'] as String,
-                  style: GoogleFonts.poppins(
-                    color: Colors.white70,
-                    fontSize: 12,
-                  ),
-                ),
+                const SizedBox(height: DesignTokens.spacing1),
+                Text(insight['description'] as String, style: GoogleFonts.poppins(color: Colors.white70, fontSize: 12)),
               ],
             ),
           ),
@@ -334,27 +288,16 @@ class _FinancialInsightsScreenState extends State<FinancialInsightsScreen> {
               const SizedBox(width: 8),
               Text(
                 'Tren Pengeluaran',
-                style: GoogleFonts.poppins(
-                  color: Colors.white,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                ),
+                style: GoogleFonts.poppins(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600),
               ),
             ],
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: DesignTokens.spacing4),
           Row(
             children: [
               Icon(trendIcon, color: trendColor, size: 24),
               const SizedBox(width: 12),
-              Text(
-                label,
-                style: GoogleFonts.poppins(
-                  color: trendColor,
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
+              Text(label, style: GoogleFonts.poppins(color: trendColor, fontSize: 18, fontWeight: FontWeight.w600)),
             ],
           ),
         ],
@@ -362,10 +305,7 @@ class _FinancialInsightsScreenState extends State<FinancialInsightsScreen> {
     );
   }
 
-  Widget _buildGoalForecastsCard(
-    InsightsController ctrl,
-    AppLocalizations? l10n,
-  ) {
+  Widget _buildGoalForecastsCard(InsightsController ctrl, AppLocalizations? l10n) {
     if (ctrl.goals.isEmpty) {
       return Container(
         padding: const EdgeInsets.all(DesignTokens.spacing4),
@@ -375,8 +315,7 @@ class _FinancialInsightsScreenState extends State<FinancialInsightsScreen> {
           border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
         ),
         child: Text(
-          l10n?.no_financial_goals ??
-              'Belum ada target keuangan. Tambahkan target untuk melihat proyeksi.',
+          l10n?.no_financial_goals ?? 'Belum ada target keuangan. Tambahkan target untuk melihat proyeksi.',
           style: GoogleFonts.poppins(color: Colors.white54, fontSize: 13),
         ),
       );
@@ -399,15 +338,11 @@ class _FinancialInsightsScreenState extends State<FinancialInsightsScreen> {
               const SizedBox(width: 8),
               Text(
                 'Proyeksi Target',
-                style: GoogleFonts.poppins(
-                  color: Colors.white,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                ),
+                style: GoogleFonts.poppins(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600),
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: DesignTokens.spacing3),
           ...ctrl.goals.take(3).map((goal) {
             final target = (goal['target_amount'] as num?)?.toDouble() ?? 0;
             final current = (goal['current_amount'] as num?)?.toDouble() ?? 0;
@@ -415,8 +350,7 @@ class _FinancialInsightsScreenState extends State<FinancialInsightsScreen> {
             final forecast = forecaster.forecastGoalCompletion(
               targetAmount: target,
               currentAmount: current,
-              monthlyContribution:
-                  (goal['monthly_contribution'] as num?)?.toDouble() ?? 0,
+              monthlyContribution: (goal['monthly_contribution'] as num?)?.toDouble() ?? 0,
             );
             final progress = target > 0 ? (current / target) * 100 : 0;
 
@@ -432,22 +366,16 @@ class _FinancialInsightsScreenState extends State<FinancialInsightsScreen> {
                 children: [
                   Text(
                     name,
-                    style: GoogleFonts.poppins(
-                      color: Colors.white,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                    ),
+                    style: GoogleFonts.poppins(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w600),
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: DesignTokens.spacing2),
                   LinearProgressIndicator(
                     value: progress / 100,
                     backgroundColor: Colors.white.withValues(alpha: 0.1),
-                    valueColor: const AlwaysStoppedAnimation<Color>(
-                      DesignTokens.primaryColor,
-                    ),
+                    valueColor: const AlwaysStoppedAnimation<Color>(DesignTokens.primaryColor),
                     minHeight: 6,
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: DesignTokens.spacing2),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -459,26 +387,16 @@ class _FinancialInsightsScreenState extends State<FinancialInsightsScreen> {
                           fontWeight: FontWeight.w500,
                         ),
                       ),
-                      if (forecast['monthsToCompletion'] != null &&
-                          forecast['monthsToCompletion'] > 0)
+                      if (forecast['monthsToCompletion'] != null && forecast['monthsToCompletion'] > 0)
                         Text(
                           '~${forecast['monthsToCompletion']} bulan lagi',
-                          style: GoogleFonts.poppins(
-                            color: Colors.white70,
-                            fontSize: 12,
-                          ),
+                          style: GoogleFonts.poppins(color: Colors.white70, fontSize: 12),
                         ),
                     ],
                   ),
                   if (forecast['warning'] != null) ...[
-                    const SizedBox(height: 8),
-                    Text(
-                      forecast['warning'] as String,
-                      style: GoogleFonts.poppins(
-                        color: Colors.orange,
-                        fontSize: 11,
-                      ),
-                    ),
+                    const SizedBox(height: DesignTokens.spacing2),
+                    Text(forecast['warning'] as String, style: GoogleFonts.poppins(color: Colors.orange, fontSize: 11)),
                   ],
                 ],
               ),
@@ -489,19 +407,14 @@ class _FinancialInsightsScreenState extends State<FinancialInsightsScreen> {
     );
   }
 
-  Widget _buildCategoryDistributionCard(
-    InsightsController ctrl,
-    AppLocalizations? l10n,
-  ) {
+  Widget _buildCategoryDistributionCard(InsightsController ctrl, AppLocalizations? l10n) {
     final thisMonth =
         ctrl.transactions.where((t) {
-          final dateStr =
-              t['transaction_date']?.toString() ?? t['date']?.toString() ?? '';
+          final dateStr = t['transaction_date']?.toString() ?? t['date']?.toString() ?? '';
           if (dateStr.isEmpty) return false;
           try {
             final date = DateTime.parse(dateStr);
-            return date.year == DateTime.now().year &&
-                date.month == DateTime.now().month;
+            return date.year == DateTime.now().year && date.month == DateTime.now().month;
           } catch (_) {
             return false;
           }
@@ -511,9 +424,7 @@ class _FinancialInsightsScreenState extends State<FinancialInsightsScreen> {
     for (final t in thisMonth) {
       if ((t['type']?.toString().toLowerCase() ?? 'expense') == 'expense') {
         final cat = t['category_name']?.toString() ?? 'Lainnya';
-        categorySpending[cat] =
-            (categorySpending[cat] ?? 0) +
-            ((t['amount'] as num?)?.toDouble() ?? 0);
+        categorySpending[cat] = (categorySpending[cat] ?? 0) + ((t['amount'] as num?)?.toDouble() ?? 0);
       }
     }
 
@@ -532,9 +443,7 @@ class _FinancialInsightsScreenState extends State<FinancialInsightsScreen> {
       );
     }
 
-    final sorted =
-        categorySpending.entries.toList()
-          ..sort((a, b) => b.value.compareTo(a.value));
+    final sorted = categorySpending.entries.toList()..sort((a, b) => b.value.compareTo(a.value));
     final total = sorted.map((e) => e.value).reduce((a, b) => a + b);
     final colors = [
       DesignTokens.primaryColor,
@@ -563,15 +472,11 @@ class _FinancialInsightsScreenState extends State<FinancialInsightsScreen> {
               const SizedBox(width: 8),
               Text(
                 'Distribusi Kategori',
-                style: GoogleFonts.poppins(
-                  color: Colors.white,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                ),
+                style: GoogleFonts.poppins(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600),
               ),
             ],
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: DesignTokens.spacing4),
           ...sorted.take(5).toList().asMap().entries.map((entry) {
             final idx = entry.key;
             final category = entry.value.key;
@@ -587,11 +492,7 @@ class _FinancialInsightsScreenState extends State<FinancialInsightsScreen> {
                     children: [
                       Text(
                         category,
-                        style: GoogleFonts.poppins(
-                          color: Colors.white,
-                          fontSize: 13,
-                          fontWeight: FontWeight.w500,
-                        ),
+                        style: GoogleFonts.poppins(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w500),
                       ),
                       Text(
                         '${percentage.toStringAsFixed(0)}%',
@@ -603,13 +504,11 @@ class _FinancialInsightsScreenState extends State<FinancialInsightsScreen> {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: DesignTokens.spacing1),
                   LinearProgressIndicator(
                     value: percentage / 100,
                     backgroundColor: Colors.white.withValues(alpha: 0.1),
-                    valueColor: AlwaysStoppedAnimation<Color>(
-                      colors[idx % colors.length],
-                    ),
+                    valueColor: AlwaysStoppedAnimation<Color>(colors[idx % colors.length]),
                     minHeight: 6,
                   ),
                 ],

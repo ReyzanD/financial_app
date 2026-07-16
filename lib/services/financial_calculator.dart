@@ -6,12 +6,7 @@ import 'package:financial_app/services/logger_service.dart';
 /// Menggunakan Money objects untuk menghindari floating-point errors
 class FinancialCalculator {
   // IDR Currency definition
-  static final Currency idr = Currency.create(
-    'IDR',
-    0,
-    symbol: 'Rp ',
-    pattern: '#,###',
-  );
+  static final Currency idr = Currency.create('IDR', 0, symbol: 'Rp ', pattern: '#,###');
 
   // Singleton pattern
   static final FinancialCalculator _instance = FinancialCalculator._internal();
@@ -59,16 +54,12 @@ class FinancialCalculator {
   /// Calculate balance (income - expenses)
   /// Returns balance amount and warning if negative
   /// Uses Money objects internally for precision
-  Map<String, dynamic> calculateBalance({
-    required double income,
-    required double expenses,
-  }) {
+  Map<String, dynamic> calculateBalance({required double income, required double expenses}) {
     final incomeMoney = _toMoney(income);
     final expensesMoney = _toMoney(expenses);
     final balanceMoney = incomeMoney - expensesMoney;
     final isNegative = _isNegative(balanceMoney);
-    final warning =
-        isNegative ? 'Saldo Anda negatif. Perhatikan pengeluaran Anda.' : null;
+    final warning = isNegative ? 'Saldo Anda negatif. Perhatikan pengeluaran Anda.' : null;
 
     LoggerService.debug(
       '[FinancialCalculator] Balance calculated: ${balanceMoney.toString()} (Income: ${incomeMoney.toString()}, Expenses: ${expensesMoney.toString()})',
@@ -88,10 +79,7 @@ class FinancialCalculator {
 
   /// Calculate savings rate (savings / income * 100)
   /// Returns percentage as double
-  double calculateSavingsRate({
-    required double income,
-    required double expenses,
-  }) {
+  double calculateSavingsRate({required double income, required double expenses}) {
     final incomeMoney = _toMoney(income);
     final expensesMoney = _toMoney(expenses);
 
@@ -102,13 +90,8 @@ class FinancialCalculator {
 
     final savingsMoney = incomeMoney - expensesMoney;
     // Calculate percentage: (savings / income) * 100
-    final rate =
-        (savingsMoney.minorUnits.toDouble() /
-            incomeMoney.minorUnits.toDouble()) *
-        100;
-    LoggerService.debug(
-      '[FinancialCalculator] Savings rate: ${rate.toStringAsFixed(2)}%',
-    );
+    final rate = (savingsMoney.minorUnits.toDouble() / incomeMoney.minorUnits.toDouble()) * 100;
+    LoggerService.debug('[FinancialCalculator] Savings rate: ${rate.toStringAsFixed(2)}%');
     return rate;
   }
 
@@ -133,16 +116,10 @@ class FinancialCalculator {
     final effectiveTaxRate = taxRate ?? 0.0;
 
     // After-tax income
-    final afterTaxIncome =
-        effectiveTaxRate > 0
-            ? incomeMoney * (1 - effectiveTaxRate / 100)
-            : incomeMoney;
+    final afterTaxIncome = effectiveTaxRate > 0 ? incomeMoney * (1 - effectiveTaxRate / 100) : incomeMoney;
 
     // Real savings (adjusted for inflation)
-    final realSavings =
-        effectiveInflationRate > 0
-            ? savingsMoney / (1 + effectiveInflationRate / 100)
-            : savingsMoney;
+    final realSavings = effectiveInflationRate > 0 ? savingsMoney / (1 + effectiveInflationRate / 100) : savingsMoney;
 
     double score = 0.0;
     final factors = <String, double>{};
@@ -150,21 +127,13 @@ class FinancialCalculator {
 
     // Factor 1: Savings Rate (40 points) - using after-tax income
     if (afterTaxIncome.minorUnits > BigInt.zero) {
-      final savingsRate =
-          (realSavings.minorUnits.toDouble() /
-              afterTaxIncome.minorUnits.toDouble()) *
-          100;
-      final savingsScore = (savingsRate / 20).clamp(
-        0.0,
-        40.0,
-      ); // 20% = perfect score
+      final savingsRate = (realSavings.minorUnits.toDouble() / afterTaxIncome.minorUnits.toDouble()) * 100;
+      final savingsScore = (savingsRate / 20).clamp(0.0, 40.0); // 20% = perfect score
       score += savingsScore;
       factors['Savings Rate'] = savingsScore;
 
       if (savingsRate < 10) {
-        recommendations.add(
-          'Tingkatkan tabungan Anda. Target minimal 10% dari pendapatan.',
-        );
+        recommendations.add('Tingkatkan tabungan Anda. Target minimal 10% dari pendapatan.');
       }
     }
 
@@ -172,17 +141,13 @@ class FinancialCalculator {
     if (budgetTotal != null && budgetTotal > 0) {
       final budgetTotalMoney = _toMoney(budgetTotal);
       final budgetSpentMoney = _toMoney(budgetSpent ?? expenses);
-      final budgetRatio =
-          budgetSpentMoney.minorUnits.toDouble() /
-          budgetTotalMoney.minorUnits.toDouble();
+      final budgetRatio = budgetSpentMoney.minorUnits.toDouble() / budgetTotalMoney.minorUnits.toDouble();
       final budgetScore = (1 - budgetRatio.clamp(0.0, 1.0)) * 30;
       score += budgetScore;
       factors['Budget Adherence'] = budgetScore;
 
       if (budgetRatio > 0.9) {
-        recommendations.add(
-          'Anda hampir melebihi budget. Perhatikan pengeluaran.',
-        );
+        recommendations.add('Anda hampir melebihi budget. Perhatikan pengeluaran.');
       }
     } else {
       // No budget set, give neutral score
@@ -192,22 +157,15 @@ class FinancialCalculator {
     }
 
     // Factor 3: Debt Ratio (20 points)
-    if (debtAmount != null &&
-        debtAmount > 0 &&
-        afterTaxIncome.minorUnits > BigInt.zero) {
+    if (debtAmount != null && debtAmount > 0 && afterTaxIncome.minorUnits > BigInt.zero) {
       final debtMoney = _toMoney(debtAmount);
-      final debtRatio =
-          (debtMoney.minorUnits.toDouble() /
-              afterTaxIncome.minorUnits.toDouble()) *
-          100;
+      final debtRatio = (debtMoney.minorUnits.toDouble() / afterTaxIncome.minorUnits.toDouble()) * 100;
       final debtScore = (1 - (debtRatio / 50).clamp(0.0, 1.0)) * 20;
       score += debtScore;
       factors['Debt Ratio'] = debtScore;
 
       if (debtRatio > 30) {
-        recommendations.add(
-          'Rasio utang Anda tinggi. Pertimbangkan untuk mengurangi utang.',
-        );
+        recommendations.add('Rasio utang Anda tinggi. Pertimbangkan untuk mengurangi utang.');
       }
     } else {
       // No debt, give full score
@@ -223,9 +181,7 @@ class FinancialCalculator {
     final finalScore = score.clamp(0.0, 100.0);
     final healthLevel = _getHealthLevel(finalScore);
 
-    LoggerService.debug(
-      '[FinancialCalculator] Financial health score: $finalScore ($healthLevel)',
-    );
+    LoggerService.debug('[FinancialCalculator] Financial health score: $finalScore ($healthLevel)');
 
     return {
       'score': finalScore,
@@ -256,8 +212,7 @@ class FinancialCalculator {
   Map<String, double> getIndonesiaDefaultRates() {
     return {
       'inflationRate': 3.5,
-      'taxRate':
-          15.0, // Average tax rate (progressive brackets: 5%, 15%, 25%, 30%, 35%)
+      'taxRate': 15.0, // Average tax rate (progressive brackets: 5%, 15%, 25%, 30%, 35%)
     };
   }
 
@@ -327,21 +282,15 @@ class FinancialCalculator {
 
     final incomeChangePercent =
         previousIncomeMoney.minorUnits > BigInt.zero
-            ? (incomeChangeMoney.minorUnits.toDouble() /
-                    previousIncomeMoney.minorUnits.toDouble()) *
-                100
+            ? (incomeChangeMoney.minorUnits.toDouble() / previousIncomeMoney.minorUnits.toDouble()) * 100
             : 0.0;
     final expenseChangePercent =
         previousExpensesMoney.minorUnits > BigInt.zero
-            ? (expenseChangeMoney.minorUnits.toDouble() /
-                    previousExpensesMoney.minorUnits.toDouble()) *
-                100
+            ? (expenseChangeMoney.minorUnits.toDouble() / previousExpensesMoney.minorUnits.toDouble()) * 100
             : 0.0;
     final balanceChangePercent =
         previousBalanceMoney.minorUnits != BigInt.zero
-            ? (balanceChangeMoney.minorUnits.toDouble() /
-                    previousBalanceMoney.minorUnits.abs().toDouble()) *
-                100
+            ? (balanceChangeMoney.minorUnits.toDouble() / previousBalanceMoney.minorUnits.abs().toDouble()) * 100
             : 0.0;
 
     LoggerService.debug('[FinancialCalculator] Month comparison calculated');
@@ -405,9 +354,7 @@ class FinancialCalculator {
 
   /// Calculate running balance (cumulative balance over time)
   /// Returns Money objects in running balances
-  List<Map<String, dynamic>> calculateRunningBalance({
-    required List<Map<String, dynamic>> transactions,
-  }) {
+  List<Map<String, dynamic>> calculateRunningBalance({required List<Map<String, dynamic>> transactions}) {
     Money runningBalanceMoney = Money.fromInt(0, isoCode: 'IDR');
     final runningBalances = <Map<String, dynamic>>[];
 
@@ -431,9 +378,7 @@ class FinancialCalculator {
       });
     }
 
-    LoggerService.debug(
-      '[FinancialCalculator] Running balance calculated for ${transactions.length} transactions',
-    );
+    LoggerService.debug('[FinancialCalculator] Running balance calculated for ${transactions.length} transactions');
 
     return runningBalances;
   }
@@ -458,16 +403,11 @@ class FinancialCalculator {
     Money projectedBalanceMoney;
     if (effectiveInflationRate > 0) {
       // Apply inflation: monthlyChange * (1 + inflationRate/100)^months
-      final inflationMultiplier = math.pow(
-        1 + effectiveInflationRate / 100,
-        months,
-      );
+      final inflationMultiplier = math.pow(1 + effectiveInflationRate / 100, months);
       final adjustedMonthlyChange = monthlyChangeMoney * inflationMultiplier;
-      projectedBalanceMoney =
-          currentBalanceMoney + (adjustedMonthlyChange * months);
+      projectedBalanceMoney = currentBalanceMoney + (adjustedMonthlyChange * months);
     } else {
-      projectedBalanceMoney =
-          currentBalanceMoney + (monthlyChangeMoney * months);
+      projectedBalanceMoney = currentBalanceMoney + (monthlyChangeMoney * months);
     }
 
     final isPositive = !projectedBalanceMoney.isNegative;
@@ -485,56 +425,41 @@ class FinancialCalculator {
       'monthlyChangeAmount': _toDouble(monthlyChangeMoney),
       'months': months,
       'isPositive': isPositive,
-      'warning':
-          isPositive
-              ? null
-              : 'Proyeksi saldo negatif dalam $months bulan. Perhatikan pengeluaran.',
+      'warning': isPositive ? null : 'Proyeksi saldo negatif dalam $months bulan. Perhatikan pengeluaran.',
       'inflationRate': effectiveInflationRate,
     };
   }
 
   /// Calculate expense breakdown by category
   /// Returns Money objects per category
-  Map<String, Money> calculateExpenseBreakdown({
-    required List<Map<String, dynamic>> expenses,
-  }) {
+  Map<String, Money> calculateExpenseBreakdown({required List<Map<String, dynamic>> expenses}) {
     final breakdown = <String, Money>{};
 
     for (final expense in expenses) {
       final category = expense['category'] as String? ?? 'Uncategorized';
       final amountMoney = _toMoney(expense['amount']);
 
-      breakdown[category] =
-          (breakdown[category] ?? Money.fromInt(0, isoCode: 'IDR')) +
-          amountMoney;
+      breakdown[category] = (breakdown[category] ?? Money.fromInt(0, isoCode: 'IDR')) + amountMoney;
     }
 
-    LoggerService.debug(
-      '[FinancialCalculator] Expense breakdown calculated for ${breakdown.length} categories',
-    );
+    LoggerService.debug('[FinancialCalculator] Expense breakdown calculated for ${breakdown.length} categories');
 
     return breakdown;
   }
 
   /// Calculate income breakdown by category
   /// Returns Money objects per category
-  Map<String, Money> calculateIncomeBreakdown({
-    required List<Map<String, dynamic>> incomes,
-  }) {
+  Map<String, Money> calculateIncomeBreakdown({required List<Map<String, dynamic>> incomes}) {
     final breakdown = <String, Money>{};
 
     for (final income in incomes) {
       final category = income['category'] as String? ?? 'Uncategorized';
       final amountMoney = _toMoney(income['amount']);
 
-      breakdown[category] =
-          (breakdown[category] ?? Money.fromInt(0, isoCode: 'IDR')) +
-          amountMoney;
+      breakdown[category] = (breakdown[category] ?? Money.fromInt(0, isoCode: 'IDR')) + amountMoney;
     }
 
-    LoggerService.debug(
-      '[FinancialCalculator] Income breakdown calculated for ${breakdown.length} categories',
-    );
+    LoggerService.debug('[FinancialCalculator] Income breakdown calculated for ${breakdown.length} categories');
 
     return breakdown;
   }

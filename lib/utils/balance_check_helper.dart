@@ -28,12 +28,8 @@ class BalanceCheckHelper {
 
       if (summaries == null) return true; // Allow if we can't check
 
-      final income =
-          (summaries['income'] as Map<String, dynamic>?)?['total_amount'] ??
-          0.0;
-      final expense =
-          (summaries['expense'] as Map<String, dynamic>?)?['total_amount'] ??
-          0.0;
+      final income = (summaries['income'] as Map<String, dynamic>?)?['total_amount'] ?? 0.0;
+      final expense = (summaries['expense'] as Map<String, dynamic>?)?['total_amount'] ?? 0.0;
       final currentBalance = income - expense;
       final newBalance = currentBalance - expenseAmount;
 

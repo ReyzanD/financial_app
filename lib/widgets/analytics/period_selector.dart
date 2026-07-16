@@ -7,11 +7,7 @@ class PeriodSelector extends StatefulWidget {
   final String selectedPeriod;
   final Function(String) onPeriodChanged;
 
-  const PeriodSelector({
-    super.key,
-    required this.selectedPeriod,
-    required this.onPeriodChanged,
-  });
+  const PeriodSelector({super.key, required this.selectedPeriod, required this.onPeriodChanged});
 
   @override
   State<PeriodSelector> createState() => _PeriodSelectorState();
@@ -46,17 +42,9 @@ class _PeriodSelectorState extends State<PeriodSelector> {
               margin: const EdgeInsets.only(right: 8),
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               decoration: BoxDecoration(
-                color:
-                    isSelected
-                        ? DesignTokens.primaryColor
-                        : DesignTokens.surfaceDark,
+                color: isSelected ? DesignTokens.primaryColor : DesignTokens.surfaceDark,
                 borderRadius: BorderRadius.circular(20),
-                border: Border.all(
-                  color:
-                      isSelected
-                          ? DesignTokens.primaryColor
-                          : DesignTokens.borderDark,
-                ),
+                border: Border.all(color: isSelected ? DesignTokens.primaryColor : DesignTokens.borderDark),
               ),
               child: Text(
                 period,

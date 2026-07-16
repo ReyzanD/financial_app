@@ -10,8 +10,7 @@ import 'package:financial_app/utils/design_tokens.dart';
 class MapScreenController extends ChangeNotifier {
   final TransactionDataService _transactionData;
 
-  MapScreenController({required TransactionDataService transactionData})
-    : _transactionData = transactionData;
+  MapScreenController({required TransactionDataService transactionData}) : _transactionData = transactionData;
 
   final MapController mapController = MapController();
   LatLng? _currentPosition;
@@ -51,22 +50,12 @@ class MapScreenController extends ChangeNotifier {
       final data = await _transactionData.getTransactions(limit: 100);
       _markers.clear();
       for (final item in data['transactions'] as List<dynamic>? ?? []) {
-        final loc =
-            item is Map<String, dynamic>
-                ? (item['location_data'] as Map<String, dynamic>?)
-                : null;
+        final loc = item is Map<String, dynamic> ? (item['location_data'] as Map<String, dynamic>?) : null;
         if (loc != null && loc['lat'] != null && loc['lng'] != null) {
           _markers.add(
             Marker(
-              point: LatLng(
-                (loc['lat'] as num).toDouble(),
-                (loc['lng'] as num).toDouble(),
-              ),
-              child: const Icon(
-                Iconsax.location,
-                color: DesignTokens.primaryColor,
-                size: 32,
-              ),
+              point: LatLng((loc['lat'] as num).toDouble(), (loc['lng'] as num).toDouble()),
+              child: const Icon(Iconsax.location, color: DesignTokens.primaryColor, size: 32),
             ),
           );
         }

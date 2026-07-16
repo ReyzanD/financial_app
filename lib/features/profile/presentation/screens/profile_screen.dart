@@ -28,9 +28,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback(
-      (_) => context.read<ProfileController>().loadProfile(),
-    );
+    WidgetsBinding.instance.addPostFrameCallback((_) => context.read<ProfileController>().loadProfile());
   }
 
   @override
@@ -55,13 +53,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           tooltip: l10n.back,
           onPressed: () => Navigator.pop(context),
         ),
-        title: Text(
-          l10n.user_profile,
-          style: GoogleFonts.poppins(
-            color: Colors.white,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
+        title: Text(l10n.user_profile, style: GoogleFonts.poppins(color: Colors.white, fontWeight: FontWeight.w600)),
       ),
       body: Column(
         children: [
@@ -70,11 +62,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             child: Consumer<ProfileController>(
               builder: (context, ctrl, _) {
                 if (ctrl.isLoading)
-                  return const Center(
-                    child: CircularProgressIndicator(
-                      color: DesignTokens.primaryColor,
-                    ),
-                  );
+                  return const Center(child: CircularProgressIndicator(color: DesignTokens.primaryColor));
                 return SingleChildScrollView(
                   padding: const EdgeInsets.all(DesignTokens.spacing4),
                   child: Form(
@@ -83,23 +71,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         _buildAvatarSection(ctrl),
-                        const SizedBox(height: 24),
+                        const SizedBox(height: DesignTokens.spacing6),
                         Text(
                           l10n.personal_information,
-                          style: GoogleFonts.poppins(
-                            color: Colors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                          ),
+                          style: GoogleFonts.poppins(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600),
                         ),
-                        const SizedBox(height: 12),
+                        const SizedBox(height: DesignTokens.spacing3),
                         _buildField(
                           'Nama Lengkap',
                           _nameCtrl,
                           icon: Iconsax.user,
                           autofillHints: const [AutofillHints.name],
                         ),
-                        const SizedBox(height: 12),
+                        const SizedBox(height: DesignTokens.spacing3),
                         _buildField(
                           'No. Telepon',
                           _phoneCtrl,
@@ -107,55 +91,39 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           keyboardType: TextInputType.phone,
                           autofillHints: const [AutofillHints.telephoneNumber],
                         ),
-                        const SizedBox(height: 12),
+                        const SizedBox(height: DesignTokens.spacing3),
                         _buildField(
                           'Jumlah Anggota Keluarga',
                           _familyCtrl,
                           icon: Iconsax.people,
                           keyboardType: TextInputType.number,
                         ),
-                        const SizedBox(height: 12),
-                        _buildField(
-                          'Lokasi',
-                          _locationCtrl,
-                          icon: Iconsax.location,
-                        ),
-                        const SizedBox(height: 16),
+                        const SizedBox(height: DesignTokens.spacing3),
+                        _buildField('Lokasi', _locationCtrl, icon: Iconsax.location),
+                        const SizedBox(height: DesignTokens.spacing4),
                         Text(
                           'Rentang Pendapatan',
-                          style: GoogleFonts.poppins(
-                            color: Colors.white,
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
-                          ),
+                          style: GoogleFonts.poppins(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w500),
                         ),
-                        const SizedBox(height: 8),
+                        const SizedBox(height: DesignTokens.spacing2),
                         DropdownButtonFormField<String>(
                           initialValue: _incomeRange,
                           dropdownColor: DesignTokens.surfaceDark,
                           decoration: DropdownHelper.darkDropdownDecoration(
-                            prefixIcon: const Icon(
-                              Iconsax.money,
-                              color: Colors.grey,
-                            ),
+                            prefixIcon: const Icon(Iconsax.money, color: Colors.grey),
                           ),
                           items:
                               _incomeRanges
                                   .map(
                                     (r) => DropdownMenuItem(
                                       value: r,
-                                      child: Text(
-                                        r,
-                                        style: GoogleFonts.poppins(
-                                          color: Colors.white,
-                                        ),
-                                      ),
+                                      child: Text(r, style: GoogleFonts.poppins(color: Colors.white)),
                                     ),
                                   )
                                   .toList(),
                           onChanged: (v) => setState(() => _incomeRange = v),
                         ),
-                        const SizedBox(height: 32),
+                        const SizedBox(height: DesignTokens.spacing7),
                         SizedBox(
                           width: double.infinity,
                           child: ElevatedButton(
@@ -164,9 +132,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               backgroundColor: DesignTokens.primaryColor,
                               padding: const EdgeInsets.symmetric(vertical: 16),
                               shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(
-                                  DesignTokens.radiusMedium,
-                                ),
+                                borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
                               ),
                             ),
                             child:
@@ -174,10 +140,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     ? const SizedBox(
                                       width: 20,
                                       height: 20,
-                                      child: CircularProgressIndicator(
-                                        strokeWidth: 2,
-                                        color: Colors.white,
-                                      ),
+                                      child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
                                     )
                                     : Text(
                                       l10n.save,
@@ -208,24 +171,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
           Container(
             width: 80,
             height: 80,
-            decoration: BoxDecoration(
-              color: DesignTokens.primaryColor.withValues(alpha: 0.2),
-              shape: BoxShape.circle,
-            ),
+            decoration: BoxDecoration(color: DesignTokens.primaryColor.withValues(alpha: 0.2), shape: BoxShape.circle),
             child: Center(
               child: Text(
                 (ctrl.profile['name']?.toString().isNotEmpty == true
                     ? ctrl.profile['name'].toString()[0].toUpperCase()
                     : 'U'),
-                style: GoogleFonts.poppins(
-                  color: DesignTokens.primaryColor,
-                  fontSize: 32,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: GoogleFonts.poppins(color: DesignTokens.primaryColor, fontSize: 32, fontWeight: FontWeight.bold),
               ),
             ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: DesignTokens.spacing3),
           Text(
             ctrl.profile['email']?.toString() ?? '',
             style: GoogleFonts.poppins(color: Colors.grey[400], fontSize: 14),
@@ -252,8 +208,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         labelStyle: GoogleFonts.poppins(color: Colors.grey[500], fontSize: 13),
         filled: true,
         fillColor: DesignTokens.surfaceDark,
-        prefixIcon:
-            icon != null ? Icon(icon, color: Colors.grey[500], size: 20) : null,
+        prefixIcon: icon != null ? Icon(icon, color: Colors.grey[500], size: 20) : null,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
           borderSide: BorderSide(color: DesignTokens.borderDark),
@@ -282,11 +237,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           l10n?.profile_saved_successfully ?? 'Profil berhasil disimpan',
         );
     } catch (e) {
-      if (mounted)
-        ErrorHandlerService.showErrorSnackbar(
-          context,
-          ErrorHandlerService.getUserFriendlyMessage(e),
-        );
+      if (mounted) ErrorHandlerService.showErrorSnackbar(context, ErrorHandlerService.getUserFriendlyMessage(e));
     }
   }
 }

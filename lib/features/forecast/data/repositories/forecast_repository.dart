@@ -6,6 +6,5 @@ class ForecastRepository {
   ForecastRepository({TransactionDataService? transactionData})
     : _transactionData = transactionData ?? getIt<TransactionDataService>();
 
-  Future<Map<String, dynamic>> getTransactions({int limit = 1000}) =>
-      _transactionData.getTransactions(limit: limit);
+  Future<Map<String, dynamic>> getTransactions({int limit = 1000}) => _transactionData.getTransactions(limit: limit);
 }

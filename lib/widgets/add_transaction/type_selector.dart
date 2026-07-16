@@ -8,11 +8,7 @@ class TypeSelector extends StatelessWidget {
   final String selectedType;
   final Function(String) onTypeChanged;
 
-  const TypeSelector({
-    super.key,
-    required this.selectedType,
-    required this.onTypeChanged,
-  });
+  const TypeSelector({super.key, required this.selectedType, required this.onTypeChanged});
 
   @override
   Widget build(BuildContext context) {
@@ -26,33 +22,14 @@ class TypeSelector extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Expanded(
-            child: _buildTypeButton(
-              l10n?.expense ?? 'Pengeluaran',
-              'expense',
-              Iconsax.arrow_down,
-              Colors.red,
-            ),
-          ),
-          Expanded(
-            child: _buildTypeButton(
-              l10n?.income ?? 'Pemasukan',
-              'income',
-              Iconsax.arrow_up,
-              Colors.green,
-            ),
-          ),
+          Expanded(child: _buildTypeButton(l10n?.expense ?? 'Pengeluaran', 'expense', Iconsax.arrow_down, Colors.red)),
+          Expanded(child: _buildTypeButton(l10n?.income ?? 'Pemasukan', 'income', Iconsax.arrow_up, Colors.green)),
         ],
       ),
     );
   }
 
-  Widget _buildTypeButton(
-    String label,
-    String type,
-    IconData icon,
-    Color color,
-  ) {
+  Widget _buildTypeButton(String label, String type, IconData icon, Color color) {
     final isSelected = selectedType == type;
 
     return GestureDetector(
@@ -67,7 +44,7 @@ class TypeSelector extends StatelessWidget {
         child: Column(
           children: [
             Icon(icon, color: isSelected ? color : Colors.grey[500], size: 20),
-            const SizedBox(height: 4),
+            const SizedBox(height: DesignTokens.spacing1),
             Text(
               label,
               style: GoogleFonts.poppins(

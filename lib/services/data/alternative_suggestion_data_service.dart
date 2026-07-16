@@ -11,11 +11,9 @@ class AlternativeSuggestionDataService {
   final LocalDatabaseService _dbService;
   final LocalAuthService _authService;
 
-  AlternativeSuggestionDataService({
-    LocalDatabaseService? dbService,
-    LocalAuthService? authService,
-  }) : _dbService = dbService ?? LocalDatabaseService(),
-       _authService = authService ?? LocalAuthService();
+  AlternativeSuggestionDataService({LocalDatabaseService? dbService, LocalAuthService? authService})
+    : _dbService = dbService ?? LocalDatabaseService(),
+      _authService = authService ?? LocalAuthService();
 
   /// Get current user ID
   Future<String?> getCurrentUserId() async {
@@ -23,9 +21,7 @@ class AlternativeSuggestionDataService {
   }
 
   /// Get cached suggestions for a given origin place visit.
-  Future<List<AlternativeSuggestion>> getForOriginPlace(
-    String originPlaceVisitId,
-  ) async {
+  Future<List<AlternativeSuggestion>> getForOriginPlace(String originPlaceVisitId) async {
     try {
       final db = await _dbService.database;
       final rows = await db.query(
@@ -36,10 +32,7 @@ class AlternativeSuggestionDataService {
       );
       return rows.map((m) => AlternativeSuggestion.fromMap(m)).toList();
     } catch (e) {
-      LoggerService.error(
-        'Error getting suggestions for origin place',
-        error: e,
-      );
+      LoggerService.error('Error getting suggestions for origin place', error: e);
       rethrow;
     }
   }
@@ -79,9 +72,7 @@ class AlternativeSuggestionDataService {
         });
       }
       await batch.commit(noResult: true);
-      LoggerService.info(
-        '✅ ${suggestions.length} alternative suggestions saved for origin $originId',
-      );
+      LoggerService.info('✅ ${suggestions.length} alternative suggestions saved for origin $originId');
     } catch (e) {
       LoggerService.error('Error saving alternative suggestions', error: e);
       rethrow;
@@ -89,16 +80,10 @@ class AlternativeSuggestionDataService {
   }
 
   /// Check if fresh suggestions exist for a given origin (within [maxAgeHours]).
-  Future<bool> hasFreshSuggestions(
-    String originPlaceVisitId, {
-    int maxAgeHours = 24,
-  }) async {
+  Future<bool> hasFreshSuggestions(String originPlaceVisitId, {int maxAgeHours = 24}) async {
     try {
       final db = await _dbService.database;
-      final cutoff =
-          DateTime.now()
-              .subtract(Duration(hours: maxAgeHours))
-              .toIso8601String();
+      final cutoff = DateTime.now().subtract(Duration(hours: maxAgeHours)).toIso8601String();
 
       final result = await db.rawQuery(
         '''
@@ -127,9 +112,7 @@ class AlternativeSuggestionDataService {
         whereArgs: [originPlaceVisitId],
       );
       if (deleted > 0) {
-        LoggerService.info(
-          '✅ Deleted $deleted suggestions for origin $originPlaceVisitId',
-        );
+        LoggerService.info('✅ Deleted $deleted suggestions for origin $originPlaceVisitId');
         return true;
       }
       return false;

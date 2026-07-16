@@ -18,9 +18,7 @@ class DescriptionField extends StatelessWidget {
       decoration: InputDecoration(
         labelText: l10n?.description ?? 'Deskripsi',
         labelStyle: GoogleFonts.poppins(color: Colors.grey[400]),
-        hintText:
-            l10n?.description_hint ??
-            'Contoh: Makan siang, Belanja bulanan, dll.',
+        hintText: l10n?.description_hint ?? 'Contoh: Makan siang, Belanja bulanan, dll.',
         hintStyle: GoogleFonts.poppins(color: Colors.grey[600]),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
@@ -38,18 +36,10 @@ class DescriptionField extends StatelessWidget {
         fillColor: DesignTokens.surfaceDark,
       ),
       maxLength: FormValidators.maxDescriptionLength,
-      buildCounter: (
-        context, {
-        required currentLength,
-        required isFocused,
-        maxLength,
-      }) {
+      buildCounter: (context, {required currentLength, required isFocused, maxLength}) {
         return Padding(
           padding: const EdgeInsets.only(top: 8.0),
-          child: Text(
-            '$currentLength / $maxLength',
-            style: GoogleFonts.poppins(color: Colors.grey[500], fontSize: 12),
-          ),
+          child: Text('$currentLength / $maxLength', style: GoogleFonts.poppins(color: Colors.grey[500], fontSize: 12)),
         );
       },
       validator: (value) => FormValidators.validateDescription(value),

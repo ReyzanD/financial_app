@@ -12,11 +12,9 @@ class AccountDataService {
   final LocalAuthService _authService;
   final _uuid = const Uuid();
 
-  AccountDataService({
-    LocalDatabaseService? dbService,
-    LocalAuthService? authService,
-  }) : _dbService = dbService ?? LocalDatabaseService(),
-       _authService = authService ?? LocalAuthService();
+  AccountDataService({LocalDatabaseService? dbService, LocalAuthService? authService})
+    : _dbService = dbService ?? LocalDatabaseService(),
+      _authService = authService ?? LocalAuthService();
 
   /// Get current user ID
   Future<String?> getCurrentUserId() async {
@@ -77,10 +75,7 @@ class AccountDataService {
   }
 
   /// Update account
-  Future<AccountModel> updateAccount(
-    String accountId,
-    Map<String, dynamic> accountData,
-  ) async {
+  Future<AccountModel> updateAccount(String accountId, Map<String, dynamic> accountData) async {
     final userId = await getCurrentUserId();
     if (userId == null) throw Exception('Not authenticated');
 
@@ -202,11 +197,7 @@ class AccountDataService {
         byType[type] = {'balance': balance, 'count': row['count']};
       }
 
-      return {
-        'total_balance': totalBalance,
-        'by_type': byType,
-        'account_count': result.length,
-      };
+      return {'total_balance': totalBalance, 'by_type': byType, 'account_count': result.length};
     } catch (e) {
       LoggerService.error('Error getting account summary', error: e);
       rethrow;
@@ -215,11 +206,7 @@ class AccountDataService {
 
   /// Adjust an account's balance by a delta amount.
   /// Used by other data services (transactions, goals, obligations).
-  Future<void> adjustAccountBalance(
-    Database db,
-    String accountId,
-    double delta,
-  ) async {
+  Future<void> adjustAccountBalance(Database db, String accountId, double delta) async {
     final accountResult = await db.query(
       'accounts_232143',
       where: 'account_id_232143 = ?',
@@ -228,15 +215,11 @@ class AccountDataService {
     );
 
     if (accountResult.isNotEmpty) {
-      final currentBalance =
-          (accountResult.first['balance_232143'] as num?)?.toDouble() ?? 0.0;
+      final currentBalance = (accountResult.first['balance_232143'] as num?)?.toDouble() ?? 0.0;
       final newBalance = currentBalance + delta;
       await db.update(
         'accounts_232143',
-        {
-          'balance_232143': newBalance,
-          'updated_at_232143': DateTime.now().toIso8601String(),
-        },
+        {'balance_232143': newBalance, 'updated_at_232143': DateTime.now().toIso8601String()},
         where: 'account_id_232143 = ?',
         whereArgs: [accountId],
       );

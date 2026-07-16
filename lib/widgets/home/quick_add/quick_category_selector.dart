@@ -23,20 +23,12 @@ class QuickCategorySelector extends StatelessWidget {
           src['id']?.toString() ??
           src['category_id']?.toString() ??
           src['category_id_232143']?.toString() ??
-          src.values
-              .firstWhere(
-                (v) => v.toString().startsWith('cat_'),
-                orElse: () => '',
-              )
-              .toString(),
+          src.values.firstWhere((v) => v.toString().startsWith('cat_'), orElse: () => '').toString(),
       'name':
           (src['name'] ??
                   src['category_name'] ??
                   src['name_232143']?.toString() ??
-                  src.values.firstWhere(
-                    (v) => v is String && !v.toString().startsWith('cat_'),
-                    orElse: () => '',
-                  ))
+                  src.values.firstWhere((v) => v is String && !v.toString().startsWith('cat_'), orElse: () => ''))
               .toString(),
     };
   }
@@ -54,36 +46,20 @@ class QuickCategorySelector extends StatelessWidget {
 
     if (categories.isEmpty) {
       return Center(
-        child: Text(
-          'No categories available',
-          style: GoogleFonts.poppins(color: Colors.grey[600], fontSize: 12),
-        ),
+        child: Text('No categories available', style: GoogleFonts.poppins(color: Colors.grey[600], fontSize: 12)),
       );
     }
 
     return Wrap(
       spacing: 8,
       runSpacing: 8,
-      children:
-          categories
-              .map(
-                (c) => _buildCategoryChip(
-                  c is Map<String, dynamic> ? _normalize(c) : c,
-                ),
-              )
-              .toList(),
+      children: categories.map((c) => _buildCategoryChip(c is Map<String, dynamic> ? _normalize(c) : c)).toList(),
     );
   }
 
   Widget _buildCategoryChip(dynamic category) {
-    final id =
-        category is Map<String, dynamic>
-            ? (category['id']?.toString() ?? '')
-            : category.toString();
-    final name =
-        category is Map<String, dynamic>
-            ? (category['name']?.toString() ?? 'Unknown')
-            : category.toString();
+    final id = category is Map<String, dynamic> ? (category['id']?.toString() ?? '') : category.toString();
+    final name = category is Map<String, dynamic> ? (category['name']?.toString() ?? 'Unknown') : category.toString();
 
     return InkWell(
       onTap: () => onCategorySelected(id),
@@ -100,14 +76,7 @@ class QuickCategorySelector extends StatelessWidget {
           children: [
             Icon(Iconsax.category, size: 14, color: Colors.grey[400]),
             const SizedBox(width: 6),
-            Text(
-              name,
-              style: GoogleFonts.poppins(
-                color: Colors.white,
-                fontSize: 11,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
+            Text(name, style: GoogleFonts.poppins(color: Colors.white, fontSize: 11, fontWeight: FontWeight.w500)),
           ],
         ),
       ),

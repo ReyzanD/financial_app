@@ -19,8 +19,7 @@ class DateTimeSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final dateText =
-        '${selectedDate.day}/${selectedDate.month}/${selectedDate.year}';
+    final dateText = '${selectedDate.day}/${selectedDate.month}/${selectedDate.year}';
     final timeText = selectedTime.format(context);
 
     return Row(
@@ -31,13 +30,9 @@ class DateTimeSection extends StatelessWidget {
             children: [
               Text(
                 'Tanggal',
-                style: GoogleFonts.poppins(
-                  color: Colors.white,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                ),
+                style: GoogleFonts.poppins(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w500),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: DesignTokens.spacing2),
               GestureDetector(
                 onTap: onSelectDate,
                 child: Container(
@@ -51,10 +46,7 @@ class DateTimeSection extends StatelessWidget {
                     children: [
                       Icon(Iconsax.calendar, color: Colors.grey[500], size: 16),
                       const SizedBox(width: 8),
-                      Text(
-                        dateText,
-                        style: GoogleFonts.poppins(color: Colors.white),
-                      ),
+                      Text(dateText, style: GoogleFonts.poppins(color: Colors.white)),
                     ],
                   ),
                 ),
@@ -67,15 +59,8 @@ class DateTimeSection extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                'Waktu',
-                style: GoogleFonts.poppins(
-                  color: Colors.white,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-              const SizedBox(height: 8),
+              Text('Waktu', style: GoogleFonts.poppins(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w500)),
+              const SizedBox(height: DesignTokens.spacing2),
               GestureDetector(
                 onTap: onSelectTime,
                 child: Container(
@@ -89,10 +74,7 @@ class DateTimeSection extends StatelessWidget {
                     children: [
                       Icon(Iconsax.clock, color: Colors.grey[500], size: 16),
                       const SizedBox(width: 8),
-                      Text(
-                        timeText,
-                        style: GoogleFonts.poppins(color: Colors.white),
-                      ),
+                      Text(timeText, style: GoogleFonts.poppins(color: Colors.white)),
                     ],
                   ),
                 ),

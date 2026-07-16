@@ -166,10 +166,7 @@ class CacheService {
 
       LoggerService.debug('[CacheService] Expired cache cleared');
     } catch (e) {
-      LoggerService.error(
-        '[CacheService] Error clearing expired cache',
-        error: e,
-      );
+      LoggerService.error('[CacheService] Error clearing expired cache', error: e);
     }
   }
 
@@ -248,14 +245,9 @@ class CacheService {
         await _remove(cacheKey);
       }
 
-      LoggerService.debug(
-        '[CacheService] Cache invalidated for pattern: $pattern',
-      );
+      LoggerService.debug('[CacheService] Cache invalidated for pattern: $pattern');
     } catch (e) {
-      LoggerService.error(
-        '[CacheService] Error invalidating pattern',
-        error: e,
-      );
+      LoggerService.error('[CacheService] Error invalidating pattern', error: e);
     }
   }
 }

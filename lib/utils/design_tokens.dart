@@ -36,32 +36,20 @@ class DesignTokens {
   static const Color surfaceModalAlt = Color(0xFF0A0A0A);
 
   // Elevation System (Material Design 3)
-  static const List<BoxShadow> elevation1 = [
-    BoxShadow(color: Color(0x1A000000), blurRadius: 3, offset: Offset(0, 1)),
-  ];
+  static const List<BoxShadow> elevation1 = [BoxShadow(color: Color(0x1A000000), blurRadius: 3, offset: Offset(0, 1))];
 
-  static const List<BoxShadow> elevation2 = [
-    BoxShadow(color: Color(0x1A000000), blurRadius: 6, offset: Offset(0, 2)),
-  ];
+  static const List<BoxShadow> elevation2 = [BoxShadow(color: Color(0x1A000000), blurRadius: 6, offset: Offset(0, 2))];
 
-  static const List<BoxShadow> elevation3 = [
-    BoxShadow(color: Color(0x1A000000), blurRadius: 12, offset: Offset(0, 4)),
-  ];
+  static const List<BoxShadow> elevation3 = [BoxShadow(color: Color(0x1A000000), blurRadius: 12, offset: Offset(0, 4))];
 
-  static const List<BoxShadow> elevation4 = [
-    BoxShadow(color: Color(0x1A000000), blurRadius: 16, offset: Offset(0, 8)),
-  ];
+  static const List<BoxShadow> elevation4 = [BoxShadow(color: Color(0x1A000000), blurRadius: 16, offset: Offset(0, 8))];
 
   static const List<BoxShadow> elevation5 = [
     BoxShadow(color: Color(0x1A000000), blurRadius: 24, offset: Offset(0, 12)),
   ];
 
   // Custom Elevation untuk Cards
-  static List<BoxShadow> cardElevation({
-    Color? color,
-    double blurRadius = 15,
-    double spreadRadius = 2,
-  }) {
+  static List<BoxShadow> cardElevation({Color? color, double blurRadius = 15, double spreadRadius = 2}) {
     return [
       BoxShadow(
         color: (color ?? primaryColor).withValues(alpha: 0.3),
@@ -202,14 +190,7 @@ class DesignTokens {
   // Category Colors (can be extended)
   static Color getCategoryColor(String category) {
     // Default color scheme, can be customized per category
-    final colors = [
-      primaryColor,
-      secondaryColor,
-      successColor,
-      warningColor,
-      errorColor,
-      infoColor,
-    ];
+    final colors = [primaryColor, secondaryColor, successColor, warningColor, errorColor, infoColor];
     final index = category.hashCode % colors.length;
     return colors[index.abs()];
   }

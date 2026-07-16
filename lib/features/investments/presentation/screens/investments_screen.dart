@@ -72,11 +72,7 @@ class _InvestmentsScreenState extends State<InvestmentsScreen> {
     );
   }
 
-  Widget _buildHeader(
-    BuildContext context,
-    AppLocalizations? l10n,
-    InvestmentController c,
-  ) {
+  Widget _buildHeader(BuildContext context, AppLocalizations? l10n, InvestmentController c) {
     final totalValue = (c.summary['total_value'] as num?)?.toDouble() ?? 0.0;
     final totalPnL = (c.summary['total_pnl'] as num?)?.toDouble() ?? 0.0;
     final pnlPct = (c.summary['pnl_percentage'] as num?)?.toDouble() ?? 0.0;
@@ -90,10 +86,7 @@ class _InvestmentsScreenState extends State<InvestmentsScreen> {
           Row(
             children: [
               IconButton(
-                icon: const Icon(
-                  Iconsax.arrow_left,
-                  color: DesignTokens.textPrimaryDark,
-                ),
+                icon: const Icon(Iconsax.arrow_left, color: DesignTokens.textPrimaryDark),
                 onPressed: () => Navigator.pop(context),
               ),
               const SizedBox(width: 8),
@@ -110,7 +103,7 @@ class _InvestmentsScreenState extends State<InvestmentsScreen> {
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: DesignTokens.spacing3),
           Container(
             padding: const EdgeInsets.all(DesignTokens.spacing4),
             decoration: BoxDecoration(
@@ -123,12 +116,9 @@ class _InvestmentsScreenState extends State<InvestmentsScreen> {
               children: [
                 Text(
                   l10n?.total_amount ?? 'Total Nilai Portofolio',
-                  style: GoogleFonts.poppins(
-                    color: DesignTokens.textSecondaryDark,
-                    fontSize: 12,
-                  ),
+                  style: GoogleFonts.poppins(color: DesignTokens.textSecondaryDark, fontSize: 12),
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: DesignTokens.spacing1),
                 Text(
                   CurrencyFormatter.formatRupiah(totalValue.toInt()),
                   style: GoogleFonts.poppins(
@@ -137,27 +127,18 @@ class _InvestmentsScreenState extends State<InvestmentsScreen> {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: DesignTokens.spacing3),
                 Row(
                   children: [
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            'P&L',
-                            style: GoogleFonts.poppins(
-                              color: DesignTokens.textSecondaryDark,
-                              fontSize: 11,
-                            ),
-                          ),
+                          Text('P&L', style: GoogleFonts.poppins(color: DesignTokens.textSecondaryDark, fontSize: 11)),
                           Text(
                             '${positive ? '+' : ''}${CurrencyFormatter.formatRupiah(totalPnL.toInt())}',
                             style: GoogleFonts.poppins(
-                              color:
-                                  positive
-                                      ? DesignTokens.successColor
-                                      : DesignTokens.errorColor,
+                              color: positive ? DesignTokens.successColor : DesignTokens.errorColor,
                               fontSize: 14,
                               fontWeight: FontWeight.w600,
                             ),
@@ -166,26 +147,15 @@ class _InvestmentsScreenState extends State<InvestmentsScreen> {
                       ),
                     ),
                     Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 6,
-                      ),
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                       decoration: BoxDecoration(
-                        color: (positive
-                                ? DesignTokens.successColor
-                                : DesignTokens.errorColor)
-                            .withValues(alpha: 0.15),
-                        borderRadius: BorderRadius.circular(
-                          DesignTokens.radiusSmall,
-                        ),
+                        color: (positive ? DesignTokens.successColor : DesignTokens.errorColor).withValues(alpha: 0.15),
+                        borderRadius: BorderRadius.circular(DesignTokens.radiusSmall),
                       ),
                       child: Text(
                         '${positive ? '+' : ''}${pnlPct.toStringAsFixed(1)}%',
                         style: GoogleFonts.poppins(
-                          color:
-                              positive
-                                  ? DesignTokens.successColor
-                                  : DesignTokens.errorColor,
+                          color: positive ? DesignTokens.successColor : DesignTokens.errorColor,
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
                         ),
@@ -201,15 +171,8 @@ class _InvestmentsScreenState extends State<InvestmentsScreen> {
     );
   }
 
-  Widget _buildBody(
-    BuildContext context,
-    AppLocalizations? l10n,
-    InvestmentController c,
-  ) {
-    if (c.isLoading)
-      return Center(
-        child: CircularProgressIndicator(color: DesignTokens.primaryColor),
-      );
+  Widget _buildBody(BuildContext context, AppLocalizations? l10n, InvestmentController c) {
+    if (c.isLoading) return Center(child: CircularProgressIndicator(color: DesignTokens.primaryColor));
     if (c.errorMessage != null) return _buildError(context, l10n, c);
     if (c.investments.isEmpty) return _buildEmpty(context, l10n);
     return ListView.builder(
@@ -244,15 +207,9 @@ class _InvestmentsScreenState extends State<InvestmentsScreen> {
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
                   color: _getTypeColor(inv.type).withValues(alpha: 0.15),
-                  borderRadius: BorderRadius.circular(
-                    DesignTokens.radiusMedium,
-                  ),
+                  borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
                 ),
-                child: Icon(
-                  Iconsax.chart_success,
-                  color: _getTypeColor(inv.type),
-                  size: 20,
-                ),
+                child: Icon(Iconsax.chart_success, color: _getTypeColor(inv.type), size: 20),
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -269,10 +226,7 @@ class _InvestmentsScreenState extends State<InvestmentsScreen> {
                     ),
                     Text(
                       '${_getTypeLabel(inv.type)} • ${inv.quantity.toStringAsFixed(2)} unit',
-                      style: GoogleFonts.poppins(
-                        color: DesignTokens.textSecondaryDark,
-                        fontSize: 12,
-                      ),
+                      style: GoogleFonts.poppins(color: DesignTokens.textSecondaryDark, fontSize: 12),
                     ),
                   ],
                 ),
@@ -294,18 +248,12 @@ class _InvestmentsScreenState extends State<InvestmentsScreen> {
                       Icon(
                         positive ? Iconsax.arrow_up_1 : Iconsax.arrow_down,
                         size: 12,
-                        color:
-                            positive
-                                ? DesignTokens.successColor
-                                : DesignTokens.errorColor,
+                        color: positive ? DesignTokens.successColor : DesignTokens.errorColor,
                       ),
                       Text(
                         '${pnlPct.toStringAsFixed(1)}%',
                         style: GoogleFonts.poppins(
-                          color:
-                              positive
-                                  ? DesignTokens.successColor
-                                  : DesignTokens.errorColor,
+                          color: positive ? DesignTokens.successColor : DesignTokens.errorColor,
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
                         ),
@@ -316,14 +264,11 @@ class _InvestmentsScreenState extends State<InvestmentsScreen> {
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: DesignTokens.spacing3),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              _detail(
-                'Harga Beli',
-                CurrencyFormatter.formatRupiah(inv.buyPrice.toInt()),
-              ),
+              _detail('Harga Beli', CurrencyFormatter.formatRupiah(inv.buyPrice.toInt())),
               _detail(
                 l10n?.current_balance ?? 'Harga Saat Ini',
                 CurrencyFormatter.formatRupiah(inv.currentPrice.toInt()),
@@ -331,24 +276,17 @@ class _InvestmentsScreenState extends State<InvestmentsScreen> {
               _detail(
                 'P&L',
                 '${positive ? '+' : ''}${CurrencyFormatter.formatRupiah(pnl.toInt())}',
-                valueColor:
-                    positive
-                        ? DesignTokens.successColor
-                        : DesignTokens.errorColor,
+                valueColor: positive ? DesignTokens.successColor : DesignTokens.errorColor,
               ),
             ],
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: DesignTokens.spacing2),
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
               InkWell(
                 onTap: () => _delete(context, inv),
-                child: const Icon(
-                  Iconsax.trash,
-                  size: 16,
-                  color: DesignTokens.errorColor,
-                ),
+                child: const Icon(Iconsax.trash, size: 16, color: DesignTokens.errorColor),
               ),
             ],
           ),
@@ -360,13 +298,7 @@ class _InvestmentsScreenState extends State<InvestmentsScreen> {
   Widget _detail(String label, String value, {Color? valueColor}) => Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
-      Text(
-        label,
-        style: GoogleFonts.poppins(
-          color: DesignTokens.textTertiaryDark,
-          fontSize: 11,
-        ),
-      ),
+      Text(label, style: GoogleFonts.poppins(color: DesignTokens.textTertiaryDark, fontSize: 11)),
       Text(
         value,
         style: GoogleFonts.poppins(
@@ -399,68 +331,38 @@ class _InvestmentsScreenState extends State<InvestmentsScreen> {
     child: Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Icon(
-          Iconsax.chart_success,
-          size: 64,
-          color: DesignTokens.textTertiaryDark,
-        ),
-        const SizedBox(height: 16),
+        Icon(Iconsax.chart_success, size: 64, color: DesignTokens.textTertiaryDark),
+        const SizedBox(height: DesignTokens.spacing4),
         Text(
           l10n?.no_investments ?? 'Belum ada investasi',
-          style: GoogleFonts.poppins(
-            color: DesignTokens.textPrimaryDark,
-            fontSize: 18,
-            fontWeight: FontWeight.w600,
-          ),
+          style: GoogleFonts.poppins(color: DesignTokens.textPrimaryDark, fontSize: 18, fontWeight: FontWeight.w600),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: DesignTokens.spacing2),
         Text(
           'Tap + untuk menambah investasi baru',
-          style: GoogleFonts.poppins(
-            color: DesignTokens.textSecondaryDark,
-            fontSize: 14,
-          ),
+          style: GoogleFonts.poppins(color: DesignTokens.textSecondaryDark, fontSize: 14),
         ),
       ],
     ),
   );
 
-  Widget _buildError(
-    BuildContext context,
-    AppLocalizations? l10n,
-    InvestmentController c,
-  ) => Center(
+  Widget _buildError(BuildContext context, AppLocalizations? l10n, InvestmentController c) => Center(
     child: Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Icon(Iconsax.warning_2, size: 64, color: DesignTokens.errorColor),
-        const SizedBox(height: 16),
+        const SizedBox(height: DesignTokens.spacing4),
         Text(
           l10n?.error ?? 'Terjadi kesalahan',
-          style: GoogleFonts.poppins(
-            color: DesignTokens.textPrimaryDark,
-            fontSize: 18,
-            fontWeight: FontWeight.w600,
-          ),
+          style: GoogleFonts.poppins(color: DesignTokens.textPrimaryDark, fontSize: 18, fontWeight: FontWeight.w600),
         ),
-        const SizedBox(height: 8),
-        Text(
-          c.errorMessage ?? '',
-          style: GoogleFonts.poppins(
-            color: DesignTokens.textSecondaryDark,
-            fontSize: 14,
-          ),
-        ),
-        const SizedBox(height: 16),
+        const SizedBox(height: DesignTokens.spacing2),
+        Text(c.errorMessage ?? '', style: GoogleFonts.poppins(color: DesignTokens.textSecondaryDark, fontSize: 14)),
+        const SizedBox(height: DesignTokens.spacing4),
         ElevatedButton(
           onPressed: c.refresh,
-          style: ElevatedButton.styleFrom(
-            backgroundColor: DesignTokens.primaryColor,
-          ),
-          child: Text(
-            l10n?.retry ?? 'Coba Lagi',
-            style: GoogleFonts.poppins(color: Colors.white),
-          ),
+          style: ElevatedButton.styleFrom(backgroundColor: DesignTokens.primaryColor),
+          child: Text(l10n?.retry ?? 'Coba Lagi', style: GoogleFonts.poppins(color: Colors.white)),
         ),
       ],
     ),
@@ -471,14 +373,8 @@ class _InvestmentsScreenState extends State<InvestmentsScreen> {
       context: context,
       backgroundColor: DesignTokens.backgroundDark,
       isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder:
-          (context) => AddInvestmentModal(
-            onInvestmentAdded:
-                () => context.read<InvestmentController>().refresh(),
-          ),
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      builder: (context) => AddInvestmentModal(onInvestmentAdded: () => context.read<InvestmentController>().refresh()),
     );
   }
 
@@ -498,24 +394,14 @@ class _InvestmentsScreenState extends State<InvestmentsScreen> {
               ),
             ),
             content: Text(
-              l10n?.delete_investment_confirm ??
-                  'Yakin ingin menghapus investasi ini?',
-              style: GoogleFonts.poppins(
-                color: DesignTokens.textSecondaryDark,
-                fontSize: 13,
-              ),
+              l10n?.delete_investment_confirm ?? 'Yakin ingin menghapus investasi ini?',
+              style: GoogleFonts.poppins(color: DesignTokens.textSecondaryDark, fontSize: 13),
             ),
             actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(ctx, false),
-                child: Text(l10n?.cancel ?? 'Batal'),
-              ),
+              TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text(l10n?.cancel ?? 'Batal')),
               TextButton(
                 onPressed: () => Navigator.pop(ctx, true),
-                child: Text(
-                  l10n?.delete ?? 'Hapus',
-                  style: const TextStyle(color: DesignTokens.errorColor),
-                ),
+                child: Text(l10n?.delete ?? 'Hapus', style: const TextStyle(color: DesignTokens.errorColor)),
               ),
             ],
           ),
@@ -530,10 +416,7 @@ class _InvestmentsScreenState extends State<InvestmentsScreen> {
         );
       } catch (e) {
         if (!mounted) return;
-        ErrorHandlerService.showErrorSnackbar(
-          context,
-          ErrorHandlerService.getUserFriendlyMessage(e),
-        );
+        ErrorHandlerService.showErrorSnackbar(context, ErrorHandlerService.getUserFriendlyMessage(e));
       }
     }
   }

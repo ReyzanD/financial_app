@@ -61,11 +61,7 @@ class CategoryBreakdown {
   final double amount;
   final double percentOfIncome;
 
-  const CategoryBreakdown({
-    required this.name,
-    required this.amount,
-    required this.percentOfIncome,
-  });
+  const CategoryBreakdown({required this.name, required this.amount, required this.percentOfIncome});
 }
 
 class GoalRunRate {
@@ -159,29 +155,17 @@ class FinancialAdvisorService {
   /// Run the full 50/30/20 analysis for the current month.
   Future<FiftyThirtyTwentyAnalysis> analyzeCurrentMonth() async {
     final now = DateTime.now();
-    return analyzeForPeriod(
-      start: DateTime(now.year, now.month, 1),
-      end: DateTime(now.year, now.month + 1, 0),
-    );
+    return analyzeForPeriod(start: DateTime(now.year, now.month, 1), end: DateTime(now.year, now.month + 1, 0));
   }
 
   /// Run 50/30/20 analysis for a specific date range.
-  Future<FiftyThirtyTwentyAnalysis> analyzeForPeriod({
-    required DateTime start,
-    required DateTime end,
-  }) async {
+  Future<FiftyThirtyTwentyAnalysis> analyzeForPeriod({required DateTime start, required DateTime end}) async {
     try {
       final startStr = start.toIso8601String().split('T')[0];
       final endStr = end.toIso8601String().split('T')[0];
 
-      final txData = await _transactionData.getTransactions(
-        startDate: startStr,
-        endDate: endStr,
-        limit: 5000,
-      );
-      final transactions = List<Map<String, dynamic>>.from(
-        txData['transactions'] ?? [],
-      );
+      final txData = await _transactionData.getTransactions(startDate: startStr, endDate: endStr, limit: 5000);
+      final transactions = List<Map<String, dynamic>>.from(txData['transactions'] ?? []);
 
       final goalRunRates = await _computeGoalRunRates();
 
@@ -223,16 +207,9 @@ class FinancialAdvisorService {
     final wantsMap = <String, double>{};
 
     for (final tx in transactions) {
-      final amount =
-          (tx['amount_232143'] as num?)?.toDouble() ??
-          (tx['amount'] as num?)?.toDouble() ??
-          0.0;
-      final type =
-          tx['type_232143']?.toString() ?? tx['type']?.toString() ?? 'expense';
-      final category =
-          tx['category_name']?.toString() ??
-          tx['category']?.toString() ??
-          'Lainnya';
+      final amount = (tx['amount_232143'] as num?)?.toDouble() ?? (tx['amount'] as num?)?.toDouble() ?? 0.0;
+      final type = tx['type_232143']?.toString() ?? tx['type']?.toString() ?? 'expense';
+      final category = tx['category_name']?.toString() ?? tx['category']?.toString() ?? 'Lainnya';
 
       if (type == 'income') {
         monthlyIncome += amount;
@@ -259,12 +236,9 @@ class FinancialAdvisorService {
     final savingsTarget = monthlyIncome * 0.20;
 
     // Percentages
-    final needsPercent =
-        monthlyIncome > 0 ? (needsActual / monthlyIncome) * 100 : 0.0;
-    final wantsPercent =
-        monthlyIncome > 0 ? (wantsActual / monthlyIncome) * 100 : 0.0;
-    final savingsPercent =
-        monthlyIncome > 0 ? (savings / monthlyIncome) * 100 : 0.0;
+    final needsPercent = monthlyIncome > 0 ? (needsActual / monthlyIncome) * 100 : 0.0;
+    final wantsPercent = monthlyIncome > 0 ? (wantsActual / monthlyIncome) * 100 : 0.0;
+    final savingsPercent = monthlyIncome > 0 ? (savings / monthlyIncome) * 100 : 0.0;
 
     // Gap analysis (positive = over budget)
     final needsGap = needsActual - needsTarget;
@@ -278,8 +252,7 @@ class FinancialAdvisorService {
               (e) => CategoryBreakdown(
                 name: e.key,
                 amount: e.value,
-                percentOfIncome:
-                    monthlyIncome > 0 ? (e.value / monthlyIncome) * 100 : 0.0,
+                percentOfIncome: monthlyIncome > 0 ? (e.value / monthlyIncome) * 100 : 0.0,
               ),
             )
             .toList()
@@ -291,8 +264,7 @@ class FinancialAdvisorService {
               (e) => CategoryBreakdown(
                 name: e.key,
                 amount: e.value,
-                percentOfIncome:
-                    monthlyIncome > 0 ? (e.value / monthlyIncome) * 100 : 0.0,
+                percentOfIncome: monthlyIncome > 0 ? (e.value / monthlyIncome) * 100 : 0.0,
               ),
             )
             .toList()
@@ -326,10 +298,7 @@ class FinancialAdvisorService {
 
       for (final goal in goals) {
         final monthlyContribution = goal.monthlyTarget ?? 0.0;
-        final progressPercent =
-            goal.targetAmount > 0
-                ? (goal.currentAmount / goal.targetAmount) * 100
-                : 0.0;
+        final progressPercent = goal.targetAmount > 0 ? (goal.currentAmount / goal.targetAmount) * 100 : 0.0;
 
         int monthsToGoal = -1;
         if (monthlyContribution > 0) {
@@ -402,9 +371,7 @@ class FinancialAdvisorService {
     if (analysis.goalRunRates.isNotEmpty) {
       final onTrack = analysis.goalRunRates.where((g) => g.monthsToGoal >= 0);
       if (onTrack.isNotEmpty) {
-        final soonest = onTrack.reduce(
-          (a, b) => a.monthsToGoal < b.monthsToGoal ? a : b,
-        );
+        final soonest = onTrack.reduce((a, b) => a.monthsToGoal < b.monthsToGoal ? a : b);
         parts.add(
           'Goal terdekat: "${soonest.name}" tercapai dalam '
           '${soonest.monthsToGoal} bulan.',
@@ -419,9 +386,7 @@ class FinancialAdvisorService {
   ///
   /// Identifies overspent categories and estimates how much the user could
   /// save each month by bringing spending back to target levels.
-  static List<SavingsSuggestion> generateSuggestions(
-    FiftyThirtyTwentyAnalysis analysis,
-  ) {
+  static List<SavingsSuggestion> generateSuggestions(FiftyThirtyTwentyAnalysis analysis) {
     if (analysis.monthlyIncome <= 0) return [];
 
     final suggestions = <SavingsSuggestion>[];
@@ -449,15 +414,10 @@ class FinancialAdvisorService {
     // If overall needs > 50%, add an aggregate suggestion for the top category
     if (analysis.needsGap > 0 && analysis.needsCategories.isNotEmpty) {
       final topNeed = analysis.needsCategories.first;
-      final alreadySuggested = suggestions.any(
-        (s) => s.categoryName == topNeed.name,
-      );
+      final alreadySuggested = suggestions.any((s) => s.categoryName == topNeed.name);
       if (!alreadySuggested) {
         // Suggest reducing the top need category by a portion of the gap
-        final reduction = (analysis.needsGap * 0.5).clamp(
-          0.0,
-          topNeed.amount * 0.3,
-        );
+        final reduction = (analysis.needsGap * 0.5).clamp(0.0, topNeed.amount * 0.3);
         if (reduction > 10000) {
           suggestions.add(
             SavingsSuggestion(
@@ -497,14 +457,9 @@ class FinancialAdvisorService {
     // If overall wants > 30%, add aggregate
     if (analysis.wantsGap > 0 && analysis.wantsCategories.isNotEmpty) {
       final topWant = analysis.wantsCategories.first;
-      final alreadySuggested = suggestions.any(
-        (s) => s.categoryName == topWant.name,
-      );
+      final alreadySuggested = suggestions.any((s) => s.categoryName == topWant.name);
       if (!alreadySuggested) {
-        final reduction = (analysis.wantsGap * 0.5).clamp(
-          0.0,
-          topWant.amount * 0.3,
-        );
+        final reduction = (analysis.wantsGap * 0.5).clamp(0.0, topWant.amount * 0.3);
         if (reduction > 10000) {
           suggestions.add(
             SavingsSuggestion(
@@ -522,9 +477,7 @@ class FinancialAdvisorService {
     }
 
     // Sort by potential savings descending, take top 5
-    suggestions.sort(
-      (a, b) => b.potentialMonthlySavings.compareTo(a.potentialMonthlySavings),
-    );
+    suggestions.sort((a, b) => b.potentialMonthlySavings.compareTo(a.potentialMonthlySavings));
     return suggestions.take(5).toList();
   }
 

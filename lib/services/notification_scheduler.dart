@@ -24,9 +24,7 @@ class NotificationScheduler {
 
   Future<void> scheduleSubscriptionNotifications() async {
     try {
-      final subscriptions = await _obligationData.getObligations(
-        type: 'subscription',
-      );
+      final subscriptions = await _obligationData.getObligations(type: 'subscription');
 
       for (final sub in subscriptions) {
         if (sub.dueDate.isAfter(DateTime.now())) {
@@ -39,10 +37,7 @@ class NotificationScheduler {
         }
       }
     } catch (e) {
-      LoggerService.error(
-        'Error scheduling subscription notifications',
-        error: e,
-      );
+      LoggerService.error('Error scheduling subscription notifications', error: e);
     }
   }
 
@@ -97,8 +92,7 @@ class NotificationScheduler {
 
       for (final split in splits) {
         if (!split.isSettled) {
-          final daysSinceCreated =
-              DateTime.now().difference(split.createdAt).inDays;
+          final daysSinceCreated = DateTime.now().difference(split.createdAt).inDays;
 
           if (daysSinceCreated > 7) {
             await _notifications.sendSplitPaymentReminder(

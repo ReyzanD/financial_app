@@ -27,10 +27,8 @@ class FinancialSummaryCard extends StatefulWidget {
   }
 }
 
-class _FinancialSummaryCardState extends State<FinancialSummaryCard>
-    with SingleTickerProviderStateMixin {
-  final TransactionDataService _transactionData =
-      getIt<TransactionDataService>();
+class _FinancialSummaryCardState extends State<FinancialSummaryCard> with SingleTickerProviderStateMixin {
+  final TransactionDataService _transactionData = getIt<TransactionDataService>();
   final FinancialCalculator _calculator = FinancialCalculator();
   Map<String, dynamic>? _summary;
   bool _isLoading = true;
@@ -44,14 +42,8 @@ class _FinancialSummaryCardState extends State<FinancialSummaryCard>
   @override
   void initState() {
     super.initState();
-    _animationController = AnimationController(
-      duration: const Duration(milliseconds: 600),
-      vsync: this,
-    );
-    _fadeAnimation = CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.easeInOut,
-    );
+    _animationController = AnimationController(duration: const Duration(milliseconds: 600), vsync: this);
+    _fadeAnimation = CurvedAnimation(parent: _animationController, curve: Curves.easeInOut);
 
     // Delay initial load slightly to ensure context is ready
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -84,10 +76,7 @@ class _FinancialSummaryCardState extends State<FinancialSummaryCard>
     }
 
     try {
-      final summary = await _transactionData.getFinancialSummary(
-        year: _selectedDate.year,
-        month: _selectedDate.month,
-      );
+      final summary = await _transactionData.getFinancialSummary(year: _selectedDate.year, month: _selectedDate.month);
 
       if (mounted) {
         setState(() {
@@ -102,9 +91,7 @@ class _FinancialSummaryCardState extends State<FinancialSummaryCard>
         final l10n = AppLocalizations.of(context);
         setState(() {
           _isLoading = false;
-          _errorMessage =
-              l10n?.failed_to_load_transactions ??
-              'Gagal memuat data. Tap untuk coba lagi.';
+          _errorMessage = l10n?.failed_to_load_transactions ?? 'Gagal memuat data. Tap untuk coba lagi.';
         });
       }
     }
@@ -141,15 +128,9 @@ class _FinancialSummaryCardState extends State<FinancialSummaryCard>
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        borderRadius: BorderRadius.circular(
-          ResponsiveHelper.borderRadius(context, 20),
-        ),
+        borderRadius: BorderRadius.circular(ResponsiveHelper.borderRadius(context, 20)),
         boxShadow: [
-          BoxShadow(
-            color: DesignTokens.primaryColor.withValues(alpha: 0.3),
-            blurRadius: 15,
-            spreadRadius: 2,
-          ),
+          BoxShadow(color: DesignTokens.primaryColor.withValues(alpha: 0.3), blurRadius: 15, spreadRadius: 2),
         ],
       ),
       child: Shimmer.fromColors(
@@ -162,10 +143,7 @@ class _FinancialSummaryCardState extends State<FinancialSummaryCard>
             Container(
               height: 12,
               width: 100,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(6),
-              ),
+              decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(6)),
             ),
             SizedBox(height: ResponsiveHelper.verticalSpacing(context, 16)),
             // Balance placeholder
@@ -186,23 +164,17 @@ class _FinancialSummaryCardState extends State<FinancialSummaryCard>
                     height: ResponsiveHelper.cardHeight(context, 72),
                     decoration: BoxDecoration(
                       color: Colors.white,
-                      borderRadius: BorderRadius.circular(
-                        ResponsiveHelper.borderRadius(context, 12),
-                      ),
+                      borderRadius: BorderRadius.circular(ResponsiveHelper.borderRadius(context, 12)),
                     ),
                   ),
                 ),
-                SizedBox(
-                  width: ResponsiveHelper.horizontalSpacing(context, 12),
-                ),
+                SizedBox(width: ResponsiveHelper.horizontalSpacing(context, 12)),
                 Expanded(
                   child: Container(
                     height: ResponsiveHelper.cardHeight(context, 72),
                     decoration: BoxDecoration(
                       color: Colors.white,
-                      borderRadius: BorderRadius.circular(
-                        ResponsiveHelper.borderRadius(context, 12),
-                      ),
+                      borderRadius: BorderRadius.circular(ResponsiveHelper.borderRadius(context, 12)),
                     ),
                   ),
                 ),
@@ -219,9 +191,7 @@ class _FinancialSummaryCardState extends State<FinancialSummaryCard>
     super.didUpdateWidget(oldWidget);
     // Reload when widget is rebuilt with new key
     if (widget.key != oldWidget.key) {
-      LoggerService.debug(
-        '[FinancialSummaryCard] Widget key changed, reloading data',
-      );
+      LoggerService.debug('[FinancialSummaryCard] Widget key changed, reloading data');
       _loadFinancialSummary();
     }
   }
@@ -230,9 +200,7 @@ class _FinancialSummaryCardState extends State<FinancialSummaryCard>
   Widget build(BuildContext context) {
     return NotificationListener<DataRefreshNotification>(
       onNotification: (notification) {
-        LoggerService.debug(
-          'FinancialSummaryCard received refresh notification',
-        );
+        LoggerService.debug('FinancialSummaryCard received refresh notification');
         _loadFinancialSummary();
         return true;
       },
@@ -258,36 +226,23 @@ class _FinancialSummaryCardState extends State<FinancialSummaryCard>
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
-            borderRadius: BorderRadius.circular(
-              ResponsiveHelper.borderRadius(context, 20),
-            ),
+            borderRadius: BorderRadius.circular(ResponsiveHelper.borderRadius(context, 20)),
             boxShadow: [
-              BoxShadow(
-                color: DesignTokens.primaryColor.withValues(alpha: 0.3),
-                blurRadius: 15,
-                spreadRadius: 2,
-              ),
+              BoxShadow(color: DesignTokens.primaryColor.withValues(alpha: 0.3), blurRadius: 15, spreadRadius: 2),
             ],
           ),
           child: Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(
-                  Icons.error_outline,
-                  color: Colors.white,
-                  size: ResponsiveHelper.iconSize(context, 48),
-                ),
+                Icon(Icons.error_outline, color: Colors.white, size: ResponsiveHelper.iconSize(context, 48)),
                 SizedBox(height: ResponsiveHelper.verticalSpacing(context, 12)),
                 Semantics(
                   liveRegion: true,
                   child: Text(
                     _errorMessage!,
                     textAlign: TextAlign.center,
-                    style: GoogleFonts.poppins(
-                      color: Colors.white70,
-                      fontSize: ResponsiveHelper.fontSize(context, 14),
-                    ),
+                    style: GoogleFonts.poppins(color: Colors.white70, fontSize: ResponsiveHelper.fontSize(context, 14)),
                   ),
                 ),
               ],
@@ -298,37 +253,26 @@ class _FinancialSummaryCardState extends State<FinancialSummaryCard>
     }
 
     final Map<String, dynamic> summaries = _summary?['summary'] ?? {};
-    final income =
-        (summaries['income'] as Map<String, dynamic>?)?['total_amount'] ?? 0.0;
-    final expense =
-        (summaries['expense'] as Map<String, dynamic>?)?['total_amount'] ?? 0.0;
+    final income = (summaries['income'] as Map<String, dynamic>?)?['total_amount'] ?? 0.0;
+    final expense = (summaries['expense'] as Map<String, dynamic>?)?['total_amount'] ?? 0.0;
 
     // Use FinancialCalculator for accurate balance calculation
     final incomeDouble = (income is num) ? income.toDouble() : 0.0;
     final expenseDouble = (expense is num) ? expense.toDouble() : 0.0;
 
-    final balanceData = _calculator.calculateBalance(
-      income: incomeDouble,
-      expenses: expenseDouble,
-    );
+    final balanceData = _calculator.calculateBalance(income: incomeDouble, expenses: expenseDouble);
 
     // Handle Money object or double for backward compatibility
     final balanceMoney = balanceData['balance'] as Money?;
     final balanceAmount =
-        balanceMoney != null
-            ? balanceMoney.minorUnits.toDouble()
-            : (balanceData['balanceAmount'] as double? ?? 0.0);
+        balanceMoney != null ? balanceMoney.minorUnits.toDouble() : (balanceData['balanceAmount'] as double? ?? 0.0);
     final actualBalance = balanceAmount;
-    final balance =
-        actualBalance < 0 ? 0.0 : actualBalance; // Display as 0 if negative
+    final balance = actualBalance < 0 ? 0.0 : actualBalance; // Display as 0 if negative
     final isNegative = balanceData['isNegative'] as bool;
     final warning = balanceData['warning'] as String?;
 
     // Calculate savings rate
-    final savingsRate = _calculator.calculateSavingsRate(
-      income: incomeDouble,
-      expenses: expenseDouble,
-    );
+    final savingsRate = _calculator.calculateSavingsRate(income: incomeDouble, expenses: expenseDouble);
 
     // Calculate financial health score with inflation and tax rates
     final healthScore = _calculator.calculateFinancialHealthScore(
@@ -341,12 +285,7 @@ class _FinancialSummaryCardState extends State<FinancialSummaryCard>
 
     LoggerService.debug(
       'Financial summary calculated',
-      error: {
-        'income': income,
-        'expense': expense,
-        'balance': balance,
-        'actualBalance': actualBalance,
-      },
+      error: {'income': income, 'expense': expense, 'balance': balance, 'actualBalance': actualBalance},
     );
 
     return FadeTransition(
@@ -359,15 +298,9 @@ class _FinancialSummaryCardState extends State<FinancialSummaryCard>
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
-          borderRadius: BorderRadius.circular(
-            ResponsiveHelper.borderRadius(context, 20),
-          ),
+          borderRadius: BorderRadius.circular(ResponsiveHelper.borderRadius(context, 20)),
           boxShadow: [
-            BoxShadow(
-              color: DesignTokens.primaryColor.withValues(alpha: 0.3),
-              blurRadius: 15,
-              spreadRadius: 2,
-            ),
+            BoxShadow(color: DesignTokens.primaryColor.withValues(alpha: 0.3), blurRadius: 15, spreadRadius: 2),
           ],
         ),
         child: Column(
@@ -378,27 +311,16 @@ class _FinancialSummaryCardState extends State<FinancialSummaryCard>
               children: [
                 Text(
                   'Saldo Bulan Ini',
-                  style: GoogleFonts.poppins(
-                    color: Colors.white70,
-                    fontSize: ResponsiveHelper.fontSize(context, 14),
-                  ),
+                  style: GoogleFonts.poppins(color: Colors.white70, fontSize: ResponsiveHelper.fontSize(context, 14)),
                 ),
                 GestureDetector(
                   onTap: _showMonthPicker,
                   child: Container(
-                    padding: ResponsiveHelper.symmetricPadding(
-                      context,
-                      horizontal: 12,
-                      vertical: 6,
-                    ),
+                    padding: ResponsiveHelper.symmetricPadding(context, horizontal: 12, vertical: 6),
                     decoration: BoxDecoration(
                       color: Colors.white.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(
-                        ResponsiveHelper.borderRadius(context, 20),
-                      ),
-                      border: Border.all(
-                        color: Colors.white.withValues(alpha: 0.2),
-                      ),
+                      borderRadius: BorderRadius.circular(ResponsiveHelper.borderRadius(context, 20)),
+                      border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
@@ -411,9 +333,7 @@ class _FinancialSummaryCardState extends State<FinancialSummaryCard>
                             fontWeight: FontWeight.w500,
                           ),
                         ),
-                        SizedBox(
-                          width: ResponsiveHelper.horizontalSpacing(context, 4),
-                        ),
+                        SizedBox(width: ResponsiveHelper.horizontalSpacing(context, 4)),
                         Icon(
                           Icons.calendar_today_rounded,
                           color: Colors.white,
@@ -437,29 +357,17 @@ class _FinancialSummaryCardState extends State<FinancialSummaryCard>
             if (isNegative && warning != null) ...[
               SizedBox(height: ResponsiveHelper.verticalSpacing(context, 8)),
               Container(
-                padding: ResponsiveHelper.symmetricPadding(
-                  context,
-                  horizontal: 12,
-                  vertical: 6,
-                ),
+                padding: ResponsiveHelper.symmetricPadding(context, horizontal: 12, vertical: 6),
                 decoration: BoxDecoration(
                   color: Colors.red.withValues(alpha: 0.2),
-                  borderRadius: BorderRadius.circular(
-                    ResponsiveHelper.borderRadius(context, 12),
-                  ),
+                  borderRadius: BorderRadius.circular(ResponsiveHelper.borderRadius(context, 12)),
                   border: Border.all(color: Colors.red.withValues(alpha: 0.5)),
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(
-                      Iconsax.warning_2,
-                      color: Colors.red,
-                      size: ResponsiveHelper.iconSize(context, 16),
-                    ),
-                    SizedBox(
-                      width: ResponsiveHelper.horizontalSpacing(context, 6),
-                    ),
+                    Icon(Iconsax.warning_2, color: Colors.red, size: ResponsiveHelper.iconSize(context, 16)),
+                    SizedBox(width: ResponsiveHelper.horizontalSpacing(context, 6)),
                     Flexible(
                       child: Text(
                         warning,
@@ -488,9 +396,7 @@ class _FinancialSummaryCardState extends State<FinancialSummaryCard>
                     icon: Icons.trending_up_rounded,
                   ),
                 ),
-                SizedBox(
-                  width: ResponsiveHelper.horizontalSpacing(context, 12),
-                ),
+                SizedBox(width: ResponsiveHelper.horizontalSpacing(context, 12)),
                 Expanded(
                   child: _buildFinanceItem(
                     title: l10n?.expense ?? 'Pengeluaran',
@@ -519,9 +425,7 @@ class _FinancialSummaryCardState extends State<FinancialSummaryCard>
                     icon: Iconsax.wallet_3,
                   ),
                 ),
-                SizedBox(
-                  width: ResponsiveHelper.horizontalSpacing(context, 12),
-                ),
+                SizedBox(width: ResponsiveHelper.horizontalSpacing(context, 12)),
                 Expanded(
                   child: _buildMetricItem(
                     title: 'Skor Kesehatan',
@@ -544,20 +448,7 @@ class _FinancialSummaryCardState extends State<FinancialSummaryCard>
   }
 
   String _getMonthName(int month) {
-    const months = [
-      'Jan',
-      'Feb',
-      'Mar',
-      'Apr',
-      'Mei',
-      'Jun',
-      'Jul',
-      'Agu',
-      'Sep',
-      'Okt',
-      'Nov',
-      'Des',
-    ];
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
     return months[month - 1];
   }
 
@@ -568,16 +459,10 @@ class _FinancialSummaryCardState extends State<FinancialSummaryCard>
     required IconData icon,
   }) {
     return Container(
-      padding: ResponsiveHelper.symmetricPadding(
-        context,
-        horizontal: 12,
-        vertical: 8,
-      ),
+      padding: ResponsiveHelper.symmetricPadding(context, horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
         color: Colors.white.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(
-          ResponsiveHelper.borderRadius(context, 12),
-        ),
+        borderRadius: BorderRadius.circular(ResponsiveHelper.borderRadius(context, 12)),
         border: Border.all(color: color.withValues(alpha: 0.3)),
       ),
       child: Column(
@@ -586,19 +471,12 @@ class _FinancialSummaryCardState extends State<FinancialSummaryCard>
           Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(
-                icon,
-                color: color,
-                size: ResponsiveHelper.iconSize(context, 16),
-              ),
+              Icon(icon, color: color, size: ResponsiveHelper.iconSize(context, 16)),
               SizedBox(width: ResponsiveHelper.horizontalSpacing(context, 6)),
               Flexible(
                 child: Text(
                   title,
-                  style: GoogleFonts.poppins(
-                    color: Colors.white70,
-                    fontSize: ResponsiveHelper.fontSize(context, 10),
-                  ),
+                  style: GoogleFonts.poppins(color: Colors.white70, fontSize: ResponsiveHelper.fontSize(context, 10)),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -632,24 +510,15 @@ class _FinancialSummaryCardState extends State<FinancialSummaryCard>
         padding: ResponsiveHelper.padding(context, multiplier: 0.75),
         decoration: BoxDecoration(
           color: Colors.white.withValues(alpha: 0.08),
-          borderRadius: BorderRadius.circular(
-            ResponsiveHelper.borderRadius(context, 12),
-          ),
+          borderRadius: BorderRadius.circular(ResponsiveHelper.borderRadius(context, 12)),
           border: Border.all(color: color.withValues(alpha: 0.3), width: 1),
         ),
         child: Column(
           children: [
             Container(
               padding: ResponsiveHelper.padding(context, multiplier: 0.625),
-              decoration: BoxDecoration(
-                color: color.withValues(alpha: 0.15),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                icon,
-                color: color,
-                size: ResponsiveHelper.iconSize(context, 22),
-              ),
+              decoration: BoxDecoration(color: color.withValues(alpha: 0.15), shape: BoxShape.circle),
+              child: Icon(icon, color: color, size: ResponsiveHelper.iconSize(context, 22)),
             ),
             SizedBox(height: ResponsiveHelper.verticalSpacing(context, 10)),
             Text(

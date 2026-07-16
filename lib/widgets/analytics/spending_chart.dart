@@ -22,10 +22,7 @@ class _SpendingChartState extends State<SpendingChart> {
     final now = DateTime.now();
     final dailySpending = _computeDailySpending(now);
 
-    final maxSpending = dailySpending.values.fold<double>(
-      0,
-      (max, val) => val > max ? val : max,
-    );
+    final maxSpending = dailySpending.values.fold<double>(0, (max, val) => val > max ? val : max);
 
     // Compute a reasonable max Y from income data when there's no spending
     final avgIncome = widget.transactions
@@ -49,16 +46,12 @@ class _SpendingChartState extends State<SpendingChart> {
               Expanded(
                 child: Text(
                   'Tren Pengeluaran ($_selectedPeriod Hari Terakhir)',
-                  style: GoogleFonts.poppins(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                  ),
+                  style: GoogleFonts.poppins(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: DesignTokens.spacing3),
           // Period selector chips
           Row(
             children:
@@ -69,37 +62,18 @@ class _SpendingChartState extends State<SpendingChart> {
                     child: GestureDetector(
                       onTap: () => setState(() => _selectedPeriod = period),
                       child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 6,
-                        ),
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
                         decoration: BoxDecoration(
-                          color:
-                              isSelected
-                                  ? DesignTokens.primaryColor.withValues(
-                                    alpha: 0.2,
-                                  )
-                                  : Colors.transparent,
+                          color: isSelected ? DesignTokens.primaryColor.withValues(alpha: 0.2) : Colors.transparent,
                           borderRadius: BorderRadius.circular(20),
-                          border: Border.all(
-                            color:
-                                isSelected
-                                    ? DesignTokens.primaryColor
-                                    : DesignTokens.borderDark,
-                          ),
+                          border: Border.all(color: isSelected ? DesignTokens.primaryColor : DesignTokens.borderDark),
                         ),
                         child: Text(
                           '$period Hari',
                           style: GoogleFonts.poppins(
-                            color:
-                                isSelected
-                                    ? DesignTokens.primaryColor
-                                    : Colors.white70,
+                            color: isSelected ? DesignTokens.primaryColor : Colors.white70,
                             fontSize: 12,
-                            fontWeight:
-                                isSelected
-                                    ? FontWeight.w600
-                                    : FontWeight.normal,
+                            fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
                           ),
                         ),
                       ),
@@ -107,7 +81,7 @@ class _SpendingChartState extends State<SpendingChart> {
                   );
                 }).toList(),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: DesignTokens.spacing4),
           SizedBox(
             height: 200,
             child: BarChart(
@@ -134,36 +108,24 @@ class _SpendingChartState extends State<SpendingChart> {
                         if (value == 0) return const SizedBox();
                         return Text(
                           '${(value / 1000).toStringAsFixed(0)}k',
-                          style: GoogleFonts.poppins(
-                            color: Colors.grey[500],
-                            fontSize: 10,
-                          ),
+                          style: GoogleFonts.poppins(color: Colors.grey[500], fontSize: 10),
                         );
                       },
                     ),
                   ),
-                  topTitles: const AxisTitles(
-                    sideTitles: SideTitles(showTitles: false),
-                  ),
-                  rightTitles: const AxisTitles(
-                    sideTitles: SideTitles(showTitles: false),
-                  ),
+                  topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                  rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
                 ),
                 gridData: FlGridData(
                   show: true,
                   drawVerticalLine: false,
                   getDrawingHorizontalLine: (value) {
-                    return FlLine(
-                      color: DesignTokens.borderDark,
-                      strokeWidth: 1,
-                    );
+                    return FlLine(color: DesignTokens.borderDark, strokeWidth: 1);
                   },
                 ),
                 borderData: FlBorderData(show: false),
                 barGroups:
-                    dailySpending.entries.toList().asMap().entries.map((
-                      idxEntry,
-                    ) {
+                    dailySpending.entries.toList().asMap().entries.map((idxEntry) {
                       final spending = idxEntry.value.value;
                       final barWidth =
                           _selectedPeriod >= 90
@@ -178,9 +140,7 @@ class _SpendingChartState extends State<SpendingChart> {
                             toY: spending,
                             color: DesignTokens.primaryColor,
                             width: barWidth,
-                            borderRadius: const BorderRadius.vertical(
-                              top: Radius.circular(4),
-                            ),
+                            borderRadius: const BorderRadius.vertical(top: Radius.circular(4)),
                           ),
                         ],
                       );
@@ -213,9 +173,7 @@ class _SpendingChartState extends State<SpendingChart> {
           final daysAgo = now.difference(transDate).inDays;
 
           if (daysAgo >= 0 && daysAgo < _selectedPeriod) {
-            final amount =
-                double.tryParse(transaction['amount']?.toString() ?? '0') ??
-                0.0;
+            final amount = double.tryParse(transaction['amount']?.toString() ?? '0') ?? 0.0;
             final dayKey = transDate.toIso8601String().substring(0, 10);
             dailySpending[dayKey] = (dailySpending[dayKey] ?? 0) + amount;
           }
@@ -252,40 +210,17 @@ class _SpendingChartState extends State<SpendingChart> {
     final month = parts[1];
     final day = parts[2];
 
-    const months = [
-      '',
-      'Jan',
-      'Feb',
-      'Mar',
-      'Apr',
-      'Mei',
-      'Jun',
-      'Jul',
-      'Agu',
-      'Sep',
-      'Okt',
-      'Nov',
-      'Des',
-    ];
+    const months = ['', 'Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
     final monthLabel =
-        int.tryParse(month) != null &&
-                int.parse(month) >= 1 &&
-                int.parse(month) <= 12
+        int.tryParse(month) != null && int.parse(month) >= 1 && int.parse(month) <= 12
             ? months[int.parse(month)]
             : month;
 
-    final label =
-        _selectedPeriod >= 90 ? '$monthLabel $day' : '$monthLabel $day';
+    final label = _selectedPeriod >= 90 ? '$monthLabel $day' : '$monthLabel $day';
 
     return Padding(
       padding: const EdgeInsets.only(top: 4),
-      child: Text(
-        label,
-        style: GoogleFonts.poppins(
-          color: Colors.grey[500],
-          fontSize: _selectedPeriod >= 90 ? 8 : 10,
-        ),
-      ),
+      child: Text(label, style: GoogleFonts.poppins(color: Colors.grey[500], fontSize: _selectedPeriod >= 90 ? 8 : 10)),
     );
   }
 }

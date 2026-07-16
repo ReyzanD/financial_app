@@ -78,10 +78,7 @@ class _GoalsListState extends State<GoalsList> {
       itemCount: goals.length,
       itemBuilder: (context, index) {
         final goal = goals[index];
-        return StaggeredListAnimation(
-          index: index,
-          child: GoalCard(goal: goal, onUpdated: widget.onGoalsChanged),
-        );
+        return StaggeredListAnimation(index: index, child: GoalCard(goal: goal, onUpdated: widget.onGoalsChanged));
       },
     );
   }

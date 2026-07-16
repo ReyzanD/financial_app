@@ -47,7 +47,7 @@ class PinPad extends StatelessWidget {
       children: [
         // PIN Display
         _buildPinDisplay(),
-        const SizedBox(height: 40),
+        const SizedBox(height: DesignTokens.spacing8),
 
         // Number Pad
         _buildNumberPad(),
@@ -67,10 +67,7 @@ class PinPad extends StatelessWidget {
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             color: isFilled ? DesignTokens.primaryColor : Colors.transparent,
-            border: Border.all(
-              color: isFilled ? DesignTokens.primaryColor : Colors.grey[600]!,
-              width: 2,
-            ),
+            border: Border.all(color: isFilled ? DesignTokens.primaryColor : Colors.grey[600]!, width: 2),
           ),
         );
       }),
@@ -82,15 +79,15 @@ class PinPad extends StatelessWidget {
       children: [
         // Row 1: 1 2 3
         _buildNumberRow(['1', '2', '3']),
-        const SizedBox(height: 12),
+        const SizedBox(height: DesignTokens.spacing3),
 
         // Row 2: 4 5 6
         _buildNumberRow(['4', '5', '6']),
-        const SizedBox(height: 12),
+        const SizedBox(height: DesignTokens.spacing3),
 
         // Row 3: 7 8 9
         _buildNumberRow(['7', '8', '9']),
-        const SizedBox(height: 12),
+        const SizedBox(height: DesignTokens.spacing3),
 
         // Row 4: Clear 0 Backspace
         Row(
@@ -98,10 +95,7 @@ class PinPad extends StatelessWidget {
           children: [
             _buildActionButton(icon: Iconsax.trash, onPressed: _onClearPressed),
             _buildNumberButton('0'),
-            _buildActionButton(
-              icon: Iconsax.arrow_left_2,
-              onPressed: _onBackspacePressed,
-            ),
+            _buildActionButton(icon: Iconsax.arrow_left_2, onPressed: _onBackspacePressed),
           ],
         ),
       ],
@@ -130,31 +124,21 @@ class PinPad extends StatelessWidget {
         child: Center(
           child: Text(
             number,
-            style: GoogleFonts.poppins(
-              color: Colors.white,
-              fontSize: 24,
-              fontWeight: FontWeight.w600,
-            ),
+            style: GoogleFonts.poppins(color: Colors.white, fontSize: 24, fontWeight: FontWeight.w600),
           ),
         ),
       ),
     );
   }
 
-  Widget _buildActionButton({
-    required IconData icon,
-    required VoidCallback onPressed,
-  }) {
+  Widget _buildActionButton({required IconData icon, required VoidCallback onPressed}) {
     return InkWell(
       onTap: onPressed,
       borderRadius: BorderRadius.circular(40),
       child: Container(
         width: 70,
         height: 70,
-        decoration: BoxDecoration(
-          color: Colors.transparent,
-          shape: BoxShape.circle,
-        ),
+        decoration: BoxDecoration(color: Colors.transparent, shape: BoxShape.circle),
         child: Center(child: Icon(icon, color: Colors.grey[400], size: 28)),
       ),
     );

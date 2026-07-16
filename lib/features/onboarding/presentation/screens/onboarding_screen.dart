@@ -20,8 +20,7 @@ class OnboardingScreen extends StatefulWidget {
   State<OnboardingScreen> createState() => _OnboardingScreenState();
 }
 
-class _OnboardingScreenState extends State<OnboardingScreen>
-    with TickerProviderStateMixin {
+class _OnboardingScreenState extends State<OnboardingScreen> with TickerProviderStateMixin {
   final PageController _pageController = PageController();
   int _currentPage = 0;
   late AnimationController _iconAnimationController;
@@ -35,9 +34,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
     return [
       _OnboardingItem(
         title: l10n?.welcome ?? 'Selamat Datang!',
-        subtitle:
-            l10n?.start_managing_finances ??
-            'Mari mulai mengelola keuangan Anda dengan lebih baik',
+        subtitle: l10n?.start_managing_finances ?? 'Mari mulai mengelola keuangan Anda dengan lebih baik',
         description:
             l10n?.app_description ??
             'Aplikasi ini akan membantu Anda melacak pengeluaran, mengatur anggaran, dan mencapai tujuan keuangan.',
@@ -73,23 +70,16 @@ class _OnboardingScreenState extends State<OnboardingScreen>
   }
 
   void _setupAnimations() {
-    _iconAnimationController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 800),
-    );
-    _fadeAnimationController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 500),
-    );
-    _iconScaleAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(
-        parent: _iconAnimationController,
-        curve: Curves.elasticOut,
-      ),
-    );
-    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _fadeAnimationController, curve: Curves.easeIn),
-    );
+    _iconAnimationController = AnimationController(vsync: this, duration: const Duration(milliseconds: 800));
+    _fadeAnimationController = AnimationController(vsync: this, duration: const Duration(milliseconds: 500));
+    _iconScaleAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: _iconAnimationController, curve: Curves.elasticOut));
+    _fadeAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: _fadeAnimationController, curve: Curves.easeIn));
     _iconAnimationController.forward();
     _fadeAnimationController.forward();
   }
@@ -104,10 +94,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
 
   Future<void> _trackProgress() async {
     try {
-      await OnboardingFlowManager.saveProgress(
-        _currentPage,
-        _onboardingPageCount + 1,
-      );
+      await OnboardingFlowManager.saveProgress(_currentPage, _onboardingPageCount + 1);
     } catch (e) {
       LoggerService.debug('Error tracking onboarding progress: $e');
     }
@@ -152,9 +139,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                 itemCount: totalPages,
                 itemBuilder:
                     (_, index) =>
-                        index < _onboardingPageCount
-                            ? _buildOnboardingPage(items[index])
-                            : _buildPermissionsPage(l10n),
+                        index < _onboardingPageCount ? _buildOnboardingPage(items[index]) : _buildPermissionsPage(l10n),
               ),
             ),
             _buildBottomSection(totalPages, l10n),
@@ -178,35 +163,25 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                 '${l10n?.step ?? 'Langkah'} ${_currentPage + 1} dari $totalPages',
                 style: GoogleFonts.poppins(
                   color: Colors.grey[400],
-                  fontSize: ResponsiveHelper.fontSize(
-                    context,
-                    DesignTokens.fontSizeLabelSmall,
-                  ),
+                  fontSize: ResponsiveHelper.fontSize(context, DesignTokens.fontSizeLabelSmall),
                 ),
               ),
               Text(
                 '${(progress * 100).toStringAsFixed(0)}%',
                 style: GoogleFonts.poppins(
                   color: Colors.grey[400],
-                  fontSize: ResponsiveHelper.fontSize(
-                    context,
-                    DesignTokens.fontSizeLabelSmall,
-                  ),
+                  fontSize: ResponsiveHelper.fontSize(context, DesignTokens.fontSizeLabelSmall),
                 ),
               ),
             ],
           ),
           SizedBox(height: ResponsiveHelper.verticalSpacing(context, 8)),
           ClipRRect(
-            borderRadius: BorderRadius.circular(
-              ResponsiveHelper.borderRadius(context, DesignTokens.radiusRound),
-            ),
+            borderRadius: BorderRadius.circular(ResponsiveHelper.borderRadius(context, DesignTokens.radiusRound)),
             child: LinearProgressIndicator(
               value: progress,
               backgroundColor: Colors.grey[800],
-              valueColor: AlwaysStoppedAnimation<Color>(
-                DesignTokens.primaryColor,
-              ),
+              valueColor: AlwaysStoppedAnimation<Color>(DesignTokens.primaryColor),
               minHeight: 4,
             ),
           ),
@@ -228,15 +203,8 @@ class _OnboardingScreenState extends State<OnboardingScreen>
               child: Container(
                 width: ResponsiveHelper.screenWidth(context) * 0.3,
                 height: ResponsiveHelper.screenWidth(context) * 0.3,
-                decoration: BoxDecoration(
-                  color: item.color.withValues(alpha: 0.1),
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
-                  item.icon,
-                  size: ResponsiveHelper.iconSize(context, 60),
-                  color: item.color,
-                ),
+                decoration: BoxDecoration(color: item.color.withValues(alpha: 0.1), shape: BoxShape.circle),
+                child: Icon(item.icon, size: ResponsiveHelper.iconSize(context, 60), color: item.color),
               ),
             ),
             SizedBox(height: ResponsiveHelper.verticalSpacing(context, 32)),
@@ -246,10 +214,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
               isHeader: true,
               style: GoogleFonts.poppins(
                 color: Colors.white,
-                fontSize: ResponsiveHelper.fontSize(
-                  context,
-                  DesignTokens.fontSizeHeadlineMedium,
-                ),
+                fontSize: ResponsiveHelper.fontSize(context, DesignTokens.fontSizeHeadlineMedium),
                 fontWeight: DesignTokens.weightBold,
               ),
             ),
@@ -258,10 +223,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
               item.subtitle,
               style: GoogleFonts.poppins(
                 color: item.color,
-                fontSize: ResponsiveHelper.fontSize(
-                  context,
-                  DesignTokens.fontSizeTitleLarge,
-                ),
+                fontSize: ResponsiveHelper.fontSize(context, DesignTokens.fontSizeTitleLarge),
                 fontWeight: DesignTokens.weightSemiBold,
               ),
               textAlign: TextAlign.center,
@@ -272,10 +234,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
               text: item.description,
               style: GoogleFonts.poppins(
                 color: Colors.grey[400],
-                fontSize: ResponsiveHelper.fontSize(
-                  context,
-                  DesignTokens.fontSizeBodyLarge,
-                ),
+                fontSize: ResponsiveHelper.fontSize(context, DesignTokens.fontSizeBodyLarge),
                 height: 1.6,
               ),
             ),
@@ -283,28 +242,17 @@ class _OnboardingScreenState extends State<OnboardingScreen>
               SizedBox(height: ResponsiveHelper.verticalSpacing(context, 24)),
               ...item.features.map(
                 (f) => Padding(
-                  padding: EdgeInsets.only(
-                    bottom: ResponsiveHelper.verticalSpacing(context, 8),
-                  ),
+                  padding: EdgeInsets.only(bottom: ResponsiveHelper.verticalSpacing(context, 8)),
                   child: Row(
                     children: [
-                      Icon(
-                        Iconsax.tick_circle,
-                        size: ResponsiveHelper.iconSize(context, 20),
-                        color: item.color,
-                      ),
-                      SizedBox(
-                        width: ResponsiveHelper.horizontalSpacing(context, 12),
-                      ),
+                      Icon(Iconsax.tick_circle, size: ResponsiveHelper.iconSize(context, 20), color: item.color),
+                      SizedBox(width: ResponsiveHelper.horizontalSpacing(context, 12)),
                       Expanded(
                         child: Text(
                           f,
                           style: GoogleFonts.poppins(
                             color: Colors.grey[300],
-                            fontSize: ResponsiveHelper.fontSize(
-                              context,
-                              DesignTokens.fontSizeBodyMedium,
-                            ),
+                            fontSize: ResponsiveHelper.fontSize(context, DesignTokens.fontSizeBodyMedium),
                           ),
                         ),
                       ),
@@ -348,23 +296,16 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                   isHeader: true,
                   style: GoogleFonts.poppins(
                     color: Colors.white,
-                    fontSize: ResponsiveHelper.fontSize(
-                      context,
-                      DesignTokens.fontSizeHeadlineMedium,
-                    ),
+                    fontSize: ResponsiveHelper.fontSize(context, DesignTokens.fontSizeHeadlineMedium),
                     fontWeight: DesignTokens.weightBold,
                   ),
                 ),
                 SizedBox(height: ResponsiveHelper.verticalSpacing(context, 12)),
                 Text(
-                  l10n?.enable_features_for_best_experience ??
-                      'Aktifkan fitur untuk pengalaman terbaik',
+                  l10n?.enable_features_for_best_experience ?? 'Aktifkan fitur untuk pengalaman terbaik',
                   style: GoogleFonts.poppins(
                     color: Colors.grey[400],
-                    fontSize: ResponsiveHelper.fontSize(
-                      context,
-                      DesignTokens.fontSizeBodyMedium,
-                    ),
+                    fontSize: ResponsiveHelper.fontSize(context, DesignTokens.fontSizeBodyMedium),
                   ),
                   textAlign: TextAlign.center,
                 ),
@@ -375,24 +316,20 @@ class _OnboardingScreenState extends State<OnboardingScreen>
           PermissionRequestCard(
             permission: Permission.notification,
             title: l10n?.notifications ?? 'Notifikasi',
-            description:
-                'Terima notifikasi untuk budget alerts, pengingat tagihan, dan rekomendasi keuangan',
+            description: 'Terima notifikasi untuk budget alerts, pengingat tagihan, dan rekomendasi keuangan',
             benefit: 'Jangan lewatkan pengingat penting tentang keuangan Anda',
             icon: Iconsax.notification,
             iconColor: DesignTokens.errorColor,
-            onPermissionGranted:
-                () => LoggerService.success('Notification permission granted'),
+            onPermissionGranted: () => LoggerService.success('Notification permission granted'),
           ),
           PermissionRequestCard(
             permission: Permission.camera,
             title: l10n?.camera ?? 'Kamera',
-            description:
-                'Gunakan kamera untuk scan struk dan extract informasi transaksi secara otomatis',
+            description: 'Gunakan kamera untuk scan struk dan extract informasi transaksi secara otomatis',
             benefit: 'Scan struk dengan mudah untuk input transaksi cepat',
             icon: Iconsax.camera,
             iconColor: DesignTokens.warningColor,
-            onPermissionGranted:
-                () => LoggerService.success('Camera permission granted'),
+            onPermissionGranted: () => LoggerService.success('Camera permission granted'),
           ),
         ],
       ),
@@ -421,10 +358,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                     foregroundColor: DesignTokens.primaryColor,
                   ),
                 ),
-              if (_currentPage > 0)
-                SizedBox(
-                  width: ResponsiveHelper.horizontalSpacing(context, 12),
-                ),
+              if (_currentPage > 0) SizedBox(width: ResponsiveHelper.horizontalSpacing(context, 12)),
               Expanded(
                 child: AccessibilityHelper.createAccessibleButton(
                   context: context,
@@ -432,15 +366,9 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                       _currentPage == totalPages - 1
                           ? (l10n?.start_now ?? 'Mulai Sekarang')
                           : (l10n?.next ?? 'Selanjutnya'),
-                  onPressed:
-                      _currentPage == totalPages - 1
-                          ? _completeOnboarding
-                          : _nextPage,
+                  onPressed: _currentPage == totalPages - 1 ? _completeOnboarding : _nextPage,
                   backgroundColor: DesignTokens.primaryColor,
-                  icon:
-                      _currentPage == totalPages - 1
-                          ? Iconsax.arrow_right_3
-                          : Iconsax.arrow_right_1,
+                  icon: _currentPage == totalPages - 1 ? Iconsax.arrow_right_3 : Iconsax.arrow_right_1,
                 ),
               ),
             ],
@@ -454,40 +382,25 @@ class _OnboardingScreenState extends State<OnboardingScreen>
     final isActive = _currentPage == index;
     return AnimatedContainer(
       duration: DesignTokens.durationMedium,
-      margin: EdgeInsets.symmetric(
-        horizontal: ResponsiveHelper.horizontalSpacing(context, 4),
-      ),
+      margin: EdgeInsets.symmetric(horizontal: ResponsiveHelper.horizontalSpacing(context, 4)),
       width:
-          isActive
-              ? ResponsiveHelper.horizontalSpacing(context, 24)
-              : ResponsiveHelper.horizontalSpacing(context, 8),
+          isActive ? ResponsiveHelper.horizontalSpacing(context, 24) : ResponsiveHelper.horizontalSpacing(context, 8),
       height: 8,
       decoration: BoxDecoration(
-        color:
-            isActive
-                ? DesignTokens.primaryColor
-                : Colors.grey[600]!.withValues(alpha: 0.5),
-        borderRadius: BorderRadius.circular(
-          ResponsiveHelper.borderRadius(context, DesignTokens.radiusRound),
-        ),
+        color: isActive ? DesignTokens.primaryColor : Colors.grey[600]!.withValues(alpha: 0.5),
+        borderRadius: BorderRadius.circular(ResponsiveHelper.borderRadius(context, DesignTokens.radiusRound)),
       ),
     );
   }
 
   void _nextPage() {
     if (_currentPage < _onboardingPageCount)
-      _pageController.nextPage(
-        duration: DesignTokens.durationMedium,
-        curve: DesignTokens.curveStandard,
-      );
+      _pageController.nextPage(duration: DesignTokens.durationMedium, curve: DesignTokens.curveStandard);
   }
 
   void _previousPage() {
     if (_currentPage > 0)
-      _pageController.previousPage(
-        duration: DesignTokens.durationMedium,
-        curve: DesignTokens.curveStandard,
-      );
+      _pageController.previousPage(duration: DesignTokens.durationMedium, curve: DesignTokens.curveStandard);
   }
 
   Future<void> _skipOnboarding() async {
@@ -506,10 +419,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
     } catch (e) {
       LoggerService.error('Error completing onboarding flow', error: e);
       if (mounted) {
-        ErrorHandlerService.showErrorSnackbar(
-          context,
-          ErrorHandlerService.getUserFriendlyMessage(e),
-        );
+        ErrorHandlerService.showErrorSnackbar(context, ErrorHandlerService.getUserFriendlyMessage(e));
       }
       if (mounted) Navigator.pushReplacementNamed(context, '/home');
       return;

@@ -8,14 +8,8 @@ class ExpenseSplitService {
   ExpenseSplitService({ExpenseSplitDataService? splitData})
     : _splitData = splitData ?? getIt<ExpenseSplitDataService>();
 
-  Future<List<SplitModel>> getSplits({
-    String? transactionId,
-    bool activeOnly = true,
-  }) async {
-    return _splitData.getSplits(
-      transactionId: transactionId,
-      activeOnly: activeOnly,
-    );
+  Future<List<SplitModel>> getSplits({String? transactionId, bool activeOnly = true}) async {
+    return _splitData.getSplits(transactionId: transactionId, activeOnly: activeOnly);
   }
 
   Future<SplitModel> createSplit(SplitModel split) async {

@@ -74,13 +74,11 @@ class TransactionTemplatesService {
 
       if (templatesJson == null) return;
 
-      final templates =
-          (json.decode(templatesJson) as List).cast<Map<String, dynamic>>();
+      final templates = (json.decode(templatesJson) as List).cast<Map<String, dynamic>>();
       final index = templates.indexWhere((t) => t['id'] == templateId);
 
       if (index != -1) {
-        templates[index]['usage_count'] =
-            ((templates[index]['usage_count'] as num?)?.toInt() ?? 0) + 1;
+        templates[index]['usage_count'] = ((templates[index]['usage_count'] as num?)?.toInt() ?? 0) + 1;
         await prefs.setString(_templatesKey, json.encode(templates));
       }
     } catch (e) {
@@ -96,8 +94,7 @@ class TransactionTemplatesService {
 
       if (templatesJson == null) return;
 
-      final templates =
-          (json.decode(templatesJson) as List).cast<Map<String, dynamic>>();
+      final templates = (json.decode(templatesJson) as List).cast<Map<String, dynamic>>();
       templates.removeWhere((t) => t['id'] == templateId);
 
       await prefs.setString(_templatesKey, json.encode(templates));
@@ -108,9 +105,7 @@ class TransactionTemplatesService {
   }
 
   /// Get most used templates
-  Future<List<Map<String, dynamic>>> getMostUsedTemplates({
-    int limit = 5,
-  }) async {
+  Future<List<Map<String, dynamic>>> getMostUsedTemplates({int limit = 5}) async {
     final templates = await getTemplates();
     templates.sort((a, b) {
       final countA = (a['usage_count'] as num?)?.toInt() ?? 0;

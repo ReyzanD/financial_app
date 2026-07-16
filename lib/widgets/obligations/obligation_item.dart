@@ -16,12 +16,7 @@ class ObligationItem extends StatelessWidget {
   final VoidCallback onTap;
   final VoidCallback? onPaymentRecorded;
 
-  const ObligationItem({
-    super.key,
-    required this.obligation,
-    required this.onTap,
-    this.onPaymentRecorded,
-  });
+  const ObligationItem({super.key, required this.obligation, required this.onTap, this.onPaymentRecorded});
 
   @override
   Widget build(BuildContext context) {
@@ -51,24 +46,13 @@ class ObligationItem extends StatelessWidget {
           children: [
             Container(
               padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.2),
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(
-                Icons.check_circle,
-                color: Colors.white,
-                size: 24,
-              ),
+              decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.2), shape: BoxShape.circle),
+              child: const Icon(Icons.check_circle, color: Colors.white, size: 24),
             ),
             const SizedBox(width: 12),
             Text(
               AppLocalizations.of(context)!.mark_as_paid,
-              style: GoogleFonts.poppins(
-                color: Colors.white,
-                fontWeight: FontWeight.w600,
-                fontSize: 15,
-              ),
+              style: GoogleFonts.poppins(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 15),
             ),
           ],
         ),
@@ -90,24 +74,13 @@ class ObligationItem extends StatelessWidget {
           children: [
             Text(
               AppLocalizations.of(context)!.delete,
-              style: GoogleFonts.poppins(
-                color: Colors.white,
-                fontWeight: FontWeight.w600,
-                fontSize: 15,
-              ),
+              style: GoogleFonts.poppins(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 15),
             ),
             const SizedBox(width: 12),
             Container(
               padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.2),
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(
-                Icons.delete_outline,
-                color: Colors.white,
-                size: 24,
-              ),
+              decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.2), shape: BoxShape.circle),
+              child: const Icon(Icons.delete_outline, color: Colors.white, size: 24),
             ),
           ],
         ),
@@ -143,9 +116,7 @@ class ObligationItem extends StatelessWidget {
                         ),
                         TextButton(
                           onPressed: () => Navigator.pop(context, true),
-                          style: TextButton.styleFrom(
-                            foregroundColor: Colors.red,
-                          ),
+                          style: TextButton.styleFrom(foregroundColor: Colors.red),
                           child: Text(AppLocalizations.of(context)!.delete),
                         ),
                       ],
@@ -161,18 +132,10 @@ class ObligationItem extends StatelessWidget {
           color: DesignTokens.surfaceCard,
           borderRadius: BorderRadius.circular(DesignTokens.radiusLarge),
           border: Border.all(
-            color: urgencyColor.withValues(
-              alpha: isOverdue || isDueSoon ? 0.4 : 0.15,
-            ),
+            color: urgencyColor.withValues(alpha: isOverdue || isDueSoon ? 0.4 : 0.15),
             width: isOverdue || isDueSoon ? 1.5 : 1,
           ),
-          boxShadow: [
-            BoxShadow(
-              color: urgencyColor.withValues(alpha: 0.1),
-              blurRadius: 8,
-              offset: const Offset(0, 2),
-            ),
-          ],
+          boxShadow: [BoxShadow(color: urgencyColor.withValues(alpha: 0.1), blurRadius: 8, offset: const Offset(0, 2))],
         ),
         child: Column(
           children: [
@@ -190,37 +153,21 @@ class ObligationItem extends StatelessWidget {
                     end: Alignment.bottomRight,
                   ),
                   borderRadius: BorderRadius.circular(14),
-                  border: Border.all(
-                    color: _getObligationColor(
-                      obligation,
-                    ).withValues(alpha: 0.3),
-                    width: 1,
-                  ),
+                  border: Border.all(color: _getObligationColor(obligation).withValues(alpha: 0.3), width: 1),
                 ),
-                child: Icon(
-                  _getObligationIcon(obligation),
-                  color: _getObligationColor(obligation),
-                  size: 26,
-                ),
+                child: Icon(_getObligationIcon(obligation), color: _getObligationColor(obligation), size: 26),
               ),
               title: Row(
                 children: [
                   Expanded(
                     child: Text(
                       obligation.name,
-                      style: GoogleFonts.poppins(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                      ),
+                      style: GoogleFonts.poppins(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600),
                     ),
                   ),
                   if (isOverdue)
                     Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 5,
-                      ),
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
                           colors: [
@@ -229,19 +176,12 @@ class ObligationItem extends StatelessWidget {
                           ],
                         ),
                         borderRadius: BorderRadius.circular(10),
-                        border: Border.all(
-                          color: Colors.red.withValues(alpha: 0.3),
-                          width: 1,
-                        ),
+                        border: Border.all(color: Colors.red.withValues(alpha: 0.3), width: 1),
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Icon(
-                            Iconsax.warning_2,
-                            size: 12,
-                            color: Colors.red.shade300,
-                          ),
+                          Icon(Iconsax.warning_2, size: 12, color: Colors.red.shade300),
                           const SizedBox(width: 4),
                           Text(
                             AppLocalizations.of(context)!.overdue,
@@ -257,10 +197,7 @@ class ObligationItem extends StatelessWidget {
                     )
                   else if (isDueSoon)
                     Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 5,
-                      ),
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
                           colors: [
@@ -269,19 +206,12 @@ class ObligationItem extends StatelessWidget {
                           ],
                         ),
                         borderRadius: BorderRadius.circular(10),
-                        border: Border.all(
-                          color: Colors.orange.withValues(alpha: 0.3),
-                          width: 1,
-                        ),
+                        border: Border.all(color: Colors.orange.withValues(alpha: 0.3), width: 1),
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Icon(
-                            Iconsax.clock,
-                            size: 12,
-                            color: Colors.orange.shade300,
-                          ),
+                          Icon(Iconsax.clock, size: 12, color: Colors.orange.shade300),
                           const SizedBox(width: 4),
                           Text(
                             AppLocalizations.of(context)!.due_soon,
@@ -300,71 +230,53 @@ class ObligationItem extends StatelessWidget {
               subtitle: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const SizedBox(height: 4),
+                  const SizedBox(height: DesignTokens.spacing1),
                   Row(
                     children: [
                       Icon(Iconsax.calendar, size: 14, color: Colors.grey[500]),
                       const SizedBox(width: 4),
                       Text(
                         '${l10n?.due_date ?? 'Jatuh Tempo'}: ${obligation.formattedDueDate}',
-                        style: GoogleFonts.poppins(
-                          color: Colors.grey[400],
-                          fontSize: 12,
-                        ),
+                        style: GoogleFonts.poppins(color: Colors.grey[400], fontSize: 12),
                       ),
                     ],
                   ),
                   if (isDebt && obligation.currentBalance != null) ...[
-                    const SizedBox(height: 4),
+                    const SizedBox(height: DesignTokens.spacing1),
                     Row(
                       children: [
-                        Icon(
-                          Iconsax.wallet_3,
-                          size: 14,
-                          color: Colors.grey[500],
-                        ),
+                        Icon(Iconsax.wallet_3, size: 14, color: Colors.grey[500]),
                         const SizedBox(width: 4),
                         Text(
                           '${l10n?.remaining ?? 'Sisa'}: ${CurrencyFormatter.formatRupiah(obligation.currentBalance!.toInt())}',
-                          style: GoogleFonts.poppins(
-                            color: Colors.grey[400],
-                            fontSize: 12,
-                          ),
+                          style: GoogleFonts.poppins(color: Colors.grey[400], fontSize: 12),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 4),
+                    const SizedBox(height: DesignTokens.spacing1),
                     // Debt progress indicator
                     ClipRRect(
                       borderRadius: BorderRadius.circular(4),
                       child: LinearProgressIndicator(
                         value:
-                            obligation.originalAmount != null &&
-                                    obligation.originalAmount! > 0
-                                ? (obligation.originalAmount! -
-                                        obligation.currentBalance!) /
-                                    obligation.originalAmount!
+                            obligation.originalAmount != null && obligation.originalAmount! > 0
+                                ? (obligation.originalAmount! - obligation.currentBalance!) / obligation.originalAmount!
                                 : 0.0,
                         backgroundColor: Colors.grey[800],
-                        valueColor: AlwaysStoppedAnimation<Color>(
-                          _getObligationColor(obligation),
-                        ),
+                        valueColor: AlwaysStoppedAnimation<Color>(_getObligationColor(obligation)),
                         minHeight: 4,
                       ),
                     ),
                   ],
                   if (obligation.isSubscription) ...[
-                    const SizedBox(height: 4),
+                    const SizedBox(height: DesignTokens.spacing1),
                     Row(
                       children: [
                         Icon(Iconsax.crown, size: 14, color: Colors.grey[500]),
                         const SizedBox(width: 4),
                         Text(
                           '${AppLocalizations.of(context)!.subscription} • ${_getSubscriptionCycleName(context, obligation.subscriptionCycle ?? 'monthly')}',
-                          style: GoogleFonts.poppins(
-                            color: Colors.grey[400],
-                            fontSize: 12,
-                          ),
+                          style: GoogleFonts.poppins(color: Colors.grey[400], fontSize: 12),
                         ),
                       ],
                     ),
@@ -376,33 +288,18 @@ class ObligationItem extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Text(
-                    CurrencyFormatter.formatRupiah(
-                      obligation.monthlyAmount.toInt(),
-                    ),
-                    style: GoogleFonts.poppins(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                      fontSize: 16,
-                    ),
+                    CurrencyFormatter.formatRupiah(obligation.monthlyAmount.toInt()),
+                    style: GoogleFonts.poppins(fontWeight: FontWeight.bold, color: Colors.white, fontSize: 16),
                   ),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: DesignTokens.spacing1),
                   Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 6,
-                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
-                        colors: [
-                          urgencyColor.withValues(alpha: 0.15),
-                          urgencyColor.withValues(alpha: 0.25),
-                        ],
+                        colors: [urgencyColor.withValues(alpha: 0.15), urgencyColor.withValues(alpha: 0.25)],
                       ),
                       borderRadius: BorderRadius.circular(10),
-                      border: Border.all(
-                        color: urgencyColor.withValues(alpha: 0.3),
-                        width: 1,
-                      ),
+                      border: Border.all(color: urgencyColor.withValues(alpha: 0.3), width: 1),
                     ),
                     child: Text(
                       isOverdue
@@ -497,27 +394,14 @@ class ObligationItem extends StatelessWidget {
                 end: Alignment.bottomRight,
               ),
               borderRadius: BorderRadius.circular(10),
-              boxShadow: [
-                BoxShadow(
-                  color: color.withValues(alpha: 0.3),
-                  blurRadius: 8,
-                  offset: const Offset(0, 2),
-                ),
-              ],
+              boxShadow: [BoxShadow(color: color.withValues(alpha: 0.3), blurRadius: 8, offset: const Offset(0, 2))],
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Icon(icon, color: Colors.white, size: 18),
                 const SizedBox(width: 6),
-                Text(
-                  label,
-                  style: GoogleFonts.poppins(
-                    color: Colors.white,
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
+                Text(label, style: GoogleFonts.poppins(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w600)),
               ],
             ),
           ),
@@ -541,14 +425,7 @@ class ObligationItem extends StatelessWidget {
               children: [
                 Icon(icon, color: color, size: 18),
                 const SizedBox(width: 6),
-                Text(
-                  label,
-                  style: GoogleFonts.poppins(
-                    color: color,
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
+                Text(label, style: GoogleFonts.poppins(color: color, fontSize: 13, fontWeight: FontWeight.w600)),
               ],
             ),
           ),
@@ -592,36 +469,21 @@ class ObligationItem extends StatelessWidget {
   }
 
   void _showPaymentDialog(BuildContext context) {
-    final amountController = TextEditingController(
-      text: obligation.monthlyAmount.toInt().toString(),
-    );
-    final dateController = TextEditingController(
-      text: DateTime.now().toString().split(' ')[0],
-    );
+    final amountController = TextEditingController(text: obligation.monthlyAmount.toInt().toString());
+    final dateController = TextEditingController(text: DateTime.now().toString().split(' ')[0]);
 
     showDialog(
       context: context,
       builder:
           (context) => AlertDialog(
             backgroundColor: DesignTokens.surfaceDark,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(DesignTokens.radiusLarge),
-            ),
-            title: Text(
-              AppLocalizations.of(context)!.record_payment,
-              style: GoogleFonts.poppins(color: Colors.white),
-            ),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(DesignTokens.radiusLarge)),
+            title: Text(AppLocalizations.of(context)!.record_payment, style: GoogleFonts.poppins(color: Colors.white)),
             content: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text(
-                  obligation.name,
-                  style: GoogleFonts.poppins(
-                    color: Colors.white70,
-                    fontSize: 14,
-                  ),
-                ),
-                const SizedBox(height: 16),
+                Text(obligation.name, style: GoogleFonts.poppins(color: Colors.white70, fontSize: 14)),
+                const SizedBox(height: DesignTokens.spacing4),
                 TextField(
                   controller: amountController,
                   keyboardType: TextInputType.number,
@@ -629,22 +491,18 @@ class ObligationItem extends StatelessWidget {
                   decoration: InputDecoration(
                     labelText: AppLocalizations.of(context)!.payment_amount,
                     labelStyle: const TextStyle(color: Colors.grey),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
                       borderSide: BorderSide(color: Colors.grey[700]!),
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
-                      borderSide: const BorderSide(
-                        color: DesignTokens.primaryColor,
-                      ),
+                      borderSide: const BorderSide(color: DesignTokens.primaryColor),
                     ),
                   ),
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: DesignTokens.spacing3),
                 TextField(
                   controller: dateController,
                   readOnly: true,
@@ -652,22 +510,15 @@ class ObligationItem extends StatelessWidget {
                   decoration: InputDecoration(
                     labelText: AppLocalizations.of(context)!.payment_date,
                     labelStyle: const TextStyle(color: Colors.grey),
-                    suffixIcon: const Icon(
-                      Icons.calendar_today,
-                      color: Colors.grey,
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
+                    suffixIcon: const Icon(Icons.calendar_today, color: Colors.grey),
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
                       borderSide: BorderSide(color: Colors.grey[700]!),
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
-                      borderSide: const BorderSide(
-                        color: DesignTokens.primaryColor,
-                      ),
+                      borderSide: const BorderSide(color: DesignTokens.primaryColor),
                     ),
                   ),
                   onTap: () async {
@@ -687,19 +538,13 @@ class ObligationItem extends StatelessWidget {
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context),
-                child: Text(
-                  AppLocalizations.of(context)!.cancel,
-                  style: GoogleFonts.poppins(color: Colors.grey),
-                ),
+                child: Text(AppLocalizations.of(context)!.cancel, style: GoogleFonts.poppins(color: Colors.grey)),
               ),
               ElevatedButton(
                 onPressed: () async {
                   final amount = double.tryParse(amountController.text);
                   if (amount == null || amount <= 0) {
-                    ErrorHandlerService.showErrorSnackbar(
-                      context,
-                      AppLocalizations.of(context)!.invalid_amount,
-                    );
+                    ErrorHandlerService.showErrorSnackbar(context, AppLocalizations.of(context)!.invalid_amount);
                     return;
                   }
 
@@ -712,23 +557,14 @@ class ObligationItem extends StatelessWidget {
 
                     // Record payment using payment history service
                     final paymentService = PaymentHistoryService();
-                    await paymentService.recordPayment(
-                      obligation.id,
-                      paymentData,
-                    );
+                    await paymentService.recordPayment(obligation.id, paymentData);
 
                     // Also record in API
-                    await getIt<ObligationService>().recordPayment(
-                      obligation.id,
-                      paymentData,
-                    );
+                    await getIt<ObligationService>().recordPayment(obligation.id, paymentData);
 
                     if (context.mounted) {
                       Navigator.pop(context);
-                      ErrorHandlerService.showSuccessSnackbar(
-                        context,
-                        AppLocalizations.of(context)!.payment_recorded,
-                      );
+                      ErrorHandlerService.showSuccessSnackbar(context, AppLocalizations.of(context)!.payment_recorded);
                       onPaymentRecorded?.call();
                     }
                   } catch (e) {
@@ -740,13 +576,8 @@ class ObligationItem extends StatelessWidget {
                     }
                   }
                 },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: DesignTokens.primaryColor,
-                ),
-                child: Text(
-                  AppLocalizations.of(context)!.save,
-                  style: GoogleFonts.poppins(color: Colors.white),
-                ),
+                style: ElevatedButton.styleFrom(backgroundColor: DesignTokens.primaryColor),
+                child: Text(AppLocalizations.of(context)!.save, style: GoogleFonts.poppins(color: Colors.white)),
               ),
             ],
           ),

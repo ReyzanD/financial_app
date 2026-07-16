@@ -60,10 +60,7 @@ class KeyNormalizer {
   /// `account_id`, `payment_method`.
   static List<Map<String, dynamic>> normalizeTransactions(List<dynamic> txns) {
     return txns.map((t) {
-      final map =
-          t is Map<String, dynamic>
-              ? normalize(t)
-              : normalize(Map<String, dynamic>.from(t as Map));
+      final map = t is Map<String, dynamic> ? normalize(t) : normalize(Map<String, dynamic>.from(t as Map));
 
       final rawAmount = map['amount'];
       final amount = (rawAmount is num) ? rawAmount.toDouble() : 0.0;

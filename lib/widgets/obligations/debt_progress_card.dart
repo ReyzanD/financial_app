@@ -17,25 +17,15 @@ class DebtProgressCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Progress Hutang',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            SizedBox(height: 16),
+            Text('Progress Hutang', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+            SizedBox(height: DesignTokens.spacing4),
             LinearProgressIndicator(
               value: 0.3, // Dummy progress
               backgroundColor: Colors.grey[700],
               valueColor: AlwaysStoppedAnimation<Color>(Colors.red),
             ),
-            SizedBox(height: 8),
-            Text(
-              '30% menuju bebas hutang',
-              style: TextStyle(color: Colors.grey),
-            ),
+            SizedBox(height: DesignTokens.spacing2),
+            Text('30% menuju bebas hutang', style: TextStyle(color: Colors.grey)),
           ],
         ),
       ),

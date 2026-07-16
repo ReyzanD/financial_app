@@ -56,11 +56,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
               child: Consumer<AnalyticsController>(
                 builder: (context, ctrl, _) {
                   if (ctrl.isLoading) {
-                    return const Center(
-                      child: CircularProgressIndicator(
-                        color: DesignTokens.primaryColor,
-                      ),
-                    );
+                    return const Center(child: CircularProgressIndicator(color: DesignTokens.primaryColor));
                   }
                   return RefreshIndicator(
                     onRefresh: ctrl.refresh,
@@ -86,24 +82,17 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
             padding: ResponsiveHelper.padding(context, multiplier: 1.5),
             decoration: BoxDecoration(
               color: DesignTokens.surfaceDark,
-              borderRadius: BorderRadius.circular(
-                ResponsiveHelper.borderRadius(context, 16),
-              ),
+              borderRadius: BorderRadius.circular(ResponsiveHelper.borderRadius(context, 16)),
               border: Border.all(color: Colors.red.withValues(alpha: 0.3)),
             ),
             child: Column(
               children: [
-                Icon(
-                  Icons.error_outline,
-                  color: Colors.red[400],
-                  size: ResponsiveHelper.iconSize(context, 40),
-                ),
+                Icon(Icons.error_outline, color: Colors.red[400], size: ResponsiveHelper.iconSize(context, 40)),
                 SizedBox(height: ResponsiveHelper.verticalSpacing(context, 12)),
                 Semantics(
                   liveRegion: true,
                   child: Text(
-                    AppLocalizations.of(context)?.failed_to_load_analytics ??
-                        'Gagal memuat data analitik',
+                    AppLocalizations.of(context)?.failed_to_load_analytics ?? 'Gagal memuat data analitik',
                     style: GoogleFonts.poppins(
                       color: Colors.grey[300],
                       fontSize: ResponsiveHelper.fontSize(context, 16),
@@ -142,18 +131,12 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
             padding: ResponsiveHelper.padding(context, multiplier: 2.0),
             decoration: BoxDecoration(
               color: DesignTokens.surfaceDark,
-              borderRadius: BorderRadius.circular(
-                ResponsiveHelper.borderRadius(context, 16),
-              ),
+              borderRadius: BorderRadius.circular(ResponsiveHelper.borderRadius(context, 16)),
               border: Border.all(color: DesignTokens.borderDark),
             ),
             child: Column(
               children: [
-                Icon(
-                  Icons.insights,
-                  color: Colors.grey[600],
-                  size: ResponsiveHelper.iconSize(context, 48),
-                ),
+                Icon(Icons.insights, color: Colors.grey[600], size: ResponsiveHelper.iconSize(context, 48)),
                 SizedBox(height: ResponsiveHelper.verticalSpacing(context, 12)),
                 Text(
                   l10n?.no_transactions_for_period ?? 'Tidak ada transaksi',
@@ -167,10 +150,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                 Text(
                   l10n?.no_transactions_subtitle ?? 'Belum ada transaksi',
                   textAlign: TextAlign.center,
-                  style: GoogleFonts.poppins(
-                    color: Colors.grey[600],
-                    fontSize: ResponsiveHelper.fontSize(context, 12),
-                  ),
+                  style: GoogleFonts.poppins(color: Colors.grey[600], fontSize: ResponsiveHelper.fontSize(context, 12)),
                 ),
               ],
             ),

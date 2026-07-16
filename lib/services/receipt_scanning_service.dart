@@ -10,8 +10,7 @@ import 'package:uuid/uuid.dart';
 class ReceiptScanningService {
   final ImagePicker _imagePicker = ImagePicker();
   final TextRecognizer _textRecognizer = TextRecognizer();
-  final ReceiptScanDataService _receiptScanData =
-      getIt<ReceiptScanDataService>();
+  final ReceiptScanDataService _receiptScanData = getIt<ReceiptScanDataService>();
   final _uuid = const Uuid();
 
   Future<File?> pickImage({bool fromCamera = false}) async {
@@ -99,12 +98,7 @@ class ReceiptScanningService {
 
   Map<String, dynamic> _parseReceiptText(String text) {
     final lines = text.split('\n').where((l) => l.trim().isNotEmpty).toList();
-    final parsed = <String, dynamic>{
-      'merchant': '',
-      'date': '',
-      'total': 0.0,
-      'items': <Map<String, dynamic>>[],
-    };
+    final parsed = <String, dynamic>{'merchant': '', 'date': '', 'total': 0.0, 'items': <Map<String, dynamic>>[]};
 
     for (var line in lines) {
       final upperLine = line.toUpperCase();
@@ -144,9 +138,7 @@ class ReceiptScanningService {
         }
       }
 
-      final dateMatch = RegExp(
-        r'(\d{1,2}[/-]\d{1,2}[/-]\d{2,4})|(\d{4}[/-]\d{1,2}[/-]\d{1,2})',
-      ).firstMatch(line);
+      final dateMatch = RegExp(r'(\d{1,2}[/-]\d{1,2}[/-]\d{2,4})|(\d{4}[/-]\d{1,2}[/-]\d{1,2})').firstMatch(line);
       if (dateMatch != null) {
         final dateStr = dateMatch.group(0) ?? '';
         parsed['date'] = _normalizeDate(dateStr);
@@ -182,11 +174,7 @@ class ReceiptScanningService {
 
       final amount = _extractAmount(line);
       if (amount > 0 && amount < parsed['total']) {
-        final description =
-            line
-                .replaceAll(RegExp(r'[\d.,Rp]'), '')
-                .replaceAll(RegExp(r'\s+'), ' ')
-                .trim();
+        final description = line.replaceAll(RegExp(r'[\d.,Rp]'), '').replaceAll(RegExp(r'\s+'), ' ').trim();
         if (description.isNotEmpty && description.length > 1) {
           parsed['items'].add({'description': description, 'amount': amount});
         }
@@ -218,9 +206,7 @@ class ReceiptScanningService {
   }
 
   double _extractAmount(String text) {
-    final rupiahPattern = RegExp(
-      r'Rp\s*[\d.,]+|[\d]{1,3}(?:[.,]\d{3})+(?:[.,]\d{2})?|[\d]{1,3}(?:[.,]\d{3})+',
-    );
+    final rupiahPattern = RegExp(r'Rp\s*[\d.,]+|[\d]{1,3}(?:[.,]\d{3})+(?:[.,]\d{2})?|[\d]{1,3}(?:[.,]\d{3})+');
     final match = rupiahPattern.firstMatch(text);
 
     if (match != null) {

@@ -7,11 +7,7 @@ class PaymentMethodSection extends StatelessWidget {
   final String selectedPaymentMethod;
   final Function(String) onPaymentMethodSelected;
 
-  const PaymentMethodSection({
-    super.key,
-    required this.selectedPaymentMethod,
-    required this.onPaymentMethodSelected,
-  });
+  const PaymentMethodSection({super.key, required this.selectedPaymentMethod, required this.onPaymentMethodSelected});
 
   static const List<Map<String, dynamic>> _paymentMethods = [
     {'id': 'cash', 'name': 'Tunai', 'icon': Iconsax.money},
@@ -28,13 +24,9 @@ class PaymentMethodSection extends StatelessWidget {
       children: [
         Text(
           'Metode Pembayaran',
-          style: GoogleFonts.poppins(
-            color: Colors.white,
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-          ),
+          style: GoogleFonts.poppins(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600),
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: DesignTokens.spacing3),
         Wrap(
           spacing: 8,
           runSpacing: 8,
@@ -45,22 +37,11 @@ class PaymentMethodSection extends StatelessWidget {
                 return GestureDetector(
                   onTap: () => onPaymentMethodSelected(method['id'] as String),
                   child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 8,
-                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                     decoration: BoxDecoration(
-                      color:
-                          isSelected
-                              ? DesignTokens.primaryColor.withValues(alpha: 0.3)
-                              : DesignTokens.surfaceDark,
+                      color: isSelected ? DesignTokens.primaryColor.withValues(alpha: 0.3) : DesignTokens.surfaceDark,
                       borderRadius: BorderRadius.circular(20),
-                      border: Border.all(
-                        color:
-                            isSelected
-                                ? DesignTokens.primaryColor
-                                : Colors.grey[700]!,
-                      ),
+                      border: Border.all(color: isSelected ? DesignTokens.primaryColor : Colors.grey[700]!),
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
@@ -68,24 +49,15 @@ class PaymentMethodSection extends StatelessWidget {
                         Icon(
                           method['icon'] as IconData,
                           size: 16,
-                          color:
-                              isSelected
-                                  ? DesignTokens.primaryColor
-                                  : Colors.grey[500],
+                          color: isSelected ? DesignTokens.primaryColor : Colors.grey[500],
                         ),
                         const SizedBox(width: 6),
                         Text(
                           method['name'] as String,
                           style: GoogleFonts.poppins(
-                            color:
-                                isSelected
-                                    ? DesignTokens.primaryColor
-                                    : Colors.grey[500],
+                            color: isSelected ? DesignTokens.primaryColor : Colors.grey[500],
                             fontSize: 12,
-                            fontWeight:
-                                isSelected
-                                    ? FontWeight.w600
-                                    : FontWeight.normal,
+                            fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
                           ),
                         ),
                       ],

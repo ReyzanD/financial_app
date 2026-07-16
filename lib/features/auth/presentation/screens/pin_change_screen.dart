@@ -73,19 +73,12 @@ class _PinChangeScreenState extends State<PinChangeScreen> {
         if (mounted) setState(() => _currentStep = 1);
       } else {
         if (ctx.mounted)
-          ErrorHandlerService.showWarningSnackbar(
-            ctx,
-            AppLocalizations.of(ctx)?.wrong_old_pin ?? 'PIN lama salah',
-          );
+          ErrorHandlerService.showWarningSnackbar(ctx, AppLocalizations.of(ctx)?.wrong_old_pin ?? 'PIN lama salah');
         if (mounted) setState(() => _oldPin = '');
       }
     } catch (e) {
       LoggerService.error('Error verifying old PIN', error: e);
-      if (ctx.mounted)
-        ErrorHandlerService.showErrorSnackbar(
-          ctx,
-          ErrorHandlerService.getUserFriendlyMessage(e),
-        );
+      if (ctx.mounted) ErrorHandlerService.showErrorSnackbar(ctx, ErrorHandlerService.getUserFriendlyMessage(e));
       if (mounted) setState(() => _oldPin = '');
     } finally {
       if (mounted) setState(() => _isLoading = false);
@@ -96,8 +89,7 @@ class _PinChangeScreenState extends State<PinChangeScreen> {
     if (_newPin != _confirmPin) {
       ErrorHandlerService.showWarningSnackbar(
         context,
-        AppLocalizations.of(context)?.new_pin_mismatch ??
-            'PIN baru tidak cocok',
+        AppLocalizations.of(context)?.new_pin_mismatch ?? 'PIN baru tidak cocok',
       );
       setState(() {
         _newPin = '';
@@ -112,8 +104,7 @@ class _PinChangeScreenState extends State<PinChangeScreen> {
       if (mounted) {
         ErrorHandlerService.showSuccessSnackbar(
           context,
-          AppLocalizations.of(context)?.pin_changed_successfully ??
-              'PIN berhasil diubah!',
+          AppLocalizations.of(context)?.pin_changed_successfully ?? 'PIN berhasil diubah!',
         );
         Navigator.pop(context);
       }
@@ -168,8 +159,7 @@ class _PinChangeScreenState extends State<PinChangeScreen> {
       case 1:
         return l10n?.new_pin_subtitle ?? 'Buat PIN baru';
       case 2:
-        return l10n?.confirm_new_pin_subtitle ??
-            'Masukkan PIN baru sekali lagi';
+        return l10n?.confirm_new_pin_subtitle ?? 'Masukkan PIN baru sekali lagi';
       default:
         return '';
     }
@@ -205,11 +195,7 @@ class _PinChangeScreenState extends State<PinChangeScreen> {
         ),
         title: Text(
           l10n?.change_pin ?? 'Ubah PIN',
-          style: GoogleFonts.poppins(
-            color: Colors.white,
-            fontSize: 20,
-            fontWeight: FontWeight.w600,
-          ),
+          style: GoogleFonts.poppins(color: Colors.white, fontSize: 20, fontWeight: FontWeight.w600),
         ),
       ),
       body: Column(
@@ -219,55 +205,42 @@ class _PinChangeScreenState extends State<PinChangeScreen> {
             child: SafeArea(
               child:
                   _isLoading
-                      ? const Center(
-                        child: CircularProgressIndicator(
-                          color: DesignTokens.primaryColor,
-                        ),
-                      )
+                      ? const Center(child: CircularProgressIndicator(color: DesignTokens.primaryColor))
                       : SingleChildScrollView(
                         padding: const EdgeInsets.all(24),
                         child: Column(
                           children: [
-                            const SizedBox(height: 20),
+                            const SizedBox(height: DesignTokens.spacing5),
                             Container(
                               padding: const EdgeInsets.all(20),
                               decoration: BoxDecoration(
-                                color: DesignTokens.primaryColor.withValues(
-                                  alpha: 0.2,
-                                ),
+                                color: DesignTokens.primaryColor.withValues(alpha: 0.2),
                                 shape: BoxShape.circle,
                               ),
                               child: Icon(
-                                _currentStep == 0
-                                    ? Iconsax.lock
-                                    : Iconsax.lock_1,
+                                _currentStep == 0 ? Iconsax.lock : Iconsax.lock_1,
                                 size: 60,
                                 color: DesignTokens.primaryColor,
                               ),
                             ),
-                            const SizedBox(height: 32),
+                            const SizedBox(height: DesignTokens.spacing7),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: List.generate(3, (i) {
                                 final completed = i < _currentStep;
                                 final current = i == _currentStep;
                                 return Container(
-                                  margin: const EdgeInsets.symmetric(
-                                    horizontal: 4,
-                                  ),
+                                  margin: const EdgeInsets.symmetric(horizontal: 4),
                                   width: current ? 32 : 8,
                                   height: 8,
                                   decoration: BoxDecoration(
-                                    color:
-                                        completed || current
-                                            ? DesignTokens.primaryColor
-                                            : Colors.grey[800],
+                                    color: completed || current ? DesignTokens.primaryColor : Colors.grey[800],
                                     borderRadius: BorderRadius.circular(4),
                                   ),
                                 );
                               }),
                             ),
-                            const SizedBox(height: 24),
+                            const SizedBox(height: DesignTokens.spacing6),
                             Text(
                               _getTitle(l10n),
                               style: GoogleFonts.poppins(
@@ -276,16 +249,13 @@ class _PinChangeScreenState extends State<PinChangeScreen> {
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
-                            const SizedBox(height: 8),
+                            const SizedBox(height: DesignTokens.spacing2),
                             Text(
                               _getSubtitle(l10n),
-                              style: GoogleFonts.poppins(
-                                color: Colors.grey[400],
-                                fontSize: 14,
-                              ),
+                              style: GoogleFonts.poppins(color: Colors.grey[400], fontSize: 14),
                               textAlign: TextAlign.center,
                             ),
-                            const SizedBox(height: 40),
+                            const SizedBox(height: DesignTokens.spacing8),
                             if (_currentStep == 1) ...[
                               Text(
                                 l10n?.select_pin_length ?? 'Pilih Panjang PIN',
@@ -295,7 +265,7 @@ class _PinChangeScreenState extends State<PinChangeScreen> {
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
-                              const SizedBox(height: 16),
+                              const SizedBox(height: DesignTokens.spacing4),
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
@@ -304,7 +274,7 @@ class _PinChangeScreenState extends State<PinChangeScreen> {
                                   _buildPinLengthButton(6),
                                 ],
                               ),
-                              const SizedBox(height: 40),
+                              const SizedBox(height: DesignTokens.spacing8),
                             ],
                             PinPad(
                               pin: _getCurrentPin(),
@@ -336,10 +306,7 @@ class _PinChangeScreenState extends State<PinChangeScreen> {
         decoration: BoxDecoration(
           color: sel ? DesignTokens.primaryColor : DesignTokens.surfaceDark,
           borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
-          border: Border.all(
-            color: sel ? DesignTokens.primaryColor : DesignTokens.borderDark,
-            width: 2,
-          ),
+          border: Border.all(color: sel ? DesignTokens.primaryColor : DesignTokens.borderDark, width: 2),
         ),
         child: Text(
           '$length Digit',

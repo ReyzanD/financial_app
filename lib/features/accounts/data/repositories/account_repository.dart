@@ -6,8 +6,7 @@ import 'package:financial_app/services/account_service.dart';
 class AccountRepository {
   final AccountService _accountService;
 
-  AccountRepository({AccountService? accountService})
-    : _accountService = accountService ?? getIt<AccountService>();
+  AccountRepository({AccountService? accountService}) : _accountService = accountService ?? getIt<AccountService>();
 
   Future<List<AccountModel>> getAccounts({bool activeOnly = true}) async {
     return await _accountService.getAccounts(activeOnly: activeOnly);
@@ -17,10 +16,7 @@ class AccountRepository {
     return await _accountService.createAccount(account);
   }
 
-  Future<AccountModel> updateAccount(
-    String id,
-    Map<String, dynamic> updates,
-  ) async {
+  Future<AccountModel> updateAccount(String id, Map<String, dynamic> updates) async {
     return await _accountService.updateAccount(id, updates);
   }
 

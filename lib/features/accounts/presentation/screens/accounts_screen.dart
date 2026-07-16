@@ -82,11 +82,7 @@ class _AccountsScreenState extends State<AccountsScreen> {
     );
   }
 
-  Widget _buildHeader(
-    BuildContext context,
-    AppLocalizations? l10n,
-    AccountController controller,
-  ) {
+  Widget _buildHeader(BuildContext context, AppLocalizations? l10n, AccountController controller) {
     return Container(
       padding: const EdgeInsets.all(DesignTokens.spacing4),
       child: Column(
@@ -95,10 +91,7 @@ class _AccountsScreenState extends State<AccountsScreen> {
           Row(
             children: [
               IconButton(
-                icon: const Icon(
-                  Iconsax.arrow_left,
-                  color: DesignTokens.textPrimaryDark,
-                ),
+                icon: const Icon(Iconsax.arrow_left, color: DesignTokens.textPrimaryDark),
                 tooltip: 'Kembali',
                 onPressed: () => Navigator.pop(context),
               ),
@@ -116,13 +109,8 @@ class _AccountsScreenState extends State<AccountsScreen> {
               ),
               const Spacer(),
               Text(
-                controller.activeOnly
-                    ? l10n?.active ?? 'Aktif'
-                    : l10n?.all ?? 'Semua',
-                style: GoogleFonts.poppins(
-                  color: DesignTokens.textSecondaryDark,
-                  fontSize: 12,
-                ),
+                controller.activeOnly ? l10n?.active ?? 'Aktif' : l10n?.all ?? 'Semua',
+                style: GoogleFonts.poppins(color: DesignTokens.textSecondaryDark, fontSize: 12),
               ),
               Switch(
                 value: controller.activeOnly,
@@ -133,7 +121,7 @@ class _AccountsScreenState extends State<AccountsScreen> {
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: DesignTokens.spacing3),
           Container(
             padding: const EdgeInsets.all(DesignTokens.spacing4),
             decoration: BoxDecoration(
@@ -144,18 +132,10 @@ class _AccountsScreenState extends State<AccountsScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                Text('Total Saldo', style: GoogleFonts.poppins(color: DesignTokens.textSecondaryDark, fontSize: 12)),
+                const SizedBox(height: DesignTokens.spacing1),
                 Text(
-                  'Total Saldo',
-                  style: GoogleFonts.poppins(
-                    color: DesignTokens.textSecondaryDark,
-                    fontSize: 12,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  CurrencyFormatter.formatRupiah(
-                    controller.totalBalance.toInt(),
-                  ),
+                  CurrencyFormatter.formatRupiah(controller.totalBalance.toInt()),
                   style: GoogleFonts.poppins(
                     color: DesignTokens.textPrimaryDark,
                     fontSize: 24,
@@ -163,7 +143,7 @@ class _AccountsScreenState extends State<AccountsScreen> {
                   ),
                 ),
                 if (controller.balanceByType.isNotEmpty) ...[
-                  const SizedBox(height: 12),
+                  const SizedBox(height: DesignTokens.spacing3),
                   Row(
                     children:
                         controller.balanceByType.entries.map((entry) {
@@ -173,15 +153,10 @@ class _AccountsScreenState extends State<AccountsScreen> {
                               children: [
                                 Text(
                                   _getTypeLabel(entry.key),
-                                  style: GoogleFonts.poppins(
-                                    color: DesignTokens.textTertiaryDark,
-                                    fontSize: 10,
-                                  ),
+                                  style: GoogleFonts.poppins(color: DesignTokens.textTertiaryDark, fontSize: 10),
                                 ),
                                 Text(
-                                  CurrencyFormatter.formatRupiah(
-                                    entry.value.toInt(),
-                                  ),
+                                  CurrencyFormatter.formatRupiah(entry.value.toInt()),
                                   style: GoogleFonts.poppins(
                                     color: DesignTokens.textSecondaryDark,
                                     fontSize: 12,
@@ -215,15 +190,9 @@ class _AccountsScreenState extends State<AccountsScreen> {
     }
   }
 
-  Widget _buildBody(
-    BuildContext context,
-    AppLocalizations? l10n,
-    AccountController controller,
-  ) {
+  Widget _buildBody(BuildContext context, AppLocalizations? l10n, AccountController controller) {
     if (controller.isLoading) {
-      return Center(
-        child: CircularProgressIndicator(color: DesignTokens.primaryColor),
-      );
+      return Center(child: CircularProgressIndicator(color: DesignTokens.primaryColor));
     }
 
     if (controller.errorMessage != null) {
@@ -267,11 +236,7 @@ class _AccountsScreenState extends State<AccountsScreen> {
               color: _getAccountColor(account.color).withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
             ),
-            child: Icon(
-              _getAccountIcon(account.icon),
-              color: _getAccountColor(account.color),
-              size: 24,
-            ),
+            child: Icon(_getAccountIcon(account.icon), color: _getAccountColor(account.color), size: 24),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -288,10 +253,7 @@ class _AccountsScreenState extends State<AccountsScreen> {
                 ),
                 Text(
                   _getTypeLabel(account.type),
-                  style: GoogleFonts.poppins(
-                    color: DesignTokens.textSecondaryDark,
-                    fontSize: 12,
-                  ),
+                  style: GoogleFonts.poppins(color: DesignTokens.textSecondaryDark, fontSize: 12),
                 ),
               ],
             ),
@@ -301,13 +263,9 @@ class _AccountsScreenState extends State<AccountsScreen> {
             children: [
               Text(
                 CurrencyFormatter.formatRupiah(account.balance.toInt()),
-                style: GoogleFonts.poppins(
-                  color: DesignTokens.successColor,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                ),
+                style: GoogleFonts.poppins(color: DesignTokens.successColor, fontSize: 14, fontWeight: FontWeight.w600),
               ),
-              const SizedBox(height: 4),
+              const SizedBox(height: DesignTokens.spacing1),
               Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -316,11 +274,7 @@ class _AccountsScreenState extends State<AccountsScreen> {
                     button: true,
                     child: InkWell(
                       onTap: () => _editAccount(context, account),
-                      child: Icon(
-                        Iconsax.edit,
-                        size: 16,
-                        color: DesignTokens.textSecondaryDark,
-                      ),
+                      child: Icon(Iconsax.edit, size: 16, color: DesignTokens.textSecondaryDark),
                     ),
                   ),
                   const SizedBox(width: 8),
@@ -329,11 +283,7 @@ class _AccountsScreenState extends State<AccountsScreen> {
                     button: true,
                     child: InkWell(
                       onTap: () => _deleteAccount(context, account, controller),
-                      child: Icon(
-                        Iconsax.trash,
-                        size: 16,
-                        color: DesignTokens.errorColor,
-                      ),
+                      child: Icon(Iconsax.trash, size: 16, color: DesignTokens.errorColor),
                     ),
                   ),
                 ],
@@ -351,39 +301,28 @@ class _AccountsScreenState extends State<AccountsScreen> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(Iconsax.wallet, size: 64, color: DesignTokens.textTertiaryDark),
-          const SizedBox(height: 16),
+          const SizedBox(height: DesignTokens.spacing4),
           Text(
             l10n?.no_accounts ?? 'Belum Ada Akun',
-            style: GoogleFonts.poppins(
-              color: DesignTokens.textPrimaryDark,
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-            ),
+            style: GoogleFonts.poppins(color: DesignTokens.textPrimaryDark, fontSize: 18, fontWeight: FontWeight.w600),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: DesignTokens.spacing2),
           Text(
             l10n?.no_transactions_subtitle ?? 'Tap + untuk menambah akun baru',
-            style: GoogleFonts.poppins(
-              color: DesignTokens.textSecondaryDark,
-              fontSize: 14,
-            ),
+            style: GoogleFonts.poppins(color: DesignTokens.textSecondaryDark, fontSize: 14),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildErrorState(
-    BuildContext context,
-    AppLocalizations? l10n,
-    AccountController controller,
-  ) {
+  Widget _buildErrorState(BuildContext context, AppLocalizations? l10n, AccountController controller) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(Iconsax.warning_2, size: 64, color: DesignTokens.errorColor),
-          const SizedBox(height: 16),
+          const SizedBox(height: DesignTokens.spacing4),
           Semantics(
             liveRegion: true,
             child: Text(
@@ -395,27 +334,19 @@ class _AccountsScreenState extends State<AccountsScreen> {
               ),
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: DesignTokens.spacing2),
           Semantics(
             liveRegion: true,
             child: Text(
               controller.errorMessage ?? '',
-              style: GoogleFonts.poppins(
-                color: DesignTokens.textSecondaryDark,
-                fontSize: 14,
-              ),
+              style: GoogleFonts.poppins(color: DesignTokens.textSecondaryDark, fontSize: 14),
             ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: DesignTokens.spacing4),
           ElevatedButton(
             onPressed: controller.refresh,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: DesignTokens.primaryColor,
-            ),
-            child: Text(
-              l10n?.retry ?? 'Coba Lagi',
-              style: GoogleFonts.poppins(color: Colors.white),
-            ),
+            style: ElevatedButton.styleFrom(backgroundColor: DesignTokens.primaryColor),
+            child: Text(l10n?.retry ?? 'Coba Lagi', style: GoogleFonts.poppins(color: Colors.white)),
           ),
         ],
       ),
@@ -427,13 +358,9 @@ class _AccountsScreenState extends State<AccountsScreen> {
       context: context,
       backgroundColor: DesignTokens.backgroundDark,
       isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
       builder: (context) {
-        return AddAccountModal(
-          onAccountAdded: () => context.read<AccountController>().refresh(),
-        );
+        return AddAccountModal(onAccountAdded: () => context.read<AccountController>().refresh());
       },
     );
   }
@@ -443,23 +370,14 @@ class _AccountsScreenState extends State<AccountsScreen> {
       context: context,
       backgroundColor: DesignTokens.backgroundDark,
       isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
       builder: (context) {
-        return AddAccountModal(
-          account: account,
-          onAccountAdded: () => context.read<AccountController>().refresh(),
-        );
+        return AddAccountModal(account: account, onAccountAdded: () => context.read<AccountController>().refresh());
       },
     );
   }
 
-  Future<void> _deleteAccount(
-    BuildContext context,
-    AccountModel account,
-    AccountController controller,
-  ) async {
+  Future<void> _deleteAccount(BuildContext context, AccountModel account, AccountController controller) async {
     final l10n = AppLocalizations.of(context);
     final confirmed = await showDialog<bool>(
       context: context,
@@ -468,30 +386,17 @@ class _AccountsScreenState extends State<AccountsScreen> {
           backgroundColor: DesignTokens.surfaceDark,
           title: Text(
             l10n?.delete ?? 'Hapus',
-            style: GoogleFonts.poppins(
-              color: DesignTokens.textPrimaryDark,
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-            ),
+            style: GoogleFonts.poppins(color: DesignTokens.textPrimaryDark, fontSize: 16, fontWeight: FontWeight.w600),
           ),
           content: Text(
             l10n?.confirm_delete_budget ?? 'Yakin ingin menghapus akun ini?',
-            style: GoogleFonts.poppins(
-              color: DesignTokens.textSecondaryDark,
-              fontSize: 13,
-            ),
+            style: GoogleFonts.poppins(color: DesignTokens.textSecondaryDark, fontSize: 13),
           ),
           actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context, false),
-              child: Text(l10n?.cancel ?? 'Batal'),
-            ),
+            TextButton(onPressed: () => Navigator.pop(context, false), child: Text(l10n?.cancel ?? 'Batal')),
             TextButton(
               onPressed: () => Navigator.pop(context, true),
-              child: Text(
-                l10n?.delete ?? 'Hapus',
-                style: const TextStyle(color: DesignTokens.errorColor),
-              ),
+              child: Text(l10n?.delete ?? 'Hapus', style: const TextStyle(color: DesignTokens.errorColor)),
             ),
           ],
         );
@@ -502,16 +407,10 @@ class _AccountsScreenState extends State<AccountsScreen> {
       try {
         await controller.deleteAccount(account.id);
         if (!mounted) return;
-        ErrorHandlerService.showSuccessSnackbar(
-          context,
-          l10n?.account_deleted_successfully ?? 'Akun berhasil dihapus',
-        );
+        ErrorHandlerService.showSuccessSnackbar(context, l10n?.account_deleted_successfully ?? 'Akun berhasil dihapus');
       } catch (e) {
         if (!mounted) return;
-        ErrorHandlerService.showErrorSnackbar(
-          context,
-          ErrorHandlerService.getUserFriendlyMessage(e),
-        );
+        ErrorHandlerService.showErrorSnackbar(context, ErrorHandlerService.getUserFriendlyMessage(e));
       }
     }
   }

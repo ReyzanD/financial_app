@@ -11,11 +11,9 @@ class InsightsController extends ChangeNotifier {
   final InsightsRepository _r;
   final SpendingPatternAnalyzer _analyzer;
 
-  InsightsController({
-    required InsightsRepository repository,
-    SpendingPatternAnalyzer? analyzer,
-  }) : _r = repository,
-       _analyzer = analyzer ?? SpendingPatternAnalyzer();
+  InsightsController({required InsightsRepository repository, SpendingPatternAnalyzer? analyzer})
+    : _r = repository,
+      _analyzer = analyzer ?? SpendingPatternAnalyzer();
 
   bool _isLoading = false;
   String? _errorMessage;
@@ -42,8 +40,7 @@ class InsightsController extends ChangeNotifier {
   List<dynamic> _transactionsThisMonth() {
     final now = DateTime.now();
     return _transactions.where((t) {
-      final dateStr =
-          t['transaction_date']?.toString() ?? t['date']?.toString() ?? '';
+      final dateStr = t['transaction_date']?.toString() ?? t['date']?.toString() ?? '';
       if (dateStr.isEmpty) return false;
       try {
         final date = DateTime.parse(dateStr);
@@ -59,8 +56,7 @@ class InsightsController extends ChangeNotifier {
     final lastMonth = now.month == 1 ? 12 : now.month - 1;
     final year = now.month == 1 ? now.year - 1 : now.year;
     return _transactions.where((t) {
-      final dateStr =
-          t['transaction_date']?.toString() ?? t['date']?.toString() ?? '';
+      final dateStr = t['transaction_date']?.toString() ?? t['date']?.toString() ?? '';
       if (dateStr.isEmpty) return false;
       try {
         final date = DateTime.parse(dateStr);
@@ -92,8 +88,7 @@ class InsightsController extends ChangeNotifier {
     }
 
     if (thisMonthIncome > 0) {
-      final savingsRate =
-          ((thisMonthIncome - thisMonthExpense) / thisMonthIncome) * 100;
+      final savingsRate = ((thisMonthIncome - thisMonthExpense) / thisMonthIncome) * 100;
       if (savingsRate >= 20)
         score += 20;
       else if (savingsRate >= 10)
@@ -102,22 +97,18 @@ class InsightsController extends ChangeNotifier {
         score -= 15;
     }
 
-    if (lastMonth.isNotEmpty && thisMonth.length < lastMonth.length * 0.8)
-      score += 5;
+    if (lastMonth.isNotEmpty && thisMonth.length < lastMonth.length * 0.8) score += 5;
 
     final categorySpending = <String, double>{};
     for (final t in thisMonth) {
       if ((t['type']?.toString().toLowerCase() ?? 'expense') == 'expense') {
         final category = t['category_name']?.toString() ?? 'Lainnya';
-        categorySpending[category] =
-            (categorySpending[category] ?? 0) +
-            ((t['amount'] as num?)?.toDouble() ?? 0);
+        categorySpending[category] = (categorySpending[category] ?? 0) + ((t['amount'] as num?)?.toDouble() ?? 0);
       }
     }
     if (categorySpending.isNotEmpty) {
       final vals = categorySpending.values.toList();
-      final topShare =
-          vals.reduce((a, b) => a > b ? a : b) / vals.reduce((a, b) => a + b);
+      final topShare = vals.reduce((a, b) => a > b ? a : b) / vals.reduce((a, b) => a + b);
       if (topShare < 0.5) score += 10;
     }
 
@@ -130,8 +121,7 @@ class InsightsController extends ChangeNotifier {
     if (thisMonth.isEmpty) return 0;
     int weekendCount = 0;
     for (final t in thisMonth) {
-      final dateStr =
-          t['transaction_date']?.toString() ?? t['date']?.toString() ?? '';
+      final dateStr = t['transaction_date']?.toString() ?? t['date']?.toString() ?? '';
       if (dateStr.isEmpty) continue;
       try {
         final date = DateTime.parse(dateStr);
@@ -171,8 +161,7 @@ class InsightsController extends ChangeNotifier {
           'type': 'positive',
           'icon': Iconsax.arrow_down_1,
           'title': 'Pengeluaran menurun!',
-          'description':
-              'Pengeluaran turun ${change.abs().toStringAsFixed(0)}% dibanding bulan lalu. Pertahankan!',
+          'description': 'Pengeluaran turun ${change.abs().toStringAsFixed(0)}% dibanding bulan lalu. Pertahankan!',
         });
       } else if (change > 15) {
         // TODO: Localize - move to screen layer or inject AppLocalizations
@@ -194,8 +183,7 @@ class InsightsController extends ChangeNotifier {
           'type': 'positive',
           'icon': Iconsax.safe_home,
           'title': 'Tabungan sehat',
-          'description':
-              'Anda menabung ${savingsRate.toStringAsFixed(0)}% dari pendapatan. Luar biasa!',
+          'description': 'Anda menabung ${savingsRate.toStringAsFixed(0)}% dari pendapatan. Luar biasa!',
         });
       } else if (savingsRate < 0) {
         // TODO: Localize - move to screen layer or inject AppLocalizations
@@ -213,16 +201,12 @@ class InsightsController extends ChangeNotifier {
     for (final t in thisMonth) {
       if ((t['type']?.toString().toLowerCase() ?? 'expense') == 'expense') {
         final cat = t['category_name']?.toString() ?? 'Lainnya';
-        categorySpending[cat] =
-            (categorySpending[cat] ?? 0) +
-            ((t['amount'] as num?)?.toDouble() ?? 0);
+        categorySpending[cat] = (categorySpending[cat] ?? 0) + ((t['amount'] as num?)?.toDouble() ?? 0);
       }
     }
     if (categorySpending.isNotEmpty) {
       final total = categorySpending.values.reduce((a, b) => a + b);
-      final sorted =
-          categorySpending.entries.toList()
-            ..sort((a, b) => b.value.compareTo(a.value));
+      final sorted = categorySpending.entries.toList()..sort((a, b) => b.value.compareTo(a.value));
       final top = sorted.first;
       final share = (top.value / total) * 100;
       if (share > 40) {
@@ -231,8 +215,7 @@ class InsightsController extends ChangeNotifier {
           'type': 'info',
           'icon': Iconsax.chart,
           'title': '${top.key} mendominasi',
-          'description':
-              '${top.key} mengambil ${share.toStringAsFixed(0)}% dari total pengeluaran.',
+          'description': '${top.key} mengambil ${share.toStringAsFixed(0)}% dari total pengeluaran.',
         });
       }
     }
@@ -244,8 +227,7 @@ class InsightsController extends ChangeNotifier {
         'type': 'info',
         'icon': Iconsax.calendar,
         'title': 'Pengeluaran akhir pekan tinggi',
-        'description':
-            '${(weekendSpending * 100).toStringAsFixed(0)}% pengeluaran terjadi di akhir pekan.',
+        'description': '${(weekendSpending * 100).toStringAsFixed(0)}% pengeluaran terjadi di akhir pekan.',
       });
     }
   }
@@ -259,14 +241,10 @@ class InsightsController extends ChangeNotifier {
       final transactionsResult = await _r.getTransactions(limit: 500);
       _goals = await _r.getGoals();
 
-      final rawTransactions =
-          (transactionsResult['transactions'] as List?) ?? [];
+      final rawTransactions = (transactionsResult['transactions'] as List?) ?? [];
       _transactions = KeyNormalizer.normalizeTransactions(rawTransactions);
 
-      _patternAnalysis = _analyzer.analyzeMultiPeriod(
-        transactions: _transactions,
-        monthsToAnalyze: 3,
-      );
+      _patternAnalysis = _analyzer.analyzeMultiPeriod(transactions: _transactions, monthsToAnalyze: 3);
       _generateInsights();
       _calculateHealthScore();
       _spendingTrend = _patternAnalysis['trends'] ?? {};

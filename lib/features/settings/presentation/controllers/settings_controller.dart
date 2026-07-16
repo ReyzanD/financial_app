@@ -8,8 +8,7 @@ import 'package:financial_app/services/data/goal_data_service.dart';
 
 class SettingsController extends ChangeNotifier {
   final AuthService _auth = getIt<AuthService>();
-  final TransactionDataService _transactionData =
-      getIt<TransactionDataService>();
+  final TransactionDataService _transactionData = getIt<TransactionDataService>();
   final BudgetDataService _budgetData = getIt<BudgetDataService>();
   final GoalDataService _goalData = getIt<GoalDataService>();
 
@@ -27,10 +26,8 @@ class SettingsController extends ChangeNotifier {
 
   Future<void> load() async {
     final prefs = await SharedPreferences.getInstance();
-    _aiRecommendationsEnabled =
-        prefs.getBool('ai_recommendations_enabled') ?? true;
-    _locationServicesEnabled =
-        prefs.getBool('location_services_enabled') ?? true;
+    _aiRecommendationsEnabled = prefs.getBool('ai_recommendations_enabled') ?? true;
+    _locationServicesEnabled = prefs.getBool('location_services_enabled') ?? true;
     _notificationsEnabled = prefs.getBool('notifications_enabled') ?? true;
     _darkModeEnabled = prefs.getBool('dark_mode_enabled') ?? true;
     _defaultTabIndex = prefs.getInt('default_tab_index') ?? 0;
@@ -91,11 +88,7 @@ class SettingsController extends ChangeNotifier {
     final goals = await _goalData.getGoals();
     return {
       'exported_at': DateTime.now().toIso8601String(),
-      'stats': {
-        'total_transactions': transactions['total'] ?? 0,
-        'budgets': budgets.length,
-        'goals': goals.length,
-      },
+      'stats': {'total_transactions': transactions['total'] ?? 0, 'budgets': budgets.length, 'goals': goals.length},
     };
   }
 }

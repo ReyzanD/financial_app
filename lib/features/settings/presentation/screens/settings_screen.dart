@@ -35,8 +35,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   void _loadCurrentLocale() async {
-    final loc =
-        Provider.of<LocalizationService>(context, listen: false).currentLocale;
+    final loc = Provider.of<LocalizationService>(context, listen: false).currentLocale;
     if (mounted) setState(() => _currentLocale = loc);
   }
 
@@ -50,11 +49,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         elevation: 0,
         title: Text(
           l10n.settings,
-          style: GoogleFonts.poppins(
-            color: Colors.white,
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-          ),
+          style: GoogleFonts.poppins(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
         ),
         leading: IconButton(
           icon: const Icon(Iconsax.arrow_left, color: Colors.white),
@@ -75,13 +70,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     icon: Iconsax.user,
                     title: l10n.user_profile,
                     subtitle: l10n.manage_account_info,
-                    onTap:
-                        () => Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => const ProfileScreen(),
-                          ),
-                        ),
+                    onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ProfileScreen())),
                   ),
                   _tile(
                     icon: Iconsax.security_card,
@@ -89,7 +78,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     subtitle: l10n.change_password_security,
                     onTap: () => _showSecurityOptions(),
                   ),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: DesignTokens.spacing6),
                   _section(l10n.preferences),
                   _switchTile(
                     icon: Iconsax.flash,
@@ -119,15 +108,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     value: ctrl.darkModeEnabled,
                     onChanged: ctrl.toggleDarkMode,
                   ),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: DesignTokens.spacing6),
                   _section(l10n.app),
                   _tile(
                     icon: Iconsax.language_square,
                     title: l10n.language,
-                    subtitle:
-                        _currentLocale != null
-                            ? _getLanguageName(_currentLocale!)
-                            : l10n.bahasa_indonesia,
+                    subtitle: _currentLocale != null ? _getLanguageName(_currentLocale!) : l10n.bahasa_indonesia,
                     onTap: () => _showLanguageDialog(),
                   ),
                   _tile(
@@ -148,7 +134,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     subtitle: l10n.app_version,
                     onTap: () => _showAboutDialog(),
                   ),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: DesignTokens.spacing6),
                   _section(l10n.actions),
                   _tile(
                     icon: Iconsax.export,
@@ -168,37 +154,26 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     subtitle: l10n.delete_account_and_all_data,
                     onTap: () => _showDeleteAccountDialog(ctrl),
                   ),
-                  const SizedBox(height: 32),
+                  const SizedBox(height: DesignTokens.spacing7),
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
                       onPressed: () async {
                         await ctrl.logout();
-                        if (mounted)
-                          Navigator.of(
-                            context,
-                          ).pushNamedAndRemoveUntil('/login', (route) => false);
+                        if (mounted) Navigator.of(context).pushNamedAndRemoveUntil('/login', (route) => false);
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.red[900],
                         padding: const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(
-                            DesignTokens.radiusMedium,
-                          ),
-                        ),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(DesignTokens.radiusMedium)),
                       ),
                       child: Text(
                         l10n.logout,
-                        style: GoogleFonts.poppins(
-                          color: Colors.white,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                        ),
+                        style: GoogleFonts.poppins(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600),
                       ),
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: DesignTokens.spacing4),
                 ],
               ),
         ),
@@ -208,14 +183,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   Widget _section(String t) => Padding(
     padding: const EdgeInsets.only(bottom: 16),
-    child: Text(
-      t,
-      style: GoogleFonts.poppins(
-        color: Colors.white,
-        fontSize: 18,
-        fontWeight: FontWeight.bold,
-      ),
-    ),
+    child: Text(t, style: GoogleFonts.poppins(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
   );
   Widget _tile({
     required IconData icon,
@@ -231,23 +199,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
     ),
     child: ListTile(
       leading: Icon(icon, color: DesignTokens.primaryColor, size: 24),
-      title: Text(
-        title,
-        style: GoogleFonts.poppins(
-          color: Colors.white,
-          fontSize: 16,
-          fontWeight: FontWeight.w500,
-        ),
-      ),
-      subtitle: Text(
-        subtitle,
-        style: GoogleFonts.poppins(color: Colors.grey[400], fontSize: 12),
-      ),
+      title: Text(title, style: GoogleFonts.poppins(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w500)),
+      subtitle: Text(subtitle, style: GoogleFonts.poppins(color: Colors.grey[400], fontSize: 12)),
       trailing: const Icon(Iconsax.arrow_right_3, color: Colors.grey, size: 20),
       onTap: onTap,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(DesignTokens.radiusMedium)),
     ),
   );
   Widget _switchTile({
@@ -265,27 +221,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
     ),
     child: ListTile(
       leading: Icon(icon, color: DesignTokens.primaryColor, size: 24),
-      title: Text(
-        title,
-        style: GoogleFonts.poppins(
-          color: Colors.white,
-          fontSize: 16,
-          fontWeight: FontWeight.w500,
-        ),
-      ),
-      subtitle: Text(
-        subtitle,
-        style: GoogleFonts.poppins(color: Colors.grey[400], fontSize: 12),
-      ),
+      title: Text(title, style: GoogleFonts.poppins(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w500)),
+      subtitle: Text(subtitle, style: GoogleFonts.poppins(color: Colors.grey[400], fontSize: 12)),
       trailing: Switch(
         value: value,
         onChanged: onChanged,
         activeThumbColor: DesignTokens.primaryColor,
         activeTrackColor: DesignTokens.primaryColor.withValues(alpha: 0.3),
       ),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(DesignTokens.radiusMedium)),
     ),
   );
 
@@ -296,34 +240,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
       builder:
           (c) => AlertDialog(
             backgroundColor: DesignTokens.surfaceDark,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20),
-            ),
-            title: Text(
-              l10n.security,
-              style: GoogleFonts.poppins(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            title: Text(l10n.security, style: GoogleFonts.poppins(color: Colors.white, fontWeight: FontWeight.bold)),
             content: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 ListTile(
-                  leading: const Icon(
-                    Iconsax.lock,
-                    color: DesignTokens.primaryColor,
-                  ),
-                  title: Text(
-                    l10n.change_pin,
-                    style: GoogleFonts.poppins(color: Colors.white),
-                  ),
+                  leading: const Icon(Iconsax.lock, color: DesignTokens.primaryColor),
+                  title: Text(l10n.change_pin, style: GoogleFonts.poppins(color: Colors.white)),
                   subtitle: Text(
                     l10n.change_app_security_pin,
-                    style: GoogleFonts.poppins(
-                      color: Colors.grey[400],
-                      fontSize: 12,
-                    ),
+                    style: GoogleFonts.poppins(color: Colors.grey[400], fontSize: 12),
                   ),
                   onTap: () {
                     Navigator.pop(c);
@@ -331,20 +258,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   },
                 ),
                 ListTile(
-                  leading: const Icon(
-                    Iconsax.key,
-                    color: DesignTokens.primaryColor,
-                  ),
-                  title: Text(
-                    l10n.change_password,
-                    style: GoogleFonts.poppins(color: Colors.white),
-                  ),
+                  leading: const Icon(Iconsax.key, color: DesignTokens.primaryColor),
+                  title: Text(l10n.change_password, style: GoogleFonts.poppins(color: Colors.white)),
                   subtitle: Text(
                     l10n.change_login_password,
-                    style: GoogleFonts.poppins(
-                      color: Colors.grey[400],
-                      fontSize: 12,
-                    ),
+                    style: GoogleFonts.poppins(color: Colors.grey[400], fontSize: 12),
                   ),
                   onTap: () {
                     Navigator.pop(c);
@@ -356,10 +274,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(c),
-                child: Text(
-                  l10n.close,
-                  style: GoogleFonts.poppins(color: DesignTokens.primaryColor),
-                ),
+                child: Text(l10n.close, style: GoogleFonts.poppins(color: DesignTokens.primaryColor)),
               ),
             ],
           ),
@@ -395,10 +310,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   void _showLanguageDialog() {
-    final localizationService = Provider.of<LocalizationService>(
-      context,
-      listen: false,
-    );
+    final localizationService = Provider.of<LocalizationService>(context, listen: false);
     final currentLocale = localizationService.currentLocale;
     final l10n = AppLocalizations.of(context)!;
     showDialog(
@@ -406,16 +318,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
       builder:
           (c) => AlertDialog(
             backgroundColor: DesignTokens.surfaceDark,
-            title: Text(
-              l10n.select_language,
-              style: GoogleFonts.poppins(color: Colors.white),
-            ),
+            title: Text(l10n.select_language, style: GoogleFonts.poppins(color: Colors.white)),
             content: Column(
               mainAxisSize: MainAxisSize.min,
               children:
                   localizationService.supportedLocales.map((locale) {
-                    final sel =
-                        locale.languageCode == currentLocale.languageCode;
+                    final sel = locale.languageCode == currentLocale.languageCode;
                     return ListTile(
                       title: Text(
                         localizationService.getLanguageName(locale),
@@ -424,10 +332,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           fontWeight: sel ? FontWeight.bold : FontWeight.normal,
                         ),
                       ),
-                      leading: Radio<Locale>(
-                        value: locale,
-                        activeColor: DesignTokens.primaryColor,
-                      ),
+                      leading: Radio<Locale>(value: locale, activeColor: DesignTokens.primaryColor),
                       onTap: () async {
                         await localizationService.setLocale(locale);
                         if (c.mounted) {
@@ -445,10 +350,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(c),
-                child: Text(
-                  l10n.cancel,
-                  style: GoogleFonts.poppins(color: Colors.grey),
-                ),
+                child: Text(l10n.cancel, style: GoogleFonts.poppins(color: Colors.grey)),
               ),
             ],
           ),
@@ -462,64 +364,37 @@ class _SettingsScreenState extends State<SettingsScreen> {
       builder:
           (c) => AlertDialog(
             backgroundColor: DesignTokens.surfaceDark,
-            title: Text(
-              l10n.select_default_tab,
-              style: GoogleFonts.poppins(color: Colors.white),
-            ),
+            title: Text(l10n.select_default_tab, style: GoogleFonts.poppins(color: Colors.white)),
             content: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 ListTile(
-                  title: Text(
-                    l10n.dashboard,
-                    style: GoogleFonts.poppins(color: Colors.white),
-                  ),
-                  leading: Radio<int>(
-                    value: 0,
-                    activeColor: DesignTokens.primaryColor,
-                  ),
+                  title: Text(l10n.dashboard, style: GoogleFonts.poppins(color: Colors.white)),
+                  leading: Radio<int>(value: 0, activeColor: DesignTokens.primaryColor),
                   onTap: () {
                     ctrl.setDefaultTab(0);
                     Navigator.pop(c);
                   },
                 ),
                 ListTile(
-                  title: Text(
-                    l10n.transactions,
-                    style: GoogleFonts.poppins(color: Colors.white),
-                  ),
-                  leading: Radio<int>(
-                    value: 1,
-                    activeColor: DesignTokens.primaryColor,
-                  ),
+                  title: Text(l10n.transactions, style: GoogleFonts.poppins(color: Colors.white)),
+                  leading: Radio<int>(value: 1, activeColor: DesignTokens.primaryColor),
                   onTap: () {
                     ctrl.setDefaultTab(1);
                     Navigator.pop(c);
                   },
                 ),
                 ListTile(
-                  title: Text(
-                    l10n.goals,
-                    style: GoogleFonts.poppins(color: Colors.white),
-                  ),
-                  leading: Radio<int>(
-                    value: 2,
-                    activeColor: DesignTokens.primaryColor,
-                  ),
+                  title: Text(l10n.goals, style: GoogleFonts.poppins(color: Colors.white)),
+                  leading: Radio<int>(value: 2, activeColor: DesignTokens.primaryColor),
                   onTap: () {
                     ctrl.setDefaultTab(2);
                     Navigator.pop(c);
                   },
                 ),
                 ListTile(
-                  title: Text(
-                    l10n.analytics,
-                    style: GoogleFonts.poppins(color: Colors.white),
-                  ),
-                  leading: Radio<int>(
-                    value: 3,
-                    activeColor: DesignTokens.primaryColor,
-                  ),
+                  title: Text(l10n.analytics, style: GoogleFonts.poppins(color: Colors.white)),
+                  leading: Radio<int>(value: 3, activeColor: DesignTokens.primaryColor),
                   onTap: () {
                     ctrl.setDefaultTab(3);
                     Navigator.pop(c);
@@ -530,10 +405,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(c),
-                child: Text(
-                  l10n.cancel,
-                  style: GoogleFonts.poppins(color: Colors.grey),
-                ),
+                child: Text(l10n.cancel, style: GoogleFonts.poppins(color: Colors.grey)),
               ),
             ],
           ),
@@ -549,10 +421,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             backgroundColor: DesignTokens.surfaceDark,
             title: Text(
               l10n.data_privacy,
-              style: GoogleFonts.poppins(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-              ),
+              style: GoogleFonts.poppins(color: Colors.white, fontWeight: FontWeight.bold),
             ),
             content: SingleChildScrollView(
               child: Column(
@@ -561,39 +430,24 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 children: [
                   Text(
                     l10n.privacy_policy,
-                    style: GoogleFonts.poppins(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w600,
-                    ),
+                    style: GoogleFonts.poppins(color: Colors.white, fontWeight: FontWeight.w600),
                   ),
-                  const SizedBox(height: 8),
-                  Text(
-                    l10n.app_stores_data_locally,
-                    style: GoogleFonts.poppins(color: Colors.grey[400]),
-                  ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: DesignTokens.spacing2),
+                  Text(l10n.app_stores_data_locally, style: GoogleFonts.poppins(color: Colors.grey[400])),
+                  const SizedBox(height: DesignTokens.spacing4),
                   Text(
                     l10n.app_permissions,
-                    style: GoogleFonts.poppins(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w600,
-                    ),
+                    style: GoogleFonts.poppins(color: Colors.white, fontWeight: FontWeight.w600),
                   ),
-                  const SizedBox(height: 8),
-                  Text(
-                    l10n.location_permission_desc,
-                    style: GoogleFonts.poppins(color: Colors.grey[400]),
-                  ),
+                  const SizedBox(height: DesignTokens.spacing2),
+                  Text(l10n.location_permission_desc, style: GoogleFonts.poppins(color: Colors.grey[400])),
                 ],
               ),
             ),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(c),
-                child: Text(
-                  l10n.close,
-                  style: GoogleFonts.poppins(color: DesignTokens.primaryColor),
-                ),
+                child: Text(l10n.close, style: GoogleFonts.poppins(color: DesignTokens.primaryColor)),
               ),
             ],
           ),
@@ -607,18 +461,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
       builder:
           (c) => AlertDialog(
             backgroundColor: DesignTokens.surfaceDark,
-            title: Text(
-              l10n.about_financial_app,
-              style: GoogleFonts.poppins(color: Colors.white),
-            ),
+            title: Text(l10n.about_financial_app, style: GoogleFonts.poppins(color: Colors.white)),
             content: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text(
-                  l10n.app_version,
-                  style: GoogleFonts.poppins(color: Colors.grey[400]),
-                ),
-                const SizedBox(height: 16),
+                Text(l10n.app_version, style: GoogleFonts.poppins(color: Colors.grey[400])),
+                const SizedBox(height: DesignTokens.spacing4),
                 Text(
                   l10n.app_description,
                   style: GoogleFonts.poppins(color: Colors.white),
@@ -629,10 +477,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(c),
-                child: Text(
-                  l10n.close,
-                  style: GoogleFonts.poppins(color: DesignTokens.primaryColor),
-                ),
+                child: Text(l10n.close, style: GoogleFonts.poppins(color: DesignTokens.primaryColor)),
               ),
             ],
           ),
@@ -646,11 +491,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       reason: AppLocalizations.of(ctx)!.authentication_required_for_export,
     );
     if (!authenticated) {
-      if (ctx.mounted)
-        ErrorHandlerService.showWarningSnackbar(
-          ctx,
-          AppLocalizations.of(ctx)!.authentication_cancelled,
-        );
+      if (ctx.mounted) ErrorHandlerService.showWarningSnackbar(ctx, AppLocalizations.of(ctx)!.authentication_cancelled);
       return;
     }
     final l10n = AppLocalizations.of(ctx)!;
@@ -664,76 +505,41 @@ class _SettingsScreenState extends State<SettingsScreen> {
         builder:
             (c) => AlertDialog(
               backgroundColor: DesignTokens.surfaceDark,
-              title: Text(
-                l10n.data_exported_successfully,
-                style: GoogleFonts.poppins(color: Colors.white),
-              ),
+              title: Text(l10n.data_exported_successfully, style: GoogleFonts.poppins(color: Colors.white)),
               content: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    l10n.export_completed_on,
-                    style: GoogleFonts.poppins(
-                      color: Colors.grey[400],
-                      fontSize: 12,
-                    ),
-                  ),
+                  Text(l10n.export_completed_on, style: GoogleFonts.poppins(color: Colors.grey[400], fontSize: 12)),
                   Text(
                     (data['exported_at'] as String).split('T')[0],
-                    style: GoogleFonts.poppins(
-                      color: Colors.white,
-                      fontSize: 14,
-                    ),
+                    style: GoogleFonts.poppins(color: Colors.white, fontSize: 14),
                   ),
-                  const SizedBox(height: 16),
-                  Text(
-                    l10n.exported_data,
-                    style: GoogleFonts.poppins(
-                      color: Colors.grey[400],
-                      fontSize: 12,
-                    ),
-                  ),
+                  const SizedBox(height: DesignTokens.spacing4),
+                  Text(l10n.exported_data, style: GoogleFonts.poppins(color: Colors.grey[400], fontSize: 12)),
                   Text(
                     '• ${stats['total_transactions'] ?? 0} ${l10n.total_transactions}',
-                    style: GoogleFonts.poppins(
-                      color: Colors.white,
-                      fontSize: 14,
-                    ),
+                    style: GoogleFonts.poppins(color: Colors.white, fontSize: 14),
                   ),
                   Text(
                     '• ${stats['budgets'] ?? 0} ${l10n.total_budgets}',
-                    style: GoogleFonts.poppins(
-                      color: Colors.white,
-                      fontSize: 14,
-                    ),
+                    style: GoogleFonts.poppins(color: Colors.white, fontSize: 14),
                   ),
                   Text(
                     '• ${stats['goals'] ?? 0} ${l10n.total_goals}',
-                    style: GoogleFonts.poppins(
-                      color: Colors.white,
-                      fontSize: 14,
-                    ),
+                    style: GoogleFonts.poppins(color: Colors.white, fontSize: 14),
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: DesignTokens.spacing4),
                   Text(
                     l10n.data_saved_to_clipboard,
-                    style: GoogleFonts.poppins(
-                      color: DesignTokens.primaryColor,
-                      fontSize: 12,
-                    ),
+                    style: GoogleFonts.poppins(color: DesignTokens.primaryColor, fontSize: 12),
                   ),
                 ],
               ),
               actions: [
                 TextButton(
                   onPressed: () => Navigator.pop(c),
-                  child: Text(
-                    l10n.close,
-                    style: GoogleFonts.poppins(
-                      color: DesignTokens.primaryColor,
-                    ),
-                  ),
+                  child: Text(l10n.close, style: GoogleFonts.poppins(color: DesignTokens.primaryColor)),
                 ),
               ],
             ),
@@ -753,10 +559,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Future<void> _pickAndImportCSV() async {
     final l10n = AppLocalizations.of(context);
     try {
-      final result = await FilePicker.platform.pickFiles(
-        type: FileType.custom,
-        allowedExtensions: ['csv'],
-      );
+      final result = await FilePicker.platform.pickFiles(type: FileType.custom, allowedExtensions: ['csv']);
       if (result == null || result.files.isEmpty) return;
       final filePath = result.files.single.path;
       if (filePath == null) return;
@@ -764,15 +567,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
       showDialog(
         context: context,
         barrierDismissible: false,
-        builder:
-            (_) => const Center(
-              child: CircularProgressIndicator(
-                color: DesignTokens.primaryColor,
-              ),
-            ),
+        builder: (_) => const Center(child: CircularProgressIndicator(color: DesignTokens.primaryColor)),
       );
-      final importResult = await getIt<ExportService>()
-          .importTransactionsFromCSV(filePath);
+      final importResult = await getIt<ExportService>().importTransactionsFromCSV(filePath);
       if (!mounted) return;
       Navigator.pop(context);
       final imported = importResult['imported'] as int;
@@ -794,46 +591,29 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 children: [
                   Text(
                     '${l10n?.import_success_count ?? 'Berhasil'}: $imported ${l10n?.transactions ?? 'transaksi'}',
-                    style: GoogleFonts.poppins(
-                      color: Colors.green[400],
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                    ),
+                    style: GoogleFonts.poppins(color: Colors.green[400], fontSize: 16, fontWeight: FontWeight.w600),
                   ),
                   if (failed > 0) ...[
-                    const SizedBox(height: 8),
+                    const SizedBox(height: DesignTokens.spacing2),
                     Text(
                       '${l10n?.import_failed_count ?? 'Gagal'}: $failed ${l10n?.transactions ?? 'transaksi'}',
-                      style: GoogleFonts.poppins(
-                        color: Colors.red[400],
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                      ),
+                      style: GoogleFonts.poppins(color: Colors.red[400], fontSize: 16, fontWeight: FontWeight.w600),
                     ),
                   ],
                   if (errors.isNotEmpty && errors.length <= 5) ...[
-                    const SizedBox(height: 12),
+                    const SizedBox(height: DesignTokens.spacing3),
                     ...errors.map(
                       (e) => Padding(
                         padding: const EdgeInsets.only(bottom: 4),
-                        child: Text(
-                          e,
-                          style: GoogleFonts.poppins(
-                            color: Colors.red[300],
-                            fontSize: 12,
-                          ),
-                        ),
+                        child: Text(e, style: GoogleFonts.poppins(color: Colors.red[300], fontSize: 12)),
                       ),
                     ),
                   ],
                   if (errors.length > 5) ...[
-                    const SizedBox(height: 8),
+                    const SizedBox(height: DesignTokens.spacing2),
                     Text(
                       '...dan ${errors.length - 5} error lainnya',
-                      style: GoogleFonts.poppins(
-                        color: Colors.grey[400],
-                        fontSize: 12,
-                      ),
+                      style: GoogleFonts.poppins(color: Colors.grey[400], fontSize: 12),
                     ),
                   ],
                 ],
@@ -841,12 +621,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               actions: [
                 TextButton(
                   onPressed: () => Navigator.pop(c),
-                  child: Text(
-                    l10n?.close ?? 'Tutup',
-                    style: GoogleFonts.poppins(
-                      color: DesignTokens.primaryColor,
-                    ),
-                  ),
+                  child: Text(l10n?.close ?? 'Tutup', style: GoogleFonts.poppins(color: DesignTokens.primaryColor)),
                 ),
               ],
             ),
@@ -867,31 +642,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
       builder:
           (c) => AlertDialog(
             backgroundColor: DesignTokens.surfaceDark,
-            title: Text(
-              l10n.delete_account_title,
-              style: GoogleFonts.poppins(color: Colors.white),
-            ),
-            content: Text(
-              l10n.delete_account_confirmation,
-              style: GoogleFonts.poppins(color: Colors.grey[400]),
-            ),
+            title: Text(l10n.delete_account_title, style: GoogleFonts.poppins(color: Colors.white)),
+            content: Text(l10n.delete_account_confirmation, style: GoogleFonts.poppins(color: Colors.grey[400])),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(c, false),
-                child: Text(
-                  l10n.cancel,
-                  style: GoogleFonts.poppins(color: Colors.grey),
-                ),
+                child: Text(l10n.cancel, style: GoogleFonts.poppins(color: Colors.grey)),
               ),
               TextButton(
                 onPressed: () async {
                   Navigator.pop(c);
                   final authOk = await BiometricHelper.requestBiometricAuth(
                     context: context,
-                    reason:
-                        AppLocalizations.of(
-                          context,
-                        )!.authentication_required_for_delete,
+                    reason: AppLocalizations.of(context)!.authentication_required_for_delete,
                   );
                   if (!authOk) {
                     if (mounted)
@@ -903,23 +666,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   }
                   try {
                     await ctrl.deleteAccount();
-                    if (mounted)
-                      Navigator.of(
-                        context,
-                      ).pushNamedAndRemoveUntil('/login', (route) => false);
+                    if (mounted) Navigator.of(context).pushNamedAndRemoveUntil('/login', (route) => false);
                   } catch (e) {
                     LoggerService.error('Error deleting account', error: e);
                     if (mounted)
-                      ErrorHandlerService.showErrorSnackbar(
-                        context,
-                        ErrorHandlerService.getUserFriendlyMessage(e),
-                      );
+                      ErrorHandlerService.showErrorSnackbar(context, ErrorHandlerService.getUserFriendlyMessage(e));
                   }
                 },
-                child: Text(
-                  l10n.delete,
-                  style: GoogleFonts.poppins(color: Colors.red),
-                ),
+                child: Text(l10n.delete, style: GoogleFonts.poppins(color: Colors.red)),
               ),
             ],
           ),
@@ -942,10 +696,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   backgroundColor: DesignTokens.surfaceDark,
                   title: Text(
                     l10n.change_password_title,
-                    style: GoogleFonts.poppins(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: GoogleFonts.poppins(color: Colors.white, fontWeight: FontWeight.bold),
                   ),
                   content: Form(
                     key: formKey,
@@ -959,129 +710,79 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             style: GoogleFonts.poppins(color: Colors.white),
                             decoration: InputDecoration(
                               labelText: l10n.old_password,
-                              labelStyle: GoogleFonts.poppins(
-                                color: Colors.grey[400],
-                              ),
+                              labelStyle: GoogleFonts.poppins(color: Colors.grey[400]),
                               filled: true,
                               fillColor: DesignTokens.surfaceDark,
                               border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(
-                                  DesignTokens.radiusMedium,
-                                ),
-                                borderSide: BorderSide(
-                                  color: Colors.grey[700]!,
-                                ),
+                                borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                                borderSide: BorderSide(color: Colors.grey[700]!),
                               ),
                               enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(
-                                  DesignTokens.radiusMedium,
-                                ),
-                                borderSide: BorderSide(
-                                  color: Colors.grey[700]!,
-                                ),
+                                borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                                borderSide: BorderSide(color: Colors.grey[700]!),
                               ),
                               focusedBorder: const OutlineInputBorder(
-                                borderRadius: BorderRadius.all(
-                                  Radius.circular(12),
-                                ),
-                                borderSide: BorderSide(
-                                  color: DesignTokens.primaryColor,
-                                ),
+                                borderRadius: BorderRadius.all(Radius.circular(12)),
+                                borderSide: BorderSide(color: DesignTokens.primaryColor),
                               ),
                             ),
-                            validator:
-                                (v) =>
-                                    (v == null || v.isEmpty)
-                                        ? l10n.enter_old_password
-                                        : null,
+                            validator: (v) => (v == null || v.isEmpty) ? l10n.enter_old_password : null,
                           ),
-                          const SizedBox(height: 16),
+                          const SizedBox(height: DesignTokens.spacing4),
                           TextFormField(
                             controller: newCtrl,
                             obscureText: true,
                             style: GoogleFonts.poppins(color: Colors.white),
                             decoration: InputDecoration(
                               labelText: l10n.new_password,
-                              labelStyle: GoogleFonts.poppins(
-                                color: Colors.grey[400],
-                              ),
+                              labelStyle: GoogleFonts.poppins(color: Colors.grey[400]),
                               filled: true,
                               fillColor: DesignTokens.surfaceDark,
                               border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(
-                                  DesignTokens.radiusMedium,
-                                ),
-                                borderSide: BorderSide(
-                                  color: Colors.grey[700]!,
-                                ),
+                                borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                                borderSide: BorderSide(color: Colors.grey[700]!),
                               ),
                               enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(
-                                  DesignTokens.radiusMedium,
-                                ),
-                                borderSide: BorderSide(
-                                  color: Colors.grey[700]!,
-                                ),
+                                borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                                borderSide: BorderSide(color: Colors.grey[700]!),
                               ),
                               focusedBorder: const OutlineInputBorder(
-                                borderRadius: BorderRadius.all(
-                                  Radius.circular(12),
-                                ),
-                                borderSide: BorderSide(
-                                  color: DesignTokens.primaryColor,
-                                ),
+                                borderRadius: BorderRadius.all(Radius.circular(12)),
+                                borderSide: BorderSide(color: DesignTokens.primaryColor),
                               ),
                             ),
                             validator: (v) {
-                              if (v == null || v.isEmpty)
-                                return l10n.enter_new_password;
-                              if (v.length < 6)
-                                return l10n.password_min_6_chars;
+                              if (v == null || v.isEmpty) return l10n.enter_new_password;
+                              if (v.length < 6) return l10n.password_min_6_chars;
                               return null;
                             },
                           ),
-                          const SizedBox(height: 16),
+                          const SizedBox(height: DesignTokens.spacing4),
                           TextFormField(
                             controller: confirmCtrl,
                             obscureText: true,
                             style: GoogleFonts.poppins(color: Colors.white),
                             decoration: InputDecoration(
                               labelText: l10n.confirm_password,
-                              labelStyle: GoogleFonts.poppins(
-                                color: Colors.grey[400],
-                              ),
+                              labelStyle: GoogleFonts.poppins(color: Colors.grey[400]),
                               filled: true,
                               fillColor: DesignTokens.surfaceDark,
                               border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(
-                                  DesignTokens.radiusMedium,
-                                ),
-                                borderSide: BorderSide(
-                                  color: Colors.grey[700]!,
-                                ),
+                                borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                                borderSide: BorderSide(color: Colors.grey[700]!),
                               ),
                               enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(
-                                  DesignTokens.radiusMedium,
-                                ),
-                                borderSide: BorderSide(
-                                  color: Colors.grey[700]!,
-                                ),
+                                borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                                borderSide: BorderSide(color: Colors.grey[700]!),
                               ),
                               focusedBorder: const OutlineInputBorder(
-                                borderRadius: BorderRadius.all(
-                                  Radius.circular(12),
-                                ),
-                                borderSide: BorderSide(
-                                  color: DesignTokens.primaryColor,
-                                ),
+                                borderRadius: BorderRadius.all(Radius.circular(12)),
+                                borderSide: BorderSide(color: DesignTokens.primaryColor),
                               ),
                             ),
                             validator: (v) {
-                              if (v == null || v.isEmpty)
-                                return l10n.confirm_new_password;
-                              if (v != newCtrl.text)
-                                return l10n.passwords_do_not_match;
+                              if (v == null || v.isEmpty) return l10n.confirm_new_password;
+                              if (v != newCtrl.text) return l10n.passwords_do_not_match;
                               return null;
                             },
                           ),
@@ -1096,18 +797,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               ? null
                               : () {
                                 Navigator.pop(c);
-                                WidgetsBinding.instance.addPostFrameCallback((
-                                  _,
-                                ) {
+                                WidgetsBinding.instance.addPostFrameCallback((_) {
                                   oldCtrl.dispose();
                                   newCtrl.dispose();
                                   confirmCtrl.dispose();
                                 });
                               },
-                      child: Text(
-                        l10n.cancel,
-                        style: GoogleFonts.poppins(color: Colors.grey),
-                      ),
+                      child: Text(l10n.cancel, style: GoogleFonts.poppins(color: Colors.grey)),
                     ),
                     ElevatedButton(
                       onPressed:
@@ -1119,50 +815,36 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                   try {
                                     if (c.mounted) {
                                       Navigator.pop(c);
-                                      WidgetsBinding.instance
-                                          .addPostFrameCallback((_) {
-                                            oldCtrl.dispose();
-                                            newCtrl.dispose();
-                                            confirmCtrl.dispose();
-                                          });
+                                      WidgetsBinding.instance.addPostFrameCallback((_) {
+                                        oldCtrl.dispose();
+                                        newCtrl.dispose();
+                                        confirmCtrl.dispose();
+                                      });
                                       ErrorHandlerService.showSuccessSnackbar(
                                         context,
                                         l10n.password_changed_successfully,
                                       );
                                     }
                                   } catch (e) {
-                                    LoggerService.error(
-                                      'Error changing password',
-                                      error: e,
-                                    );
+                                    LoggerService.error('Error changing password', error: e);
                                     setD(() => isChanging = false);
                                     if (c.mounted)
                                       ErrorHandlerService.showErrorSnackbar(
                                         c,
-                                        ErrorHandlerService.getUserFriendlyMessage(
-                                          e,
-                                        ),
+                                        ErrorHandlerService.getUserFriendlyMessage(e),
                                       );
                                   }
                                 }
                               },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: DesignTokens.primaryColor,
-                      ),
+                      style: ElevatedButton.styleFrom(backgroundColor: DesignTokens.primaryColor),
                       child:
                           isChanging
                               ? const SizedBox(
                                 width: 20,
                                 height: 20,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  color: Colors.white,
-                                ),
+                                child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
                               )
-                              : Text(
-                                l10n.change,
-                                style: GoogleFonts.poppins(color: Colors.white),
-                              ),
+                              : Text(l10n.change, style: GoogleFonts.poppins(color: Colors.white)),
                     ),
                   ],
                 ),

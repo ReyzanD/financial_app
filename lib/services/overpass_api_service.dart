@@ -84,8 +84,7 @@ class OverpassApiService {
     // Check cache
     if (!forceRefresh) {
       final cached = _cache[cacheKey];
-      if (cached != null &&
-          DateTime.now().difference(cached.timestamp) < _cacheDuration) {
+      if (cached != null && DateTime.now().difference(cached.timestamp) < _cacheDuration) {
         LoggerService.cache('HIT', 'overpass_$cacheKey');
         return cached.data;
       }
@@ -117,17 +116,10 @@ out center $maxResults;
       final response = await http
           .post(
             Uri.parse(_baseUrl),
-            headers: {
-              'User-Agent': _userAgent,
-              'Content-Type':
-                  'application/x-www-form-urlencoded; charset=utf-8',
-            },
+            headers: {'User-Agent': _userAgent, 'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8'},
             body: {'data': query},
           )
-          .timeout(
-            _timeout,
-            onTimeout: () => throw Exception('Overpass API request timeout'),
-          );
+          .timeout(_timeout, onTimeout: () => throw Exception('Overpass API request timeout'));
 
       if (response.statusCode != 200) {
         throw Exception(
@@ -183,9 +175,7 @@ out center $maxResults;
       // Cache results
       _cache[cacheKey] = _CacheEntry(data: results, timestamp: DateTime.now());
 
-      LoggerService.info(
-        '✅ Overpass found ${results.length} POIs for "$categoryName"',
-      );
+      LoggerService.info('✅ Overpass found ${results.length} POIs for "$categoryName"');
       return results;
     } catch (e) {
       LoggerService.error('Overpass API query failed', error: e);
@@ -204,17 +194,7 @@ out center $maxResults;
 
   /// Skip very generic OSM names that aren't useful as suggestions.
   bool _isGenericName(String name) {
-    const generics = [
-      'restaurant',
-      'cafe',
-      'shop',
-      'supermarket',
-      'toko',
-      'warung',
-      'building',
-      'entrance',
-      'address',
-    ];
+    const generics = ['restaurant', 'cafe', 'shop', 'supermarket', 'toko', 'warung', 'building', 'entrance', 'address'];
     return generics.contains(name.toLowerCase());
   }
 

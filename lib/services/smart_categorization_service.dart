@@ -232,9 +232,7 @@ class SmartCategorizationService {
         }
       }
 
-      suggestions.sort(
-        (a, b) => (b['score'] as double).compareTo(a['score'] as double),
-      );
+      suggestions.sort((a, b) => (b['score'] as double).compareTo(a['score'] as double));
 
       return suggestions.take(3).toList();
     } catch (e) {
@@ -243,19 +241,10 @@ class SmartCategorizationService {
     }
   }
 
-  Future<String?> predictBestCategory({
-    required String description,
-    double? amount,
-    String? merchant,
-  }) async {
-    final suggestions = await suggestCategory(
-      description: description,
-      amount: amount,
-      merchant: merchant,
-    );
+  Future<String?> predictBestCategory({required String description, double? amount, String? merchant}) async {
+    final suggestions = await suggestCategory(description: description, amount: amount, merchant: merchant);
 
-    if (suggestions.isNotEmpty &&
-        (suggestions.first['confidence'] as double) > 0.4) {
+    if (suggestions.isNotEmpty && (suggestions.first['confidence'] as double) > 0.4) {
       return suggestions.first['category'];
     }
 

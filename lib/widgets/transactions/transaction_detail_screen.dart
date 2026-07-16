@@ -30,16 +30,10 @@ class TransactionDetailScreen extends StatefulWidget {
   final VoidCallback? onDeleted;
   final VoidCallback? onUpdated;
 
-  const TransactionDetailScreen({
-    super.key,
-    required this.transaction,
-    this.onDeleted,
-    this.onUpdated,
-  });
+  const TransactionDetailScreen({super.key, required this.transaction, this.onDeleted, this.onUpdated});
 
   @override
-  State<TransactionDetailScreen> createState() =>
-      _TransactionDetailScreenState();
+  State<TransactionDetailScreen> createState() => _TransactionDetailScreenState();
 }
 
 class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
@@ -49,12 +43,9 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
   bool _isLoadingRecommendations = false;
   bool _isLoadingEngine = false;
   AppLocalizations? _l10n;
-  final AlternativeRecommendationEngine _engine =
-      getIt<AlternativeRecommendationEngine>();
-  final PlaceVisitDataService _placeVisitDataService =
-      getIt<PlaceVisitDataService>();
-  final PriceObservationDataService _priceObservationDataService =
-      getIt<PriceObservationDataService>();
+  final AlternativeRecommendationEngine _engine = getIt<AlternativeRecommendationEngine>();
+  final PlaceVisitDataService _placeVisitDataService = getIt<PlaceVisitDataService>();
+  final PriceObservationDataService _priceObservationDataService = getIt<PriceObservationDataService>();
   bool _isPriceTagged = false;
   bool _isTaggingPrice = false;
 
@@ -85,16 +76,11 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
     setState(() => _isLoadingRecommendations = true);
 
     try {
-      final recommendations = await getIt<LocationIntelligenceService>()
-          .getCategoryLocationAdvice(category);
+      final recommendations = await getIt<LocationIntelligenceService>().getCategoryLocationAdvice(category);
 
-      if (mounted)
-        setState(() => _alternativeRecommendations = recommendations);
+      if (mounted) setState(() => _alternativeRecommendations = recommendations);
     } catch (e) {
-      LoggerService.error(
-        'Error loading alternative recommendations',
-        error: e,
-      );
+      LoggerService.error('Error loading alternative recommendations', error: e);
     } finally {
       if (mounted) setState(() => _isLoadingRecommendations = false);
     }
@@ -116,20 +102,13 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
       // Upsert PlaceVisit — creates or updates from this transaction
       PlaceVisit placeVisit;
       if (txModel.locationData != null) {
-        placeVisit = await _placeVisitDataService.upsertFromTransaction(
-          txModel,
-        );
+        placeVisit = await _placeVisitDataService.upsertFromTransaction(txModel);
 
         // Auto-create a PriceObservation from this transaction's amount
         try {
-          await _priceObservationDataService.createFromTransaction(
-            placeVisitId: placeVisit.id,
-            transaction: txModel,
-          );
+          await _priceObservationDataService.createFromTransaction(placeVisitId: placeVisit.id, transaction: txModel);
           _isPriceTagged = true;
-          LoggerService.info(
-            '✅ PriceObservation auto-created for ${placeVisit.placeName}',
-          );
+          LoggerService.info('✅ PriceObservation auto-created for ${placeVisit.placeName}');
         } catch (e) {
           LoggerService.error('Error auto-creating PriceObservation', error: e);
         }
@@ -167,10 +146,7 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
       final lat = widget.transaction['latitude'] as double?;
       final lng = widget.transaction['longitude'] as double?;
       if (lat == null || lng == null) {
-        ErrorHandlerService.showWarningSnackbar(
-          context,
-          'Transaksi ini tidak memiliki data lokasi',
-        );
+        ErrorHandlerService.showWarningSnackbar(context, 'Transaksi ini tidak memiliki data lokasi');
         return;
       }
 
@@ -180,15 +156,11 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
         pv = await _placeVisitDataService.upsertFromTransaction(txModel);
       } catch (_) {
         // If upsert fails (e.g. no location_data), find or create a basic one
-        final existing = await _placeVisitDataService.findByApproximateLocation(
-          lat,
-          lng,
-        );
+        final existing = await _placeVisitDataService.findByApproximateLocation(lat, lng);
         if (existing != null) {
           pv = existing;
         } else {
-          final fallbackId =
-              'pv_${lat}_${lng}_${DateTime.now().millisecondsSinceEpoch}';
+          final fallbackId = 'pv_${lat}_${lng}_${DateTime.now().millisecondsSinceEpoch}';
           pv = PlaceVisit(
             id: fallbackId,
             placeName: widget.transaction['location']?.toString() ?? 'Unknown',
@@ -228,13 +200,10 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
   Widget build(BuildContext context) {
     _l10n = AppLocalizations.of(context);
     // Debug: Log the entire transaction data
-    LoggerService.debug(
-      'TransactionDetailScreen Data: ${json.encode(widget.transaction)}',
-    );
+    LoggerService.debug('TransactionDetailScreen Data: ${json.encode(widget.transaction)}');
 
     final isIncome = widget.transaction['type'] == 'income';
-    final amount =
-        double.tryParse(widget.transaction['amount']?.toString() ?? '0') ?? 0.0;
+    final amount = double.tryParse(widget.transaction['amount']?.toString() ?? '0') ?? 0.0;
     final category = widget.transaction['category'] ?? 'Uncategorized';
     final date = widget.transaction['date'] as String? ?? '';
     final location = widget.transaction['location'] as String? ?? '';
@@ -243,13 +212,7 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
     return Scaffold(
       backgroundColor: DesignTokens.surfaceModalAlt,
       appBar: AppBar(
-        title: Text(
-          'Detail Transaksi',
-          style: GoogleFonts.poppins(
-            color: Colors.white,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
+        title: Text('Detail Transaksi', style: GoogleFonts.poppins(color: Colors.white, fontWeight: FontWeight.w600)),
         backgroundColor: DesignTokens.surfaceModalAlt,
         elevation: 0,
         leading: IconButton(
@@ -291,28 +254,21 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // Transaction Basic Info
-                  _buildTransactionCard(
-                    isIncome,
-                    amount,
-                    category,
-                    date,
-                    location,
-                    notes,
-                  ),
-                  const SizedBox(height: 20),
+                  _buildTransactionCard(isIncome, amount, category, date, location, notes),
+                  const SizedBox(height: DesignTokens.spacing5),
 
                   // Location Insight Section
                   if (widget.transaction['location'] != '') ...[
                     _buildLocationInsightSection(),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: DesignTokens.spacing3),
                     // Price tagging button
                     _buildPriceTagButton(),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: DesignTokens.spacing5),
                   ],
 
                   // Alternative Recommendations Section
                   _buildAlternativeRecommendationsSection(),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: DesignTokens.spacing5),
 
                   // Transaction Notes & Details
                   _buildTransactionDetails(),
@@ -352,11 +308,7 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
                   color: getCategoryColor(category).withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(14),
                 ),
-                child: Icon(
-                  getCategoryIcon(category),
-                  color: getCategoryColor(category),
-                  size: 28,
-                ),
+                child: Icon(getCategoryIcon(category), color: getCategoryColor(category), size: 28),
               ),
               const SizedBox(width: 16),
               Expanded(
@@ -365,20 +317,10 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
                   children: [
                     Text(
                       widget.transaction['description'] as String? ?? 'No name',
-                      style: GoogleFonts.poppins(
-                        color: Colors.white,
-                        fontSize: 18,
-                        fontWeight: FontWeight.w600,
-                      ),
+                      style: GoogleFonts.poppins(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w600),
                     ),
-                    const SizedBox(height: 4),
-                    Text(
-                      '$category • $location',
-                      style: GoogleFonts.poppins(
-                        color: Colors.grey[500],
-                        fontSize: 14,
-                      ),
-                    ),
+                    const SizedBox(height: DesignTokens.spacing1),
+                    Text('$category • $location', style: GoogleFonts.poppins(color: Colors.grey[500], fontSize: 14)),
                   ],
                 ),
               ),
@@ -393,20 +335,12 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
                       fontWeight: FontWeight.w700,
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: DesignTokens.spacing2),
                   Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 4,
-                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                     decoration: BoxDecoration(
-                      color:
-                          isIncome
-                              ? Colors.green.withValues(alpha: 0.2)
-                              : Colors.red.withValues(alpha: 0.2),
-                      borderRadius: BorderRadius.circular(
-                        DesignTokens.radiusMedium,
-                      ),
+                      color: isIncome ? Colors.green.withValues(alpha: 0.2) : Colors.red.withValues(alpha: 0.2),
+                      borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
                     ),
                     child: Text(
                       isIncome ? 'PEMASUKAN' : 'PENGELUARAN',
@@ -422,27 +356,16 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
             ],
           ),
           if (notes != null && notes.isNotEmpty) ...[
-            const SizedBox(height: 16),
+            const SizedBox(height: DesignTokens.spacing4),
             Container(
               padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: Colors.grey[900],
-                borderRadius: BorderRadius.circular(8),
-              ),
+              decoration: BoxDecoration(color: Colors.grey[900], borderRadius: BorderRadius.circular(8)),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Icon(Icons.notes, color: Colors.grey[500], size: 16),
                   const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      notes,
-                      style: GoogleFonts.poppins(
-                        color: Colors.grey[400],
-                        fontSize: 12,
-                      ),
-                    ),
-                  ),
+                  Expanded(child: Text(notes, style: GoogleFonts.poppins(color: Colors.grey[400], fontSize: 12))),
                 ],
               ),
             ),
@@ -458,13 +381,9 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
       children: [
         Text(
           'Location Insight',
-          style: GoogleFonts.poppins(
-            color: Colors.white,
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-          ),
+          style: GoogleFonts.poppins(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: DesignTokens.spacing3),
 
         LocationInsightCard(
           transactionId: widget.transaction['id']?.toString() ?? 'unknown',
@@ -475,38 +394,24 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
   }
 
   Widget _buildPriceTagButton() {
-    final amount =
-        double.tryParse(widget.transaction['amount']?.toString() ?? '0') ?? 0.0;
+    final amount = double.tryParse(widget.transaction['amount']?.toString() ?? '0') ?? 0.0;
     final hasLocation = widget.transaction['latitude'] != null;
 
     if (_isPriceTagged) {
       return Container(
-        padding: const EdgeInsets.symmetric(
-          vertical: 10,
-          horizontal: DesignTokens.spacing4,
-        ),
+        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: DesignTokens.spacing4),
         decoration: BoxDecoration(
           color: DesignTokens.successColor.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
-          border: Border.all(
-            color: DesignTokens.successColor.withValues(alpha: 0.3),
-          ),
+          border: Border.all(color: DesignTokens.successColor.withValues(alpha: 0.3)),
         ),
         child: Row(
           children: [
-            Icon(
-              Iconsax.tick_circle,
-              color: DesignTokens.successColor,
-              size: 18,
-            ),
+            Icon(Iconsax.tick_circle, color: DesignTokens.successColor, size: 18),
             const SizedBox(width: 8),
             Text(
               'Harga tercatat: ${CurrencyFormatter.formatRupiah(amount)}',
-              style: GoogleFonts.poppins(
-                color: DesignTokens.successColor,
-                fontSize: 13,
-                fontWeight: FontWeight.w500,
-              ),
+              style: GoogleFonts.poppins(color: DesignTokens.successColor, fontSize: 13, fontWeight: FontWeight.w500),
             ),
           ],
         ),
@@ -524,27 +429,18 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
                 ? SizedBox(
                   width: 16,
                   height: 16,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2,
-                    color: DesignTokens.primaryColor,
-                  ),
+                  child: CircularProgressIndicator(strokeWidth: 2, color: DesignTokens.primaryColor),
                 )
                 : Icon(Iconsax.dollar_square, size: 18),
         label: Text(
-          _isTaggingPrice
-              ? 'Menyimpan...'
-              : 'Catat Harga (${CurrencyFormatter.formatRupiah(amount)})',
+          _isTaggingPrice ? 'Menyimpan...' : 'Catat Harga (${CurrencyFormatter.formatRupiah(amount)})',
           style: GoogleFonts.poppins(fontSize: 13),
         ),
         style: OutlinedButton.styleFrom(
           foregroundColor: DesignTokens.primaryColor,
-          side: BorderSide(
-            color: DesignTokens.primaryColor.withValues(alpha: 0.5),
-          ),
+          side: BorderSide(color: DesignTokens.primaryColor.withValues(alpha: 0.5)),
           padding: const EdgeInsets.symmetric(vertical: 12),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
-          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(DesignTokens.radiusMedium)),
         ),
       ),
     );
@@ -566,11 +462,7 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
           children: [
             Text(
               'Rekomendasi Alternatif',
-              style: GoogleFonts.poppins(
-                color: Colors.white,
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
+              style: GoogleFonts.poppins(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
             ),
             if (_engineSuggestions != null && _engineSuggestions!.isNotEmpty)
               TextButton(
@@ -580,8 +472,7 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
                     MaterialPageRoute(
                       builder:
                           (_) => AlternativesScreen(
-                            transactionId:
-                                widget.transaction['id']?.toString() ?? '',
+                            transactionId: widget.transaction['id']?.toString() ?? '',
                             category: category,
                             latitude: lat,
                             longitude: lng,
@@ -592,43 +483,29 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
                 },
                 child: Text(
                   'Lihat Semua (${_engineSuggestions!.length})',
-                  style: GoogleFonts.poppins(
-                    color: DesignTokens.primaryColor,
-                    fontSize: 12,
-                  ),
+                  style: GoogleFonts.poppins(color: DesignTokens.primaryColor, fontSize: 12),
                 ),
               ),
           ],
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: DesignTokens.spacing3),
 
         // New engine-based results (top 3)
         if (_isLoadingEngine)
           _buildLoadingEngine()
-        else if (_engineSuggestions != null &&
-            _engineSuggestions!.isNotEmpty) ...[
-          ..._engineSuggestions!
-              .take(3)
-              .map(
-                (s) =>
-                    AlternativeSuggestionCard(suggestion: s, isCompact: true),
-              ),
-          const SizedBox(height: 8),
+        else if (_engineSuggestions != null && _engineSuggestions!.isNotEmpty) ...[
+          ..._engineSuggestions!.take(3).map((s) => AlternativeSuggestionCard(suggestion: s, isCompact: true)),
+          const SizedBox(height: DesignTokens.spacing2),
         ],
 
         // Fallback: old recommendation service
         if (_engineSuggestions == null || _engineSuggestions!.isEmpty) ...[
           if (_isLoadingRecommendations)
             _buildLoadingRecommendations()
-          else if (_alternativeRecommendations != null &&
-              _alternativeRecommendations!.isNotEmpty)
+          else if (_alternativeRecommendations != null && _alternativeRecommendations!.isNotEmpty)
             ..._alternativeRecommendations!
                 .take(2)
-                .map(
-                  (recommendation) => AlternativeRecommendationCard(
-                    recommendation: recommendation,
-                  ),
-                )
+                .map((recommendation) => AlternativeRecommendationCard(recommendation: recommendation))
           else
             _buildNoRecommendationsAvailable(),
         ],
@@ -648,10 +525,7 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
           SizedBox(
             width: 16,
             height: 16,
-            child: CircularProgressIndicator(
-              strokeWidth: 2,
-              color: DesignTokens.primaryColor,
-            ),
+            child: CircularProgressIndicator(strokeWidth: 2, color: DesignTokens.primaryColor),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -676,10 +550,7 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
         children: [
           CircularProgressIndicator(color: DesignTokens.primaryColor),
           const SizedBox(width: 12),
-          Text(
-            'Mencari rekomendasi alternatif...',
-            style: GoogleFonts.poppins(color: Colors.white),
-          ),
+          Text('Mencari rekomendasi alternatif...', style: GoogleFonts.poppins(color: Colors.white)),
         ],
       ),
     );
@@ -697,8 +568,7 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
           Icon(Iconsax.info_circle, color: Colors.grey[500]),
           const SizedBox(width: 8),
           Text(
-            _l10n?.no_alternative_recommendations ??
-                'Tidak ada rekomendasi alternatif untuk kategori ini',
+            _l10n?.no_alternative_recommendations ?? 'Tidak ada rekomendasi alternatif untuk kategori ini',
             style: GoogleFonts.poppins(color: Colors.grey[500]),
           ),
         ],
@@ -712,13 +582,9 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
       children: [
         Text(
           'Detail Transaksi',
-          style: GoogleFonts.poppins(
-            color: Colors.white,
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-          ),
+          style: GoogleFonts.poppins(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: DesignTokens.spacing3),
         Container(
           padding: const EdgeInsets.all(DesignTokens.spacing4),
           decoration: BoxDecoration(
@@ -727,18 +593,9 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
           ),
           child: Column(
             children: [
-              _buildDetailRow(
-                _l10n?.date ?? 'Tanggal',
-                formatDate(widget.transaction['date'] as String? ?? ''),
-              ),
-              _buildDetailRow(
-                _l10n?.category ?? 'Kategori',
-                widget.transaction['category'] ?? 'Uncategorized',
-              ),
-              _buildDetailRow(
-                _l10n?.location ?? 'Lokasi',
-                widget.transaction['location'] ?? '',
-              ),
+              _buildDetailRow(_l10n?.date ?? 'Tanggal', formatDate(widget.transaction['date'] as String? ?? '')),
+              _buildDetailRow(_l10n?.category ?? 'Kategori', widget.transaction['category'] ?? 'Uncategorized'),
+              _buildDetailRow(_l10n?.location ?? 'Lokasi', widget.transaction['location'] ?? ''),
               _buildDetailRow(
                 _l10n?.transaction_type ?? 'Tipe',
                 widget.transaction['type'] == 'income'
@@ -758,18 +615,8 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(
-            label,
-            style: GoogleFonts.poppins(color: Colors.grey[500], fontSize: 14),
-          ),
-          Text(
-            value,
-            style: GoogleFonts.poppins(
-              color: Colors.white,
-              fontSize: 14,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
+          Text(label, style: GoogleFonts.poppins(color: Colors.grey[500], fontSize: 14)),
+          Text(value, style: GoogleFonts.poppins(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w500)),
         ],
       ),
     );

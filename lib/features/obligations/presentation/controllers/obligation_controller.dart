@@ -8,8 +8,7 @@ class ObligationController extends ChangeNotifier {
   final ObligationRepository _r;
   Timer? _debounceTimer;
 
-  ObligationController({required ObligationRepository repository})
-    : _r = repository {
+  ObligationController({required ObligationRepository repository}) : _r = repository {
     _searchController.addListener(_onSearchChanged);
   }
 
@@ -82,8 +81,7 @@ class ObligationController extends ChangeNotifier {
         final dueDate = obligation.dueDate;
         if (daysUntilDue < 0) {
           overdue++;
-        } else if (dueDate.isBefore(endOfWeek) ||
-            dueDate.isAtSameMomentAs(endOfWeek)) {
+        } else if (dueDate.isBefore(endOfWeek) || dueDate.isAtSameMomentAs(endOfWeek)) {
           dueThisWeek++;
         }
       }
@@ -92,12 +90,7 @@ class ObligationController extends ChangeNotifier {
     } catch (e) {
       LoggerService.error('Error loading obligations summary', error: e);
       _summaryError = e.toString();
-      _summary = {
-        'monthlyTotal': 0.0,
-        'totalDebt': 0.0,
-        'dueThisWeek': 0,
-        'overdue': 0,
-      };
+      _summary = {'monthlyTotal': 0.0, 'totalDebt': 0.0, 'dueThisWeek': 0, 'overdue': 0};
     } finally {
       _summaryLoading = false;
       notifyListeners();

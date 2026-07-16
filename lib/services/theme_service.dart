@@ -17,10 +17,7 @@ class ThemeService extends ChangeNotifier {
 
   /// Listen to system theme changes
   void _listenToSystemTheme() {
-    WidgetsBinding
-        .instance
-        .platformDispatcher
-        .onPlatformBrightnessChanged = () {
+    WidgetsBinding.instance.platformDispatcher.onPlatformBrightnessChanged = () {
       if (_themeMode == AppThemeMode.system) {
         notifyListeners();
       }
@@ -94,9 +91,7 @@ class ThemeService extends ChangeNotifier {
       cardTheme: CardThemeData(
         color: Colors.white,
         elevation: 2,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(DesignTokens.radiusLarge),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(DesignTokens.radiusLarge)),
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
@@ -111,10 +106,7 @@ class ThemeService extends ChangeNotifier {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
-          borderSide: const BorderSide(
-            color: DesignTokens.primaryColor,
-            width: 2,
-          ),
+          borderSide: const BorderSide(color: DesignTokens.primaryColor, width: 2),
         ),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
@@ -123,9 +115,7 @@ class ThemeService extends ChangeNotifier {
           foregroundColor: Colors.white,
           elevation: 0,
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
-          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(DesignTokens.radiusMedium)),
         ),
       ),
       textTheme: const TextTheme(
@@ -172,9 +162,7 @@ class ThemeService extends ChangeNotifier {
       cardTheme: CardThemeData(
         color: DesignTokens.surfaceDark,
         elevation: 0,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(DesignTokens.radiusLarge),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(DesignTokens.radiusLarge)),
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
@@ -189,10 +177,7 @@ class ThemeService extends ChangeNotifier {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
-          borderSide: const BorderSide(
-            color: DesignTokens.primaryColor,
-            width: 2,
-          ),
+          borderSide: const BorderSide(color: DesignTokens.primaryColor, width: 2),
         ),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
@@ -201,9 +186,7 @@ class ThemeService extends ChangeNotifier {
           foregroundColor: Colors.white,
           elevation: 0,
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
-          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(DesignTokens.radiusMedium)),
         ),
       ),
       textTheme: const TextTheme(
@@ -230,7 +213,6 @@ class ThemeService extends ChangeNotifier {
   bool get isDarkMode {
     return _themeMode == AppThemeMode.dark ||
         (_themeMode == AppThemeMode.system &&
-            WidgetsBinding.instance.platformDispatcher.platformBrightness ==
-                Brightness.dark);
+            WidgetsBinding.instance.platformDispatcher.platformBrightness == Brightness.dark);
   }
 }

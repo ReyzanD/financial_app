@@ -17,10 +17,7 @@ class InvestmentService {
     return created;
   }
 
-  Future<InvestmentModel> updatePrice(
-    String investmentId,
-    double newPrice,
-  ) async {
+  Future<InvestmentModel> updatePrice(String investmentId, double newPrice) async {
     await _investmentData.updateInvestmentPrice(investmentId, newPrice);
     final investments = await getInvestments();
     return investments.firstWhere((i) => i.id == investmentId);

@@ -11,11 +11,9 @@ class PriceObservationDataService {
   final LocalAuthService _authService;
   final _uuid = const Uuid();
 
-  PriceObservationDataService({
-    LocalDatabaseService? dbService,
-    LocalAuthService? authService,
-  }) : _dbService = dbService ?? LocalDatabaseService(),
-       _authService = authService ?? LocalAuthService();
+  PriceObservationDataService({LocalDatabaseService? dbService, LocalAuthService? authService})
+    : _dbService = dbService ?? LocalDatabaseService(),
+      _authService = authService ?? LocalAuthService();
 
   /// Get current user ID
   Future<String?> getCurrentUserId() async {
@@ -23,10 +21,7 @@ class PriceObservationDataService {
   }
 
   /// Get all price observations, optionally filtered.
-  Future<List<PriceObservation>> getPriceObservations({
-    String? placeVisitId,
-    String? category,
-  }) async {
+  Future<List<PriceObservation>> getPriceObservations({String? placeVisitId, String? category}) async {
     try {
       final db = await _dbService.database;
       var conditions = <String>[];
@@ -74,8 +69,7 @@ class PriceObservationDataService {
         'category_232143': transaction.categoryName,
         'price_232143': transaction.amount,
         'currency_232143': 'IDR',
-        'observed_at_232143':
-            transaction.transactionDate.toIso8601String().split('T')[0],
+        'observed_at_232143': transaction.transactionDate.toIso8601String().split('T')[0],
         'source_232143': source,
         'transaction_id_232143': transaction.id,
         'created_at_232143': now.toIso8601String(),
@@ -94,10 +88,7 @@ class PriceObservationDataService {
         createdAt: now,
       );
     } catch (e) {
-      LoggerService.error(
-        'Error creating price observation from transaction',
-        error: e,
-      );
+      LoggerService.error('Error creating price observation from transaction', error: e);
       rethrow;
     }
   }
@@ -105,10 +96,7 @@ class PriceObservationDataService {
   /// Get median price for a category across all places, excluding outliers.
   ///
   /// Returns null if fewer than [minObservations] data points exist.
-  Future<double?> getMedianPriceForCategory(
-    String category, {
-    int minObservations = 3,
-  }) async {
+  Future<double?> getMedianPriceForCategory(String category, {int minObservations = 3}) async {
     try {
       final db = await _dbService.database;
       final rows = await db.rawQuery(
@@ -122,8 +110,7 @@ class PriceObservationDataService {
 
       if (rows.length < minObservations) return null;
 
-      final prices =
-          rows.map((r) => (r['price_232143'] as num).toDouble()).toList();
+      final prices = rows.map((r) => (r['price_232143'] as num).toDouble()).toList();
 
       // Remove top/bottom 10% as outlier trim
       final trimCount = (prices.length * 0.1).floor();
@@ -137,10 +124,7 @@ class PriceObservationDataService {
       }
       return trimmed[mid];
     } catch (e) {
-      LoggerService.error(
-        'Error computing median price for category',
-        error: e,
-      );
+      LoggerService.error('Error computing median price for category', error: e);
       rethrow;
     }
   }
@@ -162,10 +146,7 @@ class PriceObservationDataService {
       if (rows.isEmpty) return null;
       return PriceObservation.fromMap(rows.first);
     } catch (e) {
-      LoggerService.error(
-        'Error finding cheapest price for category',
-        error: e,
-      );
+      LoggerService.error('Error finding cheapest price for category', error: e);
       rethrow;
     }
   }

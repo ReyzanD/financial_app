@@ -23,36 +23,21 @@ class LoginHeader extends StatelessWidget {
             borderRadius: BorderRadius.circular(20),
             boxShadow: [
               BoxShadow(
-                color: Color.lerp(
-                  Colors.transparent,
-                  DesignTokens.primaryColor,
-                  0.3,
-                )!.withAlpha(255),
+                color: Color.lerp(Colors.transparent, DesignTokens.primaryColor, 0.3)!.withAlpha(255),
                 blurRadius: 15,
                 spreadRadius: 2,
               ),
             ],
           ),
-          child: const Icon(
-            Icons.account_balance_wallet_rounded,
-            color: Colors.white,
-            size: 40,
-          ),
+          child: const Icon(Icons.account_balance_wallet_rounded, color: Colors.white, size: 40),
         ),
-        const SizedBox(height: 20),
+        const SizedBox(height: DesignTokens.spacing5),
         Text(
           'Hello Again!',
-          style: GoogleFonts.poppins(
-            fontSize: 28,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
+          style: GoogleFonts.poppins(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.white),
         ),
-        const SizedBox(height: 8),
-        Text(
-          'Welcome back to your financial hub',
-          style: GoogleFonts.poppins(fontSize: 14, color: Colors.grey[400]),
-        ),
+        const SizedBox(height: DesignTokens.spacing2),
+        Text('Welcome back to your financial hub', style: GoogleFonts.poppins(fontSize: 14, color: Colors.grey[400])),
       ],
     );
   }
@@ -80,36 +65,18 @@ class RegisterHeader extends StatelessWidget {
             borderRadius: BorderRadius.circular(20),
             boxShadow: [
               BoxShadow(
-                color: Color.lerp(
-                  Colors.transparent,
-                  DesignTokens.secondaryColor,
-                  0.4,
-                )!.withAlpha(255),
+                color: Color.lerp(Colors.transparent, DesignTokens.secondaryColor, 0.4)!.withAlpha(255),
                 blurRadius: 20,
                 spreadRadius: 3,
               ),
             ],
           ),
-          child: const Icon(
-            Icons.rocket_launch_rounded,
-            color: Colors.white,
-            size: 40,
-          ),
+          child: const Icon(Icons.rocket_launch_rounded, color: Colors.white, size: 40),
         ),
-        const SizedBox(height: 20),
-        Text(
-          'Get Started',
-          style: GoogleFonts.poppins(
-            fontSize: 28,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
-        ),
-        const SizedBox(height: 8),
-        Text(
-          'Create your financial journey',
-          style: GoogleFonts.poppins(fontSize: 14, color: Colors.grey[400]),
-        ),
+        const SizedBox(height: DesignTokens.spacing5),
+        Text('Get Started', style: GoogleFonts.poppins(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.white)),
+        const SizedBox(height: DesignTokens.spacing2),
+        Text('Create your financial journey', style: GoogleFonts.poppins(fontSize: 14, color: Colors.grey[400])),
       ],
     );
   }

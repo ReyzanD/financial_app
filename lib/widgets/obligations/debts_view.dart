@@ -14,11 +14,7 @@ class DebtsView extends StatelessWidget {
   final String searchQuery;
   final ObligationFilters filters;
 
-  const DebtsView({
-    super.key,
-    this.searchQuery = '',
-    this.filters = const ObligationFilters(),
-  });
+  const DebtsView({super.key, this.searchQuery = '', this.filters = const ObligationFilters()});
 
   @override
   Widget build(BuildContext context) {
@@ -49,21 +45,15 @@ class DebtsView extends StatelessWidget {
           debts =
               debts.where((d) {
                 if (f.type != null && d.type.name != f.type) return false;
-                if (f.category != null && d.category != f.category)
-                  return false;
+                if (f.category != null && d.category != f.category) return false;
                 if (f.status != null) {
                   if (f.status == 'active' && d.daysUntilDue <= 0) return false;
-                  if (f.status == 'overdue' && d.daysUntilDue >= 0)
-                    return false;
+                  if (f.status == 'overdue' && d.daysUntilDue >= 0) return false;
                 }
-                if (f.minAmount != null && d.monthlyAmount < f.minAmount!)
-                  return false;
-                if (f.maxAmount != null && d.monthlyAmount > f.maxAmount!)
-                  return false;
-                if (f.startDate != null && d.dueDate.isBefore(f.startDate!))
-                  return false;
-                if (f.endDate != null && d.dueDate.isAfter(f.endDate!))
-                  return false;
+                if (f.minAmount != null && d.monthlyAmount < f.minAmount!) return false;
+                if (f.maxAmount != null && d.monthlyAmount > f.maxAmount!) return false;
+                if (f.startDate != null && d.dueDate.isBefore(f.startDate!)) return false;
+                if (f.endDate != null && d.dueDate.isAfter(f.endDate!)) return false;
                 return true;
               }).toList();
         }
@@ -91,11 +81,7 @@ class DebtsView extends StatelessWidget {
                 itemCount: debts.length,
                 itemBuilder: (context, index) {
                   return GestureDetector(
-                    onTap:
-                        () => ObligationHelpers.showObligationDetails(
-                          context,
-                          debts[index],
-                        ),
+                    onTap: () => ObligationHelpers.showObligationDetails(context, debts[index]),
                     child: DebtItem(debt: debts[index]),
                   );
                 },

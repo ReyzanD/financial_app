@@ -19,8 +19,7 @@ class HealthScoreCard extends StatefulWidget {
 }
 
 class _HealthScoreCardState extends State<HealthScoreCard> {
-  final TransactionDataService _transactionData =
-      getIt<TransactionDataService>();
+  final TransactionDataService _transactionData = getIt<TransactionDataService>();
   final FinancialCalculator _calculator = FinancialCalculator();
 
   Map<String, dynamic>? _healthScoreData;
@@ -52,20 +51,13 @@ class _HealthScoreCardState extends State<HealthScoreCard> {
 
     try {
       final now = DateTime.now();
-      final summary = await _transactionData.getFinancialSummary(
-        year: now.year,
-        month: now.month,
-      );
+      final summary = await _transactionData.getFinancialSummary(year: now.year, month: now.month);
 
       if (!mounted) return;
 
       final summaries = summary['summary'] as Map<String, dynamic>? ?? {};
-      final income =
-          (summaries['income'] as Map<String, dynamic>?)?['total_amount'] ??
-          0.0;
-      final expense =
-          (summaries['expense'] as Map<String, dynamic>?)?['total_amount'] ??
-          0.0;
+      final income = (summaries['income'] as Map<String, dynamic>?)?['total_amount'] ?? 0.0;
+      final expense = (summaries['expense'] as Map<String, dynamic>?)?['total_amount'] ?? 0.0;
 
       final incomeDouble = (income is num) ? income.toDouble() : 0.0;
       final expenseDouble = (expense is num) ? expense.toDouble() : 0.0;
@@ -84,10 +76,7 @@ class _HealthScoreCardState extends State<HealthScoreCard> {
         });
       }
     } catch (e) {
-      LoggerService.error(
-        '[HealthScoreCard] Error loading health score',
-        error: e,
-      );
+      LoggerService.error('[HealthScoreCard] Error loading health score', error: e);
       if (mounted) {
         setState(() {
           _isLoading = false;
@@ -135,13 +124,9 @@ class _HealthScoreCardState extends State<HealthScoreCard> {
       decoration: BoxDecoration(
         color: DesignTokens.surfaceDark,
         borderRadius: BorderRadius.circular(DesignTokens.radiusLarge),
-        border: Border.all(
-          color: DesignTokens.primaryColor.withValues(alpha: 0.2),
-        ),
+        border: Border.all(color: DesignTokens.primaryColor.withValues(alpha: 0.2)),
       ),
-      child: const Center(
-        child: CircularProgressIndicator(color: DesignTokens.primaryColor),
-      ),
+      child: const Center(child: CircularProgressIndicator(color: DesignTokens.primaryColor)),
     );
   }
 
@@ -152,14 +137,12 @@ class _HealthScoreCardState extends State<HealthScoreCard> {
       decoration: BoxDecoration(
         color: DesignTokens.surfaceDark,
         borderRadius: BorderRadius.circular(DesignTokens.radiusLarge),
-        border: Border.all(
-          color: DesignTokens.errorColor.withValues(alpha: 0.3),
-        ),
+        border: Border.all(color: DesignTokens.errorColor.withValues(alpha: 0.3)),
       ),
       child: Column(
         children: [
           Icon(Icons.error_outline, color: DesignTokens.errorColor, size: 32),
-          const SizedBox(height: 8),
+          const SizedBox(height: DesignTokens.spacing2),
           Semantics(
             liveRegion: true,
             child: Text(
@@ -168,14 +151,11 @@ class _HealthScoreCardState extends State<HealthScoreCard> {
               textAlign: TextAlign.center,
             ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: DesignTokens.spacing3),
           TextButton.icon(
             onPressed: _loadHealthScore,
             icon: const Icon(Icons.refresh, size: 16),
-            label: Text(
-              l10n?.try_again ?? 'Coba Lagi',
-              style: GoogleFonts.poppins(fontSize: 12),
-            ),
+            label: Text(l10n?.try_again ?? 'Coba Lagi', style: GoogleFonts.poppins(fontSize: 12)),
           ),
         ],
       ),
@@ -187,8 +167,7 @@ class _HealthScoreCardState extends State<HealthScoreCard> {
     final level = _getHealthLevel(score);
     final color = _getScoreColor(score);
     final factors = _healthScoreData!['factors'] as Map<String, dynamic>? ?? {};
-    final recommendations =
-        _healthScoreData!['recommendations'] as List<dynamic>? ?? [];
+    final recommendations = _healthScoreData!['recommendations'] as List<dynamic>? ?? [];
 
     return Container(
       padding: const EdgeInsets.all(DesignTokens.spacing4),
@@ -215,35 +194,21 @@ class _HealthScoreCardState extends State<HealthScoreCard> {
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     color: color.withValues(alpha: 0.15),
-                    border: Border.all(
-                      color: color.withValues(alpha: 0.5),
-                      width: 3,
-                    ),
+                    border: Border.all(color: color.withValues(alpha: 0.5), width: 3),
                   ),
                   child: Center(
                     child: Text(
                       score.toInt().toString(),
-                      style: GoogleFonts.poppins(
-                        color: color,
-                        fontSize: 32,
-                        fontWeight: FontWeight.bold,
-                      ),
+                      style: GoogleFonts.poppins(color: color, fontSize: 32, fontWeight: FontWeight.bold),
                     ),
                   ),
                 ),
-                const SizedBox(height: 8),
-                Text(
-                  level,
-                  style: GoogleFonts.poppins(
-                    color: color,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
+                const SizedBox(height: DesignTokens.spacing2),
+                Text(level, style: GoogleFonts.poppins(color: color, fontSize: 16, fontWeight: FontWeight.w600)),
               ],
             ),
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: DesignTokens.spacing5),
 
           // Factor breakdowns
           ...factors.entries.map((entry) {
@@ -267,22 +232,15 @@ class _HealthScoreCardState extends State<HealthScoreCard> {
                     children: [
                       Text(
                         _getFactorLabel(entry.key),
-                        style: GoogleFonts.poppins(
-                          color: Colors.grey[300],
-                          fontSize: 12,
-                        ),
+                        style: GoogleFonts.poppins(color: Colors.grey[300], fontSize: 12),
                       ),
                       Text(
                         '${factorScore.toStringAsFixed(0)}/${maxScore.toStringAsFixed(0)}',
-                        style: GoogleFonts.poppins(
-                          color: factorColor,
-                          fontSize: 11,
-                          fontWeight: FontWeight.w600,
-                        ),
+                        style: GoogleFonts.poppins(color: factorColor, fontSize: 11, fontWeight: FontWeight.w600),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: DesignTokens.spacing1),
                   ClipRRect(
                     borderRadius: BorderRadius.circular(4),
                     child: LinearProgressIndicator(
@@ -299,38 +257,26 @@ class _HealthScoreCardState extends State<HealthScoreCard> {
 
           // Recommendations section
           if (recommendations.isNotEmpty) ...[
-            const SizedBox(height: 12),
+            const SizedBox(height: DesignTokens.spacing3),
             Divider(color: DesignTokens.borderDark),
-            const SizedBox(height: 8),
+            const SizedBox(height: DesignTokens.spacing2),
             Text(
               'Rekomendasi',
-              style: GoogleFonts.poppins(
-                color: Colors.grey[400],
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
-              ),
+              style: GoogleFonts.poppins(color: Colors.grey[400], fontSize: 12, fontWeight: FontWeight.w600),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: DesignTokens.spacing2),
             ...recommendations.take(3).map((rec) {
               return Padding(
                 padding: const EdgeInsets.only(bottom: 6),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Icon(
-                      Icons.lightbulb_outline,
-                      color: Colors.amber,
-                      size: 16,
-                    ),
+                    Icon(Icons.lightbulb_outline, color: Colors.amber, size: 16),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
                         rec.toString(),
-                        style: GoogleFonts.poppins(
-                          color: Colors.grey[400],
-                          fontSize: 11,
-                          height: 1.4,
-                        ),
+                        style: GoogleFonts.poppins(color: Colors.grey[400], fontSize: 11, height: 1.4),
                       ),
                     ),
                   ],

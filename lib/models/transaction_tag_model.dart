@@ -34,16 +34,10 @@ class TransactionTagModel {
     return TransactionTagModel(
       id: json['id']?.toString() ?? json['tag_id_232143']?.toString() ?? '',
       name: json['name']?.toString() ?? json['name_232143']?.toString() ?? '',
-      color:
-          json['color']?.toString() ??
-          json['color_232143']?.toString() ??
-          '#8B5FBF',
+      color: json['color']?.toString() ?? json['color_232143']?.toString() ?? '#8B5FBF',
       icon: json['icon']?.toString() ?? json['icon_232143']?.toString(),
       usageCount: (json['usage_count'] as num?)?.toInt() ?? 0,
-      createdAt:
-          _parseDate(json['created_at']) ??
-          _parseDate(json['created_at_232143']) ??
-          DateTime.now(),
+      createdAt: _parseDate(json['created_at']) ?? _parseDate(json['created_at_232143']) ?? DateTime.now(),
     );
   }
 
@@ -51,19 +45,10 @@ class TransactionTagModel {
     return TransactionTagModel(
       id: map['tag_id_232143']?.toString() ?? map['id']?.toString() ?? '',
       name: map['name_232143']?.toString() ?? map['name']?.toString() ?? '',
-      color:
-          map['color_232143']?.toString() ??
-          map['color']?.toString() ??
-          '#8B5FBF',
+      color: map['color_232143']?.toString() ?? map['color']?.toString() ?? '#8B5FBF',
       icon: map['icon_232143']?.toString() ?? map['icon']?.toString(),
-      usageCount:
-          (map['usage_count_232143'] as num?)?.toInt() ??
-          (map['usage_count'] as num?)?.toInt() ??
-          0,
-      createdAt:
-          _parseDate(map['created_at_232143']) ??
-          _parseDate(map['created_at']) ??
-          DateTime.now(),
+      usageCount: (map['usage_count_232143'] as num?)?.toInt() ?? (map['usage_count'] as num?)?.toInt() ?? 0,
+      createdAt: _parseDate(map['created_at_232143']) ?? _parseDate(map['created_at']) ?? DateTime.now(),
     );
   }
 

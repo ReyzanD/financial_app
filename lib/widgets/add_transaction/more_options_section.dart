@@ -50,8 +50,7 @@ class MoreOptionsSection extends StatefulWidget {
   State<MoreOptionsSection> createState() => _MoreOptionsSectionState();
 }
 
-class _MoreOptionsSectionState extends State<MoreOptionsSection>
-    with SingleTickerProviderStateMixin {
+class _MoreOptionsSectionState extends State<MoreOptionsSection> with SingleTickerProviderStateMixin {
   late bool _isExpanded;
   late AnimationController _animationController;
   late Animation<double> _expandAnimation;
@@ -61,17 +60,12 @@ class _MoreOptionsSectionState extends State<MoreOptionsSection>
   void initState() {
     super.initState();
     _isExpanded = false;
-    _animationController = AnimationController(
-      duration: const Duration(milliseconds: 300),
-      vsync: this,
-    );
-    _expandAnimation = CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.easeInOut,
-    );
-    _rotateAnimation = Tween<double>(begin: 0.0, end: 0.5).animate(
-      CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
-    );
+    _animationController = AnimationController(duration: const Duration(milliseconds: 300), vsync: this);
+    _expandAnimation = CurvedAnimation(parent: _animationController, curve: Curves.easeInOut);
+    _rotateAnimation = Tween<double>(
+      begin: 0.0,
+      end: 0.5,
+    ).animate(CurvedAnimation(parent: _animationController, curve: Curves.easeInOut));
   }
 
   @override
@@ -115,30 +109,18 @@ class _MoreOptionsSectionState extends State<MoreOptionsSection>
                       color: DesignTokens.primaryColor.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    child: const Icon(
-                      Iconsax.setting,
-                      color: DesignTokens.primaryColor,
-                      size: 20,
-                    ),
+                    child: const Icon(Iconsax.setting, color: DesignTokens.primaryColor, size: 20),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(
                       'Opsi Lainnya',
-                      style: GoogleFonts.poppins(
-                        color: Colors.white,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                      ),
+                      style: GoogleFonts.poppins(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w600),
                     ),
                   ),
                   RotationTransition(
                     turns: _rotateAnimation,
-                    child: Icon(
-                      Iconsax.arrow_down_1,
-                      color: Colors.grey[500],
-                      size: 20,
-                    ),
+                    child: Icon(Iconsax.arrow_down_1, color: Colors.grey[500], size: 20),
                   ),
                 ],
               ),
@@ -155,16 +137,16 @@ class _MoreOptionsSectionState extends State<MoreOptionsSection>
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Divider(color: DesignTokens.borderDark),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: DesignTokens.spacing2),
 
                   // Recurring toggle
                   if (widget.showRecurring == true) ...[
                     _buildRecurringToggle(),
                     if (widget.isRecurring) ...[
-                      const SizedBox(height: 12),
+                      const SizedBox(height: DesignTokens.spacing3),
                       _buildRecurringFrequencyOptions(),
                     ],
-                    const SizedBox(height: 20),
+                    const SizedBox(height: DesignTokens.spacing5),
                   ],
 
                   // Account
@@ -172,14 +154,14 @@ class _MoreOptionsSectionState extends State<MoreOptionsSection>
                     selectedAccountId: widget.selectedAccountId,
                     onAccountSelected: widget.onAccountSelected,
                   ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: DesignTokens.spacing5),
 
                   // Payment Method
                   PaymentMethodSection(
                     selectedPaymentMethod: widget.selectedPaymentMethod,
                     onPaymentMethodSelected: widget.onPaymentMethodSelected,
                   ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: DesignTokens.spacing5),
 
                   // Location
                   LocationSection(
@@ -189,7 +171,7 @@ class _MoreOptionsSectionState extends State<MoreOptionsSection>
                     onPickFromMap: widget.onPickFromMap,
                     onClearLocation: widget.onClearLocation,
                   ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: DesignTokens.spacing5),
 
                   // Notes
                   NotesField(controller: widget.notesController),
@@ -211,11 +193,7 @@ class _MoreOptionsSectionState extends State<MoreOptionsSection>
             color: DesignTokens.primaryColor.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(10),
           ),
-          child: const Icon(
-            Iconsax.refresh,
-            color: DesignTokens.primaryColor,
-            size: 18,
-          ),
+          child: const Icon(Iconsax.refresh, color: DesignTokens.primaryColor, size: 18),
         ),
         const SizedBox(width: 12),
         Expanded(
@@ -224,18 +202,11 @@ class _MoreOptionsSectionState extends State<MoreOptionsSection>
             children: [
               Text(
                 'Transaksi Berulang',
-                style: GoogleFonts.poppins(
-                  color: Colors.white,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                ),
+                style: GoogleFonts.poppins(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w500),
               ),
               Text(
                 widget.isRecurring ? 'Aktif' : 'Nonaktif',
-                style: GoogleFonts.poppins(
-                  color: Colors.grey[500],
-                  fontSize: 12,
-                ),
+                style: GoogleFonts.poppins(color: Colors.grey[500], fontSize: 12),
               ),
             ],
           ),
@@ -269,13 +240,9 @@ class _MoreOptionsSectionState extends State<MoreOptionsSection>
         children: [
           Text(
             'Frekuensi',
-            style: GoogleFonts.poppins(
-              color: Colors.grey[400],
-              fontSize: 12,
-              fontWeight: FontWeight.w500,
-            ),
+            style: GoogleFonts.poppins(color: Colors.grey[400], fontSize: 12, fontWeight: FontWeight.w500),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: DesignTokens.spacing2),
           ...frequencies.map((freq) {
             final value = freq['value'] as String;
             final label = freq['label'] as String;
@@ -288,27 +255,14 @@ class _MoreOptionsSectionState extends State<MoreOptionsSection>
                 onTap: () => widget.onRecurringFrequencyChanged(value),
                 borderRadius: BorderRadius.circular(8),
                 child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 10,
-                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                   decoration: BoxDecoration(
-                    color:
-                        isSelected
-                            ? DesignTokens.primaryColor.withValues(alpha: 0.1)
-                            : Colors.transparent,
+                    color: isSelected ? DesignTokens.primaryColor.withValues(alpha: 0.1) : Colors.transparent,
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Row(
                     children: [
-                      Icon(
-                        icon,
-                        size: 18,
-                        color:
-                            isSelected
-                                ? DesignTokens.primaryColor
-                                : Colors.grey[500],
-                      ),
+                      Icon(icon, size: 18, color: isSelected ? DesignTokens.primaryColor : Colors.grey[500]),
                       const SizedBox(width: 12),
                       Expanded(
                         child: Text(
@@ -316,10 +270,7 @@ class _MoreOptionsSectionState extends State<MoreOptionsSection>
                           style: GoogleFonts.poppins(
                             color: isSelected ? Colors.white : Colors.grey[400],
                             fontSize: 13,
-                            fontWeight:
-                                isSelected
-                                    ? FontWeight.w600
-                                    : FontWeight.normal,
+                            fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
                           ),
                         ),
                       ),
@@ -329,25 +280,12 @@ class _MoreOptionsSectionState extends State<MoreOptionsSection>
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           border: Border.all(
-                            color:
-                                isSelected
-                                    ? DesignTokens.primaryColor
-                                    : Colors.grey[600]!,
+                            color: isSelected ? DesignTokens.primaryColor : Colors.grey[600]!,
                             width: 2,
                           ),
-                          color:
-                              isSelected
-                                  ? DesignTokens.primaryColor
-                                  : Colors.transparent,
+                          color: isSelected ? DesignTokens.primaryColor : Colors.transparent,
                         ),
-                        child:
-                            isSelected
-                                ? const Icon(
-                                  Icons.check,
-                                  size: 12,
-                                  color: Colors.white,
-                                )
-                                : null,
+                        child: isSelected ? const Icon(Icons.check, size: 12, color: Colors.white) : null,
                       ),
                     ],
                   ),

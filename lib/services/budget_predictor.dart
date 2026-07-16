@@ -6,8 +6,7 @@ import 'package:financial_app/core/di/service_locator.dart';
 
 /// Service for predicting budget exhaustion and assessing overspending risk
 class BudgetPredictor {
-  final TransactionDataService _transactionData =
-      getIt<TransactionDataService>();
+  final TransactionDataService _transactionData = getIt<TransactionDataService>();
   final BudgetDataService _budgetData = getIt<BudgetDataService>();
   final ExpensePredictor _expensePredictor = ExpensePredictor();
 
@@ -19,12 +18,8 @@ class BudgetPredictor {
   }) async {
     try {
       // Get recent transactions for this budget category
-      final transactionsData = await _transactionData.getTransactions(
-        limit: 200,
-      );
-      final transactions = List<Map<String, dynamic>>.from(
-        transactionsData['transactions'] ?? [],
-      );
+      final transactionsData = await _transactionData.getTransactions(limit: 200);
+      final transactions = List<Map<String, dynamic>>.from(transactionsData['transactions'] ?? []);
 
       // Filter transactions for this budget's category
       final categoryTransactions =
@@ -43,9 +38,7 @@ class BudgetPredictor {
       }
 
       // Get expense forecast for next 30 days
-      final forecast = await _expensePredictor.predictNext30Days(
-        transactions: categoryTransactions,
-      );
+      final forecast = await _expensePredictor.predictNext30Days(transactions: categoryTransactions);
 
       final dailyForecast = (forecast['forecastAmount'] as double? ?? 0.0) / 30;
       final remainingBudget = budgetLimit - currentSpent;
@@ -76,17 +69,11 @@ class BudgetPredictor {
 
       return {
         'will_exhaust': willExhaust,
-        'days_until_exhaustion':
-            willExhaust ? daysUntilExhaustion.round() : null,
+        'days_until_exhaustion': willExhaust ? daysUntilExhaustion.round() : null,
         'risk_level': riskLevel,
         'daily_forecast': dailyForecast,
         'remaining_budget': remainingBudget,
-        'exhaustion_date':
-            willExhaust
-                ? DateTime.now().add(
-                  Duration(days: daysUntilExhaustion.round()),
-                )
-                : null,
+        'exhaustion_date': willExhaust ? DateTime.now().add(Duration(days: daysUntilExhaustion.round())) : null,
         'message':
             willExhaust
                 ? 'Budget diperkirakan habis dalam ${daysUntilExhaustion.round()} hari'
@@ -159,11 +146,7 @@ class BudgetPredictor {
           'risk_score': riskScore.clamp(0.0, 100.0),
           'risk_level': _getRiskLevelFromScore(riskScore),
           'exhaustion_prediction': exhaustionPrediction,
-          'recommendation': _getRiskRecommendation(
-            riskScore,
-            usagePercent,
-            exhaustionRisk,
-          ),
+          'recommendation': _getRiskRecommendation(riskScore, usagePercent, exhaustionRisk),
         });
       }
 
@@ -190,11 +173,7 @@ class BudgetPredictor {
   }
 
   /// Get recommendation based on risk
-  String _getRiskRecommendation(
-    double riskScore,
-    double usagePercent,
-    String? exhaustionRisk,
-  ) {
+  String _getRiskRecommendation(double riskScore, double usagePercent, String? exhaustionRisk) {
     if (riskScore >= 80 || exhaustionRisk == 'critical') {
       return 'Segera kurangi pengeluaran. Budget hampir habis!';
     } else if (riskScore >= 60 || exhaustionRisk == 'high') {
@@ -207,16 +186,10 @@ class BudgetPredictor {
   }
 
   /// Suggest optimal budget amounts based on historical patterns
-  Future<Map<String, double>> suggestOptimalBudgets({
-    int monthsToAnalyze = 3,
-  }) async {
+  Future<Map<String, double>> suggestOptimalBudgets({int monthsToAnalyze = 3}) async {
     try {
-      final transactionsData = await _transactionData.getTransactions(
-        limit: 500,
-      );
-      final transactions = List<Map<String, dynamic>>.from(
-        transactionsData['transactions'] ?? [],
-      );
+      final transactionsData = await _transactionData.getTransactions(limit: 500);
+      final transactions = List<Map<String, dynamic>>.from(transactionsData['transactions'] ?? []);
 
       final now = DateTime.now();
       final categorySpending = <String, List<double>>{};
@@ -227,16 +200,11 @@ class BudgetPredictor {
         final monthTransactions =
             transactions.where((t) {
               try {
-                final dateStr =
-                    t['transaction_date']?.toString() ??
-                    t['date']?.toString() ??
-                    '';
+                final dateStr = t['transaction_date']?.toString() ?? t['date']?.toString() ?? '';
                 if (dateStr.isEmpty) return false;
                 final date = DateTime.parse(dateStr);
                 final type = t['type']?.toString().toLowerCase() ?? 'expense';
-                return date.year == monthDate.year &&
-                    date.month == monthDate.month &&
-                    type == 'expense';
+                return date.year == monthDate.year && date.month == monthDate.month && type == 'expense';
               } catch (e) {
                 return false;
               }
@@ -246,8 +214,7 @@ class BudgetPredictor {
         for (var t in monthTransactions) {
           final category = t['category_name']?.toString() ?? 'Lainnya';
           final amount = (t['amount'] as num?)?.toDouble() ?? 0.0;
-          monthlyCategoryTotals[category] =
-              (monthlyCategoryTotals[category] ?? 0) + amount;
+          monthlyCategoryTotals[category] = (monthlyCategoryTotals[category] ?? 0) + amount;
         }
 
         monthlyCategoryTotals.forEach((category, amount) {

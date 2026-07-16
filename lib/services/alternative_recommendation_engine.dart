@@ -31,13 +31,10 @@ class AlternativeRecommendationEngine {
     PriceObservationDataService? priceObservationDataService,
     AlternativeSuggestionDataService? alternativeSuggestionDataService,
     OverpassApiService? overpassApiService,
-  }) : _placeVisitDataService =
-           placeVisitDataService ?? getIt<PlaceVisitDataService>(),
-       _priceObservationDataService =
-           priceObservationDataService ?? getIt<PriceObservationDataService>(),
+  }) : _placeVisitDataService = placeVisitDataService ?? getIt<PlaceVisitDataService>(),
+       _priceObservationDataService = priceObservationDataService ?? getIt<PriceObservationDataService>(),
        _alternativeSuggestionDataService =
-           alternativeSuggestionDataService ??
-           getIt<AlternativeSuggestionDataService>(),
+           alternativeSuggestionDataService ?? getIt<AlternativeSuggestionDataService>(),
        _overpassApiService = overpassApiService ?? getIt<OverpassApiService>();
 
   /// Get alternative suggestions for a given place visit.
@@ -52,13 +49,10 @@ class AlternativeRecommendationEngine {
     try {
       // 1. Check cache
       if (!forceRefresh) {
-        final fresh = await _alternativeSuggestionDataService
-            .hasFreshSuggestions(placeVisit.id);
+        final fresh = await _alternativeSuggestionDataService.hasFreshSuggestions(placeVisit.id);
         if (fresh) {
           LoggerService.cache('HIT', 'suggestions_${placeVisit.id}');
-          return _alternativeSuggestionDataService.getForOriginPlace(
-            placeVisit.id,
-          );
+          return _alternativeSuggestionDataService.getForOriginPlace(placeVisit.id);
         }
       }
 
@@ -73,19 +67,18 @@ class AlternativeRecommendationEngine {
       );
 
       if (pois.isEmpty) {
-        LoggerService.info(
-          'ℹ️ No Overpass POIs found near ${placeVisit.placeName}',
-        );
+        LoggerService.info('ℹ️ No Overpass POIs found near ${placeVisit.placeName}');
         return [];
       }
 
       // 3. Get median price for this category for savings estimation
-      final medianPrice = await _priceObservationDataService
-          .getMedianPriceForCategory(placeVisit.category, minObservations: 2);
+      final medianPrice = await _priceObservationDataService.getMedianPriceForCategory(
+        placeVisit.category,
+        minObservations: 2,
+      );
 
       // 4. Get known prices for this category's place visits
-      final knownPlacePrices = await _priceObservationDataService
-          .getPriceObservations(category: placeVisit.category);
+      final knownPlacePrices = await _priceObservationDataService.getPriceObservations(category: placeVisit.category);
 
       // Build a map: place_name -> lowest price observed
       final lowestPrices = <String, double>{};
@@ -187,16 +180,11 @@ class AlternativeRecommendationEngine {
               .toList();
 
       await _alternativeSuggestionDataService.saveSuggestions(models);
-      LoggerService.info(
-        '✅ Generated ${models.length} alternatives for ${placeVisit.placeName}',
-      );
+      LoggerService.info('✅ Generated ${models.length} alternatives for ${placeVisit.placeName}');
 
       return models;
     } catch (e) {
-      LoggerService.error(
-        'Error generating alternatives for ${placeVisit.placeName}',
-        error: e,
-      );
+      LoggerService.error('Error generating alternatives for ${placeVisit.placeName}', error: e);
       rethrow;
     }
   }
@@ -212,11 +200,7 @@ class AlternativeRecommendationEngine {
   }
 
   /// Score a suggestion's reliability from 0–100.
-  int _computeConfidence({
-    required bool hasPriceData,
-    required double distanceMeters,
-    required bool hasName,
-  }) {
+  int _computeConfidence({required bool hasPriceData, required double distanceMeters, required bool hasName}) {
     int score = 30; // baseline: exists and is an OSM feature
 
     if (hasName) score += 20;

@@ -41,28 +41,18 @@ class BudgetEditDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final controller = TextEditingController(
-      text: currentPercentage.toString(),
-    );
+    final controller = TextEditingController(text: currentPercentage.toString());
 
     return AlertDialog(
       backgroundColor: DesignTokens.surfaceDark,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(DesignTokens.radiusLarge),
-      ),
-      title: Text(
-        l10n?.edit_percentage ?? 'Edit Persentase',
-        style: GoogleFonts.poppins(color: Colors.white),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(DesignTokens.radiusLarge)),
+      title: Text(l10n?.edit_percentage ?? 'Edit Persentase', style: GoogleFonts.poppins(color: Colors.white)),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            categoryName,
-            style: GoogleFonts.poppins(color: Colors.white70, fontSize: 14),
-          ),
-          const SizedBox(height: 16),
+          Text(categoryName, style: GoogleFonts.poppins(color: Colors.white70, fontSize: 14)),
+          const SizedBox(height: DesignTokens.spacing4),
           TextField(
             controller: controller,
             keyboardType: TextInputType.number,
@@ -70,9 +60,7 @@ class BudgetEditDialog extends StatelessWidget {
             decoration: InputDecoration(
               labelText: 'Persentase (%)',
               labelStyle: GoogleFonts.poppins(color: Colors.grey),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8),
                 borderSide: BorderSide(color: Colors.grey[700]!),
@@ -83,7 +71,7 @@ class BudgetEditDialog extends StatelessWidget {
               ),
             ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: DesignTokens.spacing3),
           Text(
             '💡 Pastikan total semua persentase = 100%',
             style: GoogleFonts.poppins(color: Colors.orange, fontSize: 11),
@@ -93,33 +81,22 @@ class BudgetEditDialog extends StatelessWidget {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: Text(
-            l10n?.cancel ?? 'Batal',
-            style: GoogleFonts.poppins(color: Colors.grey),
-          ),
+          child: Text(l10n?.cancel ?? 'Batal', style: GoogleFonts.poppins(color: Colors.grey)),
         ),
         ElevatedButton(
           onPressed: () {
             final newPercentage = double.tryParse(controller.text);
-            if (newPercentage != null &&
-                newPercentage > 0 &&
-                newPercentage <= 100) {
+            if (newPercentage != null && newPercentage > 0 && newPercentage <= 100) {
               onSave(newPercentage);
             } else {
               ErrorHandlerService.showWarningSnackbar(
                 context,
-                l10n?.enter_valid_percentage ??
-                    'Masukkan persentase yang valid (1-100)',
+                l10n?.enter_valid_percentage ?? 'Masukkan persentase yang valid (1-100)',
               );
             }
           },
-          style: ElevatedButton.styleFrom(
-            backgroundColor: DesignTokens.primaryColor,
-          ),
-          child: Text(
-            l10n?.save ?? 'Simpan',
-            style: GoogleFonts.poppins(color: Colors.white),
-          ),
+          style: ElevatedButton.styleFrom(backgroundColor: DesignTokens.primaryColor),
+          child: Text(l10n?.save ?? 'Simpan', style: GoogleFonts.poppins(color: Colors.white)),
         ),
       ],
     );

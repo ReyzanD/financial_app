@@ -84,11 +84,7 @@ class _FinancialAdvisorScreenState extends State<FinancialAdvisorScreen> {
         backgroundColor: DesignTokens.surfaceDark,
         title: Text(
           'Penasihat Keuangan',
-          style: GoogleFonts.poppins(
-            color: Colors.white,
-            fontWeight: FontWeight.w600,
-            fontSize: 18,
-          ),
+          style: GoogleFonts.poppins(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 18),
         ),
         leading: IconButton(
           icon: const Icon(Iconsax.arrow_left, color: Colors.white),
@@ -130,10 +126,7 @@ class _FinancialAdvisorScreenState extends State<FinancialAdvisorScreen> {
   Widget _periodChip({required String label, required _AnalysisPeriod period}) {
     final selected = _selectedPeriod == period;
     return Material(
-      color:
-          selected
-              ? DesignTokens.primaryColor
-              : Colors.white.withValues(alpha: 0.1),
+      color: selected ? DesignTokens.primaryColor : Colors.white.withValues(alpha: 0.1),
       borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
       child: InkWell(
         onTap: () {
@@ -159,9 +152,7 @@ class _FinancialAdvisorScreenState extends State<FinancialAdvisorScreen> {
   }
 
   Widget _buildLoading() {
-    return const Center(
-      child: CircularProgressIndicator(color: DesignTokens.primaryColor),
-    );
+    return const Center(child: CircularProgressIndicator(color: DesignTokens.primaryColor));
   }
 
   Widget _buildError() {
@@ -172,16 +163,13 @@ class _FinancialAdvisorScreenState extends State<FinancialAdvisorScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const Icon(Iconsax.warning_2, size: 48, color: Colors.redAccent),
-            const SizedBox(height: 16),
+            const SizedBox(height: DesignTokens.spacing4),
             Text(
               _errorMessage ?? 'Terjadi kesalahan',
               textAlign: TextAlign.center,
-              style: GoogleFonts.poppins(
-                color: DesignTokens.textSecondaryDark,
-                fontSize: 14,
-              ),
+              style: GoogleFonts.poppins(color: DesignTokens.textSecondaryDark, fontSize: 14),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: DesignTokens.spacing6),
             Material(
               color: DesignTokens.primaryColor,
               borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
@@ -189,16 +177,10 @@ class _FinancialAdvisorScreenState extends State<FinancialAdvisorScreen> {
                 onTap: _loadAnalysis,
                 borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 24,
-                    vertical: 12,
-                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                   child: Text(
                     'Coba Lagi',
-                    style: GoogleFonts.poppins(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w600,
-                    ),
+                    style: GoogleFonts.poppins(color: Colors.white, fontWeight: FontWeight.w600),
                   ),
                 ),
               ),
@@ -226,24 +208,23 @@ class _FinancialAdvisorScreenState extends State<FinancialAdvisorScreen> {
           children: [
             // Income / Expense summary
             _buildSummaryCard(a),
-            const SizedBox(height: 16),
+            const SizedBox(height: DesignTokens.spacing4),
 
             // 50/30/20 three-panel breakdown
             _buildRuleCard(a),
-            const SizedBox(height: 16),
+            const SizedBox(height: DesignTokens.spacing4),
 
             // Trend (last 3 months)
-            if (_trendMonths != null && _trendMonths!.length >= 2)
-              _buildTrendSection(_trendMonths!),
-            const SizedBox(height: 16),
+            if (_trendMonths != null && _trendMonths!.length >= 2) _buildTrendSection(_trendMonths!),
+            const SizedBox(height: DesignTokens.spacing4),
 
             // Assessment
             _buildAssessmentCard(assessment),
-            const SizedBox(height: 16),
+            const SizedBox(height: DesignTokens.spacing4),
 
             // Savings suggestions
             _buildSuggestionsSection(a),
-            const SizedBox(height: 16),
+            const SizedBox(height: DesignTokens.spacing4),
 
             // Needs breakdown
             if (a.needsCategories.isNotEmpty)
@@ -256,7 +237,7 @@ class _FinancialAdvisorScreenState extends State<FinancialAdvisorScreen> {
                 target: a.needsTarget,
                 gap: a.needsGap,
               ),
-            const SizedBox(height: 12),
+            const SizedBox(height: DesignTokens.spacing3),
 
             // Wants breakdown
             if (a.wantsCategories.isNotEmpty)
@@ -269,11 +250,11 @@ class _FinancialAdvisorScreenState extends State<FinancialAdvisorScreen> {
                 target: a.wantsTarget,
                 gap: a.wantsGap,
               ),
-            const SizedBox(height: 12),
+            const SizedBox(height: DesignTokens.spacing3),
 
             // Goal run-rates
             if (a.goalRunRates.isNotEmpty) _buildGoalSection(a),
-            const SizedBox(height: 24),
+            const SizedBox(height: DesignTokens.spacing6),
           ],
         ),
       ),
@@ -287,28 +268,17 @@ class _FinancialAdvisorScreenState extends State<FinancialAdvisorScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(
-              Iconsax.wallet,
-              size: 64,
-              color: DesignTokens.textSecondaryDark,
-            ),
-            const SizedBox(height: 16),
+            const Icon(Iconsax.wallet, size: 64, color: DesignTokens.textSecondaryDark),
+            const SizedBox(height: DesignTokens.spacing4),
             Text(
               'Belum Ada Data Bulan Ini',
-              style: GoogleFonts.poppins(
-                color: Colors.white,
-                fontWeight: FontWeight.w600,
-                fontSize: 18,
-              ),
+              style: GoogleFonts.poppins(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 18),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: DesignTokens.spacing2),
             Text(
               'Tambahkan transaksi pemasukan bulan ini\nuntuk melihat analisis 50/30/20.',
               textAlign: TextAlign.center,
-              style: GoogleFonts.poppins(
-                color: DesignTokens.textSecondaryDark,
-                fontSize: 14,
-              ),
+              style: GoogleFonts.poppins(color: DesignTokens.textSecondaryDark, fontSize: 14),
             ),
           ],
         ),
@@ -330,19 +300,10 @@ class _FinancialAdvisorScreenState extends State<FinancialAdvisorScreen> {
         children: [
           Text(
             'Ringkasan Bulan Ini',
-            style: GoogleFonts.poppins(
-              color: Colors.white,
-              fontWeight: FontWeight.w600,
-              fontSize: 16,
-            ),
+            style: GoogleFonts.poppins(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 16),
           ),
-          const SizedBox(height: 12),
-          _summaryRow(
-            Iconsax.arrow_up_2,
-            'Pemasukan',
-            CurrencyFormatter.formatRupiah(a.monthlyIncome),
-            Colors.green,
-          ),
+          const SizedBox(height: DesignTokens.spacing3),
+          _summaryRow(Iconsax.arrow_up_2, 'Pemasukan', CurrencyFormatter.formatRupiah(a.monthlyIncome), Colors.green),
           const SizedBox(height: 6),
           _summaryRow(
             Iconsax.arrow_down_2,
@@ -367,23 +328,8 @@ class _FinancialAdvisorScreenState extends State<FinancialAdvisorScreen> {
       children: [
         Icon(icon, size: 18, color: color),
         const SizedBox(width: 8),
-        Expanded(
-          child: Text(
-            label,
-            style: GoogleFonts.poppins(
-              color: DesignTokens.textSecondaryDark,
-              fontSize: 14,
-            ),
-          ),
-        ),
-        Text(
-          value,
-          style: GoogleFonts.poppins(
-            color: color,
-            fontWeight: FontWeight.w600,
-            fontSize: 14,
-          ),
-        ),
+        Expanded(child: Text(label, style: GoogleFonts.poppins(color: DesignTokens.textSecondaryDark, fontSize: 14))),
+        Text(value, style: GoogleFonts.poppins(color: color, fontWeight: FontWeight.w600, fontSize: 14)),
       ],
     );
   }
@@ -402,23 +348,15 @@ class _FinancialAdvisorScreenState extends State<FinancialAdvisorScreen> {
         children: [
           Row(
             children: [
-              const Icon(
-                Iconsax.diagram,
-                color: DesignTokens.primaryColor,
-                size: 20,
-              ),
+              const Icon(Iconsax.diagram, color: DesignTokens.primaryColor, size: 20),
               const SizedBox(width: 8),
               Text(
                 'Aturan 50/30/20',
-                style: GoogleFonts.poppins(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w600,
-                  fontSize: 16,
-                ),
+                style: GoogleFonts.poppins(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 16),
               ),
             ],
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: DesignTokens.spacing4),
           _buildRuleBar(
             label: 'Kebutuhan',
             target: 50,
@@ -429,7 +367,7 @@ class _FinancialAdvisorScreenState extends State<FinancialAdvisorScreen> {
             icon: Iconsax.shield_tick,
             gap: a.needsGap,
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: DesignTokens.spacing3),
           _buildRuleBar(
             label: 'Keinginan',
             target: 30,
@@ -440,7 +378,7 @@ class _FinancialAdvisorScreenState extends State<FinancialAdvisorScreen> {
             icon: Iconsax.heart,
             gap: a.wantsGap,
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: DesignTokens.spacing3),
           _buildRuleBar(
             label: 'Tabungan',
             target: 20,
@@ -466,8 +404,7 @@ class _FinancialAdvisorScreenState extends State<FinancialAdvisorScreen> {
     required IconData icon,
     required double gap,
   }) {
-    final overTarget =
-        (label == 'Tabungan') ? actualPercent < target : actualPercent > target;
+    final overTarget = (label == 'Tabungan') ? actualPercent < target : actualPercent > target;
     final pct = actualPercent.clamp(0.0, 100.0);
 
     return Column(
@@ -480,11 +417,7 @@ class _FinancialAdvisorScreenState extends State<FinancialAdvisorScreen> {
             Expanded(
               child: Text(
                 label,
-                style: GoogleFonts.poppins(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w500,
-                  fontSize: 14,
-                ),
+                style: GoogleFonts.poppins(color: Colors.white, fontWeight: FontWeight.w500, fontSize: 14),
               ),
             ),
             Text(
@@ -503,29 +436,21 @@ class _FinancialAdvisorScreenState extends State<FinancialAdvisorScreen> {
           child: LinearProgressIndicator(
             value: pct / 100,
             backgroundColor: Colors.white.withValues(alpha: 0.1),
-            valueColor: AlwaysStoppedAnimation(
-              overTarget ? Colors.redAccent : color,
-            ),
+            valueColor: AlwaysStoppedAnimation(overTarget ? Colors.redAccent : color),
             minHeight: 8,
           ),
         ),
-        const SizedBox(height: 4),
+        const SizedBox(height: DesignTokens.spacing1),
         Row(
           children: [
             Text(
               'Aktual: ${CurrencyFormatter.formatRupiah(actualAmount)}',
-              style: GoogleFonts.poppins(
-                color: DesignTokens.textSecondaryDark,
-                fontSize: 11,
-              ),
+              style: GoogleFonts.poppins(color: DesignTokens.textSecondaryDark, fontSize: 11),
             ),
             const Spacer(),
             Text(
               'Target $target%: ${CurrencyFormatter.formatRupiah(targetAmount)}',
-              style: GoogleFonts.poppins(
-                color: DesignTokens.textSecondaryDark,
-                fontSize: 11,
-              ),
+              style: GoogleFonts.poppins(color: DesignTokens.textSecondaryDark, fontSize: 11),
             ),
           ],
         ),
@@ -553,15 +478,11 @@ class _FinancialAdvisorScreenState extends State<FinancialAdvisorScreen> {
               const SizedBox(width: 8),
               Text(
                 'Tren 3 Bulan',
-                style: GoogleFonts.poppins(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w600,
-                  fontSize: 16,
-                ),
+                style: GoogleFonts.poppins(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 16),
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: DesignTokens.spacing3),
           // Header row
           Row(
             children: [
@@ -581,27 +502,12 @@ class _FinancialAdvisorScreenState extends State<FinancialAdvisorScreen> {
               ),
             ],
           ),
-          const SizedBox(height: 8),
-          _trendRow(
-            'Kebutuhan',
-            Colors.blue,
-            months.map((m) => m.needsPercent).toList(),
-            50,
-          ),
+          const SizedBox(height: DesignTokens.spacing2),
+          _trendRow('Kebutuhan', Colors.blue, months.map((m) => m.needsPercent).toList(), 50),
           const SizedBox(height: 6),
-          _trendRow(
-            'Keinginan',
-            Colors.orange,
-            months.map((m) => m.wantsPercent).toList(),
-            30,
-          ),
+          _trendRow('Keinginan', Colors.orange, months.map((m) => m.wantsPercent).toList(), 30),
           const SizedBox(height: 6),
-          _trendRow(
-            'Tabungan',
-            Colors.green,
-            months.map((m) => m.savingsPercent).toList(),
-            20,
-          ),
+          _trendRow('Tabungan', Colors.green, months.map((m) => m.savingsPercent).toList(), 20),
         ],
       ),
     );
@@ -618,40 +524,18 @@ class _FinancialAdvisorScreenState extends State<FinancialAdvisorScreen> {
   }
 
   String _monthName(int month) {
-    const names = [
-      'Jan',
-      'Feb',
-      'Mar',
-      'Apr',
-      'Mei',
-      'Jun',
-      'Jul',
-      'Agu',
-      'Sep',
-      'Okt',
-      'Nov',
-      'Des',
-    ];
+    const names = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
     return names[month - 1];
   }
 
-  Widget _trendRow(
-    String label,
-    Color color,
-    List<double> values,
-    double target,
-  ) {
+  Widget _trendRow(String label, Color color, List<double> values, double target) {
     return Row(
       children: [
         SizedBox(
           width: 60,
           child: Text(
             label,
-            style: GoogleFonts.poppins(
-              color: Colors.white70,
-              fontSize: 11,
-              fontWeight: FontWeight.w500,
-            ),
+            style: GoogleFonts.poppins(color: Colors.white70, fontSize: 11, fontWeight: FontWeight.w500),
           ),
         ),
         ...values.asMap().entries.map((entry) {
@@ -664,10 +548,7 @@ class _FinancialAdvisorScreenState extends State<FinancialAdvisorScreen> {
                 Text(
                   val > 0 ? '${val.toStringAsFixed(0)}%' : '-',
                   style: GoogleFonts.poppins(
-                    color:
-                        isLatest
-                            ? Colors.white
-                            : DesignTokens.textSecondaryDark,
+                    color: isLatest ? Colors.white : DesignTokens.textSecondaryDark,
                     fontWeight: isLatest ? FontWeight.w600 : FontWeight.w400,
                     fontSize: isLatest ? 14 : 12,
                   ),
@@ -678,9 +559,7 @@ class _FinancialAdvisorScreenState extends State<FinancialAdvisorScreen> {
                   child: LinearProgressIndicator(
                     value: (val / 100).clamp(0.0, 1.0),
                     backgroundColor: Colors.white.withValues(alpha: 0.08),
-                    valueColor: AlwaysStoppedAnimation(
-                      overTarget ? Colors.redAccent : color,
-                    ),
+                    valueColor: AlwaysStoppedAnimation(overTarget ? Colors.redAccent : color),
                     minHeight: 4,
                   ),
                 ),
@@ -706,30 +585,18 @@ class _FinancialAdvisorScreenState extends State<FinancialAdvisorScreen> {
         children: [
           Row(
             children: [
-              const Icon(
-                Iconsax.message_text,
-                color: DesignTokens.primaryColor,
-                size: 20,
-              ),
+              const Icon(Iconsax.message_text, color: DesignTokens.primaryColor, size: 20),
               const SizedBox(width: 8),
               Text(
                 'Penilaian',
-                style: GoogleFonts.poppins(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w600,
-                  fontSize: 16,
-                ),
+                style: GoogleFonts.poppins(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 16),
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: DesignTokens.spacing3),
           Text(
             assessment,
-            style: GoogleFonts.poppins(
-              color: DesignTokens.textSecondaryDark,
-              fontSize: 13,
-              height: 1.6,
-            ),
+            style: GoogleFonts.poppins(color: DesignTokens.textSecondaryDark, fontSize: 13, height: 1.6),
           ),
         ],
       ),
@@ -747,40 +614,27 @@ class _FinancialAdvisorScreenState extends State<FinancialAdvisorScreen> {
       decoration: BoxDecoration(
         color: DesignTokens.surfaceDark,
         borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
-        border: Border.all(
-          color: DesignTokens.successColor.withValues(alpha: 0.3),
-        ),
+        border: Border.all(color: DesignTokens.successColor.withValues(alpha: 0.3)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              const Icon(
-                Iconsax.lamp_charge,
-                color: DesignTokens.successColor,
-                size: 20,
-              ),
+              const Icon(Iconsax.lamp_charge, color: DesignTokens.successColor, size: 20),
               const SizedBox(width: 8),
               Text(
                 'Cara Hemat',
-                style: GoogleFonts.poppins(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w600,
-                  fontSize: 16,
-                ),
+                style: GoogleFonts.poppins(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 16),
               ),
             ],
           ),
-          const SizedBox(height: 4),
+          const SizedBox(height: DesignTokens.spacing1),
           Text(
             'Kurangi pengeluaran ini untuk menabung lebih banyak',
-            style: GoogleFonts.poppins(
-              color: DesignTokens.textSecondaryDark,
-              fontSize: 12,
-            ),
+            style: GoogleFonts.poppins(color: DesignTokens.textSecondaryDark, fontSize: 12),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: DesignTokens.spacing3),
           ...suggestions.map((s) => _buildSuggestionItem(s)),
         ],
       ),
@@ -812,11 +666,7 @@ class _FinancialAdvisorScreenState extends State<FinancialAdvisorScreen> {
                     color: color.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(6),
                   ),
-                  child: Icon(
-                    isNeeds ? Iconsax.shield_tick : Iconsax.heart,
-                    size: 14,
-                    color: color,
-                  ),
+                  child: Icon(isNeeds ? Iconsax.shield_tick : Iconsax.heart, size: 14, color: color),
                 ),
                 const SizedBox(width: 10),
                 Expanded(
@@ -850,17 +700,14 @@ class _FinancialAdvisorScreenState extends State<FinancialAdvisorScreen> {
                       Text(
                         'Saat ini ${CurrencyFormatter.formatRupiah(s.currentAmount)} — '
                         'target ${CurrencyFormatter.formatRupiah(s.targetAmount)}',
-                        style: GoogleFonts.poppins(
-                          color: DesignTokens.textSecondaryDark,
-                          fontSize: 11,
-                        ),
+                        style: GoogleFonts.poppins(color: DesignTokens.textSecondaryDark, fontSize: 11),
                       ),
                     ],
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: DesignTokens.spacing2),
             Row(
               children: [
                 Material(
@@ -868,22 +715,13 @@ class _FinancialAdvisorScreenState extends State<FinancialAdvisorScreen> {
                   borderRadius: BorderRadius.circular(DesignTokens.radiusSmall),
                   child: InkWell(
                     onTap: () => _searchAlternatives(s.categoryName),
-                    borderRadius: BorderRadius.circular(
-                      DesignTokens.radiusSmall,
-                    ),
+                    borderRadius: BorderRadius.circular(DesignTokens.radiusSmall),
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 6,
-                      ),
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Icon(
-                            Iconsax.search_normal,
-                            size: 13,
-                            color: DesignTokens.primaryColor,
-                          ),
+                          Icon(Iconsax.search_normal, size: 13, color: DesignTokens.primaryColor),
                           const SizedBox(width: 4),
                           Text(
                             'Cari Alternatif',
@@ -904,22 +742,13 @@ class _FinancialAdvisorScreenState extends State<FinancialAdvisorScreen> {
                   borderRadius: BorderRadius.circular(DesignTokens.radiusSmall),
                   child: InkWell(
                     onTap: () => _createGoalFromSuggestion(s),
-                    borderRadius: BorderRadius.circular(
-                      DesignTokens.radiusSmall,
-                    ),
+                    borderRadius: BorderRadius.circular(DesignTokens.radiusSmall),
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 6,
-                      ),
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Icon(
-                            Iconsax.flag,
-                            size: 13,
-                            color: DesignTokens.successColor,
-                          ),
+                          Icon(Iconsax.flag, size: 13, color: DesignTokens.successColor),
                           const SizedBox(width: 4),
                           Text(
                             'Buat Goal',
@@ -970,17 +799,12 @@ class _FinancialAdvisorScreenState extends State<FinancialAdvisorScreen> {
       context: context,
       backgroundColor: DesignTokens.backgroundDark,
       isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
       builder: (ctx) => AddGoalModal(initialGoal: initialGoal),
     );
 
     if (result == true && mounted) {
-      ErrorHandlerService.showSuccessSnackbar(
-        context,
-        'Goal berhasil dibuat! Pantau progres di menu Goals.',
-      );
+      ErrorHandlerService.showSuccessSnackbar(context, 'Goal berhasil dibuat! Pantau progres di menu Goals.');
     }
   }
 
@@ -1010,14 +834,7 @@ class _FinancialAdvisorScreenState extends State<FinancialAdvisorScreen> {
             children: [
               Icon(icon, size: 18, color: color),
               const SizedBox(width: 8),
-              Text(
-                title,
-                style: GoogleFonts.poppins(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w600,
-                  fontSize: 15,
-                ),
-              ),
+              Text(title, style: GoogleFonts.poppins(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 15)),
               const Spacer(),
               Text(
                 CurrencyFormatter.formatRupiah(total),
@@ -1029,15 +846,12 @@ class _FinancialAdvisorScreenState extends State<FinancialAdvisorScreen> {
               ),
             ],
           ),
-          const SizedBox(height: 4),
+          const SizedBox(height: DesignTokens.spacing1),
           Row(
             children: [
               Text(
                 'Batas: ${CurrencyFormatter.formatRupiah(target)}',
-                style: GoogleFonts.poppins(
-                  color: DesignTokens.textSecondaryDark,
-                  fontSize: 11,
-                ),
+                style: GoogleFonts.poppins(color: DesignTokens.textSecondaryDark, fontSize: 11),
               ),
               const Spacer(),
               Text(
@@ -1052,7 +866,7 @@ class _FinancialAdvisorScreenState extends State<FinancialAdvisorScreen> {
               ),
             ],
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: DesignTokens.spacing2),
           ...categories
               .take(6)
               .map(
@@ -1063,10 +877,7 @@ class _FinancialAdvisorScreenState extends State<FinancialAdvisorScreen> {
                       Expanded(
                         child: Text(
                           c.name,
-                          style: GoogleFonts.poppins(
-                            color: DesignTokens.textSecondaryDark,
-                            fontSize: 12,
-                          ),
+                          style: GoogleFonts.poppins(color: DesignTokens.textSecondaryDark, fontSize: 12),
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
@@ -1076,11 +887,7 @@ class _FinancialAdvisorScreenState extends State<FinancialAdvisorScreen> {
                         child: Text(
                           CurrencyFormatter.formatRupiah(c.amount),
                           textAlign: TextAlign.right,
-                          style: GoogleFonts.poppins(
-                            color: Colors.white70,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w500,
-                          ),
+                          style: GoogleFonts.poppins(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.w500),
                         ),
                       ),
                       const SizedBox(width: 8),
@@ -1089,10 +896,7 @@ class _FinancialAdvisorScreenState extends State<FinancialAdvisorScreen> {
                         child: Text(
                           '${c.percentOfIncome.toStringAsFixed(1)}%',
                           textAlign: TextAlign.right,
-                          style: GoogleFonts.poppins(
-                            color: DesignTokens.textSecondaryDark,
-                            fontSize: 11,
-                          ),
+                          style: GoogleFonts.poppins(color: DesignTokens.textSecondaryDark, fontSize: 11),
                         ),
                       ),
                     ],
@@ -1134,15 +938,11 @@ class _FinancialAdvisorScreenState extends State<FinancialAdvisorScreen> {
               const SizedBox(width: 8),
               Text(
                 'Progres Goals',
-                style: GoogleFonts.poppins(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w600,
-                  fontSize: 16,
-                ),
+                style: GoogleFonts.poppins(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 16),
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: DesignTokens.spacing3),
           ...a.goalRunRates.map(
             (g) => Padding(
               padding: const EdgeInsets.only(bottom: 10),
@@ -1154,49 +954,37 @@ class _FinancialAdvisorScreenState extends State<FinancialAdvisorScreen> {
                       Expanded(
                         child: Text(
                           g.name,
-                          style: GoogleFonts.poppins(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w500,
-                            fontSize: 13,
-                          ),
+                          style: GoogleFonts.poppins(color: Colors.white, fontWeight: FontWeight.w500, fontSize: 13),
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
                       Text(
                         '${g.progressPercent.toStringAsFixed(0)}%',
                         style: GoogleFonts.poppins(
-                          color:
-                              g.progressPercent >= 100
-                                  ? Colors.green
-                                  : Colors.amber,
+                          color: g.progressPercent >= 100 ? Colors.green : Colors.amber,
                           fontWeight: FontWeight.w600,
                           fontSize: 13,
                         ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: DesignTokens.spacing1),
                   ClipRRect(
                     borderRadius: BorderRadius.circular(4),
                     child: LinearProgressIndicator(
                       value: (g.progressPercent / 100).clamp(0.0, 1.0),
                       backgroundColor: Colors.white.withValues(alpha: 0.1),
-                      valueColor: AlwaysStoppedAnimation(
-                        g.progressPercent >= 100 ? Colors.green : Colors.amber,
-                      ),
+                      valueColor: AlwaysStoppedAnimation(g.progressPercent >= 100 ? Colors.green : Colors.amber),
                       minHeight: 6,
                     ),
                   ),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: DesignTokens.spacing1),
                   Row(
                     children: [
                       Text(
                         '${CurrencyFormatter.formatRupiah(g.currentAmount)} / '
                         '${CurrencyFormatter.formatRupiah(g.targetAmount)}',
-                        style: GoogleFonts.poppins(
-                          color: DesignTokens.textSecondaryDark,
-                          fontSize: 11,
-                        ),
+                        style: GoogleFonts.poppins(color: DesignTokens.textSecondaryDark, fontSize: 11),
                       ),
                       const Spacer(),
                       Text(
@@ -1206,10 +994,7 @@ class _FinancialAdvisorScreenState extends State<FinancialAdvisorScreen> {
                             ? 'Tidak sesuai target'
                             : 'Belum ditabung',
                         style: GoogleFonts.poppins(
-                          color:
-                              g.monthsToGoal >= 0
-                                  ? Colors.green
-                                  : DesignTokens.textSecondaryDark,
+                          color: g.monthsToGoal >= 0 ? Colors.green : DesignTokens.textSecondaryDark,
                           fontSize: 11,
                         ),
                       ),

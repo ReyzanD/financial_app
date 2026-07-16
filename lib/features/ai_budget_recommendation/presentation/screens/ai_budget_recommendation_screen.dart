@@ -12,12 +12,10 @@ class AIBudgetRecommendationScreen extends StatefulWidget {
   const AIBudgetRecommendationScreen({super.key});
 
   @override
-  State<AIBudgetRecommendationScreen> createState() =>
-      _AIBudgetRecommendationScreenState();
+  State<AIBudgetRecommendationScreen> createState() => _AIBudgetRecommendationScreenState();
 }
 
-class _AIBudgetRecommendationScreenState
-    extends State<AIBudgetRecommendationScreen> {
+class _AIBudgetRecommendationScreenState extends State<AIBudgetRecommendationScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -32,10 +30,7 @@ class _AIBudgetRecommendationScreenState
         ),
         title: Text(
           'Rekomendasi Budget AI',
-          style: GoogleFonts.poppins(
-            color: Colors.white,
-            fontWeight: FontWeight.w600,
-          ),
+          style: GoogleFonts.poppins(color: Colors.white, fontWeight: FontWeight.w600),
         ),
       ),
       body: Column(
@@ -45,38 +40,25 @@ class _AIBudgetRecommendationScreenState
             child: Consumer<AIBudgetController>(
               builder: (_, ctrl, __) {
                 if (ctrl.isLoading) {
-                  return const Center(
-                    child: CircularProgressIndicator(
-                      color: DesignTokens.primaryColor,
-                    ),
-                  );
+                  return const Center(child: CircularProgressIndicator(color: DesignTokens.primaryColor));
                 }
                 if (ctrl.error != null && ctrl.recommendation == null) {
                   return Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Icon(
-                          Iconsax.info_circle,
-                          color: Colors.red,
-                          size: 48,
-                        ),
-                        const SizedBox(height: 16),
+                        const Icon(Iconsax.info_circle, color: Colors.red, size: 48),
+                        const SizedBox(height: DesignTokens.spacing4),
                         Text(
                           ctrl.error!,
                           style: GoogleFonts.poppins(color: Colors.white70),
                           textAlign: TextAlign.center,
                         ),
-                        const SizedBox(height: 16),
+                        const SizedBox(height: DesignTokens.spacing4),
                         ElevatedButton(
                           onPressed: ctrl.loadRecommendation,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: DesignTokens.primaryColor,
-                          ),
-                          child: Text(
-                            'Coba Lagi',
-                            style: GoogleFonts.poppins(color: Colors.white),
-                          ),
+                          style: ElevatedButton.styleFrom(backgroundColor: DesignTokens.primaryColor),
+                          child: Text('Coba Lagi', style: GoogleFonts.poppins(color: Colors.white)),
                         ),
                       ],
                     ),
@@ -90,11 +72,11 @@ class _AIBudgetRecommendationScreenState
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         _buildSummaryCard(rec, ctrl),
-                        const SizedBox(height: 24),
+                        const SizedBox(height: DesignTokens.spacing6),
                         _buildAllocationSection(rec, ctrl),
-                        const SizedBox(height: 24),
+                        const SizedBox(height: DesignTokens.spacing6),
                         _buildApplyButton(ctrl),
-                        const SizedBox(height: 24),
+                        const SizedBox(height: DesignTokens.spacing6),
                       ],
                     ),
                   ),
@@ -127,22 +109,15 @@ class _AIBudgetRecommendationScreenState
               const SizedBox(width: 8),
               Text(
                 'AI Recommendation',
-                style: GoogleFonts.poppins(
-                  color: Colors.white70,
-                  fontSize: 12,
-                  letterSpacing: 1,
-                ),
+                style: GoogleFonts.poppins(color: Colors.white70, fontSize: 12, letterSpacing: 1),
               ),
             ],
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: DesignTokens.spacing4),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                'Budget Bulanan',
-                style: GoogleFonts.poppins(color: Colors.white70, fontSize: 14),
-              ),
+              Text('Budget Bulanan', style: GoogleFonts.poppins(color: Colors.white70, fontSize: 14)),
               GestureDetector(
                 onTap: _showIncomeEditDialog,
                 child: Row(
@@ -161,31 +136,16 @@ class _AIBudgetRecommendationScreenState
               ),
             ],
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: DesignTokens.spacing2),
           if (rec['period'] != null)
-            Text(
-              rec['period'].toString(),
-              style: GoogleFonts.poppins(color: Colors.white38, fontSize: 11),
-            ),
-          const SizedBox(height: 16),
+            Text(rec['period'].toString(), style: GoogleFonts.poppins(color: Colors.white38, fontSize: 11)),
+          const SizedBox(height: DesignTokens.spacing4),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              _buildStatItem(
-                'Kategori',
-                '${rec['categories']?.length ?? 0}',
-                Iconsax.category,
-              ),
-              _buildStatItem(
-                'Sisa',
-                _formatCurrency((rec['total_income'] as num?)?.toDouble() ?? 0),
-                Iconsax.money,
-              ),
-              _buildStatItem(
-                'Alokasi',
-                '${rec['categories']?.length ?? 0} item',
-                Iconsax.tick_circle,
-              ),
+              _buildStatItem('Kategori', '${rec['categories']?.length ?? 0}', Iconsax.category),
+              _buildStatItem('Sisa', _formatCurrency((rec['total_income'] as num?)?.toDouble() ?? 0), Iconsax.money),
+              _buildStatItem('Alokasi', '${rec['categories']?.length ?? 0} item', Iconsax.tick_circle),
             ],
           ),
         ],
@@ -197,40 +157,23 @@ class _AIBudgetRecommendationScreenState
     return Column(
       children: [
         Icon(icon, color: Colors.white70, size: 18),
-        const SizedBox(height: 4),
-        Text(
-          value,
-          style: GoogleFonts.poppins(
-            color: Colors.white,
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        Text(
-          label,
-          style: GoogleFonts.poppins(color: Colors.white38, fontSize: 10),
-        ),
+        const SizedBox(height: DesignTokens.spacing1),
+        Text(value, style: GoogleFonts.poppins(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600)),
+        Text(label, style: GoogleFonts.poppins(color: Colors.white38, fontSize: 10)),
       ],
     );
   }
 
-  Widget _buildAllocationSection(
-    Map<String, dynamic> rec,
-    AIBudgetController ctrl,
-  ) {
+  Widget _buildAllocationSection(Map<String, dynamic> rec, AIBudgetController ctrl) {
     final categories = rec['categories'] as List<dynamic>? ?? [];
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           'Alokasi per Kategori',
-          style: GoogleFonts.poppins(
-            color: Colors.white,
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-          ),
+          style: GoogleFonts.poppins(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600),
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: DesignTokens.spacing3),
         ...categories.map((cat) {
           final catMap = cat as Map<String, dynamic>;
           final name = catMap['name']?.toString() ?? 'Kategori';
@@ -253,18 +196,10 @@ class _AIBudgetRecommendationScreenState
                   children: [
                     Text(
                       name,
-                      style: GoogleFonts.poppins(
-                        color: Colors.white,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                      ),
+                      style: GoogleFonts.poppins(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w600),
                     ),
                     Text(
-                      NumberFormat.currency(
-                        locale: 'id',
-                        symbol: 'Rp ',
-                        decimalDigits: 0,
-                      ).format(amount),
+                      NumberFormat.currency(locale: 'id', symbol: 'Rp ', decimalDigits: 0).format(amount),
                       style: GoogleFonts.poppins(
                         color: DesignTokens.primaryColor,
                         fontSize: 14,
@@ -273,15 +208,13 @@ class _AIBudgetRecommendationScreenState
                     ),
                   ],
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: DesignTokens.spacing2),
                 ClipRRect(
                   borderRadius: BorderRadius.circular(4),
                   child: LinearProgressIndicator(
                     value: percentage / 100,
                     backgroundColor: Colors.grey[800],
-                    valueColor: const AlwaysStoppedAnimation<Color>(
-                      DesignTokens.primaryColor,
-                    ),
+                    valueColor: const AlwaysStoppedAnimation<Color>(DesignTokens.primaryColor),
                   ),
                 ),
                 const SizedBox(height: 6),
@@ -290,19 +223,12 @@ class _AIBudgetRecommendationScreenState
                   children: [
                     Text(
                       '${percentage.toStringAsFixed(1)}% dari total',
-                      style: GoogleFonts.poppins(
-                        color: Colors.grey[500],
-                        fontSize: 11,
-                      ),
+                      style: GoogleFonts.poppins(color: Colors.grey[500], fontSize: 11),
                     ),
                     if (notes != null)
                       Text(
                         notes,
-                        style: GoogleFonts.poppins(
-                          color: Colors.grey[600],
-                          fontSize: 10,
-                          fontStyle: FontStyle.italic,
-                        ),
+                        style: GoogleFonts.poppins(color: Colors.grey[600], fontSize: 10, fontStyle: FontStyle.italic),
                       ),
                   ],
                 ),
@@ -319,9 +245,7 @@ class _AIBudgetRecommendationScreenState
       width: double.infinity,
       height: 56,
       decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          colors: [DesignTokens.primaryColor, DesignTokens.secondaryColor],
-        ),
+        gradient: LinearGradient(colors: [DesignTokens.primaryColor, DesignTokens.secondaryColor]),
         borderRadius: BorderRadius.all(Radius.circular(16)),
       ),
       child: ElevatedButton(
@@ -329,9 +253,7 @@ class _AIBudgetRecommendationScreenState
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.transparent,
           shadowColor: Colors.transparent,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(DesignTokens.radiusLarge),
-          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(DesignTokens.radiusLarge)),
         ),
         child:
             ctrl.isApplying
@@ -343,11 +265,7 @@ class _AIBudgetRecommendationScreenState
                     const SizedBox(width: 12),
                     Text(
                       'Terapkan sebagai Budget',
-                      style: GoogleFonts.poppins(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                      ),
+                      style: GoogleFonts.poppins(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600),
                     ),
                   ],
                 ),
@@ -361,13 +279,8 @@ class _AIBudgetRecommendationScreenState
       builder:
           (c) => AlertDialog(
             backgroundColor: DesignTokens.surfaceDark,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(DesignTokens.radiusLarge),
-            ),
-            title: Text(
-              'Terapkan Budget?',
-              style: GoogleFonts.poppins(color: Colors.white),
-            ),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(DesignTokens.radiusLarge)),
+            title: Text('Terapkan Budget?', style: GoogleFonts.poppins(color: Colors.white)),
             content: Text(
               'Budget ini akan otomatis dibuat berdasarkan rekomendasi AI. Anda bisa mengeditnya nanti.',
               style: GoogleFonts.poppins(color: Colors.white70),
@@ -375,20 +288,12 @@ class _AIBudgetRecommendationScreenState
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(c, false),
-                child: Text(
-                  'Batal',
-                  style: GoogleFonts.poppins(color: Colors.grey),
-                ),
+                child: Text('Batal', style: GoogleFonts.poppins(color: Colors.grey)),
               ),
               ElevatedButton(
                 onPressed: () => Navigator.pop(c, true),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: DesignTokens.primaryColor,
-                ),
-                child: Text(
-                  'Terapkan',
-                  style: GoogleFonts.poppins(color: Colors.white),
-                ),
+                style: ElevatedButton.styleFrom(backgroundColor: DesignTokens.primaryColor),
+                child: Text('Terapkan', style: GoogleFonts.poppins(color: Colors.white)),
               ),
             ],
           ),
@@ -401,23 +306,15 @@ class _AIBudgetRecommendationScreenState
 
   Future<void> _showIncomeEditDialog() async {
     final ctrl = context.read<AIBudgetController>();
-    final current =
-        ctrl.editedIncome ??
-        (ctrl.recommendation?['total_income'] as num?)?.toDouble() ??
-        0;
+    final current = ctrl.editedIncome ?? (ctrl.recommendation?['total_income'] as num?)?.toDouble() ?? 0;
     final controller = TextEditingController(text: current.toStringAsFixed(0));
     final newIncome = await showDialog<double>(
       context: context,
       builder: (c) {
         return AlertDialog(
           backgroundColor: DesignTokens.surfaceDark,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(DesignTokens.radiusLarge),
-          ),
-          title: Text(
-            'Edit Total Budget',
-            style: GoogleFonts.poppins(color: Colors.white),
-          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(DesignTokens.radiusLarge)),
+          title: Text('Edit Total Budget', style: GoogleFonts.poppins(color: Colors.white)),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -426,7 +323,7 @@ class _AIBudgetRecommendationScreenState
                 'Masukkan total pendapatan bulanan Anda',
                 style: GoogleFonts.poppins(color: Colors.white70, fontSize: 14),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: DesignTokens.spacing4),
               TextField(
                 controller: controller,
                 keyboardType: TextInputType.number,
@@ -436,22 +333,18 @@ class _AIBudgetRecommendationScreenState
                   labelStyle: GoogleFonts.poppins(color: Colors.grey),
                   prefixText: 'Rp ',
                   prefixStyle: GoogleFonts.poppins(color: Colors.white70),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
                     borderSide: BorderSide(color: Colors.grey[700]!),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
-                    borderSide: const BorderSide(
-                      color: DesignTokens.primaryColor,
-                    ),
+                    borderSide: const BorderSide(color: DesignTokens.primaryColor),
                   ),
                 ),
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: DesignTokens.spacing3),
               Text(
                 'Jumlah ini akan digunakan untuk menghitung ulang alokasi budget per kategori',
                 style: GoogleFonts.poppins(color: Colors.orange, fontSize: 11),
@@ -461,10 +354,7 @@ class _AIBudgetRecommendationScreenState
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(c),
-              child: Text(
-                'Batal',
-                style: GoogleFonts.poppins(color: Colors.grey),
-              ),
+              child: Text('Batal', style: GoogleFonts.poppins(color: Colors.grey)),
             ),
             ElevatedButton(
               onPressed: () {
@@ -472,19 +362,11 @@ class _AIBudgetRecommendationScreenState
                 if (v != null && v > 0) {
                   Navigator.pop(c, v);
                 } else {
-                  ErrorHandlerService.showWarningSnackbar(
-                    c,
-                    'Masukkan jumlah yang valid',
-                  );
+                  ErrorHandlerService.showWarningSnackbar(c, 'Masukkan jumlah yang valid');
                 }
               },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: DesignTokens.primaryColor,
-              ),
-              child: Text(
-                'Simpan',
-                style: GoogleFonts.poppins(color: Colors.white),
-              ),
+              style: ElevatedButton.styleFrom(backgroundColor: DesignTokens.primaryColor),
+              child: Text('Simpan', style: GoogleFonts.poppins(color: Colors.white)),
             ),
           ],
         );
@@ -494,10 +376,6 @@ class _AIBudgetRecommendationScreenState
   }
 
   String _formatCurrency(double amount) {
-    return NumberFormat.currency(
-      locale: 'id',
-      symbol: 'Rp ',
-      decimalDigits: 0,
-    ).format(amount);
+    return NumberFormat.currency(locale: 'id', symbol: 'Rp ', decimalDigits: 0).format(amount);
   }
 }

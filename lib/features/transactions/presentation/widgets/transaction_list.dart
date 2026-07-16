@@ -30,11 +30,7 @@ class TransactionList extends StatefulWidget {
   final String selectedFilter;
   final String searchQuery;
 
-  const TransactionList({
-    super.key,
-    required this.selectedFilter,
-    this.searchQuery = '',
-  });
+  const TransactionList({super.key, required this.selectedFilter, this.searchQuery = ''});
 
   @override
   State<TransactionList> createState() => _TransactionListState();
@@ -126,12 +122,9 @@ class _TransactionListState extends State<TransactionList> {
                     categoryName: t.categoryName,
                     description: t.description,
                     transactionDate: t.transactionDate,
-                    locationName:
-                        t.locationData?['address'] as String? ??
-                        t.locationData?['name'] as String?,
+                    locationName: t.locationData?['address'] as String? ?? t.locationData?['name'] as String?,
                     latitude: (t.locationData?['latitude'] as num?)?.toDouble(),
-                    longitude:
-                        (t.locationData?['longitude'] as num?)?.toDouble(),
+                    longitude: (t.locationData?['longitude'] as num?)?.toDouble(),
                   ),
                 )
                 .toList();
@@ -157,8 +150,7 @@ class _TransactionListState extends State<TransactionList> {
     final grouped = <String, List<TransactionEntity>>{};
     for (final t in transactions) {
       final d = t.transactionDate;
-      final key =
-          '${d.year}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
+      final key = '${d.year}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
       grouped.putIfAbsent(key, () => []).add(t);
     }
 
@@ -170,11 +162,7 @@ class _TransactionListState extends State<TransactionList> {
 
     for (final key in sortedKeys) {
       final parts = key.split('-');
-      final date = DateTime(
-        int.parse(parts[0]),
-        int.parse(parts[1]),
-        int.parse(parts[2]),
-      );
+      final date = DateTime(int.parse(parts[0]), int.parse(parts[1]), int.parse(parts[2]));
 
       final l10n = AppLocalizations.of(context);
       String label;
@@ -186,20 +174,7 @@ class _TransactionListState extends State<TransactionList> {
         label = l10n?.yesterday ?? 'Kemarin';
         subtitle = '';
       } else {
-        const months = [
-          'Jan',
-          'Feb',
-          'Mar',
-          'Apr',
-          'Mei',
-          'Jun',
-          'Jul',
-          'Agu',
-          'Sep',
-          'Okt',
-          'Nov',
-          'Des',
-        ];
+        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
         const dayNames = ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'];
         label = '${date.day} ${months[date.month - 1]} ${date.year}';
         subtitle = dayNames[date.weekday - 1];
@@ -287,9 +262,7 @@ class _TransactionListState extends State<TransactionList> {
     );
   }
 
-  List<TransactionEntity> _filterTransactions(
-    List<TransactionEntity> transactions,
-  ) {
+  List<TransactionEntity> _filterTransactions(List<TransactionEntity> transactions) {
     final l10n = AppLocalizations.of(context);
     if (widget.selectedFilter == (l10n?.all ?? 'Semua')) {
       return transactions;
@@ -313,20 +286,12 @@ class _TransactionListState extends State<TransactionList> {
       final startOfWeek = today.subtract(Duration(days: today.weekday - 1));
       final endOfWeek = startOfWeek.add(const Duration(days: 7));
       return transactions
-          .where(
-            (t) =>
-                !t.transactionDate.isBefore(startOfWeek) &&
-                t.transactionDate.isBefore(endOfWeek),
-          )
+          .where((t) => !t.transactionDate.isBefore(startOfWeek) && t.transactionDate.isBefore(endOfWeek))
           .toList();
     } else if (widget.selectedFilter == (l10n?.this_month ?? 'Bulan Ini')) {
       final now = DateTime.now();
       return transactions
-          .where(
-            (t) =>
-                t.transactionDate.year == now.year &&
-                t.transactionDate.month == now.month,
-          )
+          .where((t) => t.transactionDate.year == now.year && t.transactionDate.month == now.month)
           .toList();
     }
     return transactions;
@@ -341,37 +306,21 @@ class _TransactionListState extends State<TransactionList> {
         }
 
         if (controller.error != null) {
-          return Expanded(
-            child: EmptyStates.serverError(
-              () => controller.loadTransactions(),
-              context,
-            ),
-          );
+          return Expanded(child: EmptyStates.serverError(() => controller.loadTransactions(), context));
         }
 
         // Use searched transactions if search query exists, otherwise use filtered transactions
         final transactionsToShow =
-            widget.searchQuery.isNotEmpty
-                ? _searchedTransactions
-                : _filterTransactions(controller.transactions);
+            widget.searchQuery.isNotEmpty ? _searchedTransactions : _filterTransactions(controller.transactions);
 
         if (_isSearching) {
-          return const Expanded(
-            child: Center(
-              child: CircularProgressIndicator(
-                color: DesignTokens.primaryColor,
-              ),
-            ),
-          );
+          return const Expanded(child: Center(child: CircularProgressIndicator(color: DesignTokens.primaryColor)));
         }
 
         if (transactionsToShow.isEmpty) {
           return Expanded(
             child: EmptyStates.noTransactions(() async {
-              final result = await Navigator.pushNamed(
-                context,
-                '/add-transaction',
-              );
+              final result = await Navigator.pushNamed(context, '/add-transaction');
               if (result == true && context.mounted) {
                 await controller.loadTransactions();
               }

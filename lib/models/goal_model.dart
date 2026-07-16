@@ -99,26 +99,14 @@ class GoalModel {
   factory GoalModel.fromJson(Map<String, dynamic> json) {
     return GoalModel(
       id: json['id']?.toString() ?? json['goal_id_232143']?.toString() ?? '',
-      userId:
-          json['user_id']?.toString() ??
-          json['user_id_232143']?.toString() ??
-          '',
+      userId: json['user_id']?.toString() ?? json['user_id_232143']?.toString() ?? '',
       name: json['name']?.toString() ?? json['name_232143']?.toString() ?? '',
-      description:
-          json['description']?.toString() ??
-          json['description_232143']?.toString(),
-      goalType:
-          json['goal_type']?.toString() ??
-          json['goal_type_232143']?.toString() ??
-          'other',
+      description: json['description']?.toString() ?? json['description_232143']?.toString(),
+      goalType: json['goal_type']?.toString() ?? json['goal_type_232143']?.toString() ?? 'other',
       targetAmount:
-          (json['target_amount'] as num?)?.toDouble() ??
-          (json['target_amount_232143'] as num?)?.toDouble() ??
-          0.0,
+          (json['target_amount'] as num?)?.toDouble() ?? (json['target_amount_232143'] as num?)?.toDouble() ?? 0.0,
       currentAmount:
-          (json['current_amount'] as num?)?.toDouble() ??
-          (json['current_amount_232143'] as num?)?.toDouble() ??
-          0.0,
+          (json['current_amount'] as num?)?.toDouble() ?? (json['current_amount_232143'] as num?)?.toDouble() ?? 0.0,
       startDate:
           json['start_date'] != null
               ? DateTime.parse(json['start_date'].toString())
@@ -131,36 +119,24 @@ class GoalModel {
               : json['target_date_232143'] != null
               ? DateTime.parse(json['target_date_232143'].toString())
               : DateTime.now(),
-      isCompleted:
-          _parseBool(json['is_completed']) ??
-          _parseBool(json['is_completed_232143']) ??
-          false,
+      isCompleted: _parseBool(json['is_completed']) ?? _parseBool(json['is_completed_232143']) ?? false,
       completedDate:
           json['completed_date'] != null
               ? DateTime.parse(json['completed_date'].toString())
               : json['completed_date_232143'] != null
               ? DateTime.parse(json['completed_date_232143'].toString())
               : null,
-      priority:
-          (json['priority'] as num?)?.toInt() ??
-          (json['priority_232143'] as num?)?.toInt() ??
-          3,
+      priority: (json['priority'] as num?)?.toInt() ?? (json['priority_232143'] as num?)?.toInt() ?? 3,
       monthlyTarget:
-          (json['monthly_target'] as num?)?.toDouble() ??
-          (json['monthly_target_232143'] as num?)?.toDouble(),
-      autoDeduct:
-          _parseBool(json['auto_deduct']) ??
-          _parseBool(json['auto_deduct_232143']) ??
-          false,
+          (json['monthly_target'] as num?)?.toDouble() ?? (json['monthly_target_232143'] as num?)?.toDouble(),
+      autoDeduct: _parseBool(json['auto_deduct']) ?? _parseBool(json['auto_deduct_232143']) ?? false,
       deductPercentage:
-          (json['deduct_percentage'] as num?)?.toDouble() ??
-          (json['deduct_percentage_232143'] as num?)?.toDouble(),
+          (json['deduct_percentage'] as num?)?.toDouble() ?? (json['deduct_percentage_232143'] as num?)?.toDouble(),
       recommendedMonthlySaving:
           (json['recommended_monthly_saving'] as num?)?.toDouble() ??
           (json['recommended_monthly_saving_232143'] as num?)?.toDouble(),
       feasibilityScore:
-          (json['feasibility_score'] as num?)?.toDouble() ??
-          (json['feasibility_score_232143'] as num?)?.toDouble(),
+          (json['feasibility_score'] as num?)?.toDouble() ?? (json['feasibility_score_232143'] as num?)?.toDouble(),
       progressPercentage:
           (json['progress_percentage'] as num?)?.toDouble() ??
           (json['progress_percentage_232143'] as num?)?.toDouble() ??
@@ -217,8 +193,7 @@ class GoalModel {
       monthlyTarget: monthlyTarget ?? this.monthlyTarget,
       autoDeduct: autoDeduct ?? this.autoDeduct,
       deductPercentage: deductPercentage ?? this.deductPercentage,
-      recommendedMonthlySaving:
-          recommendedMonthlySaving ?? this.recommendedMonthlySaving,
+      recommendedMonthlySaving: recommendedMonthlySaving ?? this.recommendedMonthlySaving,
       feasibilityScore: feasibilityScore ?? this.feasibilityScore,
       progressPercentage: progressPercentage ?? this.progressPercentage,
       createdAt: createdAt,

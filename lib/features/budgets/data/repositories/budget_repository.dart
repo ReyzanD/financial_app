@@ -10,11 +10,9 @@ class BudgetRepository {
   final BudgetDataService _budgetData;
   final CategoryDataService _categoryData;
 
-  BudgetRepository({
-    BudgetDataService? budgetData,
-    CategoryDataService? categoryData,
-  }) : _budgetData = budgetData ?? getIt<BudgetDataService>(),
-       _categoryData = categoryData ?? getIt<CategoryDataService>();
+  BudgetRepository({BudgetDataService? budgetData, CategoryDataService? categoryData})
+    : _budgetData = budgetData ?? getIt<BudgetDataService>(),
+      _categoryData = categoryData ?? getIt<CategoryDataService>();
 
   Future<List<BudgetModel>> getBudgets({bool activeOnly = false}) async {
     return await _budgetData.getBudgets(activeOnly: activeOnly);
@@ -49,8 +47,7 @@ class BudgetRepository {
       'total_budgeted': totalBudgeted,
       'total_spent': totalSpent,
       'remaining': totalBudgeted - totalSpent,
-      'usage_percentage':
-          totalBudgeted > 0 ? (totalSpent / totalBudgeted) * 100 : 0,
+      'usage_percentage': totalBudgeted > 0 ? (totalSpent / totalBudgeted) * 100 : 0,
       'active_budgets': activeCount,
     };
   }

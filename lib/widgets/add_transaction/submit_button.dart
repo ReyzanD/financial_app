@@ -7,11 +7,7 @@ class SubmitButton extends StatelessWidget {
   final VoidCallback onPressed;
   final bool isLoading;
 
-  const SubmitButton({
-    super.key,
-    required this.onPressed,
-    this.isLoading = false,
-  });
+  const SubmitButton({super.key, required this.onPressed, this.isLoading = false});
 
   @override
   Widget build(BuildContext context) {
@@ -24,27 +20,15 @@ class SubmitButton extends StatelessWidget {
           backgroundColor: DesignTokens.primaryColor,
           foregroundColor: Colors.white,
           padding: const EdgeInsets.symmetric(vertical: 16),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
-          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(DesignTokens.radiusMedium)),
           disabledBackgroundColor: Colors.grey[700],
         ),
         child:
             isLoading
-                ? SizedBox(
-                  width: 20,
-                  height: 20,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2,
-                    color: Colors.white,
-                  ),
-                )
+                ? SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
                 : Text(
                   l10n?.save_transaction ?? 'Simpan Transaksi',
-                  style: GoogleFonts.poppins(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                  ),
+                  style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w600),
                 ),
       ),
     );

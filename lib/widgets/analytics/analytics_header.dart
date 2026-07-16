@@ -16,14 +16,10 @@ class AnalyticsHeader extends StatelessWidget {
             header: true,
             child: Text(
               'Analisis Keuangan',
-              style: GoogleFonts.poppins(
-                color: Colors.white,
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-              ),
+              style: GoogleFonts.poppins(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: DesignTokens.spacing2),
           Text(
             'Lihat pola dan tren pengeluaran Anda',
             style: GoogleFonts.poppins(color: Colors.grey[400], fontSize: 14),

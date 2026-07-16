@@ -14,11 +14,7 @@ class PaymentHistoryView extends StatefulWidget {
   final String obligationId;
   final String obligationName;
 
-  const PaymentHistoryView({
-    super.key,
-    required this.obligationId,
-    required this.obligationName,
-  });
+  const PaymentHistoryView({super.key, required this.obligationId, required this.obligationName});
 
   @override
   State<PaymentHistoryView> createState() => _PaymentHistoryViewState();
@@ -39,12 +35,8 @@ class _PaymentHistoryViewState extends State<PaymentHistoryView> {
   Future<void> _loadPaymentHistory() async {
     setState(() => _isLoading = true);
     try {
-      final payments = await _paymentService.getPaymentHistory(
-        widget.obligationId,
-      );
-      final stats = await _paymentService.getPaymentStatistics(
-        widget.obligationId,
-      );
+      final payments = await _paymentService.getPaymentHistory(widget.obligationId);
+      final stats = await _paymentService.getPaymentStatistics(widget.obligationId);
 
       setState(() {
         _payments = payments;
@@ -63,10 +55,7 @@ class _PaymentHistoryViewState extends State<PaymentHistoryView> {
       builder:
           (context) => AlertDialog(
             backgroundColor: DesignTokens.surfaceDark,
-            title: Text(
-              AppLocalizations.of(context)!.delete_payment,
-              style: GoogleFonts.poppins(color: Colors.white),
-            ),
+            title: Text(AppLocalizations.of(context)!.delete_payment, style: GoogleFonts.poppins(color: Colors.white)),
             content: Text(
               AppLocalizations.of(context)!.delete_payment_confirm,
               style: const TextStyle(color: Colors.white70),
@@ -91,17 +80,11 @@ class _PaymentHistoryViewState extends State<PaymentHistoryView> {
         await _loadPaymentHistory();
 
         if (mounted) {
-          ErrorHandlerService.showSuccessSnackbar(
-            context,
-            AppLocalizations.of(context)!.payment_deleted,
-          );
+          ErrorHandlerService.showSuccessSnackbar(context, AppLocalizations.of(context)!.payment_deleted);
         }
       } catch (e) {
         if (mounted) {
-          ErrorHandlerService.showErrorSnackbar(
-            context,
-            AppLocalizations.of(context)!.payment_delete_failed,
-          );
+          ErrorHandlerService.showErrorSnackbar(context, AppLocalizations.of(context)!.payment_delete_failed);
         }
       }
     }
@@ -110,9 +93,7 @@ class _PaymentHistoryViewState extends State<PaymentHistoryView> {
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
-      return const Center(
-        child: CircularProgressIndicator(color: DesignTokens.primaryColor),
-      );
+      return const Center(child: CircularProgressIndicator(color: DesignTokens.primaryColor));
     }
 
     return Column(
@@ -126,22 +107,16 @@ class _PaymentHistoryViewState extends State<PaymentHistoryView> {
             decoration: BoxDecoration(
               color: DesignTokens.surfaceDark,
               borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
-              border: Border.all(
-                color: DesignTokens.primaryColor.withValues(alpha: 0.3),
-              ),
+              border: Border.all(color: DesignTokens.primaryColor.withValues(alpha: 0.3)),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   AppLocalizations.of(context)!.payment_statistics,
-                  style: GoogleFonts.poppins(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: GoogleFonts.poppins(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: DesignTokens.spacing3),
                 Row(
                   children: [
                     Expanded(
@@ -156,17 +131,14 @@ class _PaymentHistoryViewState extends State<PaymentHistoryView> {
                     Expanded(
                       child: _buildStatItem(
                         AppLocalizations.of(context)!.total_amount,
-                        CurrencyFormatter.formatRupiah(
-                          (_statistics['total_amount'] as num?)?.toDouble() ??
-                              0.0,
-                        ),
+                        CurrencyFormatter.formatRupiah((_statistics['total_amount'] as num?)?.toDouble() ?? 0.0),
                         Iconsax.money_recive,
                         Colors.green,
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: DesignTokens.spacing3),
                 Row(
                   children: [
                     Expanded(
@@ -201,23 +173,13 @@ class _PaymentHistoryViewState extends State<PaymentHistoryView> {
             children: [
               Text(
                 AppLocalizations.of(context)!.payment_history,
-                style: GoogleFonts.poppins(
-                  color: Colors.white,
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: GoogleFonts.poppins(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
               ),
-              Text(
-                '${_payments.length} pembayaran',
-                style: GoogleFonts.poppins(
-                  color: Colors.grey[400],
-                  fontSize: 12,
-                ),
-              ),
+              Text('${_payments.length} pembayaran', style: GoogleFonts.poppins(color: Colors.grey[400], fontSize: 12)),
             ],
           ),
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: DesignTokens.spacing3),
 
         if (_payments.isEmpty)
           Center(
@@ -226,21 +188,15 @@ class _PaymentHistoryViewState extends State<PaymentHistoryView> {
               child: Column(
                 children: [
                   Icon(Iconsax.receipt, size: 64, color: Colors.grey[600]),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: DesignTokens.spacing4),
                   Text(
                     AppLocalizations.of(context)!.no_payment_history,
-                    style: GoogleFonts.poppins(
-                      color: Colors.grey[400],
-                      fontSize: 16,
-                    ),
+                    style: GoogleFonts.poppins(color: Colors.grey[400], fontSize: 16),
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: DesignTokens.spacing2),
                   Text(
                     AppLocalizations.of(context)!.payment_history_hint,
-                    style: GoogleFonts.poppins(
-                      color: Colors.grey[600],
-                      fontSize: 12,
-                    ),
+                    style: GoogleFonts.poppins(color: Colors.grey[600], fontSize: 12),
                   ),
                 ],
               ),
@@ -261,12 +217,7 @@ class _PaymentHistoryViewState extends State<PaymentHistoryView> {
     );
   }
 
-  Widget _buildStatItem(
-    String label,
-    String value,
-    IconData icon,
-    Color color,
-  ) {
+  Widget _buildStatItem(String label, String value, IconData icon, Color color) {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
@@ -284,10 +235,7 @@ class _PaymentHistoryViewState extends State<PaymentHistoryView> {
               Expanded(
                 child: Text(
                   label,
-                  style: GoogleFonts.poppins(
-                    color: Colors.grey[400],
-                    fontSize: 11,
-                  ),
+                  style: GoogleFonts.poppins(color: Colors.grey[400], fontSize: 11),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -295,14 +243,7 @@ class _PaymentHistoryViewState extends State<PaymentHistoryView> {
             ],
           ),
           const SizedBox(height: 6),
-          Text(
-            value,
-            style: GoogleFonts.poppins(
-              color: color,
-              fontSize: 14,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
+          Text(value, style: GoogleFonts.poppins(color: color, fontSize: 14, fontWeight: FontWeight.bold)),
         ],
       ),
     );
@@ -310,9 +251,7 @@ class _PaymentHistoryViewState extends State<PaymentHistoryView> {
 
   Widget _buildPaymentItem(Map<String, dynamic> payment) {
     final amount = (payment['amount_paid'] as num?)?.toDouble() ?? 0.0;
-    final paymentDateStr =
-        payment['payment_date']?.toString() ??
-        payment['recorded_at']?.toString();
+    final paymentDateStr = payment['payment_date']?.toString() ?? payment['recorded_at']?.toString();
     DateTime? paymentDate;
 
     if (paymentDateStr != null) {
@@ -332,12 +271,7 @@ class _PaymentHistoryViewState extends State<PaymentHistoryView> {
       decoration: BoxDecoration(
         color: DesignTokens.surfaceDark,
         borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
-        border: Border.all(
-          color:
-              wasOnTime
-                  ? Colors.green.withValues(alpha: 0.3)
-                  : Colors.red.withValues(alpha: 0.3),
-        ),
+        border: Border.all(color: wasOnTime ? Colors.green.withValues(alpha: 0.3) : Colors.red.withValues(alpha: 0.3)),
       ),
       child: Row(
         children: [
@@ -345,10 +279,7 @@ class _PaymentHistoryViewState extends State<PaymentHistoryView> {
             width: 48,
             height: 48,
             decoration: BoxDecoration(
-              color:
-                  wasOnTime
-                      ? Colors.green.withValues(alpha: 0.2)
-                      : Colors.red.withValues(alpha: 0.2),
+              color: wasOnTime ? Colors.green.withValues(alpha: 0.2) : Colors.red.withValues(alpha: 0.2),
               borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
             ),
             child: Icon(
@@ -364,46 +295,28 @@ class _PaymentHistoryViewState extends State<PaymentHistoryView> {
               children: [
                 Text(
                   CurrencyFormatter.formatRupiah(amount.toInt()),
-                  style: GoogleFonts.poppins(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: GoogleFonts.poppins(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: DesignTokens.spacing1),
                 Row(
                   children: [
                     Icon(Iconsax.calendar, size: 12, color: Colors.grey[500]),
                     const SizedBox(width: 4),
                     Text(
                       paymentDate != null
-                          ? DateFormat(
-                            'dd MMM yyyy',
-                            'id_ID',
-                          ).format(paymentDate)
+                          ? DateFormat('dd MMM yyyy', 'id_ID').format(paymentDate)
                           : AppLocalizations.of(context)!.unknown_date,
-                      style: GoogleFonts.poppins(
-                        color: Colors.grey[400],
-                        fontSize: 12,
-                      ),
+                      style: GoogleFonts.poppins(color: Colors.grey[400], fontSize: 12),
                     ),
                     const SizedBox(width: 8),
                     Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 6,
-                        vertical: 2,
-                      ),
+                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                       decoration: BoxDecoration(
-                        color:
-                            wasOnTime
-                                ? Colors.green.withValues(alpha: 0.2)
-                                : Colors.red.withValues(alpha: 0.2),
+                        color: wasOnTime ? Colors.green.withValues(alpha: 0.2) : Colors.red.withValues(alpha: 0.2),
                         borderRadius: BorderRadius.circular(4),
                       ),
                       child: Text(
-                        wasOnTime
-                            ? AppLocalizations.of(context)!.on_time
-                            : AppLocalizations.of(context)!.late,
+                        wasOnTime ? AppLocalizations.of(context)!.on_time : AppLocalizations.of(context)!.late,
                         style: GoogleFonts.poppins(
                           color: wasOnTime ? Colors.green : Colors.red,
                           fontSize: 10,
@@ -414,13 +327,10 @@ class _PaymentHistoryViewState extends State<PaymentHistoryView> {
                   ],
                 ),
                 if (paymentMethod != 'manual') ...[
-                  const SizedBox(height: 4),
+                  const SizedBox(height: DesignTokens.spacing1),
                   Text(
                     'Metode: ${_getPaymentMethodName(paymentMethod)}',
-                    style: GoogleFonts.poppins(
-                      color: Colors.grey[500],
-                      fontSize: 11,
-                    ),
+                    style: GoogleFonts.poppins(color: Colors.grey[500], fontSize: 11),
                   ),
                 ],
               ],

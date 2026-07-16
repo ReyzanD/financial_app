@@ -14,8 +14,7 @@ import 'package:financial_app/core/di/service_locator.dart';
 
 /// Service untuk export/import data dengan multiple formats
 class ExportService {
-  final TransactionDataService _transactionData =
-      getIt<TransactionDataService>();
+  final TransactionDataService _transactionData = getIt<TransactionDataService>();
   final CategoryDataService _categoryData = getIt<CategoryDataService>();
   final DateFormat _dateTimeFormat = DateFormat('yyyy-MM-dd HH:mm:ss');
 
@@ -28,16 +27,11 @@ class ExportService {
   }) async {
     try {
       final transactionsData = await _transactionData.getTransactions();
-      final transactions = List<Map<String, dynamic>>.from(
-        transactionsData['transactions'] ?? [],
-      );
+      final transactions = List<Map<String, dynamic>>.from(transactionsData['transactions'] ?? []);
 
       // Filter transactions
       List<Map<String, dynamic>> filtered = transactions;
-      if (startDate != null ||
-          endDate != null ||
-          categoryId != null ||
-          type != null) {
+      if (startDate != null || endDate != null || categoryId != null || type != null) {
         filtered =
             transactions.where((transaction) {
               if (startDate != null || endDate != null) {
@@ -94,14 +88,11 @@ class ExportService {
 
       // Save to file
       final directory = await getApplicationDocumentsDirectory();
-      final fileName =
-          'transactions_${DateTime.now().millisecondsSinceEpoch}.csv';
+      final fileName = 'transactions_${DateTime.now().millisecondsSinceEpoch}.csv';
       final file = File('${directory.path}/$fileName');
       await file.writeAsString(csvString);
 
-      LoggerService.info(
-        'Exported ${filtered.length} transactions to CSV: $fileName',
-      );
+      LoggerService.info('Exported ${filtered.length} transactions to CSV: $fileName');
       return file.path;
     } catch (e) {
       LoggerService.error('Error exporting to CSV', error: e);
@@ -118,16 +109,11 @@ class ExportService {
   }) async {
     try {
       final transactionsData = await _transactionData.getTransactions();
-      final transactions = List<Map<String, dynamic>>.from(
-        transactionsData['transactions'] ?? [],
-      );
+      final transactions = List<Map<String, dynamic>>.from(transactionsData['transactions'] ?? []);
 
       // Filter transactions (same logic as CSV)
       List<Map<String, dynamic>> filtered = transactions;
-      if (startDate != null ||
-          endDate != null ||
-          categoryId != null ||
-          type != null) {
+      if (startDate != null || endDate != null || categoryId != null || type != null) {
         filtered =
             transactions.where((transaction) {
               if (startDate != null || endDate != null) {
@@ -172,14 +158,11 @@ class ExportService {
 
       // Save to file
       final directory = await getApplicationDocumentsDirectory();
-      final fileName =
-          'transactions_${DateTime.now().millisecondsSinceEpoch}.json';
+      final fileName = 'transactions_${DateTime.now().millisecondsSinceEpoch}.json';
       final file = File('${directory.path}/$fileName');
       await file.writeAsString(jsonString);
 
-      LoggerService.info(
-        'Exported ${filtered.length} transactions to JSON: $fileName',
-      );
+      LoggerService.info('Exported ${filtered.length} transactions to JSON: $fileName');
       return file.path;
     } catch (e) {
       LoggerService.error('Error exporting to JSON', error: e);
@@ -196,16 +179,11 @@ class ExportService {
   }) async {
     try {
       final transactionsData = await _transactionData.getTransactions();
-      final transactions = List<Map<String, dynamic>>.from(
-        transactionsData['transactions'] ?? [],
-      );
+      final transactions = List<Map<String, dynamic>>.from(transactionsData['transactions'] ?? []);
 
       // Filter transactions (same logic)
       List<Map<String, dynamic>> filtered = transactions;
-      if (startDate != null ||
-          endDate != null ||
-          categoryId != null ||
-          type != null) {
+      if (startDate != null || endDate != null || categoryId != null || type != null) {
         filtered =
             transactions.where((transaction) {
               if (startDate != null || endDate != null) {
@@ -251,23 +229,11 @@ class ExportService {
             return [
               pw.Header(
                 level: 0,
-                child: pw.Text(
-                  'Transaction Report',
-                  style: pw.TextStyle(
-                    fontSize: 24,
-                    fontWeight: pw.FontWeight.bold,
-                  ),
-                ),
+                child: pw.Text('Transaction Report', style: pw.TextStyle(fontSize: 24, fontWeight: pw.FontWeight.bold)),
               ),
               pw.SizedBox(height: 20),
-              pw.Text(
-                'Export Date: ${_dateTimeFormat.format(DateTime.now())}',
-                style: pw.TextStyle(fontSize: 12),
-              ),
-              pw.Text(
-                'Total Transactions: ${filtered.length}',
-                style: pw.TextStyle(fontSize: 12),
-              ),
+              pw.Text('Export Date: ${_dateTimeFormat.format(DateTime.now())}', style: pw.TextStyle(fontSize: 12)),
+              pw.Text('Total Transactions: ${filtered.length}', style: pw.TextStyle(fontSize: 12)),
               pw.SizedBox(height: 20),
               pw.Table(
                 border: pw.TableBorder.all(),
@@ -276,38 +242,23 @@ class ExportService {
                     children: [
                       pw.Padding(
                         padding: const pw.EdgeInsets.all(4),
-                        child: pw.Text(
-                          'Date',
-                          style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
-                        ),
+                        child: pw.Text('Date', style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
                       ),
                       pw.Padding(
                         padding: const pw.EdgeInsets.all(4),
-                        child: pw.Text(
-                          'Type',
-                          style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
-                        ),
+                        child: pw.Text('Type', style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
                       ),
                       pw.Padding(
                         padding: const pw.EdgeInsets.all(4),
-                        child: pw.Text(
-                          'Category',
-                          style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
-                        ),
+                        child: pw.Text('Category', style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
                       ),
                       pw.Padding(
                         padding: const pw.EdgeInsets.all(4),
-                        child: pw.Text(
-                          'Description',
-                          style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
-                        ),
+                        child: pw.Text('Description', style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
                       ),
                       pw.Padding(
                         padding: const pw.EdgeInsets.all(4),
-                        child: pw.Text(
-                          'Amount',
-                          style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
-                        ),
+                        child: pw.Text('Amount', style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
                       ),
                     ],
                   ),
@@ -316,9 +267,7 @@ class ExportService {
                       children: [
                         pw.Padding(
                           padding: const pw.EdgeInsets.all(4),
-                          child: pw.Text(
-                            transaction['transaction_date']?.toString() ?? '',
-                          ),
+                          child: pw.Text(transaction['transaction_date']?.toString() ?? ''),
                         ),
                         pw.Padding(
                           padding: const pw.EdgeInsets.all(4),
@@ -326,23 +275,15 @@ class ExportService {
                         ),
                         pw.Padding(
                           padding: const pw.EdgeInsets.all(4),
-                          child: pw.Text(
-                            transaction['category_name']?.toString() ?? '',
-                          ),
+                          child: pw.Text(transaction['category_name']?.toString() ?? ''),
                         ),
                         pw.Padding(
                           padding: const pw.EdgeInsets.all(4),
-                          child: pw.Text(
-                            transaction['description']?.toString() ?? '',
-                          ),
+                          child: pw.Text(transaction['description']?.toString() ?? ''),
                         ),
                         pw.Padding(
                           padding: const pw.EdgeInsets.all(4),
-                          child: pw.Text(
-                            CurrencyFormatter.formatRupiah(
-                              (transaction['amount'] as num?)?.toInt() ?? 0,
-                            ),
-                          ),
+                          child: pw.Text(CurrencyFormatter.formatRupiah((transaction['amount'] as num?)?.toInt() ?? 0)),
                         ),
                       ],
                     );
@@ -356,14 +297,11 @@ class ExportService {
 
       // Save to file
       final directory = await getApplicationDocumentsDirectory();
-      final fileName =
-          'transactions_${DateTime.now().millisecondsSinceEpoch}.pdf';
+      final fileName = 'transactions_${DateTime.now().millisecondsSinceEpoch}.pdf';
       final file = File('${directory.path}/$fileName');
       await file.writeAsBytes(await pdf.save());
 
-      LoggerService.info(
-        'Exported ${filtered.length} transactions to PDF: $fileName',
-      );
+      LoggerService.info('Exported ${filtered.length} transactions to PDF: $fileName');
       return file.path;
     } catch (e) {
       LoggerService.error('Error exporting to PDF', error: e);
@@ -382,9 +320,7 @@ class ExportService {
   }
 
   /// Import transactions dari CSV
-  Future<Map<String, dynamic>> importTransactionsFromCSV(
-    String filePath,
-  ) async {
+  Future<Map<String, dynamic>> importTransactionsFromCSV(String filePath) async {
     try {
       final file = File(filePath);
       final csvString = await file.readAsString();
@@ -392,12 +328,7 @@ class ExportService {
       final csvData = const CsvToListConverter().convert(csvString);
 
       if (csvData.isEmpty) {
-        return {
-          'success': false,
-          'message': 'File kosong',
-          'imported': 0,
-          'failed': 0,
-        };
+        return {'success': false, 'message': 'File kosong', 'imported': 0, 'failed': 0};
       }
 
       // Skip header
@@ -442,8 +373,7 @@ class ExportService {
             final categories = await _categoryData.getCategories();
             for (final cat in categories) {
               final catName = cat.name.toLowerCase();
-              if (catName.contains(category.toLowerCase()) ||
-                  category.toLowerCase().contains(catName)) {
+              if (catName.contains(category.toLowerCase()) || category.toLowerCase().contains(catName)) {
                 categoryId = cat.id;
                 break;
               }
@@ -451,12 +381,10 @@ class ExportService {
           }
 
           final transactionData = {
-            'transaction_date_232143':
-                date.isNotEmpty ? date : DateTime.now().toIso8601String(),
+            'transaction_date_232143': date.isNotEmpty ? date : DateTime.now().toIso8601String(),
             'type_232143': type,
             'amount_232143': amount,
-            'description_232143':
-                description.isEmpty ? 'Imported from CSV' : description,
+            'description_232143': description.isEmpty ? 'Imported from CSV' : description,
             'category_id_232143': categoryId,
             'location_name': row.length > 5 ? row[5].toString() : '',
           };
@@ -483,12 +411,7 @@ class ExportService {
       };
     } catch (e) {
       LoggerService.error('Error importing from CSV', error: e);
-      return {
-        'success': false,
-        'message': 'Error: ${e.toString()}',
-        'imported': 0,
-        'failed': 0,
-      };
+      return {'success': false, 'message': 'Error: ${e.toString()}', 'imported': 0, 'failed': 0};
     }
   }
 }

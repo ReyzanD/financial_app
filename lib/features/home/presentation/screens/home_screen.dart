@@ -33,8 +33,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _currentIndex = 0;
   final PageController _pageController = PageController();
-  final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
-      GlobalKey<RefreshIndicatorState>();
+  final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey = GlobalKey<RefreshIndicatorState>();
   int _refreshCounter = 0;
   String? _errorMessage;
 
@@ -56,9 +55,7 @@ class _HomeScreenState extends State<HomeScreen> {
     } catch (e) {
       LoggerService.error('[HomeScreen] Error loading initial data', error: e);
       if (mounted) {
-        setState(
-          () => _errorMessage = ErrorHandlerService.getUserFriendlyMessage(e),
-        );
+        setState(() => _errorMessage = ErrorHandlerService.getUserFriendlyMessage(e));
       }
     }
   }
@@ -103,11 +100,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: PageView(
                       controller: _pageController,
                       onPageChanged: (i) => setState(() => _currentIndex = i),
-                      children: [
-                        _buildDashboardTab(),
-                        TabPlaceholders.buildTransactionsTab(),
-                        const MoreTabScreen(),
-                      ],
+                      children: [_buildDashboardTab(), TabPlaceholders.buildTransactionsTab(), const MoreTabScreen()],
                     ),
                   ),
                 ],
@@ -167,9 +160,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 icon: Iconsax.health,
                 initiallyExpanded: false,
                 accentColor: DesignTokens.successColor,
-                child: HealthScoreCard(
-                  key: ValueKey('health_$_refreshCounter'),
-                ),
+                child: HealthScoreCard(key: ValueKey('health_$_refreshCounter')),
               ),
             ],
           ),
@@ -192,11 +183,7 @@ class _HomeScreenState extends State<HomeScreen> {
               liveRegion: true,
               child: Text(
                 l10n?.error ?? 'Terjadi kesalahan',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.white,
-                ),
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: Colors.white),
               ),
             ),
             SizedBox(height: ResponsiveHelper.verticalSpacing(context, 8)),
@@ -219,9 +206,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 },
                 icon: const Icon(Icons.refresh),
                 label: Text(l10n?.try_again ?? 'Coba Lagi'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: DesignTokens.primaryColor,
-                ),
+                style: ElevatedButton.styleFrom(backgroundColor: DesignTokens.primaryColor),
               ),
             ),
           ],
@@ -235,20 +220,14 @@ class _HomeScreenState extends State<HomeScreen> {
       final controller = context.read<DashboardController>();
       await controller.refresh();
       if (controller.error != null && mounted) {
-        ErrorHandlerService.showErrorSnackbar(
-          context,
-          ErrorHandlerService.getUserFriendlyMessage(controller.error!),
-        );
+        ErrorHandlerService.showErrorSnackbar(context, ErrorHandlerService.getUserFriendlyMessage(controller.error!));
       } else {
         LoggerService.success('[HomeScreen] Dashboard refreshed successfully');
       }
     } catch (e) {
       LoggerService.error('[HomeScreen] Refresh failed', error: e);
       if (mounted) {
-        ErrorHandlerService.showErrorSnackbar(
-          context,
-          ErrorHandlerService.getUserFriendlyMessage(e),
-        );
+        ErrorHandlerService.showErrorSnackbar(context, ErrorHandlerService.getUserFriendlyMessage(e));
       }
     }
     if (mounted) {

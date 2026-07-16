@@ -7,11 +7,9 @@ class FinancialCalendarService {
   final TransactionDataService _transactionData;
   final ObligationDataService _obligationData;
 
-  FinancialCalendarService({
-    TransactionDataService? transactionData,
-    ObligationDataService? obligationData,
-  }) : _transactionData = transactionData ?? getIt<TransactionDataService>(),
-       _obligationData = obligationData ?? getIt<ObligationDataService>();
+  FinancialCalendarService({TransactionDataService? transactionData, ObligationDataService? obligationData})
+    : _transactionData = transactionData ?? getIt<TransactionDataService>(),
+      _obligationData = obligationData ?? getIt<ObligationDataService>();
 
   Future<List<Map<String, dynamic>>> getMonthEvents(int year, int month) async {
     final events = <Map<String, dynamic>>[];
@@ -27,14 +25,10 @@ class FinancialCalendarService {
         endDate: endDate.toIso8601String().split('T')[0],
       );
 
-      final transactions = List<Map<String, dynamic>>.from(
-        transactionsData['transactions'] ?? [],
-      );
+      final transactions = List<Map<String, dynamic>>.from(transactionsData['transactions'] ?? []);
       for (final transaction in transactions) {
         final dateStr =
-            transaction['transaction_date_232143']?.toString() ??
-            transaction['transaction_date']?.toString() ??
-            '';
+            transaction['transaction_date_232143']?.toString() ?? transaction['transaction_date']?.toString() ?? '';
         if (dateStr.isNotEmpty) {
           try {
             final date = DateTime.parse(dateStr);
@@ -50,9 +44,7 @@ class FinancialCalendarService {
                   (transaction['amount'] as num?)?.toDouble() ??
                   0.0,
               'transaction_type':
-                  transaction['type_232143']?.toString() ??
-                  transaction['type']?.toString() ??
-                  'expense',
+                  transaction['type_232143']?.toString() ?? transaction['type']?.toString() ?? 'expense',
               'category': transaction['category_name']?.toString() ?? '',
             });
           } catch (e) {
@@ -61,9 +53,7 @@ class FinancialCalendarService {
         }
       }
 
-      final subscriptions = await _obligationData.getObligations(
-        type: 'subscription',
-      );
+      final subscriptions = await _obligationData.getObligations(type: 'subscription');
       for (var sub in subscriptions) {
         if (sub.dueDate.year == year && sub.dueDate.month == month) {
           events.add({
@@ -77,9 +67,7 @@ class FinancialCalendarService {
         }
       }
 
-      events.sort(
-        (a, b) => (a['date'] as DateTime).compareTo(b['date'] as DateTime),
-      );
+      events.sort((a, b) => (a['date'] as DateTime).compareTo(b['date'] as DateTime));
     } catch (e) {
       LoggerService.error('Error getting calendar events', error: e);
     }
@@ -92,9 +80,7 @@ class FinancialCalendarService {
     final dayEvents =
         events.where((e) {
           final eventDate = e['date'] as DateTime;
-          return eventDate.year == date.year &&
-              eventDate.month == date.month &&
-              eventDate.day == date.day;
+          return eventDate.year == date.year && eventDate.month == date.month && eventDate.day == date.day;
         }).toList();
 
     double totalIncome = 0;
@@ -118,9 +104,7 @@ class FinancialCalendarService {
     };
   }
 
-  Future<List<Map<String, dynamic>>> getUpcomingEvents({
-    int daysAhead = 7,
-  }) async {
+  Future<List<Map<String, dynamic>>> getUpcomingEvents({int daysAhead = 7}) async {
     final now = DateTime.now();
     final events = await getMonthEvents(now.year, now.month);
 
@@ -136,9 +120,7 @@ class FinancialCalendarService {
           return diff >= 0 && diff <= daysAhead;
         }).toList();
 
-    upcoming.sort(
-      (a, b) => (a['date'] as DateTime).compareTo(b['date'] as DateTime),
-    );
+    upcoming.sort((a, b) => (a['date'] as DateTime).compareTo(b['date'] as DateTime));
     return upcoming;
   }
 

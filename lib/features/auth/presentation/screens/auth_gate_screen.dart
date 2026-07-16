@@ -64,10 +64,7 @@ class _AuthGateState extends State<AuthGate> {
     } catch (e) {
       LoggerService.error('Error determining route', error: e);
       if (mounted) {
-        ErrorHandlerService.showErrorSnackbar(
-          context,
-          ErrorHandlerService.getUserFriendlyMessage(e),
-        );
+        ErrorHandlerService.showErrorSnackbar(context, ErrorHandlerService.getUserFriendlyMessage(e));
       }
       setState(() {
         _targetScreen = const LoginScreen();
@@ -89,14 +86,9 @@ class _AuthGateState extends State<AuthGate> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const CircularProgressIndicator(
-                      color: DesignTokens.primaryColor,
-                    ),
-                    const SizedBox(height: 16),
-                    const Text(
-                      'Loading...',
-                      style: TextStyle(color: Colors.white, fontSize: 16),
-                    ),
+                    const CircularProgressIndicator(color: DesignTokens.primaryColor),
+                    const SizedBox(height: DesignTokens.spacing4),
+                    const Text('Loading...', style: TextStyle(color: Colors.white, fontSize: 16)),
                   ],
                 ),
               ),

@@ -13,11 +13,7 @@ class ReportController extends ChangeNotifier {
   String? get error => _error;
   Map<String, dynamic> get reportData => _reportData;
 
-  Future<void> generate({
-    required DateTime start,
-    required DateTime end,
-    String type = 'summary',
-  }) async {
+  Future<void> generate({required DateTime start, required DateTime end, String type = 'summary'}) async {
     _isLoading = true;
     _error = null;
     notifyListeners();

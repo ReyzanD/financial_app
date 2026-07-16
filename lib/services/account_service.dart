@@ -19,10 +19,7 @@ class AccountService {
     return _accountData.addAccount(account.toMap());
   }
 
-  Future<AccountModel> updateAccount(
-    String id,
-    Map<String, dynamic> updates,
-  ) async {
+  Future<AccountModel> updateAccount(String id, Map<String, dynamic> updates) async {
     return _accountData.updateAccount(id, updates);
   }
 
@@ -57,12 +54,8 @@ class AccountService {
       throw Exception('Insufficient balance');
     }
 
-    await updateAccount(fromAccountId, {
-      'balance': accounts[fromIndex].balance - amount,
-    });
-    await updateAccount(toAccountId, {
-      'balance': accounts[toIndex].balance + amount,
-    });
+    await updateAccount(fromAccountId, {'balance': accounts[fromIndex].balance - amount});
+    await updateAccount(toAccountId, {'balance': accounts[toIndex].balance + amount});
   }
 
   Future<AccountModel?> getAccountById(String id) async {

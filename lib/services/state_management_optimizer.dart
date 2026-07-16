@@ -31,11 +31,7 @@ class StateManagementOptimizer {
   }
 
   /// Optimize rebuild dengan shouldRebuild callback
-  static bool shouldRebuild<T>(
-    T oldValue,
-    T newValue,
-    bool Function(T, T) compare,
-  ) {
+  static bool shouldRebuild<T>(T oldValue, T newValue, bool Function(T, T) compare) {
     return !compare(oldValue, newValue);
   }
 

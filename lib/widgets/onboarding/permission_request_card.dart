@@ -91,25 +91,15 @@ class _PermissionRequestCardState extends State<PermissionRequestCard> {
     final isPermanentlyDenied = _status?.isPermanentlyDenied ?? false;
 
     return Semantics(
-      label: AccessibilityHelper.createSemanticLabel(
-        label: widget.title,
-        hint: widget.description,
-      ),
+      label: AccessibilityHelper.createSemanticLabel(label: widget.title, hint: widget.description),
       child: Container(
-        margin: EdgeInsets.only(
-          bottom: ResponsiveHelper.verticalSpacing(context, 16),
-        ),
+        margin: EdgeInsets.only(bottom: ResponsiveHelper.verticalSpacing(context, 16)),
         padding: ResponsiveHelper.padding(context),
         decoration: BoxDecoration(
           color: DesignTokens.getSurfaceColor(context),
-          borderRadius: BorderRadius.circular(
-            ResponsiveHelper.borderRadius(context, DesignTokens.radiusLarge),
-          ),
+          borderRadius: BorderRadius.circular(ResponsiveHelper.borderRadius(context, DesignTokens.radiusLarge)),
           border: Border.all(
-            color:
-                isGranted
-                    ? DesignTokens.successColor
-                    : DesignTokens.getBorderColor(context),
+            color: isGranted ? DesignTokens.successColor : DesignTokens.getBorderColor(context),
             width: isGranted ? 2 : 1,
           ),
         ),
@@ -124,21 +114,12 @@ class _PermissionRequestCardState extends State<PermissionRequestCard> {
                   decoration: BoxDecoration(
                     color: widget.iconColor.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(
-                      ResponsiveHelper.borderRadius(
-                        context,
-                        DesignTokens.radiusMedium,
-                      ),
+                      ResponsiveHelper.borderRadius(context, DesignTokens.radiusMedium),
                     ),
                   ),
-                  child: Icon(
-                    widget.icon,
-                    color: widget.iconColor,
-                    size: ResponsiveHelper.iconSize(context, 24),
-                  ),
+                  child: Icon(widget.icon, color: widget.iconColor, size: ResponsiveHelper.iconSize(context, 24)),
                 ),
-                SizedBox(
-                  width: ResponsiveHelper.horizontalSpacing(context, 12),
-                ),
+                SizedBox(width: ResponsiveHelper.horizontalSpacing(context, 12)),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -149,17 +130,12 @@ class _PermissionRequestCardState extends State<PermissionRequestCard> {
                         isHeader: true,
                         style: GoogleFonts.poppins(
                           color: DesignTokens.getTextColor(context),
-                          fontSize: ResponsiveHelper.fontSize(
-                            context,
-                            DesignTokens.fontSizeTitleMedium,
-                          ),
+                          fontSize: ResponsiveHelper.fontSize(context, DesignTokens.fontSizeTitleMedium),
                           fontWeight: DesignTokens.weightSemiBold,
                         ),
                       ),
                       if (isGranted) ...[
-                        SizedBox(
-                          height: ResponsiveHelper.verticalSpacing(context, 4),
-                        ),
+                        SizedBox(height: ResponsiveHelper.verticalSpacing(context, 4)),
                         Row(
                           children: [
                             Icon(
@@ -167,20 +143,12 @@ class _PermissionRequestCardState extends State<PermissionRequestCard> {
                               size: ResponsiveHelper.iconSize(context, 16),
                               color: DesignTokens.successColor,
                             ),
-                            SizedBox(
-                              width: ResponsiveHelper.horizontalSpacing(
-                                context,
-                                4,
-                              ),
-                            ),
+                            SizedBox(width: ResponsiveHelper.horizontalSpacing(context, 4)),
                             Text(
                               'Diizinkan',
                               style: GoogleFonts.poppins(
                                 color: DesignTokens.successColor,
-                                fontSize: ResponsiveHelper.fontSize(
-                                  context,
-                                  DesignTokens.fontSizeLabelSmall,
-                                ),
+                                fontSize: ResponsiveHelper.fontSize(context, DesignTokens.fontSizeLabelSmall),
                               ),
                             ),
                           ],
@@ -199,10 +167,7 @@ class _PermissionRequestCardState extends State<PermissionRequestCard> {
               text: widget.description,
               style: GoogleFonts.poppins(
                 color: DesignTokens.getTextColor(context, isPrimary: false),
-                fontSize: ResponsiveHelper.fontSize(
-                  context,
-                  DesignTokens.fontSizeBodySmall,
-                ),
+                fontSize: ResponsiveHelper.fontSize(context, DesignTokens.fontSizeBodySmall),
                 height: 1.5,
               ),
             ),
@@ -213,12 +178,7 @@ class _PermissionRequestCardState extends State<PermissionRequestCard> {
               padding: ResponsiveHelper.padding(context, multiplier: 0.75),
               decoration: BoxDecoration(
                 color: DesignTokens.infoColor.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(
-                  ResponsiveHelper.borderRadius(
-                    context,
-                    DesignTokens.radiusSmall,
-                  ),
-                ),
+                borderRadius: BorderRadius.circular(ResponsiveHelper.borderRadius(context, DesignTokens.radiusSmall)),
               ),
               child: Row(
                 children: [
@@ -227,18 +187,13 @@ class _PermissionRequestCardState extends State<PermissionRequestCard> {
                     size: ResponsiveHelper.iconSize(context, 16),
                     color: DesignTokens.infoColor,
                   ),
-                  SizedBox(
-                    width: ResponsiveHelper.horizontalSpacing(context, 8),
-                  ),
+                  SizedBox(width: ResponsiveHelper.horizontalSpacing(context, 8)),
                   Expanded(
                     child: Text(
                       widget.benefit,
                       style: GoogleFonts.poppins(
                         color: DesignTokens.infoColor,
-                        fontSize: ResponsiveHelper.fontSize(
-                          context,
-                          DesignTokens.fontSizeLabelSmall,
-                        ),
+                        fontSize: ResponsiveHelper.fontSize(context, DesignTokens.fontSizeLabelSmall),
                       ),
                     ),
                   ),
@@ -265,11 +220,7 @@ class _PermissionRequestCardState extends State<PermissionRequestCard> {
                         : _isRequesting
                         ? Container(
                           padding: ResponsiveHelper.padding(context),
-                          child: Center(
-                            child: CircularProgressIndicator(
-                              color: widget.iconColor,
-                            ),
-                          ),
+                          child: Center(child: CircularProgressIndicator(color: widget.iconColor)),
                         )
                         : AccessibilityHelper.createAccessibleButton(
                           context: context,

@@ -42,10 +42,7 @@ class _PinSetupScreenState extends State<PinSetupScreen> {
       if (_pin == _confirmPin) {
         await _savePin();
       } else {
-        ErrorHandlerService.showWarningSnackbar(
-          context,
-          'PIN tidak cocok. Silakan coba lagi.',
-        );
+        ErrorHandlerService.showWarningSnackbar(context, 'PIN tidak cocok. Silakan coba lagi.');
         setState(() {
           _pin = '';
           _confirmPin = '';
@@ -63,11 +60,9 @@ class _PinSetupScreenState extends State<PinSetupScreen> {
       if (!ctx.mounted) return;
       ErrorHandlerService.showSuccessSnackbar(
         ctx,
-        AppLocalizations.of(ctx)?.pin_created_successfully ??
-            'PIN berhasil dibuat!',
+        AppLocalizations.of(ctx)?.pin_created_successfully ?? 'PIN berhasil dibuat!',
       );
-      final onboardingCompleted =
-          await OnboardingFlowManager.isOnboardingCompleted();
+      final onboardingCompleted = await OnboardingFlowManager.isOnboardingCompleted();
       if (!ctx.mounted) return;
       if (!onboardingCompleted)
         Navigator.of(ctx).pushReplacementNamed('/onboarding');
@@ -76,11 +71,7 @@ class _PinSetupScreenState extends State<PinSetupScreen> {
     } catch (e) {
       LoggerService.error('Error creating PIN', error: e);
       if (!ctx.mounted) return;
-      ErrorHandlerService.showErrorSnackbar(
-        ctx,
-        ErrorHandlerService.getUserFriendlyMessage(e),
-        onRetry: _savePin,
-      );
+      ErrorHandlerService.showErrorSnackbar(ctx, ErrorHandlerService.getUserFriendlyMessage(e), onRetry: _savePin);
     } finally {
       if (ctx.mounted) setState(() => _isLoading = false);
     }
@@ -104,10 +95,7 @@ class _PinSetupScreenState extends State<PinSetupScreen> {
         elevation: 0,
         leading:
             _isConfirmStep
-                ? IconButton(
-                  icon: const Icon(Iconsax.arrow_left, color: Colors.white),
-                  onPressed: _onBack,
-                )
+                ? IconButton(icon: const Icon(Iconsax.arrow_left, color: Colors.white), onPressed: _onBack)
                 : null,
         automaticallyImplyLeading: false,
       ),
@@ -118,53 +106,36 @@ class _PinSetupScreenState extends State<PinSetupScreen> {
             child: SafeArea(
               child:
                   _isLoading
-                      ? const Center(
-                        child: CircularProgressIndicator(
-                          color: DesignTokens.primaryColor,
-                        ),
-                      )
+                      ? const Center(child: CircularProgressIndicator(color: DesignTokens.primaryColor))
                       : SingleChildScrollView(
                         padding: const EdgeInsets.all(24),
                         child: Column(
                           children: [
-                            const SizedBox(height: 20),
+                            const SizedBox(height: DesignTokens.spacing5),
                             Container(
                               padding: const EdgeInsets.all(20),
                               decoration: BoxDecoration(
-                                color: DesignTokens.primaryColor.withValues(
-                                  alpha: 0.2,
-                                ),
+                                color: DesignTokens.primaryColor.withValues(alpha: 0.2),
                                 shape: BoxShape.circle,
                               ),
-                              child: const Icon(
-                                Iconsax.lock,
-                                size: 60,
-                                color: DesignTokens.primaryColor,
-                              ),
+                              child: const Icon(Iconsax.lock, size: 60, color: DesignTokens.primaryColor),
                             ),
-                            const SizedBox(height: 32),
+                            const SizedBox(height: DesignTokens.spacing7),
                             Text(
-                              _isConfirmStep
-                                  ? l10n.confirm_pin
-                                  : l10n.create_pin,
+                              _isConfirmStep ? l10n.confirm_pin : l10n.create_pin,
                               style: GoogleFonts.poppins(
                                 color: Colors.white,
                                 fontSize: 28,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
-                            const SizedBox(height: 12),
+                            const SizedBox(height: DesignTokens.spacing3),
                             Text(
-                              _isConfirmStep
-                                  ? l10n.enter_pin_again
-                                  : l10n.create_pin_to_secure,
-                              style: GoogleFonts.poppins(
-                                color: Colors.grey[400],
-                                fontSize: 14,
-                              ),
+                              _isConfirmStep ? l10n.enter_pin_again : l10n.create_pin_to_secure,
+                              style: GoogleFonts.poppins(color: Colors.grey[400], fontSize: 14),
                               textAlign: TextAlign.center,
                             ),
-                            const SizedBox(height: 40),
+                            const SizedBox(height: DesignTokens.spacing8),
                             if (!_isConfirmStep) ...[
                               Text(
                                 l10n.select_pin_length,
@@ -174,7 +145,7 @@ class _PinSetupScreenState extends State<PinSetupScreen> {
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
-                              const SizedBox(height: 16),
+                              const SizedBox(height: DesignTokens.spacing4),
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
@@ -183,7 +154,7 @@ class _PinSetupScreenState extends State<PinSetupScreen> {
                                   _buildPinLengthButton(6),
                                 ],
                               ),
-                              const SizedBox(height: 40),
+                              const SizedBox(height: DesignTokens.spacing8),
                             ],
                             PinPad(
                               pin: _isConfirmStep ? _confirmPin : _pin,
@@ -191,35 +162,22 @@ class _PinSetupScreenState extends State<PinSetupScreen> {
                               onPinChanged: _onPinChanged,
                               onComplete: _onPinComplete,
                             ),
-                            const SizedBox(height: 32),
+                            const SizedBox(height: DesignTokens.spacing7),
                             Container(
-                              padding: const EdgeInsets.all(
-                                DesignTokens.spacing4,
-                              ),
+                              padding: const EdgeInsets.all(DesignTokens.spacing4),
                               decoration: BoxDecoration(
                                 color: DesignTokens.surfaceDark,
-                                borderRadius: BorderRadius.circular(
-                                  DesignTokens.radiusMedium,
-                                ),
-                                border: Border.all(
-                                  color: DesignTokens.borderDark,
-                                ),
+                                borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                                border: Border.all(color: DesignTokens.borderDark),
                               ),
                               child: Row(
                                 children: [
-                                  Icon(
-                                    Iconsax.info_circle,
-                                    color: Colors.grey[400],
-                                    size: 20,
-                                  ),
+                                  Icon(Iconsax.info_circle, color: Colors.grey[400], size: 20),
                                   const SizedBox(width: 12),
                                   Expanded(
                                     child: Text(
                                       l10n.use_pin_to_unlock,
-                                      style: GoogleFonts.poppins(
-                                        color: Colors.grey[400],
-                                        fontSize: 12,
-                                      ),
+                                      style: GoogleFonts.poppins(color: Colors.grey[400], fontSize: 12),
                                     ),
                                   ),
                                 ],
@@ -247,16 +205,9 @@ class _PinSetupScreenState extends State<PinSetupScreen> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
         decoration: BoxDecoration(
-          color:
-              isSelected ? DesignTokens.primaryColor : DesignTokens.surfaceDark,
+          color: isSelected ? DesignTokens.primaryColor : DesignTokens.surfaceDark,
           borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
-          border: Border.all(
-            color:
-                isSelected
-                    ? DesignTokens.primaryColor
-                    : DesignTokens.borderDark,
-            width: 2,
-          ),
+          border: Border.all(color: isSelected ? DesignTokens.primaryColor : DesignTokens.borderDark, width: 2),
         ),
         child: Text(
           '$length Digit',

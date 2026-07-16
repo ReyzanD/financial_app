@@ -34,14 +34,8 @@ class ExchangeRateService {
 
       final rates = await _exchangeRateData.getExchangeRates();
 
-      final fromRateInIDR =
-          rates[fromCode.toUpperCase()] ??
-          _defaultRates[fromCode.toUpperCase()] ??
-          1.0;
-      final toRateInIDR =
-          rates[toCode.toUpperCase()] ??
-          _defaultRates[toCode.toUpperCase()] ??
-          1.0;
+      final fromRateInIDR = rates[fromCode.toUpperCase()] ?? _defaultRates[fromCode.toUpperCase()] ?? 1.0;
+      final toRateInIDR = rates[toCode.toUpperCase()] ?? _defaultRates[toCode.toUpperCase()] ?? 1.0;
 
       return toRateInIDR / fromRateInIDR;
     } catch (e) {
@@ -50,11 +44,7 @@ class ExchangeRateService {
     }
   }
 
-  Future<double> convert({
-    required double amount,
-    required String fromCurrency,
-    required String toCurrency,
-  }) async {
+  Future<double> convert({required double amount, required String fromCurrency, required String toCurrency}) async {
     if (fromCurrency == toCurrency) return amount;
 
     final rate = await getExchangeRate(fromCurrency, toCurrency);
@@ -115,11 +105,7 @@ class ExchangeRateService {
       if (currencyCode == baseCurrency) {
         totalInBase += amount;
       } else {
-        final converted = await convert(
-          amount: amount,
-          fromCurrency: currencyCode,
-          toCurrency: baseCurrency,
-        );
+        final converted = await convert(amount: amount, fromCurrency: currencyCode, toCurrency: baseCurrency);
         totalInBase += converted;
       }
     }
@@ -127,9 +113,7 @@ class ExchangeRateService {
     return totalInBase;
   }
 
-  Future<List<Map<String, dynamic>>> getCurrencyDistribution(
-    Map<String, double> balances,
-  ) async {
+  Future<List<Map<String, dynamic>>> getCurrencyDistribution(Map<String, double> balances) async {
     final totalValue = await calculatePortfolioValue(balances);
     if (totalValue == 0) return [];
 
@@ -147,13 +131,7 @@ class ExchangeRateService {
       );
 
       distribution.add({
-        'currency':
-            currency ??
-            CurrencyModel(
-              code: currencyCode,
-              name: currencyCode,
-              symbol: currencyCode,
-            ),
+        'currency': currency ?? CurrencyModel(code: currencyCode, name: currencyCode, symbol: currencyCode),
         'amount': amount,
         'value_in_base': valueInBase,
         'percentage': (valueInBase / totalValue) * 100,
@@ -161,9 +139,7 @@ class ExchangeRateService {
     }
 
     distribution.sort((a, b) {
-      return (b['value_in_base'] as double).compareTo(
-        a['value_in_base'] as double,
-      );
+      return (b['value_in_base'] as double).compareTo(a['value_in_base'] as double);
     });
 
     return distribution;

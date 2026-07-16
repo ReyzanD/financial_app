@@ -14,9 +14,7 @@ class TagService {
       if (tagsJson == null) return [];
 
       final List<dynamic> decoded = jsonDecode(tagsJson);
-      return decoded
-          .map((e) => TransactionTagModel.fromJson(e as Map<String, dynamic>))
-          .toList();
+      return decoded.map((e) => TransactionTagModel.fromJson(e as Map<String, dynamic>)).toList();
     } catch (e) {
       LoggerService.error('Error getting tags', error: e);
       return [];
@@ -72,10 +70,7 @@ class TagService {
     }
   }
 
-  Future<void> removeTagFromTransaction(
-    String transactionId,
-    String tagId,
-  ) async {
+  Future<void> removeTagFromTransaction(String transactionId, String tagId) async {
     try {
       final mappings = await _getTransactionTags(transactionId);
       mappings.remove(tagId);
@@ -92,9 +87,7 @@ class TagService {
   Future<List<String>> getTransactionsByTag(String tagId) async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      final keys = prefs.getKeys().where(
-        (k) => k.startsWith('${_transactionTagsKey}_'),
-      );
+      final keys = prefs.getKeys().where((k) => k.startsWith('${_transactionTagsKey}_'));
       final transactionIds = <String>[];
 
       for (var key in keys) {
@@ -134,12 +127,9 @@ class TagService {
         bool matches = true;
 
         if (query != null && query.isNotEmpty) {
-          final desc =
-              (transaction['description']?.toString() ?? '').toLowerCase();
-          final category =
-              (transaction['category_name']?.toString() ?? '').toLowerCase();
-          if (!desc.contains(query.toLowerCase()) &&
-              !category.contains(query.toLowerCase())) {
+          final desc = (transaction['description']?.toString() ?? '').toLowerCase();
+          final category = (transaction['category_name']?.toString() ?? '').toLowerCase();
+          if (!desc.contains(query.toLowerCase()) && !category.contains(query.toLowerCase())) {
             matches = false;
           }
         }
@@ -197,10 +187,7 @@ class TagService {
     }
   }
 
-  Future<void> _saveTransactionTags(
-    String transactionId,
-    List<String> tagIds,
-  ) async {
+  Future<void> _saveTransactionTags(String transactionId, List<String> tagIds) async {
     try {
       final prefs = await SharedPreferences.getInstance();
       final key = '${_transactionTagsKey}_$transactionId';

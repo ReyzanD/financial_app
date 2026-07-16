@@ -16,9 +16,7 @@ class ShimmerLoading extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
           color: DesignTokens.getSurfaceColor(context),
-          borderRadius: BorderRadius.circular(
-            ResponsiveHelper.borderRadius(context, DesignTokens.radiusMedium),
-          ),
+          borderRadius: BorderRadius.circular(ResponsiveHelper.borderRadius(context, DesignTokens.radiusMedium)),
         ),
       ),
     );
@@ -37,23 +35,15 @@ class TransactionShimmer extends StatelessWidget {
       padding: ResponsiveHelper.padding(context),
       itemBuilder: (context, index) {
         return Padding(
-          padding: EdgeInsets.only(
-            bottom: ResponsiveHelper.verticalSpacing(context, 12),
-          ),
+          padding: EdgeInsets.only(bottom: ResponsiveHelper.verticalSpacing(context, 12)),
           child: Shimmer.fromColors(
             baseColor: isDark ? DesignTokens.surfaceDark : Colors.grey[300]!,
-            highlightColor:
-                isDark ? DesignTokens.borderDark : Colors.grey[100]!,
+            highlightColor: isDark ? DesignTokens.borderDark : Colors.grey[100]!,
             child: Container(
               height: ResponsiveHelper.cardHeight(context, 80),
               decoration: BoxDecoration(
                 color: DesignTokens.getSurfaceColor(context),
-                borderRadius: BorderRadius.circular(
-                  ResponsiveHelper.borderRadius(
-                    context,
-                    DesignTokens.radiusMedium,
-                  ),
-                ),
+                borderRadius: BorderRadius.circular(ResponsiveHelper.borderRadius(context, DesignTokens.radiusMedium)),
               ),
             ),
           ),
@@ -73,11 +63,7 @@ class CardShimmer extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return Padding(
-      padding: ResponsiveHelper.symmetricPadding(
-        context,
-        horizontal: 16,
-        vertical: 8,
-      ),
+      padding: ResponsiveHelper.symmetricPadding(context, horizontal: 16, vertical: 8),
       child: Shimmer.fromColors(
         baseColor: isDark ? DesignTokens.surfaceDark : Colors.grey[300]!,
         highlightColor: isDark ? DesignTokens.borderDark : Colors.grey[100]!,
@@ -85,9 +71,7 @@ class CardShimmer extends StatelessWidget {
           height: ResponsiveHelper.cardHeight(context, height),
           decoration: BoxDecoration(
             color: DesignTokens.getSurfaceColor(context),
-            borderRadius: BorderRadius.circular(
-              ResponsiveHelper.borderRadius(context, DesignTokens.radiusLarge),
-            ),
+            borderRadius: BorderRadius.circular(ResponsiveHelper.borderRadius(context, DesignTokens.radiusLarge)),
           ),
         ),
       ),
@@ -127,18 +111,12 @@ class SummaryCardShimmer extends StatelessWidget {
           Expanded(
             child: Shimmer.fromColors(
               baseColor: isDark ? DesignTokens.surfaceDark : Colors.grey[300]!,
-              highlightColor:
-                  isDark ? DesignTokens.borderDark : Colors.grey[100]!,
+              highlightColor: isDark ? DesignTokens.borderDark : Colors.grey[100]!,
               child: Container(
                 height: ResponsiveHelper.cardHeight(context, 100),
                 decoration: BoxDecoration(
                   color: DesignTokens.getSurfaceColor(context),
-                  borderRadius: BorderRadius.circular(
-                    ResponsiveHelper.borderRadius(
-                      context,
-                      DesignTokens.radiusLarge,
-                    ),
-                  ),
+                  borderRadius: BorderRadius.circular(ResponsiveHelper.borderRadius(context, DesignTokens.radiusLarge)),
                 ),
               ),
             ),
@@ -147,18 +125,12 @@ class SummaryCardShimmer extends StatelessWidget {
           Expanded(
             child: Shimmer.fromColors(
               baseColor: isDark ? DesignTokens.surfaceDark : Colors.grey[300]!,
-              highlightColor:
-                  isDark ? DesignTokens.borderDark : Colors.grey[100]!,
+              highlightColor: isDark ? DesignTokens.borderDark : Colors.grey[100]!,
               child: Container(
                 height: ResponsiveHelper.cardHeight(context, 100),
                 decoration: BoxDecoration(
                   color: DesignTokens.getSurfaceColor(context),
-                  borderRadius: BorderRadius.circular(
-                    ResponsiveHelper.borderRadius(
-                      context,
-                      DesignTokens.radiusLarge,
-                    ),
-                  ),
+                  borderRadius: BorderRadius.circular(ResponsiveHelper.borderRadius(context, DesignTokens.radiusLarge)),
                 ),
               ),
             ),
@@ -175,12 +147,7 @@ class ShimmerBox extends StatelessWidget {
   final double height;
   final BorderRadius? borderRadius;
 
-  const ShimmerBox({
-    super.key,
-    required this.width,
-    required this.height,
-    this.borderRadius,
-  });
+  const ShimmerBox({super.key, required this.width, required this.height, this.borderRadius});
 
   @override
   Widget build(BuildContext context) {
@@ -194,13 +161,7 @@ class ShimmerBox extends StatelessWidget {
         decoration: BoxDecoration(
           color: DesignTokens.getSurfaceColor(context),
           borderRadius:
-              borderRadius ??
-              BorderRadius.circular(
-                ResponsiveHelper.borderRadius(
-                  context,
-                  DesignTokens.radiusSmall,
-                ),
-              ),
+              borderRadius ?? BorderRadius.circular(ResponsiveHelper.borderRadius(context, DesignTokens.radiusSmall)),
         ),
       ),
     );

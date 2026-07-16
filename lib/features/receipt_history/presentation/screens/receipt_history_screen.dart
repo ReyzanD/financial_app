@@ -21,8 +21,7 @@ class ReceiptHistoryScreen extends StatefulWidget {
 
 class _ReceiptHistoryScreenState extends State<ReceiptHistoryScreen> {
   bool _isScanning = false;
-  final ReceiptScanningService _receiptScanningService =
-      ReceiptScanningService();
+  final ReceiptScanningService _receiptScanningService = ReceiptScanningService();
 
   @override
   void initState() {
@@ -55,8 +54,7 @@ class _ReceiptHistoryScreenState extends State<ReceiptHistoryScreen> {
           Expanded(
             child: Consumer<ReceiptController>(
               builder: (context, ctrl, _) {
-                if (ctrl.isLoading)
-                  return const Center(child: CircularProgressIndicator());
+                if (ctrl.isLoading) return const Center(child: CircularProgressIndicator());
                 if (ctrl.error != null) return _buildErrorState(ctrl);
                 if (ctrl.receipts.isEmpty) return _buildEmptyState();
                 return _buildReceiptsList(ctrl);
@@ -77,25 +75,19 @@ class _ReceiptHistoryScreenState extends State<ReceiptHistoryScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(Icons.error_outline_rounded, size: 64, color: Colors.red[400]),
-            const SizedBox(height: 16),
+            const SizedBox(height: DesignTokens.spacing4),
             Text(
               l10n?.failed_to_load_data ?? 'Gagal Memuat Data',
-              style: GoogleFonts.poppins(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-              ),
+              style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.w600),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: DesignTokens.spacing2),
             Text(
               ctrl.error ?? 'Terjadi kesalahan',
               textAlign: TextAlign.center,
               style: GoogleFonts.poppins(color: Colors.grey[600]),
             ),
-            const SizedBox(height: 24),
-            ElevatedButton(
-              onPressed: ctrl.refresh,
-              child: const Text('Coba Lagi'),
-            ),
+            const SizedBox(height: DesignTokens.spacing6),
+            ElevatedButton(onPressed: ctrl.refresh, child: const Text('Coba Lagi')),
           ],
         ),
       ),
@@ -110,46 +102,29 @@ class _ReceiptHistoryScreenState extends State<ReceiptHistoryScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              Icons.receipt_long_outlined,
-              size: 80,
-              color: Colors.grey[400],
-            ),
-            const SizedBox(height: 16),
+            Icon(Icons.receipt_long_outlined, size: 80, color: Colors.grey[400]),
+            const SizedBox(height: DesignTokens.spacing4),
             Text(
               l10n?.no_receipts_yet ?? 'Belum Ada Struk',
-              style: GoogleFonts.poppins(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-              ),
+              style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.w600),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: DesignTokens.spacing2),
             Text(
               'Scan struk untuk mulai melacak pengeluaran Anda',
               textAlign: TextAlign.center,
               style: GoogleFonts.poppins(color: Colors.grey[600]),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: DesignTokens.spacing6),
             ElevatedButton(
               onPressed: _scanReceipt,
               style: ElevatedButton.styleFrom(
                 backgroundColor: DesignTokens.primaryColor,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 24,
-                  vertical: 12,
-                ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(
-                    DesignTokens.radiusMedium,
-                  ),
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(DesignTokens.radiusMedium)),
               ),
               child: Text(
                 l10n?.scan_receipt ?? 'Scan Struk',
-                style: GoogleFonts.poppins(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w600,
-                ),
+                style: GoogleFonts.poppins(color: Colors.white, fontWeight: FontWeight.w600),
               ),
             ),
           ],
@@ -163,9 +138,7 @@ class _ReceiptHistoryScreenState extends State<ReceiptHistoryScreen> {
     setState(() => _isScanning = true);
 
     try {
-      final imageFile = await _receiptScanningService.pickImage(
-        fromCamera: true,
-      );
+      final imageFile = await _receiptScanningService.pickImage(fromCamera: true);
       if (imageFile == null) {
         if (mounted) setState(() => _isScanning = false);
         return;
@@ -175,23 +148,17 @@ class _ReceiptHistoryScreenState extends State<ReceiptHistoryScreen> {
       if (scanResult != null && mounted) {
         ErrorHandlerService.showSuccessSnackbar(
           context,
-          AppLocalizations.of(context)?.receipt_scanned ??
-              'Struk berhasil dipindai',
+          AppLocalizations.of(context)?.receipt_scanned ?? 'Struk berhasil dipindai',
         );
         await context.read<ReceiptController>().refresh();
       } else if (mounted) {
         ErrorHandlerService.showWarningSnackbar(
           context,
-          AppLocalizations.of(context)?.cannot_scan_receipt_try_again ??
-              'Tidak dapat memindai struk. Coba lagi.',
+          AppLocalizations.of(context)?.cannot_scan_receipt_try_again ?? 'Tidak dapat memindai struk. Coba lagi.',
         );
       }
     } catch (e) {
-      if (mounted)
-        ErrorHandlerService.showErrorSnackbar(
-          context,
-          ErrorHandlerService.getUserFriendlyMessage(e),
-        );
+      if (mounted) ErrorHandlerService.showErrorSnackbar(context, ErrorHandlerService.getUserFriendlyMessage(e));
     } finally {
       if (mounted) setState(() => _isScanning = false);
     }
@@ -206,10 +173,7 @@ class _ReceiptHistoryScreenState extends State<ReceiptHistoryScreen> {
     );
   }
 
-  Widget _buildReceiptCard(
-    Map<String, dynamic> receipt,
-    ReceiptController ctrl,
-  ) {
+  Widget _buildReceiptCard(Map<String, dynamic> receipt, ReceiptController ctrl) {
     final merchant = receipt['merchant_232143'] as String? ?? 'Tidak Diketahui';
     final total = (receipt['total_amount_232143'] as num?)?.toDouble() ?? 0.0;
     final dateStr = receipt['receipt_date_232143'] as String?;
@@ -248,14 +212,8 @@ class _ReceiptHistoryScreenState extends State<ReceiptHistoryScreen> {
                 title: Text(l10n?.delete_receipt_confirm ?? 'Hapus Struk?'),
                 content: const Text('Struk ini akan dihapus secara permanen.'),
                 actions: [
-                  TextButton(
-                    onPressed: () => Navigator.pop(c, false),
-                    child: Text(l10n?.cancel ?? 'Batal'),
-                  ),
-                  FilledButton(
-                    onPressed: () => Navigator.pop(c, true),
-                    child: Text(l10n?.delete ?? 'Hapus'),
-                  ),
+                  TextButton(onPressed: () => Navigator.pop(c, false), child: Text(l10n?.cancel ?? 'Batal')),
+                  FilledButton(onPressed: () => Navigator.pop(c, true), child: Text(l10n?.delete ?? 'Hapus')),
                 ],
               );
             },
@@ -291,14 +249,11 @@ class _ReceiptHistoryScreenState extends State<ReceiptHistoryScreen> {
                     children: [
                       Text(
                         merchant,
-                        style: GoogleFonts.poppins(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 16,
-                        ),
+                        style: GoogleFonts.poppins(fontWeight: FontWeight.w600, fontSize: 16),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
-                      const SizedBox(height: 4),
+                      const SizedBox(height: DesignTokens.spacing1),
                       Text(
                         CurrencyFormatter.formatRupiah(total.toInt()),
                         style: GoogleFonts.poppins(
@@ -307,54 +262,30 @@ class _ReceiptHistoryScreenState extends State<ReceiptHistoryScreen> {
                           color: Theme.of(context).colorScheme.primary,
                         ),
                       ),
-                      const SizedBox(height: 4),
+                      const SizedBox(height: DesignTokens.spacing1),
                       Row(
                         children: [
-                          Icon(
-                            Icons.calendar_today,
-                            size: 12,
-                            color: Colors.grey[500],
-                          ),
+                          Icon(Icons.calendar_today, size: 12, color: Colors.grey[500]),
                           const SizedBox(width: 4),
                           Text(
-                            date != null
-                                ? '${date.day}/${date.month}/${date.year}'
-                                : 'Tanggal tidak diketahui',
-                            style: GoogleFonts.poppins(
-                              fontSize: 12,
-                              color: Colors.grey[600],
-                            ),
+                            date != null ? '${date.day}/${date.month}/${date.year}' : 'Tanggal tidak diketahui',
+                            style: GoogleFonts.poppins(fontSize: 12, color: Colors.grey[600]),
                           ),
                           const SizedBox(width: 12),
                           Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 2,
-                            ),
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                             decoration: BoxDecoration(
-                              color:
-                                  isProcessed
-                                      ? Colors.green[50]
-                                      : Colors.orange[50],
-                              borderRadius: BorderRadius.circular(
-                                DesignTokens.radiusMedium,
-                              ),
+                              color: isProcessed ? Colors.green[50] : Colors.orange[50],
+                              borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
                             ),
                             child: Text(
                               isProcessed
-                                  ? (AppLocalizations.of(context)?.processed ??
-                                      'Diproses')
-                                  : (AppLocalizations.of(
-                                        context,
-                                      )?.not_processed ??
-                                      'Belum Diproses'),
+                                  ? (AppLocalizations.of(context)?.processed ?? 'Diproses')
+                                  : (AppLocalizations.of(context)?.not_processed ?? 'Belum Diproses'),
                               style: GoogleFonts.poppins(
                                 fontSize: 10,
                                 fontWeight: FontWeight.w600,
-                                color:
-                                    isProcessed
-                                        ? Colors.green[700]
-                                        : Colors.orange[700],
+                                color: isProcessed ? Colors.green[700] : Colors.orange[700],
                               ),
                             ),
                           ),
@@ -366,21 +297,14 @@ class _ReceiptHistoryScreenState extends State<ReceiptHistoryScreen> {
                 IconButton(
                   icon: Icon(
                     isProcessed ? Iconsax.edit : Iconsax.add_circle,
-                    color:
-                        isProcessed
-                            ? DesignTokens.textSecondaryDark
-                            : DesignTokens.primaryColor,
+                    color: isProcessed ? DesignTokens.textSecondaryDark : DesignTokens.primaryColor,
                     size: 24,
                   ),
                   onPressed: () => _createTransactionFromReceipt(receipt),
                   tooltip:
                       isProcessed
-                          ? (AppLocalizations.of(
-                                context,
-                              )?.create_transaction_again ??
-                              'Buat transaksi lagi')
-                          : (AppLocalizations.of(context)?.create_transaction ??
-                              'Buat transaksi'),
+                          ? (AppLocalizations.of(context)?.create_transaction_again ?? 'Buat transaksi lagi')
+                          : (AppLocalizations.of(context)?.create_transaction ?? 'Buat transaksi'),
                 ),
                 const Icon(Icons.chevron_right, color: Colors.grey),
               ],
@@ -398,11 +322,7 @@ class _ReceiptHistoryScreenState extends State<ReceiptHistoryScreen> {
         child: SizedBox(
           width: 60,
           height: 60,
-          child: Image.file(
-            File(imagePath),
-            fit: BoxFit.cover,
-            errorBuilder: (_, __, ___) => _buildDefaultThumbnail(),
-          ),
+          child: Image.file(File(imagePath), fit: BoxFit.cover, errorBuilder: (_, __, ___) => _buildDefaultThumbnail()),
         ),
       );
     }
@@ -413,10 +333,7 @@ class _ReceiptHistoryScreenState extends State<ReceiptHistoryScreen> {
     return Container(
       width: 60,
       height: 60,
-      decoration: BoxDecoration(
-        color: Colors.grey[200],
-        borderRadius: BorderRadius.circular(8),
-      ),
+      decoration: BoxDecoration(color: Colors.grey[200], borderRadius: BorderRadius.circular(8)),
       child: Icon(Icons.receipt_long, color: Colors.grey[500], size: 30),
     );
   }
@@ -456,10 +373,7 @@ class _ReceiptHistoryScreenState extends State<ReceiptHistoryScreen> {
     }
   }
 
-  void _showReceiptDetail(
-    Map<String, dynamic> receipt,
-    ReceiptController ctrl,
-  ) {
+  void _showReceiptDetail(Map<String, dynamic> receipt, ReceiptController ctrl) {
     final merchant = receipt['merchant_232143'] as String? ?? 'Tidak Diketahui';
     final total = (receipt['total_amount_232143'] as num?)?.toDouble() ?? 0.0;
     final dateStr = receipt['receipt_date_232143'] as String?;
@@ -485,34 +399,18 @@ class _ReceiptHistoryScreenState extends State<ReceiptHistoryScreen> {
                         child: Container(
                           width: 40,
                           height: 4,
-                          decoration: BoxDecoration(
-                            color: Colors.grey[300],
-                            borderRadius: BorderRadius.circular(2),
-                          ),
+                          decoration: BoxDecoration(color: Colors.grey[300], borderRadius: BorderRadius.circular(2)),
                         ),
                       ),
-                      const SizedBox(height: 20),
+                      const SizedBox(height: DesignTokens.spacing5),
                       if (imagePath != null && File(imagePath).existsSync())
                         ClipRRect(
-                          borderRadius: BorderRadius.circular(
-                            DesignTokens.radiusMedium,
-                          ),
-                          child: Image.file(
-                            File(imagePath),
-                            height: 200,
-                            width: double.infinity,
-                            fit: BoxFit.cover,
-                          ),
+                          borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                          child: Image.file(File(imagePath), height: 200, width: double.infinity, fit: BoxFit.cover),
                         ),
-                      const SizedBox(height: 16),
-                      Text(
-                        merchant,
-                        style: GoogleFonts.poppins(
-                          fontSize: 22,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
+                      const SizedBox(height: DesignTokens.spacing4),
+                      Text(merchant, style: GoogleFonts.poppins(fontSize: 22, fontWeight: FontWeight.w700)),
+                      const SizedBox(height: DesignTokens.spacing2),
                       Text(
                         CurrencyFormatter.formatRupiah(total.toInt()),
                         style: GoogleFonts.poppins(
@@ -522,22 +420,13 @@ class _ReceiptHistoryScreenState extends State<ReceiptHistoryScreen> {
                         ),
                       ),
                       if (dateStr != null) ...[
-                        const SizedBox(height: 8),
-                        Text(
-                          'Tanggal: $dateStr',
-                          style: GoogleFonts.poppins(color: Colors.grey[600]),
-                        ),
+                        const SizedBox(height: DesignTokens.spacing2),
+                        Text('Tanggal: $dateStr', style: GoogleFonts.poppins(color: Colors.grey[600])),
                       ],
                       if (items.isNotEmpty) ...[
-                        const SizedBox(height: 20),
-                        Text(
-                          'Item:',
-                          style: GoogleFonts.poppins(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
+                        const SizedBox(height: DesignTokens.spacing5),
+                        Text('Item:', style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w600)),
+                        const SizedBox(height: DesignTokens.spacing2),
                         ...items.map<Widget>(
                           (item) => Padding(
                             padding: const EdgeInsets.symmetric(vertical: 4),
@@ -545,45 +434,29 @@ class _ReceiptHistoryScreenState extends State<ReceiptHistoryScreen> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Expanded(
-                                  child: Text(
-                                    item['description']?.toString() ?? '',
-                                    style: GoogleFonts.poppins(),
-                                  ),
+                                  child: Text(item['description']?.toString() ?? '', style: GoogleFonts.poppins()),
                                 ),
                                 Text(
-                                  CurrencyFormatter.formatRupiah(
-                                    (item['amount'] as num).toInt(),
-                                  ),
-                                  style: GoogleFonts.poppins(
-                                    fontWeight: FontWeight.w500,
-                                  ),
+                                  CurrencyFormatter.formatRupiah((item['amount'] as num).toInt()),
+                                  style: GoogleFonts.poppins(fontWeight: FontWeight.w500),
                                 ),
                               ],
                             ),
                           ),
                         ),
                       ],
-                      const SizedBox(height: 20),
-                      const Text(
-                        'Detail OCR',
-                        style: TextStyle(fontWeight: FontWeight.w600),
-                      ),
-                      const SizedBox(height: 8),
+                      const SizedBox(height: DesignTokens.spacing5),
+                      const Text('Detail OCR', style: TextStyle(fontWeight: FontWeight.w600)),
+                      const SizedBox(height: DesignTokens.spacing2),
                       Container(
                         padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: Colors.grey[100],
-                          borderRadius: BorderRadius.circular(8),
-                        ),
+                        decoration: BoxDecoration(color: Colors.grey[100], borderRadius: BorderRadius.circular(8)),
                         child: Text(
                           receipt['raw_text_232143'] as String? ?? '',
-                          style: const TextStyle(
-                            fontSize: 12,
-                            fontFamily: 'monospace',
-                          ),
+                          style: const TextStyle(fontSize: 12, fontFamily: 'monospace'),
                         ),
                       ),
-                      const SizedBox(height: 20),
+                      const SizedBox(height: DesignTokens.spacing5),
                       SizedBox(
                         width: double.infinity,
                         child: ElevatedButton.icon(
@@ -594,13 +467,8 @@ class _ReceiptHistoryScreenState extends State<ReceiptHistoryScreen> {
                           icon: const Icon(Iconsax.add),
                           label: Text(
                             receipt['is_processed_232143'] == 1
-                                ? (AppLocalizations.of(
-                                      c,
-                                    )?.create_transaction_again ??
-                                    'Buat Transaksi Lagi')
-                                : (AppLocalizations.of(
-                                      c,
-                                    )?.create_transaction_from_receipt ??
+                                ? (AppLocalizations.of(c)?.create_transaction_again ?? 'Buat Transaksi Lagi')
+                                : (AppLocalizations.of(c)?.create_transaction_from_receipt ??
                                     'Buat Transaksi dari Struk'),
                           ),
                           style: ElevatedButton.styleFrom(

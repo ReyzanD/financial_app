@@ -16,9 +16,7 @@ class LocationService {
       }
 
       return await Geolocator.getCurrentPosition(
-        locationSettings: const LocationSettings(
-          accuracy: LocationAccuracy.high,
-        ),
+        locationSettings: const LocationSettings(accuracy: LocationAccuracy.high),
       );
     } catch (e) {
       LoggerService.error('Error getting current position', error: e);
@@ -40,12 +38,7 @@ class LocationService {
     );
   }
 
-  static double calculateDistance(
-    double startLat,
-    double startLng,
-    double endLat,
-    double endLng,
-  ) {
+  static double calculateDistance(double startLat, double startLng, double endLat, double endLng) {
     return Geolocator.distanceBetween(startLat, startLng, endLat, endLng);
   }
 

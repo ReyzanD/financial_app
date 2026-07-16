@@ -21,38 +21,20 @@ class BudgetTipsSection extends StatelessWidget {
         children: [
           Row(
             children: [
-              const Icon(
-                Iconsax.lamp,
-                color: DesignTokens.warningColor,
-                size: 20,
-              ),
+              const Icon(Iconsax.lamp, color: DesignTokens.warningColor, size: 20),
               const SizedBox(width: 8),
               Text(
                 'Tips Mengelola Budget',
-                style: GoogleFonts.poppins(
-                  color: Colors.white,
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: GoogleFonts.poppins(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
               ),
             ],
           ),
-          const SizedBox(height: 16),
-          _buildTipItem(
-            '1. Prioritaskan dana darurat minimal 6 bulan pengeluaran',
-          ),
-          _buildTipItem(
-            '2. Sisihkan tabungan dan investasi di awal bulan (pay yourself first)',
-          ),
-          _buildTipItem(
-            '3. Tinjau dan sesuaikan budget setiap bulan sesuai kebutuhan',
-          ),
-          _buildTipItem(
-            '4. Gunakan metode amplop untuk kategori yang sering over budget',
-          ),
-          _buildTipItem(
-            '5. Batasi pengeluaran impulsif dengan aturan tunggu 24 jam',
-          ),
+          const SizedBox(height: DesignTokens.spacing4),
+          _buildTipItem('1. Prioritaskan dana darurat minimal 6 bulan pengeluaran'),
+          _buildTipItem('2. Sisihkan tabungan dan investasi di awal bulan (pay yourself first)'),
+          _buildTipItem('3. Tinjau dan sesuaikan budget setiap bulan sesuai kebutuhan'),
+          _buildTipItem('4. Gunakan metode amplop untuk kategori yang sering over budget'),
+          _buildTipItem('5. Batasi pengeluaran impulsif dengan aturan tunggu 24 jam'),
         ],
       ),
     );
@@ -64,22 +46,9 @@ class BudgetTipsSection extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Icon(
-            Iconsax.tick_circle,
-            color: DesignTokens.successColor,
-            size: 16,
-          ),
+          const Icon(Iconsax.tick_circle, color: DesignTokens.successColor, size: 16),
           const SizedBox(width: 12),
-          Expanded(
-            child: Text(
-              text,
-              style: GoogleFonts.poppins(
-                color: Colors.white70,
-                fontSize: 13,
-                height: 1.5,
-              ),
-            ),
-          ),
+          Expanded(child: Text(text, style: GoogleFonts.poppins(color: Colors.white70, fontSize: 13, height: 1.5))),
         ],
       ),
     );

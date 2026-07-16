@@ -26,12 +26,10 @@ class FinancialObligationsScreen extends StatefulWidget {
   const FinancialObligationsScreen({super.key, this.initialTab = 'all'});
 
   @override
-  State<FinancialObligationsScreen> createState() =>
-      _FinancialObligationsScreenState();
+  State<FinancialObligationsScreen> createState() => _FinancialObligationsScreenState();
 }
 
-class _FinancialObligationsScreenState
-    extends State<FinancialObligationsScreen> {
+class _FinancialObligationsScreenState extends State<FinancialObligationsScreen> {
   @override
   void initState() {
     super.initState();
@@ -54,10 +52,7 @@ class _FinancialObligationsScreenState
         backgroundColor: DesignTokens.backgroundDark,
         title: Text(
           l10n.financial_obligations,
-          style: GoogleFonts.poppins(
-            color: Colors.white,
-            fontWeight: FontWeight.w600,
-          ),
+          style: GoogleFonts.poppins(color: Colors.white, fontWeight: FontWeight.w600),
         ),
         leading: IconButton(
           icon: const Icon(Iconsax.arrow_left, color: Colors.white),
@@ -84,9 +79,7 @@ class _FinancialObligationsScreenState
         child: Column(
           children: [
             const OfflineIndicator(),
-            Consumer<ObligationController>(
-              builder: (context, ctrl, _) => _buildSummaryCards(context, ctrl),
-            ),
+            Consumer<ObligationController>(builder: (context, ctrl, _) => _buildSummaryCards(context, ctrl)),
             // Search Bar
             Padding(
               padding: ResponsiveHelper.horizontalPadding(context),
@@ -96,10 +89,7 @@ class _FinancialObligationsScreenState
                       decoration: BoxDecoration(
                         color: DesignTokens.surfaceCard,
                         borderRadius: BorderRadius.circular(14),
-                        border: Border.all(
-                          color: DesignTokens.borderDark.withValues(alpha: 0.5),
-                          width: 1,
-                        ),
+                        border: Border.all(color: DesignTokens.borderDark.withValues(alpha: 0.5), width: 1),
                         boxShadow: [
                           BoxShadow(
                             color: Colors.black.withValues(alpha: 0.1),
@@ -110,23 +100,13 @@ class _FinancialObligationsScreenState
                       ),
                       child: TextField(
                         controller: ctrl.searchController,
-                        style: GoogleFonts.poppins(
-                          color: Colors.white,
-                          fontSize: 14,
-                        ),
+                        style: GoogleFonts.poppins(color: Colors.white, fontSize: 14),
                         decoration: InputDecoration(
                           hintText: l10n.search_obligations,
-                          hintStyle: GoogleFonts.poppins(
-                            color: Colors.grey[500],
-                            fontSize: 14,
-                          ),
+                          hintStyle: GoogleFonts.poppins(color: Colors.grey[500], fontSize: 14),
                           prefixIcon: Container(
                             padding: const EdgeInsets.all(12),
-                            child: Icon(
-                              Iconsax.search_normal,
-                              color: Colors.grey[500],
-                              size: 20,
-                            ),
+                            child: Icon(Iconsax.search_normal, color: Colors.grey[500], size: 20),
                           ),
                           suffixIcon:
                               ctrl.searchQuery.isNotEmpty
@@ -134,15 +114,10 @@ class _FinancialObligationsScreenState
                                     icon: Container(
                                       padding: const EdgeInsets.all(4),
                                       decoration: BoxDecoration(
-                                        color: DesignTokens.borderDark
-                                            .withValues(alpha: 0.5),
+                                        color: DesignTokens.borderDark.withValues(alpha: 0.5),
                                         shape: BoxShape.circle,
                                       ),
-                                      child: Icon(
-                                        Icons.close,
-                                        color: Colors.grey[400],
-                                        size: 16,
-                                      ),
+                                      child: Icon(Icons.close, color: Colors.grey[400], size: 16),
                                     ),
                                     tooltip: l10n.delete_search,
                                     onPressed: ctrl.clearSearch,
@@ -153,10 +128,7 @@ class _FinancialObligationsScreenState
                           border: InputBorder.none,
                           enabledBorder: InputBorder.none,
                           focusedBorder: InputBorder.none,
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 14,
-                          ),
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                         ),
                       ),
                     ),
@@ -172,11 +144,7 @@ class _FinancialObligationsScreenState
                   ),
             ),
             // Content based on selected view
-            Expanded(
-              child: Consumer<ObligationController>(
-                builder: (context, ctrl, _) => _buildSelectedView(ctrl),
-              ),
-            ),
+            Expanded(child: Consumer<ObligationController>(builder: (context, ctrl, _) => _buildSelectedView(ctrl))),
           ],
         ),
       ),
@@ -200,9 +168,7 @@ class _FinancialObligationsScreenState
           heroTag: 'obligations_fab',
           tooltip: l10n.add_obligation,
           onPressed: () async {
-            final result = await ObligationHelpers.showAddObligationModal(
-              context,
-            );
+            final result = await ObligationHelpers.showAddObligationModal(context);
             if (result == true) {
               await context.read<ObligationController>().refresh();
             }
@@ -221,9 +187,7 @@ class _FinancialObligationsScreenState
     if (ctrl.summaryLoading) {
       return const SizedBox(
         height: 100,
-        child: Center(
-          child: CircularProgressIndicator(color: DesignTokens.primaryColor),
-        ),
+        child: Center(child: CircularProgressIndicator(color: DesignTokens.primaryColor)),
       );
     }
 
@@ -254,9 +218,7 @@ class _FinancialObligationsScreenState
                   onTap: () => ctrl.setView('all'),
                   child: _buildSummaryCard(
                     l10n.monthly_total,
-                    CurrencyFormatter.formatRupiah(
-                      summary['monthlyTotal'] ?? 0,
-                    ),
+                    CurrencyFormatter.formatRupiah(summary['monthlyTotal'] ?? 0),
                     Colors.blue,
                     Iconsax.calendar,
                   ),
@@ -276,7 +238,7 @@ class _FinancialObligationsScreenState
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: DesignTokens.spacing3),
           Row(
             children: [
               Expanded(
@@ -311,13 +273,7 @@ class _FinancialObligationsScreenState
     );
   }
 
-  Widget _buildSummaryCard(
-    String title,
-    String amount,
-    Color color,
-    IconData icon, {
-    bool isCount = false,
-  }) {
+  Widget _buildSummaryCard(String title, String amount, Color color, IconData icon, {bool isCount = false}) {
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
@@ -329,12 +285,7 @@ class _FinancialObligationsScreenState
         borderRadius: BorderRadius.circular(DesignTokens.radiusLarge),
         border: Border.all(color: color.withValues(alpha: 0.25), width: 1.5),
         boxShadow: [
-          BoxShadow(
-            color: color.withValues(alpha: 0.15),
-            blurRadius: 12,
-            spreadRadius: 0,
-            offset: const Offset(0, 4),
-          ),
+          BoxShadow(color: color.withValues(alpha: 0.15), blurRadius: 12, spreadRadius: 0, offset: const Offset(0, 4)),
         ],
       ),
       child: Column(
@@ -347,51 +298,26 @@ class _FinancialObligationsScreenState
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
-                    colors: [
-                      color.withValues(alpha: 0.3),
-                      color.withValues(alpha: 0.15),
-                    ],
+                    colors: [color.withValues(alpha: 0.3), color.withValues(alpha: 0.15)],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
-                  borderRadius: BorderRadius.circular(
-                    DesignTokens.radiusMedium,
-                  ),
-                  border: Border.all(
-                    color: color.withValues(alpha: 0.3),
-                    width: 1,
-                  ),
+                  borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                  border: Border.all(color: color.withValues(alpha: 0.3), width: 1),
                 ),
                 child: Icon(icon, color: color, size: 22),
               ),
               if (isCount && amount.split(' ')[0] != '0')
                 Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 6,
-                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                   decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [
-                        color.withValues(alpha: 0.2),
-                        color.withValues(alpha: 0.3),
-                      ],
-                    ),
-                    borderRadius: BorderRadius.circular(
-                      DesignTokens.radiusMedium,
-                    ),
-                    border: Border.all(
-                      color: color.withValues(alpha: 0.4),
-                      width: 1,
-                    ),
+                    gradient: LinearGradient(colors: [color.withValues(alpha: 0.2), color.withValues(alpha: 0.3)]),
+                    borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                    border: Border.all(color: color.withValues(alpha: 0.4), width: 1),
                   ),
                   child: Text(
                     amount.split(' ')[0],
-                    style: GoogleFonts.poppins(
-                      color: color,
-                      fontSize: 13,
-                      fontWeight: FontWeight.w700,
-                    ),
+                    style: GoogleFonts.poppins(color: color, fontSize: 13, fontWeight: FontWeight.w700),
                   ),
                 ),
             ],
@@ -428,47 +354,19 @@ class _FinancialObligationsScreenState
     final filters = ctrl.filters;
     switch (ctrl.selectedView) {
       case 'all':
-        return AllObligationsView(
-          key: key,
-          searchQuery: ctrl.searchQuery,
-          filters: filters,
-        );
+        return AllObligationsView(key: key, searchQuery: ctrl.searchQuery, filters: filters);
       case 'upcoming':
-        return UpcomingObligationsView(
-          key: key,
-          searchQuery: ctrl.searchQuery,
-          filters: filters,
-        );
+        return UpcomingObligationsView(key: key, searchQuery: ctrl.searchQuery, filters: filters);
       case 'overdue':
-        return OverdueObligationsView(
-          key: key,
-          searchQuery: ctrl.searchQuery,
-          filters: filters,
-        );
+        return OverdueObligationsView(key: key, searchQuery: ctrl.searchQuery, filters: filters);
       case 'debts':
-        return DebtsView(
-          key: key,
-          searchQuery: ctrl.searchQuery,
-          filters: filters,
-        );
+        return DebtsView(key: key, searchQuery: ctrl.searchQuery, filters: filters);
       case 'subscriptions':
-        return SubscriptionsView(
-          key: key,
-          searchQuery: ctrl.searchQuery,
-          filters: filters,
-        );
+        return SubscriptionsView(key: key, searchQuery: ctrl.searchQuery, filters: filters);
       case 'recurring':
-        return RecurringObligationsView(
-          key: key,
-          searchQuery: ctrl.searchQuery,
-          filters: filters,
-        );
+        return RecurringObligationsView(key: key, searchQuery: ctrl.searchQuery, filters: filters);
       default:
-        return AllObligationsView(
-          key: key,
-          searchQuery: ctrl.searchQuery,
-          filters: filters,
-        );
+        return AllObligationsView(key: key, searchQuery: ctrl.searchQuery, filters: filters);
     }
   }
 
@@ -477,14 +375,10 @@ class _FinancialObligationsScreenState
       context: context,
       backgroundColor: DesignTokens.backgroundDark,
       isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
       builder:
           (context) => Padding(
-            padding: EdgeInsets.only(
-              bottom: MediaQuery.of(context).viewInsets.bottom,
-            ),
+            padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
             child: ObligationFiltersWidget(
               initialFilters: context.read<ObligationController>().filters,
               onFiltersChanged: (filters) {

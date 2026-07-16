@@ -6,19 +6,15 @@ import 'package:financial_app/core/di/service_locator.dart';
 
 /// Enhanced AI Recommendations Service dengan personalization, pattern analysis, dan savings opportunities
 class AIRecommendationsEnhancedService {
-  final TransactionDataService _transactionData =
-      getIt<TransactionDataService>();
+  final TransactionDataService _transactionData = getIt<TransactionDataService>();
   final BudgetDataService _budgetData = getIt<BudgetDataService>();
   final GoalDataService _goalData = getIt<GoalDataService>();
 
   /// Generate personalized recommendations
-  Future<List<Map<String, dynamic>>>
-  generatePersonalizedRecommendations() async {
+  Future<List<Map<String, dynamic>>> generatePersonalizedRecommendations() async {
     try {
       final txData = await _transactionData.getTransactions(limit: 200);
-      final transactions = List<Map<String, dynamic>>.from(
-        txData['transactions'] ?? [],
-      );
+      final transactions = List<Map<String, dynamic>>.from(txData['transactions'] ?? []);
       final budgetModels = await _budgetData.getBudgets();
       final budgets = budgetModels.map((b) => b.toJson()).toList();
       final goals = await _goalData.getGoals();
@@ -50,10 +46,7 @@ class AIRecommendationsEnhancedService {
 
       return recommendations.take(5).toList();
     } catch (e) {
-      LoggerService.error(
-        'Error generating personalized recommendations',
-        error: e,
-      );
+      LoggerService.error('Error generating personalized recommendations', error: e);
       return [];
     }
   }
@@ -63,10 +56,7 @@ class AIRecommendationsEnhancedService {
     final thisMonth =
         transactions.where((t) {
           try {
-            final dateStr =
-                t['transaction_date']?.toString() ??
-                t['date']?.toString() ??
-                '';
+            final dateStr = t['transaction_date']?.toString() ?? t['date']?.toString() ?? '';
             if (dateStr.isEmpty) return false;
             final date = DateTime.parse(dateStr);
             return date.month == now.month && date.year == now.year;
@@ -78,15 +68,11 @@ class AIRecommendationsEnhancedService {
     final lastMonth =
         transactions.where((t) {
           try {
-            final dateStr =
-                t['transaction_date']?.toString() ??
-                t['date']?.toString() ??
-                '';
+            final dateStr = t['transaction_date']?.toString() ?? t['date']?.toString() ?? '';
             if (dateStr.isEmpty) return false;
             final date = DateTime.parse(dateStr);
             final lastMonthDate = DateTime(now.year, now.month - 1);
-            return date.month == lastMonthDate.month &&
-                date.year == lastMonthDate.year;
+            return date.month == lastMonthDate.month && date.year == lastMonthDate.year;
           } catch (e) {
             return false;
           }
@@ -131,9 +117,7 @@ class AIRecommendationsEnhancedService {
       'this_month_expense': thisMonthExpense,
       'last_month_expense': lastMonthExpense,
       'change_percentage':
-          lastMonthExpense > 0
-              ? ((thisMonthExpense - lastMonthExpense) / lastMonthExpense) * 100
-              : 0.0,
+          lastMonthExpense > 0 ? ((thisMonthExpense - lastMonthExpense) / lastMonthExpense) * 100 : 0.0,
       'top_category': topCategory,
       'top_category_amount': topAmount,
       'category_spending': categorySpending,
@@ -141,9 +125,7 @@ class AIRecommendationsEnhancedService {
     };
   }
 
-  List<Map<String, dynamic>> _generatePatternRecommendations(
-    Map<String, dynamic> analysis,
-  ) {
+  List<Map<String, dynamic>> _generatePatternRecommendations(Map<String, dynamic> analysis) {
     final recommendations = <Map<String, dynamic>>[];
 
     final changePercentage = analysis['change_percentage'] as double;
@@ -180,10 +162,7 @@ class AIRecommendationsEnhancedService {
     return recommendations;
   }
 
-  List<Map<String, dynamic>> _identifySavingsOpportunities(
-    List<dynamic> transactions,
-    List<dynamic> budgets,
-  ) {
+  List<Map<String, dynamic>> _identifySavingsOpportunities(List<dynamic> transactions, List<dynamic> budgets) {
     final recommendations = <Map<String, dynamic>>[];
 
     // Analyze recurring expenses
@@ -201,10 +180,7 @@ class AIRecommendationsEnhancedService {
             description.contains('langganan')) {
           final key = description;
           recurringExpenses[key] ??= [];
-          recurringExpenses[key]!.add({
-            'amount': amount,
-            'date': t['transaction_date'] ?? t['date'],
-          });
+          recurringExpenses[key]!.add({'amount': amount, 'date': t['transaction_date'] ?? t['date']});
         }
       }
     }
@@ -251,9 +227,7 @@ class AIRecommendationsEnhancedService {
     return recommendations;
   }
 
-  List<Map<String, dynamic>> _suggestBillOptimizations(
-    List<dynamic> transactions,
-  ) {
+  List<Map<String, dynamic>> _suggestBillOptimizations(List<dynamic> transactions) {
     final recommendations = <Map<String, dynamic>>[];
 
     // Group similar bills
@@ -271,10 +245,7 @@ class AIRecommendationsEnhancedService {
             description.contains('telepon')) {
           final category = description;
           billPatterns[category] ??= [];
-          billPatterns[category]!.add({
-            'amount': amount,
-            'date': t['transaction_date'] ?? t['date'],
-          });
+          billPatterns[category]!.add({'amount': amount, 'date': t['transaction_date'] ?? t['date']});
         }
       }
     }
@@ -307,10 +278,7 @@ class AIRecommendationsEnhancedService {
     return recommendations;
   }
 
-  List<Map<String, dynamic>> _recommendFinancialGoals(
-    List<dynamic> transactions,
-    List<dynamic> goals,
-  ) {
+  List<Map<String, dynamic>> _recommendFinancialGoals(List<dynamic> transactions, List<dynamic> goals) {
     final recommendations = <Map<String, dynamic>>[];
 
     // Calculate savings rate
@@ -326,10 +294,7 @@ class AIRecommendationsEnhancedService {
       }
     }
 
-    final savingsRate =
-        totalIncome > 0
-            ? ((totalIncome - totalExpense) / totalIncome) * 100
-            : 0.0;
+    final savingsRate = totalIncome > 0 ? ((totalIncome - totalExpense) / totalIncome) * 100 : 0.0;
 
     // Recommend emergency fund if no goals
     if (goals.isEmpty && savingsRate > 10) {

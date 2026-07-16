@@ -81,10 +81,7 @@ class _ContributeModalState extends State<ContributeModal> {
     final l10n = AppLocalizations.of(context);
     final amountText = _amountController.text.replaceAll(RegExp(r'[^0-9]'), '');
     if (amountText.isEmpty) {
-      ErrorHandlerService.showWarningSnackbar(
-        context,
-        l10n?.enter_contribution_amount ?? 'Masukkan jumlah kontribusi',
-      );
+      ErrorHandlerService.showWarningSnackbar(context, l10n?.enter_contribution_amount ?? 'Masukkan jumlah kontribusi');
       return;
     }
 
@@ -146,26 +143,12 @@ class _ContributeModalState extends State<ContributeModal> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final currentAmount =
-        ((widget.goal['current_amount_232143'] ??
-                    widget.goal['current_amount'] ??
-                    0)
-                as num)
-            .toDouble();
-    final targetAmount =
-        ((widget.goal['target_amount_232143'] ??
-                    widget.goal['target_amount'] ??
-                    0)
-                as num)
-            .toDouble();
+        ((widget.goal['current_amount_232143'] ?? widget.goal['current_amount'] ?? 0) as num).toDouble();
+    final targetAmount = ((widget.goal['target_amount_232143'] ?? widget.goal['target_amount'] ?? 0) as num).toDouble();
     final remaining = targetAmount - currentAmount;
 
     return Padding(
-      padding: EdgeInsets.only(
-        bottom: MediaQuery.of(context).viewInsets.bottom,
-        left: 16,
-        right: 16,
-        top: 16,
-      ),
+      padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom, left: 16, right: 16, top: 16),
       child: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -177,11 +160,7 @@ class _ContributeModalState extends State<ContributeModal> {
               children: [
                 Text(
                   l10n?.add_contribution ?? 'Tambah Kontribusi',
-                  style: GoogleFonts.poppins(
-                    color: Colors.white,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: GoogleFonts.poppins(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
                 ),
                 IconButton(
                   icon: const Icon(Iconsax.close_circle, color: Colors.white),
@@ -189,7 +168,7 @@ class _ContributeModalState extends State<ContributeModal> {
                 ),
               ],
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: DesignTokens.spacing2),
 
             // Goal Info
             Container(
@@ -197,62 +176,36 @@ class _ContributeModalState extends State<ContributeModal> {
               decoration: BoxDecoration(
                 color: DesignTokens.surfaceDark,
                 borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
-                border: Border.all(
-                  color: DesignTokens.primaryColor.withValues(alpha: 0.3),
-                ),
+                border: Border.all(color: DesignTokens.primaryColor.withValues(alpha: 0.3)),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     widget.goal['name_232143'] ?? widget.goal['name'] ?? 'Goal',
-                    style: GoogleFonts.poppins(
-                      color: Colors.white,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                    ),
+                    style: GoogleFonts.poppins(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600),
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: DesignTokens.spacing2),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            'Terkumpul',
-                            style: GoogleFonts.poppins(
-                              color: Colors.grey[500],
-                              fontSize: 11,
-                            ),
-                          ),
+                          Text('Terkumpul', style: GoogleFonts.poppins(color: Colors.grey[500], fontSize: 11)),
                           Text(
                             CurrencyFormatter.formatRupiah(currentAmount),
-                            style: GoogleFonts.poppins(
-                              color: Colors.green,
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                            ),
+                            style: GoogleFonts.poppins(color: Colors.green, fontSize: 14, fontWeight: FontWeight.w600),
                           ),
                         ],
                       ),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
-                          Text(
-                            'Tersisa',
-                            style: GoogleFonts.poppins(
-                              color: Colors.grey[500],
-                              fontSize: 11,
-                            ),
-                          ),
+                          Text('Tersisa', style: GoogleFonts.poppins(color: Colors.grey[500], fontSize: 11)),
                           Text(
                             CurrencyFormatter.formatRupiah(remaining),
-                            style: GoogleFonts.poppins(
-                              color: Colors.orange,
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                            ),
+                            style: GoogleFonts.poppins(color: Colors.orange, fontSize: 14, fontWeight: FontWeight.w600),
                           ),
                         ],
                       ),
@@ -261,26 +214,20 @@ class _ContributeModalState extends State<ContributeModal> {
                 ],
               ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: DesignTokens.spacing5),
 
             // Account Selector
             if (!_isLoadingAccounts) ...[
               Text(
                 'Sumber Dana',
-                style: GoogleFonts.poppins(
-                  color: Colors.white,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                ),
+                style: GoogleFonts.poppins(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w600),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: DesignTokens.spacing2),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 12),
                 decoration: BoxDecoration(
                   color: DesignTokens.surfaceDark,
-                  borderRadius: BorderRadius.circular(
-                    DesignTokens.radiusMedium,
-                  ),
+                  borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
                   border: Border.all(color: DesignTokens.borderDark),
                 ),
                 child: DropdownButtonHideUnderline(
@@ -288,39 +235,24 @@ class _ContributeModalState extends State<ContributeModal> {
                     value: _selectedAccount,
                     isExpanded: true,
                     dropdownColor: DesignTokens.surfaceDark,
-                    hint: Text(
-                      'Pilih akun',
-                      style: GoogleFonts.poppins(color: Colors.grey[600]),
-                    ),
+                    hint: Text('Pilih akun', style: GoogleFonts.poppins(color: Colors.grey[600])),
                     items:
                         _accounts.map((account) {
                           return DropdownMenuItem<AccountModel>(
                             value: account,
                             child: Row(
                               children: [
-                                Icon(
-                                  _getAccountIcon(account.icon),
-                                  size: 18,
-                                  color: DesignTokens.primaryColor,
-                                ),
+                                Icon(_getAccountIcon(account.icon), size: 18, color: DesignTokens.primaryColor),
                                 const SizedBox(width: 8),
                                 Expanded(
                                   child: Text(
                                     account.name,
-                                    style: GoogleFonts.poppins(
-                                      color: Colors.white,
-                                      fontSize: 14,
-                                    ),
+                                    style: GoogleFonts.poppins(color: Colors.white, fontSize: 14),
                                   ),
                                 ),
                                 Text(
-                                  CurrencyFormatter.formatRupiah(
-                                    account.balance.toInt(),
-                                  ),
-                                  style: GoogleFonts.poppins(
-                                    color: Colors.grey[400],
-                                    fontSize: 12,
-                                  ),
+                                  CurrencyFormatter.formatRupiah(account.balance.toInt()),
+                                  style: GoogleFonts.poppins(color: Colors.grey[400], fontSize: 12),
                                 ),
                               ],
                             ),
@@ -334,7 +266,7 @@ class _ContributeModalState extends State<ContributeModal> {
                   ),
                 ),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: DesignTokens.spacing2),
 
               // Available Balance Info
               Container(
@@ -342,35 +274,21 @@ class _ContributeModalState extends State<ContributeModal> {
                 decoration: BoxDecoration(
                   color: DesignTokens.primaryColor.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(
-                    color: DesignTokens.primaryColor.withValues(alpha: 0.2),
-                  ),
+                  border: Border.all(color: DesignTokens.primaryColor.withValues(alpha: 0.2)),
                 ),
                 child: Row(
                   children: [
-                    const Icon(
-                      Iconsax.info_circle,
-                      size: 16,
-                      color: DesignTokens.primaryColor,
-                    ),
+                    const Icon(Iconsax.info_circle, size: 16, color: DesignTokens.primaryColor),
                     const SizedBox(width: 8),
                     Expanded(
                       child: RichText(
                         text: TextSpan(
-                          style: GoogleFonts.poppins(
-                            fontSize: 11,
-                            color: Colors.grey[400],
-                          ),
+                          style: GoogleFonts.poppins(fontSize: 11, color: Colors.grey[400]),
                           children: [
                             const TextSpan(text: 'Saldo tersedia: '),
                             TextSpan(
-                              text: CurrencyFormatter.formatRupiah(
-                                _availableBalance.toInt(),
-                              ),
-                              style: GoogleFonts.poppins(
-                                fontWeight: FontWeight.w600,
-                                color: Colors.white,
-                              ),
+                              text: CurrencyFormatter.formatRupiah(_availableBalance.toInt()),
+                              style: GoogleFonts.poppins(fontWeight: FontWeight.w600, color: Colors.white),
                             ),
                             TextSpan(
                               text:
@@ -384,13 +302,10 @@ class _ContributeModalState extends State<ContributeModal> {
                 ),
               ),
               if (_selectedAccount != null) ...[
-                const SizedBox(height: 4),
+                const SizedBox(height: DesignTokens.spacing1),
                 Container(
                   padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: Colors.grey[900],
-                    borderRadius: BorderRadius.circular(8),
-                  ),
+                  decoration: BoxDecoration(color: Colors.grey[900], borderRadius: BorderRadius.circular(8)),
                   child: Row(
                     children: [
                       const Icon(Iconsax.wallet, size: 16, color: Colors.grey),
@@ -398,29 +313,22 @@ class _ContributeModalState extends State<ContributeModal> {
                       Expanded(
                         child: Text(
                           '${_selectedAccount!.name}: ${CurrencyFormatter.formatRupiah(_selectedAccount!.balance.toInt())}',
-                          style: GoogleFonts.poppins(
-                            fontSize: 11,
-                            color: Colors.grey[400],
-                          ),
+                          style: GoogleFonts.poppins(fontSize: 11, color: Colors.grey[400]),
                         ),
                       ),
                     ],
                   ),
                 ),
               ],
-              const SizedBox(height: 16),
+              const SizedBox(height: DesignTokens.spacing4),
             ],
 
             // Quick Amount Buttons
             Text(
               'Nominal Cepat',
-              style: GoogleFonts.poppins(
-                color: Colors.white,
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-              ),
+              style: GoogleFonts.poppins(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w600),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: DesignTokens.spacing3),
             Wrap(
               spacing: 8,
               runSpacing: 8,
@@ -429,20 +337,11 @@ class _ContributeModalState extends State<ContributeModal> {
                     return GestureDetector(
                       onTap: () => _setQuickAmount(amount),
                       child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 10,
-                        ),
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                         decoration: BoxDecoration(
-                          color: DesignTokens.primaryColor.withValues(
-                            alpha: 0.2,
-                          ),
+                          color: DesignTokens.primaryColor.withValues(alpha: 0.2),
                           borderRadius: BorderRadius.circular(20),
-                          border: Border.all(
-                            color: DesignTokens.primaryColor.withValues(
-                              alpha: 0.5,
-                            ),
-                          ),
+                          border: Border.all(color: DesignTokens.primaryColor.withValues(alpha: 0.5)),
                         ),
                         child: Text(
                           CurrencyFormatter.formatRupiah(amount),
@@ -456,18 +355,14 @@ class _ContributeModalState extends State<ContributeModal> {
                     );
                   }).toList(),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: DesignTokens.spacing5),
 
             // Amount Input
             Text(
               l10n?.contribution_amount ?? 'Jumlah Kontribusi',
-              style: GoogleFonts.poppins(
-                color: Colors.white,
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-              ),
+              style: GoogleFonts.poppins(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w600),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: DesignTokens.spacing2),
             TextField(
               controller: _amountController,
               keyboardType: TextInputType.number,
@@ -478,45 +373,29 @@ class _ContributeModalState extends State<ContributeModal> {
                 filled: true,
                 fillColor: DesignTokens.surfaceDark,
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(
-                    DesignTokens.radiusMedium,
-                  ),
+                  borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
                   borderSide: BorderSide(color: DesignTokens.borderDark),
                 ),
                 enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(
-                    DesignTokens.radiusMedium,
-                  ),
+                  borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
                   borderSide: BorderSide(color: DesignTokens.borderDark),
                 ),
                 focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(
-                    DesignTokens.radiusMedium,
-                  ),
-                  borderSide: const BorderSide(
-                    color: DesignTokens.primaryColor,
-                    width: 2,
-                  ),
+                  borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                  borderSide: const BorderSide(color: DesignTokens.primaryColor, width: 2),
                 ),
-                prefixIcon: const Icon(
-                  Iconsax.money_4,
-                  color: DesignTokens.primaryColor,
-                ),
+                prefixIcon: const Icon(Iconsax.money_4, color: DesignTokens.primaryColor),
               ),
               inputFormatters: [FilteringTextInputFormatter.digitsOnly],
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: DesignTokens.spacing4),
 
             // Note Input (Optional)
             Text(
               'Catatan (Opsional)',
-              style: GoogleFonts.poppins(
-                color: Colors.white,
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-              ),
+              style: GoogleFonts.poppins(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w600),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: DesignTokens.spacing2),
             TextField(
               controller: _noteController,
               maxLines: 2,
@@ -527,29 +406,20 @@ class _ContributeModalState extends State<ContributeModal> {
                 filled: true,
                 fillColor: DesignTokens.surfaceDark,
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(
-                    DesignTokens.radiusMedium,
-                  ),
+                  borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
                   borderSide: BorderSide(color: DesignTokens.borderDark),
                 ),
                 enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(
-                    DesignTokens.radiusMedium,
-                  ),
+                  borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
                   borderSide: BorderSide(color: DesignTokens.borderDark),
                 ),
                 focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(
-                    DesignTokens.radiusMedium,
-                  ),
-                  borderSide: const BorderSide(
-                    color: DesignTokens.primaryColor,
-                    width: 2,
-                  ),
+                  borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                  borderSide: const BorderSide(color: DesignTokens.primaryColor, width: 2),
                 ),
               ),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: DesignTokens.spacing6),
 
             // Submit Button
             SizedBox(
@@ -559,26 +429,18 @@ class _ContributeModalState extends State<ContributeModal> {
                 onPressed: _isLoading ? null : _contributeToGoal,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: DesignTokens.primaryColor,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(
-                      DesignTokens.radiusMedium,
-                    ),
-                  ),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(DesignTokens.radiusMedium)),
                 ),
                 child:
                     _isLoading
                         ? const CircularProgressIndicator(color: Colors.white)
                         : Text(
                           l10n?.add_contribution ?? 'Tambah Kontribusi',
-                          style: GoogleFonts.poppins(
-                            color: Colors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                          ),
+                          style: GoogleFonts.poppins(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600),
                         ),
               ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: DesignTokens.spacing4),
           ],
         ),
       ),

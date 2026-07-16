@@ -7,12 +7,7 @@ class AuthButton extends StatelessWidget {
   final VoidCallback onPressed;
   final bool isLoading;
 
-  const AuthButton({
-    super.key,
-    required this.text,
-    required this.onPressed,
-    this.isLoading = false,
-  });
+  const AuthButton({super.key, required this.text, required this.onPressed, this.isLoading = false});
 
   @override
   Widget build(BuildContext context) {
@@ -28,11 +23,7 @@ class AuthButton extends StatelessWidget {
         borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
         boxShadow: [
           BoxShadow(
-            color: Color.lerp(
-              Colors.transparent,
-              DesignTokens.primaryColor,
-              0.3,
-            )!.withAlpha(255),
+            color: Color.lerp(Colors.transparent, DesignTokens.primaryColor, 0.3)!.withAlpha(255),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -43,9 +34,7 @@ class AuthButton extends StatelessWidget {
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.transparent,
           shadowColor: Colors.transparent,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
-          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(DesignTokens.radiusMedium)),
         ),
         child:
             isLoading
@@ -59,11 +48,7 @@ class AuthButton extends StatelessWidget {
                 )
                 : Text(
                   text,
-                  style: GoogleFonts.poppins(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.white,
-                  ),
+                  style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.white),
                 ),
       ),
     );

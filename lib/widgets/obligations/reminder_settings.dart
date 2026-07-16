@@ -19,8 +19,7 @@ class ReminderSettings extends StatefulWidget {
 }
 
 class _ReminderSettingsState extends State<ReminderSettings> {
-  final ObligationReminderService _reminderService =
-      ObligationReminderService();
+  final ObligationReminderService _reminderService = ObligationReminderService();
   bool _remindersEnabled = true;
   int _reminderDays = 3;
   bool _isLoading = true;
@@ -34,9 +33,7 @@ class _ReminderSettingsState extends State<ReminderSettings> {
   Future<void> _loadReminderSettings() async {
     setState(() => _isLoading = true);
     try {
-      final enabled = await _reminderService.getReminderEnabled(
-        widget.obligation.id,
-      );
+      final enabled = await _reminderService.getReminderEnabled(widget.obligation.id);
       final days = await _reminderService.getReminderDays(widget.obligation.id);
 
       setState(() {
@@ -57,9 +54,7 @@ class _ReminderSettingsState extends State<ReminderSettings> {
     if (mounted) {
       ErrorHandlerService.showInfoSnackbar(
         context,
-        value
-            ? AppLocalizations.of(context)!.reminder_enabled
-            : AppLocalizations.of(context)!.reminder_disabled,
+        value ? AppLocalizations.of(context)!.reminder_enabled : AppLocalizations.of(context)!.reminder_disabled,
       );
     }
   }
@@ -69,10 +64,7 @@ class _ReminderSettingsState extends State<ReminderSettings> {
     await _reminderService.setReminderDays(widget.obligation.id, days);
 
     if (mounted) {
-      ErrorHandlerService.showInfoSnackbar(
-        context,
-        '${AppLocalizations.of(context)!.reminder_set} $days hari',
-      );
+      ErrorHandlerService.showInfoSnackbar(context, '${AppLocalizations.of(context)!.reminder_set} $days hari');
     }
   }
 
@@ -80,19 +72,14 @@ class _ReminderSettingsState extends State<ReminderSettings> {
     await _reminderService.snoozeReminder(widget.obligation.id, hours: 24);
 
     if (mounted) {
-      ErrorHandlerService.showWarningSnackbar(
-        context,
-        AppLocalizations.of(context)!.reminder_snoozed,
-      );
+      ErrorHandlerService.showWarningSnackbar(context, AppLocalizations.of(context)!.reminder_snoozed);
     }
   }
 
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
-      return const Center(
-        child: CircularProgressIndicator(color: DesignTokens.primaryColor),
-      );
+      return const Center(child: CircularProgressIndicator(color: DesignTokens.primaryColor));
     }
 
     return Container(
@@ -108,23 +95,15 @@ class _ReminderSettingsState extends State<ReminderSettings> {
         children: [
           Row(
             children: [
-              Icon(
-                Iconsax.notification,
-                color: DesignTokens.primaryColor,
-                size: 20,
-              ),
+              Icon(Iconsax.notification, color: DesignTokens.primaryColor, size: 20),
               const SizedBox(width: 8),
               Text(
                 AppLocalizations.of(context)!.reminder_settings,
-                style: GoogleFonts.poppins(
-                  color: Colors.white,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                ),
+                style: GoogleFonts.poppins(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600),
               ),
             ],
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: DesignTokens.spacing4),
 
           // Toggle reminders
           SwitchListTile(
@@ -142,52 +121,39 @@ class _ReminderSettingsState extends State<ReminderSettings> {
           ),
 
           if (_remindersEnabled) ...[
-            const SizedBox(height: 8),
+            const SizedBox(height: DesignTokens.spacing2),
             const Divider(color: Colors.grey),
-            const SizedBox(height: 8),
+            const SizedBox(height: DesignTokens.spacing2),
 
             // Reminder days selector
             Text(
               '${AppLocalizations.of(context)!.reminder_days} $_reminderDays hari',
               style: GoogleFonts.poppins(color: Colors.white70, fontSize: 14),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: DesignTokens.spacing3),
 
             Row(
               children: [
                 _buildReminderDayChip(1, AppLocalizations.of(context)!.one_day),
                 const SizedBox(width: 8),
-                _buildReminderDayChip(
-                  3,
-                  AppLocalizations.of(context)!.three_days,
-                ),
+                _buildReminderDayChip(3, AppLocalizations.of(context)!.three_days),
                 const SizedBox(width: 8),
-                _buildReminderDayChip(
-                  7,
-                  AppLocalizations.of(context)!.seven_days,
-                ),
+                _buildReminderDayChip(7, AppLocalizations.of(context)!.seven_days),
                 const SizedBox(width: 8),
-                _buildReminderDayChip(
-                  14,
-                  AppLocalizations.of(context)!.fourteen_days,
-                ),
+                _buildReminderDayChip(14, AppLocalizations.of(context)!.fourteen_days),
               ],
             ),
 
-            const SizedBox(height: 16),
+            const SizedBox(height: DesignTokens.spacing4),
 
             // Snooze button
-            if (widget.obligation.daysUntilDue <= 3 &&
-                widget.obligation.daysUntilDue >= 0)
+            if (widget.obligation.daysUntilDue <= 3 && widget.obligation.daysUntilDue >= 0)
               SizedBox(
                 width: double.infinity,
                 child: OutlinedButton.icon(
                   onPressed: _snoozeReminder,
                   icon: const Icon(Iconsax.timer, size: 18),
-                  label: Text(
-                    AppLocalizations.of(context)!.snooze_reminder,
-                    style: GoogleFonts.poppins(),
-                  ),
+                  label: Text(AppLocalizations.of(context)!.snooze_reminder, style: GoogleFonts.poppins()),
                   style: OutlinedButton.styleFrom(
                     foregroundColor: Colors.orange,
                     side: const BorderSide(color: Colors.orange),
@@ -209,17 +175,9 @@ class _ReminderSettingsState extends State<ReminderSettings> {
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
           decoration: BoxDecoration(
-            color:
-                isSelected
-                    ? DesignTokens.primaryColor.withValues(alpha: 0.2)
-                    : Colors.grey[900],
+            color: isSelected ? DesignTokens.primaryColor.withValues(alpha: 0.2) : Colors.grey[900],
             borderRadius: BorderRadius.circular(8),
-            border: Border.all(
-              color:
-                  isSelected
-                      ? DesignTokens.primaryColor
-                      : DesignTokens.borderDark,
-            ),
+            border: Border.all(color: isSelected ? DesignTokens.primaryColor : DesignTokens.borderDark),
           ),
           child: Text(
             label,

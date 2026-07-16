@@ -34,8 +34,7 @@ class _GoalCardState extends State<GoalCard> {
   }
 
   Future<void> _loadContributions() async {
-    final goalId =
-        (widget.goal['goal_id_232143'] ?? widget.goal['id']).toString();
+    final goalId = (widget.goal['goal_id_232143'] ?? widget.goal['id']).toString();
     if (goalId.isEmpty) return;
     try {
       final accountService = getIt<AccountService>();
@@ -60,21 +59,15 @@ class _GoalCardState extends State<GoalCard> {
 
     final priorityValue = goal['priority_232143'] ?? goal['priority'];
     final priority =
-        priorityValue is int
-            ? priorityValue
-            : (priorityValue is String ? int.tryParse(priorityValue) ?? 3 : 3);
+        priorityValue is int ? priorityValue : (priorityValue is String ? int.tryParse(priorityValue) ?? 3 : 3);
 
     return Container(
       width: double.infinity,
-      margin: EdgeInsets.only(
-        bottom: ResponsiveHelper.verticalSpacing(context, 12),
-      ),
+      margin: EdgeInsets.only(bottom: ResponsiveHelper.verticalSpacing(context, 12)),
       padding: ResponsiveHelper.padding(context),
       decoration: BoxDecoration(
         color: DesignTokens.surfaceDark,
-        borderRadius: BorderRadius.circular(
-          ResponsiveHelper.borderRadius(context, 16),
-        ),
+        borderRadius: BorderRadius.circular(ResponsiveHelper.borderRadius(context, 16)),
         border: Border.all(color: DesignTokens.borderDark),
       ),
       child: Column(
@@ -88,9 +81,7 @@ class _GoalCardState extends State<GoalCard> {
                 height: ResponsiveHelper.iconSize(context, 40),
                 decoration: BoxDecoration(
                   color: getGoalTypeColor(type).withValues(alpha: 0.2),
-                  borderRadius: BorderRadius.circular(
-                    ResponsiveHelper.borderRadius(context, 10),
-                  ),
+                  borderRadius: BorderRadius.circular(ResponsiveHelper.borderRadius(context, 10)),
                 ),
                 child: Icon(
                   getGoalTypeIcon(type),
@@ -132,9 +123,7 @@ class _GoalCardState extends State<GoalCard> {
             value: progress,
             backgroundColor: Colors.grey[800],
             color: getGoalTypeColor(type),
-            borderRadius: BorderRadius.circular(
-              ResponsiveHelper.borderRadius(context, 10),
-            ),
+            borderRadius: BorderRadius.circular(ResponsiveHelper.borderRadius(context, 10)),
             minHeight: ResponsiveHelper.verticalSpacing(context, 8),
           ),
 
@@ -154,18 +143,12 @@ class _GoalCardState extends State<GoalCard> {
               ),
               Text(
                 '${(progress * 100).toStringAsFixed(0)}%',
-                style: GoogleFonts.poppins(
-                  color: Colors.grey[400],
-                  fontSize: ResponsiveHelper.fontSize(context, 12),
-                ),
+                style: GoogleFonts.poppins(color: Colors.grey[400], fontSize: ResponsiveHelper.fontSize(context, 12)),
               ),
               if (deadline != null && deadline.toString().isNotEmpty)
                 Text(
                   formatDeadline(deadline.toString()),
-                  style: GoogleFonts.poppins(
-                    color: Colors.grey[400],
-                    fontSize: ResponsiveHelper.fontSize(context, 12),
-                  ),
+                  style: GoogleFonts.poppins(color: Colors.grey[400], fontSize: ResponsiveHelper.fontSize(context, 12)),
                 ),
             ],
           ),
@@ -194,12 +177,7 @@ class _GoalCardState extends State<GoalCard> {
                 ),
               ],
               SizedBox(width: ResponsiveHelper.horizontalSpacing(context, 8)),
-              _buildIconButton(
-                context,
-                icon: Iconsax.edit,
-                color: Colors.blue,
-                onTap: () => _showEditDialog(context),
-              ),
+              _buildIconButton(context, icon: Iconsax.edit, color: Colors.blue, onTap: () => _showEditDialog(context)),
               SizedBox(width: ResponsiveHelper.horizontalSpacing(context, 8)),
               _buildIconButton(
                 context,
@@ -223,9 +201,7 @@ class _GoalCardState extends State<GoalCard> {
       context: context,
       backgroundColor: DesignTokens.surfaceDark,
       isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
       builder: (ctx) {
         return Padding(
           padding: const EdgeInsets.all(20),
@@ -237,30 +213,17 @@ class _GoalCardState extends State<GoalCard> {
                 child: Container(
                   width: 40,
                   height: 4,
-                  decoration: BoxDecoration(
-                    color: Colors.grey[600],
-                    borderRadius: BorderRadius.circular(2),
-                  ),
+                  decoration: BoxDecoration(color: Colors.grey[600], borderRadius: BorderRadius.circular(2)),
                 ),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: DesignTokens.spacing4),
               Text(
                 l10n?.contribution_history ?? 'Riwayat Kontribusi',
-                style: GoogleFonts.poppins(
-                  color: Colors.white,
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: GoogleFonts.poppins(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
               ),
-              const SizedBox(height: 4),
-              Text(
-                goalName,
-                style: GoogleFonts.poppins(
-                  color: Colors.grey[400],
-                  fontSize: 12,
-                ),
-              ),
-              const SizedBox(height: 16),
+              const SizedBox(height: DesignTokens.spacing1),
+              Text(goalName, style: GoogleFonts.poppins(color: Colors.grey[400], fontSize: 12)),
+              const SizedBox(height: DesignTokens.spacing4),
               if (_contributions.isEmpty)
                 Padding(
                   padding: const EdgeInsets.all(20),
@@ -276,12 +239,10 @@ class _GoalCardState extends State<GoalCard> {
                   child: ListView.separated(
                     shrinkWrap: true,
                     itemCount: _contributions.length,
-                    separatorBuilder:
-                        (_, __) => Divider(color: DesignTokens.borderDark),
+                    separatorBuilder: (_, __) => Divider(color: DesignTokens.borderDark),
                     itemBuilder: (_, i) {
                       final c = _contributions[i];
-                      final amt =
-                          (c['amount_232143'] as num?)?.toDouble() ?? 0.0;
+                      final amt = (c['amount_232143'] as num?)?.toDouble() ?? 0.0;
                       final acctName = c['account_name']?.toString();
                       final date = c['contributed_at_232143']?.toString() ?? '';
                       final note = c['note_232143']?.toString();
@@ -291,44 +252,28 @@ class _GoalCardState extends State<GoalCard> {
                         leading: Container(
                           padding: const EdgeInsets.all(8),
                           decoration: BoxDecoration(
-                            color: DesignTokens.primaryColor.withValues(
-                              alpha: 0.2,
-                            ),
+                            color: DesignTokens.primaryColor.withValues(alpha: 0.2),
                             borderRadius: BorderRadius.circular(8),
                           ),
-                          child: const Icon(
-                            Iconsax.money_4,
-                            color: DesignTokens.primaryColor,
-                            size: 20,
-                          ),
+                          child: const Icon(Iconsax.money_4, color: DesignTokens.primaryColor, size: 20),
                         ),
                         title: Text(
                           CurrencyFormatter.formatRupiah(amt.toInt()),
-                          style: GoogleFonts.poppins(
-                            color: Colors.white,
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                          ),
+                          style: GoogleFonts.poppins(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w600),
                         ),
                         subtitle: Text(
                           '${acctName ?? 'Tanpa akun'}${note != null ? ' - $note' : ''}',
-                          style: GoogleFonts.poppins(
-                            color: Colors.grey[500],
-                            fontSize: 11,
-                          ),
+                          style: GoogleFonts.poppins(color: Colors.grey[500], fontSize: 11),
                         ),
                         trailing: Text(
                           _formatDate(date),
-                          style: GoogleFonts.poppins(
-                            color: Colors.grey[600],
-                            fontSize: 10,
-                          ),
+                          style: GoogleFonts.poppins(color: Colors.grey[600], fontSize: 10),
                         ),
                       );
                     },
                   ),
                 ),
-              const SizedBox(height: 16),
+              const SizedBox(height: DesignTokens.spacing4),
             ],
           ),
         );
@@ -354,26 +299,18 @@ class _GoalCardState extends State<GoalCard> {
   }) {
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(
-        ResponsiveHelper.borderRadius(context, 8),
-      ),
+      borderRadius: BorderRadius.circular(ResponsiveHelper.borderRadius(context, 8)),
       child: Container(
         padding: ResponsiveHelper.verticalPadding(context, multiplier: 0.5),
         decoration: BoxDecoration(
           color: color.withValues(alpha: 0.1),
-          borderRadius: BorderRadius.circular(
-            ResponsiveHelper.borderRadius(context, 8),
-          ),
+          borderRadius: BorderRadius.circular(ResponsiveHelper.borderRadius(context, 8)),
           border: Border.all(color: color.withValues(alpha: 0.3)),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              icon,
-              color: color,
-              size: ResponsiveHelper.iconSize(context, 16),
-            ),
+            Icon(icon, color: color, size: ResponsiveHelper.iconSize(context, 16)),
             SizedBox(width: ResponsiveHelper.horizontalSpacing(context, 6)),
             Text(
               label,
@@ -397,23 +334,15 @@ class _GoalCardState extends State<GoalCard> {
   }) {
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(
-        ResponsiveHelper.borderRadius(context, 8),
-      ),
+      borderRadius: BorderRadius.circular(ResponsiveHelper.borderRadius(context, 8)),
       child: Container(
         padding: ResponsiveHelper.padding(context, multiplier: 0.5),
         decoration: BoxDecoration(
           color: color.withValues(alpha: 0.1),
-          borderRadius: BorderRadius.circular(
-            ResponsiveHelper.borderRadius(context, 8),
-          ),
+          borderRadius: BorderRadius.circular(ResponsiveHelper.borderRadius(context, 8)),
           border: Border.all(color: color.withValues(alpha: 0.3)),
         ),
-        child: Icon(
-          icon,
-          color: color,
-          size: ResponsiveHelper.iconSize(context, 16),
-        ),
+        child: Icon(icon, color: color, size: ResponsiveHelper.iconSize(context, 16)),
       ),
     );
   }
@@ -423,9 +352,7 @@ class _GoalCardState extends State<GoalCard> {
       context: context,
       backgroundColor: DesignTokens.backgroundDark,
       isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
       builder: (context) {
         return ContributeModal(goal: widget.goal);
       },
@@ -441,9 +368,7 @@ class _GoalCardState extends State<GoalCard> {
       context: context,
       backgroundColor: DesignTokens.backgroundDark,
       isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
       builder: (context) {
         return AddGoalModal(initialGoal: widget.goal);
       },
@@ -453,18 +378,14 @@ class _GoalCardState extends State<GoalCard> {
   }
 
   void _showDeleteDialog(BuildContext context) {
-    final goalName =
-        widget.goal['name_232143'] ?? widget.goal['name'] ?? 'Goal';
+    final goalName = widget.goal['name_232143'] ?? widget.goal['name'] ?? 'Goal';
     final l10n = AppLocalizations.of(context);
     showDialog(
       context: context,
       builder: (BuildContext dialogContext) {
         return AlertDialog(
           backgroundColor: DesignTokens.surfaceDark,
-          title: Text(
-            l10n?.delete_goal_confirm ?? 'Hapus Goal?',
-            style: GoogleFonts.poppins(color: Colors.white),
-          ),
+          title: Text(l10n?.delete_goal_confirm ?? 'Hapus Goal?', style: GoogleFonts.poppins(color: Colors.white)),
           content: Text(
             '${l10n?.delete_goal_message ?? 'Apakah Anda yakin ingin menghapus'} "$goalName"?',
             style: GoogleFonts.poppins(color: Colors.grey[400]),
@@ -472,25 +393,19 @@ class _GoalCardState extends State<GoalCard> {
           actions: [
             TextButton(
               onPressed: () => Navigator.of(dialogContext).pop(),
-              child: Text(
-                l10n?.cancel ?? 'Batal',
-                style: GoogleFonts.poppins(color: Colors.grey),
-              ),
+              child: Text(l10n?.cancel ?? 'Batal', style: GoogleFonts.poppins(color: Colors.grey)),
             ),
             TextButton(
               onPressed: () async {
                 try {
                   final goalService = getIt<GoalDataService>();
-                  await goalService.deleteGoal(
-                    widget.goal['goal_id_232143'] ?? widget.goal['id'],
-                  );
+                  await goalService.deleteGoal(widget.goal['goal_id_232143'] ?? widget.goal['id']);
                   if (dialogContext.mounted) {
                     Navigator.of(dialogContext).pop();
                     if (context.mounted) {
                       ErrorHandlerService.showSuccessSnackbar(
                         context,
-                        l10n?.goal_deleted_successfully ??
-                            'Goal berhasil dihapus',
+                        l10n?.goal_deleted_successfully ?? 'Goal berhasil dihapus',
                       );
                     }
                     widget.onUpdated?.call();
@@ -498,17 +413,11 @@ class _GoalCardState extends State<GoalCard> {
                 } catch (e) {
                   LoggerService.error('Error deleting goal', error: e);
                   if (dialogContext.mounted && context.mounted) {
-                    ErrorHandlerService.showErrorSnackbar(
-                      context,
-                      ErrorHandlerService.getUserFriendlyMessage(e),
-                    );
+                    ErrorHandlerService.showErrorSnackbar(context, ErrorHandlerService.getUserFriendlyMessage(e));
                   }
                 }
               },
-              child: Text(
-                l10n?.delete ?? 'Hapus',
-                style: GoogleFonts.poppins(color: Colors.red),
-              ),
+              child: Text(l10n?.delete ?? 'Hapus', style: GoogleFonts.poppins(color: Colors.red)),
             ),
           ],
         );
@@ -546,16 +455,10 @@ class _GoalCardState extends State<GoalCard> {
     }
 
     return Container(
-      padding: ResponsiveHelper.symmetricPadding(
-        context,
-        horizontal: 8,
-        vertical: 4,
-      ),
+      padding: ResponsiveHelper.symmetricPadding(context, horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.2),
-        borderRadius: BorderRadius.circular(
-          ResponsiveHelper.borderRadius(context, 8),
-        ),
+        borderRadius: BorderRadius.circular(ResponsiveHelper.borderRadius(context, 8)),
         border: Border.all(color: color.withValues(alpha: 0.5)),
       ),
       child: Text(

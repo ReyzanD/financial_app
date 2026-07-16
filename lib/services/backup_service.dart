@@ -183,8 +183,7 @@ class BackupService {
         'challengeCount': (data['challenges'] as List?)?.length ?? 0,
         'investmentCount': (data['investments'] as List?)?.length ?? 0,
         'templateCount': (data['templates'] as List?)?.length ?? 0,
-        'netWorthSnapshotCount':
-            (data['net_worth_history'] as List?)?.length ?? 0,
+        'netWorthSnapshotCount': (data['net_worth_history'] as List?)?.length ?? 0,
       };
     } catch (e) {
       throw Exception('Failed to read backup info: $e');
@@ -208,223 +207,140 @@ class BackupService {
         final transactions = (data['transactions'] as List<dynamic>?) ?? [];
         for (var tx in transactions) {
           final txMap = tx as Map<String, dynamic>;
-          await txn.insert(
-            'transactions_232143',
-            txMap,
-            conflictAlgorithm: ConflictAlgorithm.replace,
-          );
+          await txn.insert('transactions_232143', txMap, conflictAlgorithm: ConflictAlgorithm.replace);
         }
 
         // Restore categories
         final categories = (data['categories'] as List<dynamic>?) ?? [];
         for (var cat in categories) {
           final catMap = cat as Map<String, dynamic>;
-          await txn.insert(
-            'categories_232143',
-            catMap,
-            conflictAlgorithm: ConflictAlgorithm.replace,
-          );
+          await txn.insert('categories_232143', catMap, conflictAlgorithm: ConflictAlgorithm.replace);
         }
 
         // Restore budgets
         final budgets = (data['budgets'] as List<dynamic>?) ?? [];
         for (var budget in budgets) {
           final budgetMap = budget as Map<String, dynamic>;
-          await txn.insert(
-            'budgets_232143',
-            budgetMap,
-            conflictAlgorithm: ConflictAlgorithm.replace,
-          );
+          await txn.insert('budgets_232143', budgetMap, conflictAlgorithm: ConflictAlgorithm.replace);
         }
 
         // Restore goals
         final goals = (data['goals'] as List<dynamic>?) ?? [];
         for (var goal in goals) {
           final goalMap = goal as Map<String, dynamic>;
-          await txn.insert(
-            'financial_goals_232143',
-            goalMap,
-            conflictAlgorithm: ConflictAlgorithm.replace,
-          );
+          await txn.insert('financial_goals_232143', goalMap, conflictAlgorithm: ConflictAlgorithm.replace);
         }
 
         // Restore obligations
         final obligations = (data['obligations'] as List<dynamic>?) ?? [];
         for (var obligation in obligations) {
           final obligationMap = obligation as Map<String, dynamic>;
-          await txn.insert(
-            'financial_obligations_232143',
-            obligationMap,
-            conflictAlgorithm: ConflictAlgorithm.replace,
-          );
+          await txn.insert('financial_obligations_232143', obligationMap, conflictAlgorithm: ConflictAlgorithm.replace);
         }
 
         // Restore receipt scans
         final receiptScans = (data['receipt_scans'] as List<dynamic>?) ?? [];
         for (var scan in receiptScans) {
           final scanMap = scan as Map<String, dynamic>;
-          await txn.insert(
-            'receipt_scans_232143',
-            scanMap,
-            conflictAlgorithm: ConflictAlgorithm.replace,
-          );
+          await txn.insert('receipt_scans_232143', scanMap, conflictAlgorithm: ConflictAlgorithm.replace);
         }
 
         // Restore users
         final users = (data['users'] as List<dynamic>?) ?? [];
         for (var user in users) {
           final userMap = user as Map<String, dynamic>;
-          await txn.insert(
-            'users_232143',
-            userMap,
-            conflictAlgorithm: ConflictAlgorithm.replace,
-          );
+          await txn.insert('users_232143', userMap, conflictAlgorithm: ConflictAlgorithm.replace);
         }
 
         // Restore goal contributions
-        final goalContributions =
-            (data['goal_contributions'] as List<dynamic>?) ?? [];
+        final goalContributions = (data['goal_contributions'] as List<dynamic>?) ?? [];
         for (var contribution in goalContributions) {
           final contributionMap = contribution as Map<String, dynamic>;
-          await txn.insert(
-            'goal_contributions_232143',
-            contributionMap,
-            conflictAlgorithm: ConflictAlgorithm.replace,
-          );
+          await txn.insert('goal_contributions_232143', contributionMap, conflictAlgorithm: ConflictAlgorithm.replace);
         }
 
         // Restore accounts
         final accounts = (data['accounts'] as List<dynamic>?) ?? [];
         for (var account in accounts) {
           final accountMap = account as Map<String, dynamic>;
-          await txn.insert(
-            'accounts_232143',
-            accountMap,
-            conflictAlgorithm: ConflictAlgorithm.replace,
-          );
+          await txn.insert('accounts_232143', accountMap, conflictAlgorithm: ConflictAlgorithm.replace);
         }
 
         // Restore debts
         final debts = (data['debts'] as List<dynamic>?) ?? [];
         for (var debt in debts) {
           final debtMap = debt as Map<String, dynamic>;
-          await txn.insert(
-            'debts_232143',
-            debtMap,
-            conflictAlgorithm: ConflictAlgorithm.replace,
-          );
+          await txn.insert('debts_232143', debtMap, conflictAlgorithm: ConflictAlgorithm.replace);
         }
 
         // Restore debt payments
         final debtPayments = (data['debt_payments'] as List<dynamic>?) ?? [];
         for (var payment in debtPayments) {
           final paymentMap = payment as Map<String, dynamic>;
-          await txn.insert(
-            'debt_payments_232143',
-            paymentMap,
-            conflictAlgorithm: ConflictAlgorithm.replace,
-          );
+          await txn.insert('debt_payments_232143', paymentMap, conflictAlgorithm: ConflictAlgorithm.replace);
         }
 
         // Restore subscriptions
         final subscriptions = (data['subscriptions'] as List<dynamic>?) ?? [];
         for (var sub in subscriptions) {
           final subMap = sub as Map<String, dynamic>;
-          await txn.insert(
-            'subscriptions_232143',
-            subMap,
-            conflictAlgorithm: ConflictAlgorithm.replace,
-          );
+          await txn.insert('subscriptions_232143', subMap, conflictAlgorithm: ConflictAlgorithm.replace);
         }
 
         // Restore tags
         final tags = (data['tags'] as List<dynamic>?) ?? [];
         for (var tag in tags) {
           final tagMap = tag as Map<String, dynamic>;
-          await txn.insert(
-            'tags_232143',
-            tagMap,
-            conflictAlgorithm: ConflictAlgorithm.replace,
-          );
+          await txn.insert('tags_232143', tagMap, conflictAlgorithm: ConflictAlgorithm.replace);
         }
 
         // Restore transaction tags
-        final transactionTags =
-            (data['transaction_tags'] as List<dynamic>?) ?? [];
+        final transactionTags = (data['transaction_tags'] as List<dynamic>?) ?? [];
         for (var tt in transactionTags) {
           final ttMap = tt as Map<String, dynamic>;
-          await txn.insert(
-            'transaction_tags_232143',
-            ttMap,
-            conflictAlgorithm: ConflictAlgorithm.replace,
-          );
+          await txn.insert('transaction_tags_232143', ttMap, conflictAlgorithm: ConflictAlgorithm.replace);
         }
 
         // Restore expense splits
         final expenseSplits = (data['expense_splits'] as List<dynamic>?) ?? [];
         for (var split in expenseSplits) {
           final splitMap = split as Map<String, dynamic>;
-          await txn.insert(
-            'expense_splits_232143',
-            splitMap,
-            conflictAlgorithm: ConflictAlgorithm.replace,
-          );
+          await txn.insert('expense_splits_232143', splitMap, conflictAlgorithm: ConflictAlgorithm.replace);
         }
 
         // Restore challenges
         final challenges = (data['challenges'] as List<dynamic>?) ?? [];
         for (var challenge in challenges) {
           final challengeMap = challenge as Map<String, dynamic>;
-          await txn.insert(
-            'challenges_232143',
-            challengeMap,
-            conflictAlgorithm: ConflictAlgorithm.replace,
-          );
+          await txn.insert('challenges_232143', challengeMap, conflictAlgorithm: ConflictAlgorithm.replace);
         }
 
         // Restore investments
         final investments = (data['investments'] as List<dynamic>?) ?? [];
         for (var investment in investments) {
           final investmentMap = investment as Map<String, dynamic>;
-          await txn.insert(
-            'investments_232143',
-            investmentMap,
-            conflictAlgorithm: ConflictAlgorithm.replace,
-          );
+          await txn.insert('investments_232143', investmentMap, conflictAlgorithm: ConflictAlgorithm.replace);
         }
 
         // Restore templates
         final templates = (data['templates'] as List<dynamic>?) ?? [];
         for (var template in templates) {
           final templateMap = template as Map<String, dynamic>;
-          await txn.insert(
-            'transaction_templates_232143',
-            templateMap,
-            conflictAlgorithm: ConflictAlgorithm.replace,
-          );
+          await txn.insert('transaction_templates_232143', templateMap, conflictAlgorithm: ConflictAlgorithm.replace);
         }
 
         // Restore net worth history
-        final netWorthHistory =
-            (data['net_worth_history'] as List<dynamic>?) ?? [];
+        final netWorthHistory = (data['net_worth_history'] as List<dynamic>?) ?? [];
         for (var snapshot in netWorthHistory) {
           final snapshotMap = snapshot as Map<String, dynamic>;
-          await txn.insert(
-            'net_worth_history_232143',
-            snapshotMap,
-            conflictAlgorithm: ConflictAlgorithm.replace,
-          );
+          await txn.insert('net_worth_history_232143', snapshotMap, conflictAlgorithm: ConflictAlgorithm.replace);
         }
 
         // Restore exchange rates
         final exchangeRates = (data['exchange_rates'] as List<dynamic>?) ?? [];
         for (var rate in exchangeRates) {
           final rateMap = rate as Map<String, dynamic>;
-          await txn.insert(
-            'exchange_rates_232143',
-            rateMap,
-            conflictAlgorithm: ConflictAlgorithm.replace,
-          );
+          await txn.insert('exchange_rates_232143', rateMap, conflictAlgorithm: ConflictAlgorithm.replace);
         }
       });
 
@@ -443,18 +359,13 @@ class BackupService {
           directory
               .listSync()
               .where(
-                (item) =>
-                    item is File &&
-                    item.path.endsWith('.json') &&
-                    item.path.contains('financial_app_backup'),
+                (item) => item is File && item.path.endsWith('.json') && item.path.contains('financial_app_backup'),
               )
               .map((item) => item as File)
               .toList();
 
       // Sort by modification date (newest first)
-      files.sort(
-        (a, b) => b.lastModifiedSync().compareTo(a.lastModifiedSync()),
-      );
+      files.sort((a, b) => b.lastModifiedSync().compareTo(a.lastModifiedSync()));
 
       return files;
     } catch (e) {

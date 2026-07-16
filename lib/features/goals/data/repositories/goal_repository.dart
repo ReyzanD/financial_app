@@ -7,8 +7,7 @@ import 'package:financial_app/features/goals/domain/repositories/goal_repository
 class GoalRepository implements GoalRepositoryInterface {
   final GoalDataService _goalData;
 
-  GoalRepository({GoalDataService? goalData})
-    : _goalData = goalData ?? getIt<GoalDataService>();
+  GoalRepository({GoalDataService? goalData}) : _goalData = goalData ?? getIt<GoalDataService>();
 
   @override
   Future<List<GoalEntity>> getGoals() async {
@@ -49,26 +48,15 @@ class GoalRepository implements GoalRepositoryInterface {
     return {
       'total_target': totalTarget,
       'total_saved': totalSaved,
-      'overall_progress':
-          totalTarget > 0 ? (totalSaved / totalTarget) * 100 : 0,
+      'overall_progress': totalTarget > 0 ? (totalSaved / totalTarget) * 100 : 0,
       'goal_count': goals.length,
       'completed_count': completedCount,
     };
   }
 
   @override
-  Future<Map<String, dynamic>> addContribution(
-    String goalId,
-    double amount, {
-    String? accountId,
-    String? note,
-  }) async {
-    return await _goalData.addGoalContribution(
-      goalId,
-      amount,
-      accountId: accountId,
-      note: note,
-    );
+  Future<Map<String, dynamic>> addContribution(String goalId, double amount, {String? accountId, String? note}) async {
+    return await _goalData.addGoalContribution(goalId, amount, accountId: accountId, note: note);
   }
 
   @override

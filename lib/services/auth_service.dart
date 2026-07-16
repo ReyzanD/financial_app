@@ -31,17 +31,9 @@ class AuthService {
   }
 
   /// Register new user (local database)
-  Future<Map<String, dynamic>?> register(
-    String email,
-    String password,
-    String fullName,
-  ) async {
+  Future<Map<String, dynamic>?> register(String email, String password, String fullName) async {
     try {
-      final result = await _localAuth.register(
-        email: email,
-        password: password,
-        fullName: fullName,
-      );
+      final result = await _localAuth.register(email: email, password: password, fullName: fullName);
 
       // Auto-login: store auth token (redundant with local_auth but defensive)
       final sessionToken = result['access_token'] as String;
@@ -52,11 +44,7 @@ class AuthService {
       await prefs.setString('current_user_id', userId);
 
       LoggerService.info('Registration successful');
-      return {
-        'access_token': sessionToken,
-        'message': 'User registered successfully',
-        'user': result,
-      };
+      return {'access_token': sessionToken, 'message': 'User registered successfully', 'user': result};
     } catch (e) {
       LoggerService.error('Error during registration', error: e);
       throw Exception('Registration error: $e');
@@ -118,11 +106,7 @@ class AuthService {
 
       // Delete user from local database (cascade will delete all related data)
       final db = await LocalDatabaseService().database;
-      await db.delete(
-        'users_232143',
-        where: 'user_id_232143 = ?',
-        whereArgs: [userId],
-      );
+      await db.delete('users_232143', where: 'user_id_232143 = ?', whereArgs: [userId]);
 
       // Explicitly clear encryption keys since the account is being deleted
       getIt<EncryptionService>().clearKey();

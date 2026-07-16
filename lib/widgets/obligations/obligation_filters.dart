@@ -59,15 +59,10 @@ class ObligationFiltersWidget extends StatefulWidget {
   final ObligationFilters initialFilters;
   final Function(ObligationFilters) onFiltersChanged;
 
-  const ObligationFiltersWidget({
-    super.key,
-    required this.initialFilters,
-    required this.onFiltersChanged,
-  });
+  const ObligationFiltersWidget({super.key, required this.initialFilters, required this.onFiltersChanged});
 
   @override
-  State<ObligationFiltersWidget> createState() =>
-      _ObligationFiltersWidgetState();
+  State<ObligationFiltersWidget> createState() => _ObligationFiltersWidgetState();
 }
 
 class _ObligationFiltersWidgetState extends State<ObligationFiltersWidget> {
@@ -97,11 +92,7 @@ class _ObligationFiltersWidgetState extends State<ObligationFiltersWidget> {
             children: [
               Text(
                 AppLocalizations.of(context)!.filter,
-                style: GoogleFonts.poppins(
-                  color: Colors.white,
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: GoogleFonts.poppins(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
               ),
               Row(
                 children: [
@@ -115,10 +106,7 @@ class _ObligationFiltersWidgetState extends State<ObligationFiltersWidget> {
                       },
                       child: Text(
                         AppLocalizations.of(context)!.reset,
-                        style: GoogleFonts.poppins(
-                          color: Colors.red,
-                          fontSize: 12,
-                        ),
+                        style: GoogleFonts.poppins(color: Colors.red, fontSize: 12),
                       ),
                     ),
                   IconButton(
@@ -129,104 +117,68 @@ class _ObligationFiltersWidgetState extends State<ObligationFiltersWidget> {
               ),
             ],
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: DesignTokens.spacing4),
 
           // Type Filter
           Text(
             AppLocalizations.of(context)!.type,
-            style: GoogleFonts.poppins(
-              color: Colors.white70,
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-            ),
+            style: GoogleFonts.poppins(color: Colors.white70, fontSize: 14, fontWeight: FontWeight.w600),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: DesignTokens.spacing2),
           Wrap(
             spacing: 8,
             children: [
-              _buildFilterChip(
-                AppLocalizations.of(context)!.all,
-                _filters.type == null,
-                () {
-                  setState(() {
-                    _filters = _filters.copyWith(type: null);
-                  });
-                },
-              ),
-              _buildFilterChip(
-                AppLocalizations.of(context)!.bill,
-                _filters.type == 'bill',
-                () {
-                  setState(() {
-                    _filters = _filters.copyWith(type: 'bill');
-                  });
-                },
-              ),
-              _buildFilterChip(
-                AppLocalizations.of(context)!.debt,
-                _filters.type == 'debt',
-                () {
-                  setState(() {
-                    _filters = _filters.copyWith(type: 'debt');
-                  });
-                },
-              ),
-              _buildFilterChip(
-                AppLocalizations.of(context)!.subscription,
-                _filters.type == 'subscription',
-                () {
-                  setState(() {
-                    _filters = _filters.copyWith(type: 'subscription');
-                  });
-                },
-              ),
+              _buildFilterChip(AppLocalizations.of(context)!.all, _filters.type == null, () {
+                setState(() {
+                  _filters = _filters.copyWith(type: null);
+                });
+              }),
+              _buildFilterChip(AppLocalizations.of(context)!.bill, _filters.type == 'bill', () {
+                setState(() {
+                  _filters = _filters.copyWith(type: 'bill');
+                });
+              }),
+              _buildFilterChip(AppLocalizations.of(context)!.debt, _filters.type == 'debt', () {
+                setState(() {
+                  _filters = _filters.copyWith(type: 'debt');
+                });
+              }),
+              _buildFilterChip(AppLocalizations.of(context)!.subscription, _filters.type == 'subscription', () {
+                setState(() {
+                  _filters = _filters.copyWith(type: 'subscription');
+                });
+              }),
             ],
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: DesignTokens.spacing4),
 
           // Status Filter
           Text(
             AppLocalizations.of(context)!.status,
-            style: GoogleFonts.poppins(
-              color: Colors.white70,
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-            ),
+            style: GoogleFonts.poppins(color: Colors.white70, fontSize: 14, fontWeight: FontWeight.w600),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: DesignTokens.spacing2),
           Wrap(
             spacing: 8,
             children: [
-              _buildFilterChip(
-                AppLocalizations.of(context)!.all,
-                _filters.status == null,
-                () {
-                  setState(() {
-                    _filters = _filters.copyWith(status: null);
-                  });
-                },
-              ),
-              _buildFilterChip(
-                AppLocalizations.of(context)!.active,
-                _filters.status == 'active',
-                () {
-                  setState(() {
-                    _filters = _filters.copyWith(status: 'active');
-                  });
-                },
-              ),
-              _buildFilterChip(
-                AppLocalizations.of(context)!.overdue,
-                _filters.status == 'overdue',
-                () {
-                  setState(() {
-                    _filters = _filters.copyWith(status: 'overdue');
-                  });
-                },
-              ),
+              _buildFilterChip(AppLocalizations.of(context)!.all, _filters.status == null, () {
+                setState(() {
+                  _filters = _filters.copyWith(status: null);
+                });
+              }),
+              _buildFilterChip(AppLocalizations.of(context)!.active, _filters.status == 'active', () {
+                setState(() {
+                  _filters = _filters.copyWith(status: 'active');
+                });
+              }),
+              _buildFilterChip(AppLocalizations.of(context)!.overdue, _filters.status == 'overdue', () {
+                setState(() {
+                  _filters = _filters.copyWith(status: 'overdue');
+                });
+              }),
             ],
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: DesignTokens.spacing4),
 
           // Apply Button
           SizedBox(
@@ -240,11 +192,7 @@ class _ObligationFiltersWidgetState extends State<ObligationFiltersWidget> {
                 backgroundColor: DesignTokens.primaryColor,
                 foregroundColor: Colors.white,
                 padding: const EdgeInsets.symmetric(vertical: 14),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(
-                    DesignTokens.radiusMedium,
-                  ),
-                ),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(DesignTokens.radiusMedium)),
               ),
               child: Text(
                 AppLocalizations.of(context)!.apply_filter,
@@ -263,17 +211,9 @@ class _ObligationFiltersWidgetState extends State<ObligationFiltersWidget> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
-          color:
-              isSelected
-                  ? DesignTokens.primaryColor.withValues(alpha: 0.2)
-                  : Colors.grey[900],
+          color: isSelected ? DesignTokens.primaryColor.withValues(alpha: 0.2) : Colors.grey[900],
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(
-            color:
-                isSelected
-                    ? DesignTokens.primaryColor
-                    : DesignTokens.borderDark,
-          ),
+          border: Border.all(color: isSelected ? DesignTokens.primaryColor : DesignTokens.borderDark),
         ),
         child: Text(
           label,

@@ -66,19 +66,11 @@ class QuickActionsAnalyticsService {
       }
 
       // Sort by count
-      final sorted =
-          actionCounts.entries.toList()
-            ..sort((a, b) => b.value.compareTo(a.value));
+      final sorted = actionCounts.entries.toList()..sort((a, b) => b.value.compareTo(a.value));
 
       return sorted
           .take(limit)
-          .map(
-            (e) => {
-              'id': e.key,
-              'count': e.value,
-              'last_used': analytics['${e.key}_last_used'],
-            },
-          )
+          .map((e) => {'id': e.key, 'count': e.value, 'last_used': analytics['${e.key}_last_used']})
           .toList();
     } catch (e) {
       LoggerService.error('Error getting most used actions', error: e);
@@ -120,8 +112,7 @@ class QuickActionsAnalyticsService {
               final icon = action['icon'];
               if (icon != null) {
                 // Store icon identifier (will be reconstructed from id when loading)
-                sanitized['iconId'] =
-                    action['id']; // Use action id to map back to icon
+                sanitized['iconId'] = action['id']; // Use action id to map back to icon
               }
             }
 
@@ -129,8 +120,7 @@ class QuickActionsAnalyticsService {
             if (action.containsKey('color')) {
               final color = action['color'];
               if (color is Color) {
-                sanitized['colorHex'] =
-                    '#${color.toARGB32().toRadixString(16).padLeft(8, '0')}';
+                sanitized['colorHex'] = '#${color.toARGB32().toRadixString(16).padLeft(8, '0')}';
               } else if (color is String) {
                 sanitized['colorHex'] = color;
               }

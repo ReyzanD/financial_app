@@ -12,11 +12,7 @@ class LocationInsightCard extends StatefulWidget {
   final String transactionId;
   final LatLng? transactionLocation;
 
-  const LocationInsightCard({
-    super.key,
-    required this.transactionId,
-    this.transactionLocation,
-  });
+  const LocationInsightCard({super.key, required this.transactionId, this.transactionLocation});
 
   @override
   State<LocationInsightCard> createState() => _LocationInsightCardState();
@@ -76,41 +72,30 @@ class _LocationInsightCardState extends State<LocationInsightCard> {
         children: [
           Row(
             children: [
-              const Icon(
-                Iconsax.location,
-                color: DesignTokens.primaryColor,
-                size: 20,
-              ),
+              const Icon(Iconsax.location, color: DesignTokens.primaryColor, size: 20),
               const SizedBox(width: 8),
               Text(
                 'Location Insight',
-                style: GoogleFonts.poppins(
-                  color: Colors.white,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                ),
+                style: GoogleFonts.poppins(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600),
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: DesignTokens.spacing3),
           Text(
             'Transaction Location: $_locationString',
             style: GoogleFonts.poppins(color: Colors.white70, fontSize: 14),
           ),
           if (_distance != null) ...[
-            const SizedBox(height: 8),
+            const SizedBox(height: DesignTokens.spacing2),
             Text(
               'Distance from current location: ${_distance!.toStringAsFixed(1)} km',
               style: GoogleFonts.poppins(color: Colors.white70, fontSize: 14),
             ),
           ],
-          const SizedBox(height: 12),
+          const SizedBox(height: DesignTokens.spacing3),
           Container(
             height: 120,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(8),
-              color: Colors.black26,
-            ),
+            decoration: BoxDecoration(borderRadius: BorderRadius.circular(8), color: Colors.black26),
             child:
                 widget.transactionLocation != null
                     ? ClipRRect(
@@ -119,14 +104,11 @@ class _LocationInsightCardState extends State<LocationInsightCard> {
                         options: MapOptions(
                           initialCenter: widget.transactionLocation!,
                           initialZoom: 15.0,
-                          interactionOptions: const InteractionOptions(
-                            flags: InteractiveFlag.none,
-                          ),
+                          interactionOptions: const InteractionOptions(flags: InteractiveFlag.none),
                         ),
                         children: [
                           TileLayer(
-                            urlTemplate:
-                                MapProviderService.getTileUrlTemplate(),
+                            urlTemplate: MapProviderService.getTileUrlTemplate(),
                             userAgentPackageName: 'com.example.financial_app',
                           ),
                           MarkerLayer(
@@ -135,23 +117,14 @@ class _LocationInsightCardState extends State<LocationInsightCard> {
                                 point: widget.transactionLocation!,
                                 width: 40,
                                 height: 40,
-                                child: const Icon(
-                                  Icons.location_on,
-                                  color: Colors.red,
-                                  size: 40,
-                                ),
+                                child: const Icon(Icons.location_on, color: Colors.red, size: 40),
                               ),
                             ],
                           ),
                         ],
                       ),
                     )
-                    : Center(
-                      child: Text(
-                        'Map not available',
-                        style: GoogleFonts.poppins(color: Colors.white54),
-                      ),
-                    ),
+                    : Center(child: Text('Map not available', style: GoogleFonts.poppins(color: Colors.white54))),
           ),
         ],
       ),

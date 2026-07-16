@@ -10,22 +10,15 @@ import 'package:financial_app/core/di/service_locator.dart';
 /// Service untuk menghubungkan obligations dengan transactions
 class ObligationTransactionLinker {
   final ObligationDataService _obligationData = getIt<ObligationDataService>();
-  final TransactionDataService _transactionData =
-      getIt<TransactionDataService>();
+  final TransactionDataService _transactionData = getIt<TransactionDataService>();
   final PaymentHistoryService _paymentService = getIt<PaymentHistoryService>();
 
   /// Auto-link transaction to obligation berdasarkan amount dan date
-  Future<String?> autoLinkTransaction(
-    String transactionId,
-    Map<String, dynamic> transaction,
-  ) async {
+  Future<String?> autoLinkTransaction(String transactionId, Map<String, dynamic> transaction) async {
     try {
-      final transactionAmount =
-          (transaction['amount'] as num?)?.toDouble() ?? 0.0;
+      final transactionAmount = (transaction['amount'] as num?)?.toDouble() ?? 0.0;
       final transactionDate =
-          transaction['date'] != null
-              ? DateTime.parse(transaction['date'].toString())
-              : DateTime.now();
+          transaction['date'] != null ? DateTime.parse(transaction['date'].toString()) : DateTime.now();
 
       // Get all obligations
       final obligations = await _obligationData.getObligations();
@@ -35,21 +28,14 @@ class ObligationTransactionLinker {
         final monthlyAmount = obligation.monthlyAmount;
 
         // Match by amount (within 5% tolerance) and date (within 7 days)
-        final amountMatch =
-            (transactionAmount - monthlyAmount).abs() / monthlyAmount < 0.05;
+        final amountMatch = (transactionAmount - monthlyAmount).abs() / monthlyAmount < 0.05;
         final dateMatch = _isDateNearDueDate(transactionDate, obligation);
 
         if (amountMatch && dateMatch) {
           // Link transaction to obligation
-          await linkTransactionToObligation(
-            obligation.id,
-            transactionId,
-            transaction,
-          );
+          await linkTransactionToObligation(obligation.id, transactionId, transaction);
 
-          LoggerService.success(
-            'Auto-linked transaction to ${obligation.name}',
-          );
+          LoggerService.success('Auto-linked transaction to ${obligation.name}');
 
           return obligation.id;
         }
@@ -63,10 +49,7 @@ class ObligationTransactionLinker {
   }
 
   /// Check if transaction date is near obligation due date
-  bool _isDateNearDueDate(
-    DateTime transactionDate,
-    FinancialObligation obligation,
-  ) {
+  bool _isDateNearDueDate(DateTime transactionDate, FinancialObligation obligation) {
     try {
       final dueDayOfMonth = obligation.dueDate.day;
       final now = DateTime.now();
@@ -104,20 +87,15 @@ class ObligationTransactionLinker {
       }
 
       // Also store reverse link: transaction_id -> obligation_id
-      final reverseLinksJson =
-          prefs.getString('transaction_obligation_links') ?? '{}';
+      final reverseLinksJson = prefs.getString('transaction_obligation_links') ?? '{}';
       final reverseLinks = jsonDecode(reverseLinksJson) as Map<String, dynamic>;
       reverseLinks[transactionId] = obligationId;
 
       await prefs.setString('obligation_transaction_links', jsonEncode(links));
-      await prefs.setString(
-        'transaction_obligation_links',
-        jsonEncode(reverseLinks),
-      );
+      await prefs.setString('transaction_obligation_links', jsonEncode(reverseLinks));
 
       // If transaction amount matches obligation amount, record as payment
-      final transactionAmount =
-          (transaction['amount'] as num?)?.toDouble() ?? 0.0;
+      final transactionAmount = (transaction['amount'] as num?)?.toDouble() ?? 0.0;
       final obligations = await _obligationData.getObligations();
       final obligation = obligations.firstWhere(
         (o) => o.id == obligationId,
@@ -138,11 +116,8 @@ class ObligationTransactionLinker {
           // Amount matches, record as payment
           await _paymentService.recordPayment(obligationId, {
             'amount_paid': transactionAmount,
-            'payment_date':
-                transaction['date']?.toString() ??
-                DateTime.now().toIso8601String(),
-            'payment_method':
-                transaction['payment_method']?.toString() ?? 'manual',
+            'payment_date': transaction['date']?.toString() ?? DateTime.now().toIso8601String(),
+            'payment_method': transaction['payment_method']?.toString() ?? 'manual',
             'transaction_id': transactionId,
             'was_on_time': true, // Could be calculated based on due date
           });
@@ -178,8 +153,7 @@ class ObligationTransactionLinker {
   Future<String?> getObligationForTransaction(String transactionId) async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      final reverseLinksJson =
-          prefs.getString('transaction_obligation_links') ?? '{}';
+      final reverseLinksJson = prefs.getString('transaction_obligation_links') ?? '{}';
       final reverseLinks = jsonDecode(reverseLinksJson) as Map<String, dynamic>;
 
       return reverseLinks[transactionId]?.toString();
@@ -190,10 +164,7 @@ class ObligationTransactionLinker {
   }
 
   /// Unlink transaction from obligation
-  Future<void> unlinkTransaction(
-    String obligationId,
-    String transactionId,
-  ) async {
+  Future<void> unlinkTransaction(String obligationId, String transactionId) async {
     try {
       final prefs = await SharedPreferences.getInstance();
 
@@ -205,21 +176,14 @@ class ObligationTransactionLinker {
         final transactionIds = List<String>.from(links[obligationId] as List);
         transactionIds.remove(transactionId);
         links[obligationId] = transactionIds;
-        await prefs.setString(
-          'obligation_transaction_links',
-          jsonEncode(links),
-        );
+        await prefs.setString('obligation_transaction_links', jsonEncode(links));
       }
 
       // Remove from transaction -> obligation map
-      final reverseLinksJson =
-          prefs.getString('transaction_obligation_links') ?? '{}';
+      final reverseLinksJson = prefs.getString('transaction_obligation_links') ?? '{}';
       final reverseLinks = jsonDecode(reverseLinksJson) as Map<String, dynamic>;
       reverseLinks.remove(transactionId);
-      await prefs.setString(
-        'transaction_obligation_links',
-        jsonEncode(reverseLinks),
-      );
+      await prefs.setString('transaction_obligation_links', jsonEncode(reverseLinks));
 
       LoggerService.success('Transaction unlinked from obligation');
     } catch (e) {
@@ -229,10 +193,7 @@ class ObligationTransactionLinker {
   }
 
   /// Auto-create transaction when bill is marked as paid
-  Future<String?> createTransactionFromPayment(
-    String obligationId,
-    Map<String, dynamic> paymentData,
-  ) async {
+  Future<String?> createTransactionFromPayment(String obligationId, Map<String, dynamic> paymentData) async {
     try {
       final obligations = await _obligationData.getObligations();
       final obligation = obligations.firstWhere(
@@ -260,24 +221,16 @@ class ObligationTransactionLinker {
         'category_id': _getCategoryIdForObligation(obligation),
         'description': '${obligation.name} - ${obligation.type.name}',
         'payment_method': paymentData['payment_method'] ?? 'manual',
-        'transaction_date':
-            paymentData['payment_date'] ??
-            DateTime.now().toIso8601String().split('T')[0],
+        'transaction_date': paymentData['payment_date'] ?? DateTime.now().toIso8601String().split('T')[0],
         'time': DateTime.now().toString().split(' ')[1].substring(0, 5),
       };
 
       // Create transaction via data service
-      final transactionModel = await _transactionData.addTransaction(
-        transactionData,
-      );
+      final transactionModel = await _transactionData.addTransaction(transactionData);
       final transactionId = transactionModel.id;
 
       // Link transaction to obligation
-      await linkTransactionToObligation(
-        obligationId,
-        transactionId,
-        transactionData,
-      );
+      await linkTransactionToObligation(obligationId, transactionId, transactionData);
 
       return transactionId;
     } catch (e) {
@@ -292,26 +245,18 @@ class ObligationTransactionLinker {
   }
 
   /// Check for duplicate transactions
-  Future<bool> isDuplicateTransaction(
-    String obligationId,
-    double amount,
-    DateTime paymentDate,
-  ) async {
+  Future<bool> isDuplicateTransaction(String obligationId, double amount, DateTime paymentDate) async {
     try {
-      final paymentHistory = await _paymentService.getPaymentHistory(
-        obligationId,
-      );
+      final paymentHistory = await _paymentService.getPaymentHistory(obligationId);
 
       for (var payment in paymentHistory) {
-        final paymentAmount =
-            (payment['amount_paid'] as num?)?.toDouble() ?? 0.0;
+        final paymentAmount = (payment['amount_paid'] as num?)?.toDouble() ?? 0.0;
         final paymentDateStr = payment['payment_date']?.toString();
 
         if (paymentDateStr != null) {
           try {
             final paymentDateTime = DateTime.parse(paymentDateStr);
-            final amountMatch =
-                (paymentAmount - amount).abs() < 1000; // Within 1000 rupiah
+            final amountMatch = (paymentAmount - amount).abs() < 1000; // Within 1000 rupiah
             final dateMatch =
                 paymentDateTime.year == paymentDate.year &&
                 paymentDateTime.month == paymentDate.month &&

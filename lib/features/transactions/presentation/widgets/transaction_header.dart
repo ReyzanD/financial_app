@@ -26,11 +26,7 @@ class TransactionHeader extends StatelessWidget {
             }
           }
 
-          final numberFormat = NumberFormat.currency(
-            locale: 'id_ID',
-            symbol: 'Rp',
-            decimalDigits: 0,
-          );
+          final numberFormat = NumberFormat.currency(locale: 'id_ID', symbol: 'Rp', decimalDigits: 0);
 
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -42,11 +38,7 @@ class TransactionHeader extends StatelessWidget {
                     header: true,
                     child: Text(
                       AppLocalizations.of(context)?.transactions ?? 'Transaksi',
-                      style: GoogleFonts.poppins(
-                        color: Colors.white,
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                      ),
+                      style: GoogleFonts.poppins(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
                     ),
                   ),
                   if (!controller.isLoading && controller.error == null)
@@ -60,14 +52,10 @@ class TransactionHeader extends StatelessWidget {
                     ),
                 ],
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: DesignTokens.spacing2),
               Text(
-                AppLocalizations.of(context)?.manage_all_transactions ??
-                    'Kelola semua transaksi keuangan Anda',
-                style: GoogleFonts.poppins(
-                  color: Colors.grey[400],
-                  fontSize: 14,
-                ),
+                AppLocalizations.of(context)?.manage_all_transactions ?? 'Kelola semua transaksi keuangan Anda',
+                style: GoogleFonts.poppins(color: Colors.grey[400], fontSize: 14),
               ),
             ],
           );

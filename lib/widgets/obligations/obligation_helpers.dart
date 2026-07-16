@@ -33,26 +33,19 @@ class ObligationHelpers {
       context: context,
       isScrollControlled: true,
       backgroundColor: DesignTokens.surfaceModal,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
       builder: (context) => const AddObligationModal(),
     );
 
     return result;
   }
 
-  static Future<void> showObligationDetails(
-    BuildContext context,
-    FinancialObligation obligation,
-  ) async {
+  static Future<void> showObligationDetails(BuildContext context, FinancialObligation obligation) async {
     await showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: DesignTokens.surfaceModal,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
       builder: (context) => ObligationDetailsModal(obligation: obligation),
     );
   }

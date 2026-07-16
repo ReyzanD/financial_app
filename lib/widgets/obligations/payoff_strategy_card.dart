@@ -16,17 +16,10 @@ class PayoffStrategyCard extends StatelessWidget {
           children: [
             Text(
               'Strategi Pelunasan',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
             ),
-            SizedBox(height: 12),
-            Text(
-              'Fokus pada hutang dengan bunga tertinggi terlebih dahulu',
-              style: TextStyle(color: Colors.grey),
-            ),
+            SizedBox(height: DesignTokens.spacing3),
+            Text('Fokus pada hutang dengan bunga tertinggi terlebih dahulu', style: TextStyle(color: Colors.grey)),
           ],
         ),
       ),

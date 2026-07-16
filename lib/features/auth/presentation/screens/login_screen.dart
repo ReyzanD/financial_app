@@ -53,36 +53,26 @@ class _LoginScreenState extends State<LoginScreen> {
     });
   }
 
-  bool _isValidEmail(String email) => RegExp(
-    r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',
-  ).hasMatch(email);
+  bool _isValidEmail(String email) => RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$').hasMatch(email);
   bool _isStrongPassword(String password) => password.length >= 8;
 
   Future<void> _handleLogin() async {
     if (_emailController.text.isEmpty || _passwordController.text.isEmpty) {
       ErrorHandlerService.showWarningSnackbar(
         context,
-        AppLocalizations.of(context)?.please_fill_all_fields ??
-            'Silakan isi semua field',
+        AppLocalizations.of(context)?.please_fill_all_fields ?? 'Silakan isi semua field',
       );
       return;
     }
     if (!_isValidEmail(_emailController.text.trim())) {
-      ErrorHandlerService.showWarningSnackbar(
-        context,
-        'Format email tidak valid',
-      );
+      ErrorHandlerService.showWarningSnackbar(context, 'Format email tidak valid');
       return;
     }
     setState(() => _isLoading = true);
     final ctx = context;
     try {
-      await context.read<AuthController>().login(
-        _emailController.text.trim(),
-        _passwordController.text,
-      );
-      final onboardingCompleted =
-          await OnboardingFlowManager.isOnboardingCompleted();
+      await context.read<AuthController>().login(_emailController.text.trim(), _passwordController.text);
+      final onboardingCompleted = await OnboardingFlowManager.isOnboardingCompleted();
       if (!ctx.mounted) return;
       if (!onboardingCompleted) {
         Navigator.pushReplacementNamed(ctx, '/onboarding');
@@ -110,28 +100,19 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> _handleRegister() async {
-    if (_nameController.text.isEmpty ||
-        _emailController.text.isEmpty ||
-        _passwordController.text.isEmpty) {
+    if (_nameController.text.isEmpty || _emailController.text.isEmpty || _passwordController.text.isEmpty) {
       ErrorHandlerService.showWarningSnackbar(
         context,
-        AppLocalizations.of(context)?.please_fill_all_fields ??
-            'Silakan isi semua field',
+        AppLocalizations.of(context)?.please_fill_all_fields ?? 'Silakan isi semua field',
       );
       return;
     }
     if (!_isValidEmail(_emailController.text.trim())) {
-      ErrorHandlerService.showWarningSnackbar(
-        context,
-        'Format email tidak valid',
-      );
+      ErrorHandlerService.showWarningSnackbar(context, 'Format email tidak valid');
       return;
     }
     if (!_isStrongPassword(_passwordController.text)) {
-      ErrorHandlerService.showWarningSnackbar(
-        context,
-        'Password minimal 8 karakter',
-      );
+      ErrorHandlerService.showWarningSnackbar(context, 'Password minimal 8 karakter');
       return;
     }
     setState(() => _isLoading = true);
@@ -168,13 +149,12 @@ class _LoginScreenState extends State<LoginScreen> {
               padding: const EdgeInsets.all(24.0),
               child: Column(
                 children: [
-                  const SizedBox(height: 40),
+                  const SizedBox(height: DesignTokens.spacing8),
                   AnimatedSwitcher(
                     duration: const Duration(milliseconds: 300),
-                    child:
-                        _isLogin ? const LoginHeader() : const RegisterHeader(),
+                    child: _isLogin ? const LoginHeader() : const RegisterHeader(),
                   ),
-                  const SizedBox(height: 40),
+                  const SizedBox(height: DesignTokens.spacing8),
                   AnimatedSwitcher(
                     duration: const Duration(milliseconds: 300),
                     child:
@@ -183,10 +163,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               emailController: _emailController,
                               passwordController: _passwordController,
                               obscurePassword: _obscurePassword,
-                              onToggleObscure:
-                                  () => setState(
-                                    () => _obscurePassword = !_obscurePassword,
-                                  ),
+                              onToggleObscure: () => setState(() => _obscurePassword = !_obscurePassword),
                               onLoginPressed: _handleLogin,
                               isLoading: _isLoading,
                             )
@@ -195,17 +172,14 @@ class _LoginScreenState extends State<LoginScreen> {
                               emailController: _emailController,
                               passwordController: _passwordController,
                               obscurePassword: _obscurePassword,
-                              onToggleObscure:
-                                  () => setState(
-                                    () => _obscurePassword = !_obscurePassword,
-                                  ),
+                              onToggleObscure: () => setState(() => _obscurePassword = !_obscurePassword),
                               onRegisterPressed: _handleRegister,
                               isLoading: _isLoading,
                             ),
                   ),
                   const SizedBox(height: 30),
                   const SocialLogin(),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: DesignTokens.spacing5),
                   ToggleAuth(isLogin: _isLogin, onToggle: _toggleAuthMode),
                 ],
               ),

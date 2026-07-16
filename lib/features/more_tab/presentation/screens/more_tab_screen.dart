@@ -39,10 +39,7 @@ class MoreTabScreen extends StatelessWidget {
                                 ),
                               ),
                             ),
-                            Icon(
-                              Iconsax.more_square,
-                              color: DesignTokens.textSecondaryDark,
-                            ),
+                            Icon(Iconsax.more_square, color: DesignTokens.textSecondaryDark),
                           ],
                         ),
                       ),
@@ -65,22 +62,20 @@ class MoreTabScreen extends StatelessWidget {
                       SliverPadding(
                         padding: const EdgeInsets.symmetric(horizontal: 16),
                         sliver: SliverGrid(
-                          gridDelegate:
-                              const SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: 4,
-                                mainAxisSpacing: 12,
-                                crossAxisSpacing: 8,
-                                childAspectRatio: 0.9,
-                              ),
+                          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 4,
+                            mainAxisSpacing: 12,
+                            crossAxisSpacing: 8,
+                            childAspectRatio: 0.9,
+                          ),
                           delegate: SliverChildBuilderDelegate(
-                            (context, index) =>
-                                _buildGridItem(context, section.items[index]),
+                            (context, index) => _buildGridItem(context, section.items[index]),
                             childCount: section.items.length,
                           ),
                         ),
                       ),
                     ],
-                    const SliverToBoxAdapter(child: SizedBox(height: 24)),
+                    const SliverToBoxAdapter(child: SizedBox(height: DesignTokens.spacing6)),
                   ],
                 ),
               ),
@@ -96,94 +91,29 @@ class MoreTabScreen extends StatelessWidget {
       _MoreSection(
         title: 'MANAJEMEN KEUANGAN',
         items: [
-          _MoreItem(
-            icon: Iconsax.wallet_1,
-            label: 'Akun',
-            color: Colors.indigo,
-            route: '/accounts',
-          ),
-          _MoreItem(
-            icon: Iconsax.wallet,
-            label: 'Anggaran',
-            color: Colors.blue,
-            route: '/budgets',
-          ),
-          _MoreItem(
-            icon: Iconsax.flag,
-            label: 'Goals',
-            color: DesignTokens.successColor,
-            route: '/goals',
-          ),
-          _MoreItem(
-            icon: Iconsax.receipt_1,
-            label: 'Kewajiban',
-            color: Colors.red,
-            route: '/obligations',
-          ),
+          _MoreItem(icon: Iconsax.wallet_1, label: 'Akun', color: Colors.indigo, route: '/accounts'),
+          _MoreItem(icon: Iconsax.wallet, label: 'Anggaran', color: Colors.blue, route: '/budgets'),
+          _MoreItem(icon: Iconsax.flag, label: 'Goals', color: DesignTokens.successColor, route: '/goals'),
+          _MoreItem(icon: Iconsax.receipt_1, label: 'Kewajiban', color: Colors.red, route: '/obligations'),
         ],
       ),
       _MoreSection(
         title: 'ANALISIS',
         items: [
-          _MoreItem(
-            icon: Iconsax.chart,
-            label: 'Analisis',
-            color: Colors.orange,
-            route: '/insights-hub',
-          ),
-          _MoreItem(
-            icon: Iconsax.graph,
-            label: 'Perkiraan',
-            color: Colors.cyan,
-            route: '/forecast',
-          ),
-          _MoreItem(
-            icon: Iconsax.chart_1,
-            label: 'Investasi',
-            color: Colors.green,
-            route: '/investments',
-          ),
+          _MoreItem(icon: Iconsax.chart, label: 'Analisis', color: Colors.orange, route: '/insights-hub'),
+          _MoreItem(icon: Iconsax.graph, label: 'Perkiraan', color: Colors.cyan, route: '/forecast'),
+          _MoreItem(icon: Iconsax.chart_1, label: 'Investasi', color: Colors.green, route: '/investments'),
         ],
       ),
       _MoreSection(
         title: 'ALAT',
         items: [
-          _MoreItem(
-            icon: Iconsax.copy,
-            label: 'Template',
-            color: Colors.deepOrange,
-            route: '/templates',
-          ),
-          _MoreItem(
-            icon: Iconsax.flag,
-            label: 'Tantangan',
-            color: Colors.amber,
-            route: '/challenges',
-          ),
-          _MoreItem(
-            icon: Iconsax.people,
-            label: 'Patungan',
-            color: Colors.teal,
-            route: '/splits',
-          ),
-          _MoreItem(
-            icon: Iconsax.calendar,
-            label: 'Kalender',
-            color: Colors.cyan,
-            route: '/calendar',
-          ),
-          _MoreItem(
-            icon: Iconsax.receipt,
-            label: 'Riwayat Resi',
-            color: Colors.cyan,
-            route: '/receipt-history',
-          ),
-          _MoreItem(
-            icon: Iconsax.category,
-            label: 'Kategori & Tag',
-            color: Colors.pink,
-            route: '/categories',
-          ),
+          _MoreItem(icon: Iconsax.copy, label: 'Template', color: Colors.deepOrange, route: '/templates'),
+          _MoreItem(icon: Iconsax.flag, label: 'Tantangan', color: Colors.amber, route: '/challenges'),
+          _MoreItem(icon: Iconsax.people, label: 'Patungan', color: Colors.teal, route: '/splits'),
+          _MoreItem(icon: Iconsax.calendar, label: 'Kalender', color: Colors.cyan, route: '/calendar'),
+          _MoreItem(icon: Iconsax.receipt, label: 'Riwayat Resi', color: Colors.cyan, route: '/receipt-history'),
+          _MoreItem(icon: Iconsax.category, label: 'Kategori & Tag', color: Colors.pink, route: '/categories'),
           _MoreItem(
             icon: Iconsax.diagram,
             label: 'Penasihat',
@@ -201,24 +131,9 @@ class MoreTabScreen extends StatelessWidget {
       _MoreSection(
         title: 'AKUN',
         items: [
-          _MoreItem(
-            icon: Iconsax.user,
-            label: 'Profil',
-            color: Colors.indigo,
-            route: '/profile',
-          ),
-          _MoreItem(
-            icon: Iconsax.cloud_add,
-            label: 'Backup',
-            color: Colors.teal,
-            route: '/backup',
-          ),
-          _MoreItem(
-            icon: Iconsax.setting,
-            label: 'Pengaturan',
-            color: Colors.grey,
-            route: '/settings',
-          ),
+          _MoreItem(icon: Iconsax.user, label: 'Profil', color: Colors.indigo, route: '/profile'),
+          _MoreItem(icon: Iconsax.cloud_add, label: 'Backup', color: Colors.teal, route: '/backup'),
+          _MoreItem(icon: Iconsax.setting, label: 'Pengaturan', color: Colors.grey, route: '/settings'),
         ],
       ),
     ];
@@ -250,11 +165,7 @@ class MoreTabScreen extends StatelessWidget {
                 Text(
                   item.label,
                   textAlign: TextAlign.center,
-                  style: GoogleFonts.poppins(
-                    color: Colors.white,
-                    fontSize: 11,
-                    fontWeight: FontWeight.w600,
-                  ),
+                  style: GoogleFonts.poppins(color: Colors.white, fontSize: 11, fontWeight: FontWeight.w600),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -278,10 +189,5 @@ class _MoreItem {
   final String label;
   final Color color;
   final String? route;
-  const _MoreItem({
-    required this.icon,
-    required this.label,
-    required this.color,
-    this.route,
-  });
+  const _MoreItem({required this.icon, required this.label, required this.color, this.route});
 }

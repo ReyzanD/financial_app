@@ -80,16 +80,7 @@ class CurrencyModel {
   );
 
   /// Get all supported currencies
-  static List<CurrencyModel> get supportedCurrencies => [
-    idr,
-    usd,
-    eur,
-    gbp,
-    jpy,
-    sgd,
-    myr,
-    aud,
-  ];
+  static List<CurrencyModel> get supportedCurrencies => [idr, usd, eur, gbp, jpy, sgd, myr, aud];
 
   /// Find currency by code
   static CurrencyModel? fromCode(String code) {
@@ -102,13 +93,7 @@ class CurrencyModel {
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'code': code,
-      'name': name,
-      'symbol': symbol,
-      'decimalPlaces': decimalPlaces,
-      'countryCode': countryCode,
-    };
+    return {'code': code, 'name': name, 'symbol': symbol, 'decimalPlaces': decimalPlaces, 'countryCode': countryCode};
   }
 
   factory CurrencyModel.fromJson(Map<String, dynamic> json) {

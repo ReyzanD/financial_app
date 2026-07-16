@@ -16,19 +16,13 @@ class ObligationService {
         totalMonthly += o.monthlyAmount;
         totalDebt += o.currentBalance ?? o.monthlyAmount;
       }
-      return {
-        'monthlyTotal': totalMonthly,
-        'totalDebt': totalDebt,
-        'obligationsCount': obligations.length,
-      };
+      return {'monthlyTotal': totalMonthly, 'totalDebt': totalDebt, 'obligationsCount': obligations.length};
     } catch (e) {
       return {'monthlyTotal': 0.0, 'totalDebt': 0.0, 'obligationsCount': 0};
     }
   }
 
-  Future<List<FinancialObligation>> getUpcomingObligations({
-    int days = 7,
-  }) async {
+  Future<List<FinancialObligation>> getUpcomingObligations({int days = 7}) async {
     try {
       return await _obligationData.getUpcomingObligations(days: days);
     } catch (e) {
@@ -56,11 +50,7 @@ class ObligationService {
         monthlyPayments += debt.monthlyAmount;
       }
 
-      return DebtSummary(
-        debts: debts,
-        totalDebt: totalDebt,
-        monthlyPayments: monthlyPayments,
-      );
+      return DebtSummary(debts: debts, totalDebt: totalDebt, monthlyPayments: monthlyPayments);
     } catch (e) {
       return DebtSummary(debts: [], totalDebt: 0.0, monthlyPayments: 0.0);
     }
@@ -79,10 +69,7 @@ class ObligationService {
     return response.id;
   }
 
-  Future<void> updateObligation(
-    String obligationId,
-    Map<String, dynamic> obligationData,
-  ) async {
+  Future<void> updateObligation(String obligationId, Map<String, dynamic> obligationData) async {
     await _obligationData.updateObligation(obligationId, obligationData);
   }
 
@@ -90,10 +77,7 @@ class ObligationService {
     await _obligationData.deleteObligation(obligationId);
   }
 
-  Future<void> recordPayment(
-    String obligationId,
-    Map<String, dynamic> paymentData,
-  ) async {
+  Future<void> recordPayment(String obligationId, Map<String, dynamic> paymentData) async {
     await _obligationData.recordObligationPayment(obligationId, paymentData);
   }
 }

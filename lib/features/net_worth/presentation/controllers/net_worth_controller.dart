@@ -4,8 +4,7 @@ import 'package:financial_app/services/logger_service.dart';
 
 class NetWorthController extends ChangeNotifier {
   final NetWorthRepository _r;
-  NetWorthController({required NetWorthRepository repository})
-    : _r = repository;
+  NetWorthController({required NetWorthRepository repository}) : _r = repository;
 
   Map<String, dynamic> _data = {};
   List<Map<String, dynamic>> _history = [];
@@ -24,11 +23,7 @@ class NetWorthController extends ChangeNotifier {
     _errorMessage = null;
     notifyListeners();
     try {
-      final r = await Future.wait([
-        _r.calculateNetWorth(),
-        _r.getHistory(limit: 30),
-        _r.getNetWorthTrend(),
-      ]);
+      final r = await Future.wait([_r.calculateNetWorth(), _r.getHistory(limit: 30), _r.getNetWorthTrend()]);
       _data = r[0] as Map<String, dynamic>;
       _history = r[1] as List<Map<String, dynamic>>;
       _trend = r[2] as Map<String, dynamic>;

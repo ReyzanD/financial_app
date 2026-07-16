@@ -32,10 +32,7 @@ class VoiceInputService {
   bool get isListening => _isListening;
 
   /// Start listening untuk voice input
-  Future<String?> startListening({
-    String localeId = 'id_ID',
-    Duration? listenDuration,
-  }) async {
+  Future<String?> startListening({String localeId = 'id_ID', Duration? listenDuration}) async {
     if (!_isAvailable) {
       final initialized = await initialize();
       if (!initialized) {

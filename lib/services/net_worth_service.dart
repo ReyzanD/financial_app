@@ -41,10 +41,7 @@ class NetWorthService {
   Future<double> _calculateTotalLiabilities() async {
     // Read debts from unified financial_obligations table
     final debts = await _obligationData.getObligations(type: 'debt');
-    return debts.fold<double>(
-      0,
-      (sum, d) => sum + (d.currentBalance ?? d.monthlyAmount),
-    );
+    return debts.fold<double>(0, (sum, d) => sum + (d.currentBalance ?? d.monthlyAmount));
   }
 
   Future<Map<String, double>> _getAssetBreakdown() async {
@@ -52,10 +49,7 @@ class NetWorthService {
     final investments = await _investmentService.getInvestments();
 
     final breakdown = Map<String, double>.from(accountsByType);
-    breakdown['investments'] = investments.fold<double>(
-      0,
-      (sum, i) => sum + i.totalValue,
-    );
+    breakdown['investments'] = investments.fold<double>(0, (sum, i) => sum + i.totalValue);
 
     return breakdown;
   }
@@ -67,9 +61,7 @@ class NetWorthService {
 
     for (var debt in debts) {
       final subtype = debt.debtType ?? debt.category ?? 'other';
-      breakdown[subtype] =
-          (breakdown[subtype] ?? 0) +
-          (debt.currentBalance ?? debt.monthlyAmount);
+      breakdown[subtype] = (breakdown[subtype] ?? 0) + (debt.currentBalance ?? debt.monthlyAmount);
     }
 
     return breakdown;

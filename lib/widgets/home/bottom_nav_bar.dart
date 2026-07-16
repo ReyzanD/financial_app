@@ -8,29 +8,17 @@ class HomeBottomNavBar extends StatelessWidget {
   final ValueChanged<int> onTap;
   final PageController pageController;
 
-  const HomeBottomNavBar({
-    super.key,
-    required this.currentIndex,
-    required this.onTap,
-    required this.pageController,
-  });
+  const HomeBottomNavBar({super.key, required this.currentIndex, required this.onTap, required this.pageController});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(
-        color: Colors.black,
-        border: Border(top: BorderSide(color: DesignTokens.borderDark)),
-      ),
+      decoration: BoxDecoration(color: Colors.black, border: Border(top: BorderSide(color: DesignTokens.borderDark))),
       child: BottomNavigationBar(
         currentIndex: currentIndex,
         onTap: (index) {
           onTap(index);
-          pageController.animateToPage(
-            index,
-            duration: const Duration(milliseconds: 300),
-            curve: Curves.easeInOut,
-          );
+          pageController.animateToPage(index, duration: const Duration(milliseconds: 300), curve: Curves.easeInOut);
         },
         backgroundColor: Colors.transparent,
         type: BottomNavigationBarType.fixed,
@@ -39,22 +27,14 @@ class HomeBottomNavBar extends StatelessWidget {
         selectedLabelStyle: GoogleFonts.poppins(fontSize: 10),
         unselectedLabelStyle: GoogleFonts.poppins(fontSize: 10),
         items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Iconsax.home),
-            activeIcon: Icon(Iconsax.home),
-            label: 'Home',
-          ),
+          BottomNavigationBarItem(icon: Icon(Iconsax.home), activeIcon: Icon(Iconsax.home), label: 'Home'),
           BottomNavigationBarItem(
             icon: Icon(Iconsax.receipt),
             activeIcon: Icon(Iconsax.receipt),
             label: 'Transactions',
           ),
           // Forecast moved to More > Forecast (see more_tab_screen.dart)
-          BottomNavigationBarItem(
-            icon: Icon(Iconsax.menu),
-            activeIcon: Icon(Iconsax.menu),
-            label: 'More',
-          ),
+          BottomNavigationBarItem(icon: Icon(Iconsax.menu), activeIcon: Icon(Iconsax.menu), label: 'More'),
         ],
       ),
     );

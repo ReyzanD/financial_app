@@ -4,8 +4,7 @@ import 'package:financial_app/models/category_model.dart';
 
 class CategoryController extends ChangeNotifier {
   final CategoryCustomizationService _s;
-  CategoryController({CategoryCustomizationService? service})
-    : _s = service ?? CategoryCustomizationService();
+  CategoryController({CategoryCustomizationService? service}) : _s = service ?? CategoryCustomizationService();
 
   List<CategoryModel> _defaultCategories = [];
   List<CategoryModel> _customCategories = [];
@@ -28,8 +27,7 @@ class CategoryController extends ChangeNotifier {
       ]);
       final allCategories = results[0];
       _customCategories = results[1];
-      _defaultCategories =
-          allCategories.where((c) => c.isSystemDefault).toList();
+      _defaultCategories = allCategories.where((c) => c.isSystemDefault).toList();
     } catch (e) {
       _error = e.toString();
     } finally {

@@ -10,11 +10,9 @@ class InvestmentDataService {
   final LocalAuthService _authService;
   final _uuid = const Uuid();
 
-  InvestmentDataService({
-    LocalDatabaseService? dbService,
-    LocalAuthService? authService,
-  }) : _dbService = dbService ?? LocalDatabaseService(),
-       _authService = authService ?? LocalAuthService();
+  InvestmentDataService({LocalDatabaseService? dbService, LocalAuthService? authService})
+    : _dbService = dbService ?? LocalDatabaseService(),
+      _authService = authService ?? LocalAuthService();
 
   Future<String?> getCurrentUserId() async => _authService.getCurrentUserId();
 
@@ -61,8 +59,7 @@ class InvestmentDataService {
         'type_232143': invData['type'] ?? 'other',
         'quantity_232143': invData['quantity'],
         'buy_price_232143': invData['buy_price'],
-        'current_price_232143':
-            invData['current_price'] ?? invData['buy_price'],
+        'current_price_232143': invData['current_price'] ?? invData['buy_price'],
         'buy_date_232143': invData['buy_date'] ?? now.split('T')[0],
         'ticker_232143': invData['ticker'],
         'notes_232143': invData['notes'],
@@ -87,10 +84,7 @@ class InvestmentDataService {
       final db = await _dbService.database;
       await db.update(
         'investments_232143',
-        {
-          'current_price_232143': newPrice,
-          'updated_at_232143': DateTime.now().toIso8601String(),
-        },
+        {'current_price_232143': newPrice, 'updated_at_232143': DateTime.now().toIso8601String()},
         where: 'investment_id_232143 = ? AND user_id_232143 = ?',
         whereArgs: [invId, userId],
       );
@@ -131,11 +125,7 @@ class InvestmentDataService {
       if (userId == null) throw Exception('Not authenticated');
 
       final db = await _dbService.database;
-      final investments = await db.query(
-        'investments_232143',
-        where: 'user_id_232143 = ?',
-        whereArgs: [userId],
-      );
+      final investments = await db.query('investments_232143', where: 'user_id_232143 = ?', whereArgs: [userId]);
 
       double totalValue = 0;
       double totalCost = 0;
@@ -144,8 +134,7 @@ class InvestmentDataService {
       for (var inv in investments) {
         final quantity = (inv['quantity_232143'] as num?)?.toDouble() ?? 0.0;
         final buyPrice = (inv['buy_price_232143'] as num?)?.toDouble() ?? 0.0;
-        final currentPrice =
-            (inv['current_price_232143'] as num?)?.toDouble() ?? 0.0;
+        final currentPrice = (inv['current_price_232143'] as num?)?.toDouble() ?? 0.0;
         final type = inv['type_232143'] as String? ?? 'other';
 
         final cost = quantity * buyPrice;

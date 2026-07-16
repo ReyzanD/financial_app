@@ -4,42 +4,29 @@ import 'package:financial_app/core/di/service_locator.dart';
 import 'package:financial_app/services/data/transaction_data_service.dart';
 
 class LocationIntelligenceService {
-  final TransactionDataService _transactionDataService =
-      getIt<TransactionDataService>();
+  final TransactionDataService _transactionDataService = getIt<TransactionDataService>();
 
   /// Generate intelligent location-based recommendations
   Future<List<LocationRecommendation>> generateLocationInsights() async {
     try {
       LoggerService.debug('LocationIntelligence: Fetching transactions...');
       // Analyze user's transaction locations
-      final transactionsData = await _transactionDataService.getTransactions(
-        limit: 200,
-      );
-      final transactions = List<dynamic>.from(
-        transactionsData['transactions'] ?? [],
-      );
-      LoggerService.debug(
-        'LocationIntelligence: Found ${transactions.length} total transactions',
-      );
+      final transactionsData = await _transactionDataService.getTransactions(limit: 200);
+      final transactions = List<dynamic>.from(transactionsData['transactions'] ?? []);
+      LoggerService.debug('LocationIntelligence: Found ${transactions.length} total transactions');
 
       // Filter transactions with location data (only expenses have locations now)
       final locatedTransactions =
           transactions.where((t) {
-            final hasLocation =
-                t['location_name_232143'] != null ||
-                t['latitude_232143'] != null;
+            final hasLocation = t['location_name_232143'] != null || t['latitude_232143'] != null;
             return hasLocation;
           }).toList();
 
-      LoggerService.debug(
-        'LocationIntelligence: Found ${locatedTransactions.length} transactions with location data',
-      );
+      LoggerService.debug('LocationIntelligence: Found ${locatedTransactions.length} transactions with location data');
 
       // Show default recommendations if too few transactions with location
       if (locatedTransactions.isEmpty) {
-        LoggerService.info(
-          'LocationIntelligence: No location data, showing default recommendations',
-        );
+        LoggerService.info('LocationIntelligence: No location data, showing default recommendations');
         return _getDefaultRecommendations();
       }
 
@@ -57,17 +44,10 @@ class LocationIntelligenceService {
       // Generate smart recommendations
       final recommendations = _generateRecommendations(analysis);
 
-      LoggerService.success(
-        'LocationIntelligence: Generated ${recommendations.length} recommendations',
-      );
-      return recommendations.isNotEmpty
-          ? recommendations
-          : _getDefaultRecommendations();
+      LoggerService.success('LocationIntelligence: Generated ${recommendations.length} recommendations');
+      return recommendations.isNotEmpty ? recommendations : _getDefaultRecommendations();
     } catch (e) {
-      LoggerService.error(
-        'LocationIntelligence: Error generating insights',
-        error: e,
-      );
+      LoggerService.error('LocationIntelligence: Error generating insights', error: e);
       return _getDefaultRecommendations();
     }
   }
@@ -87,8 +67,7 @@ class LocationIntelligenceService {
 
       final amount = (transaction['amount_232143'] ?? 0).toDouble();
       final category = transaction['category_name']?.toString() ?? 'Lainnya';
-      final type =
-          transaction['type_232143']?.toString().toLowerCase() ?? 'expense';
+      final type = transaction['type_232143']?.toString().toLowerCase() ?? 'expense';
 
       if (type == 'expense') {
         locationGroups[locationName] ??= [];
@@ -98,22 +77,17 @@ class LocationIntelligenceService {
           'date': transaction['transaction_date_232143'],
         });
 
-        locationTotals[locationName] =
-            (locationTotals[locationName] ?? 0) + amount;
+        locationTotals[locationName] = (locationTotals[locationName] ?? 0) + amount;
         locationCounts[locationName] = (locationCounts[locationName] ?? 0) + 1;
         locationCategories[locationName] = category;
       }
     }
 
     // Find top spending locations
-    final sortedLocations =
-        locationTotals.entries.toList()
-          ..sort((a, b) => b.value.compareTo(a.value));
+    final sortedLocations = locationTotals.entries.toList()..sort((a, b) => b.value.compareTo(a.value));
 
     // Find frequent locations
-    final sortedByFrequency =
-        locationCounts.entries.toList()
-          ..sort((a, b) => b.value.compareTo(a.value));
+    final sortedByFrequency = locationCounts.entries.toList()..sort((a, b) => b.value.compareTo(a.value));
 
     // Calculate average spending per location
     Map<String, double> averageSpending = {};
@@ -122,9 +96,7 @@ class LocationIntelligenceService {
     });
 
     // Find expensive locations (high average spending)
-    final sortedByAverage =
-        averageSpending.entries.toList()
-          ..sort((a, b) => b.value.compareTo(a.value));
+    final sortedByAverage = averageSpending.entries.toList()..sort((a, b) => b.value.compareTo(a.value));
 
     return {
       'locationGroups': locationGroups,
@@ -139,9 +111,7 @@ class LocationIntelligenceService {
     };
   }
 
-  List<LocationRecommendation> _generateRecommendations(
-    Map<String, dynamic> analysis,
-  ) {
+  List<LocationRecommendation> _generateRecommendations(Map<String, dynamic> analysis) {
     final recommendations = <LocationRecommendation>[];
 
     final topSpending = analysis['topSpendingLocations'] as List;
@@ -149,8 +119,7 @@ class LocationIntelligenceService {
     final expensiveLocations = analysis['expensiveLocations'] as List;
     final locationTotals = analysis['locationTotals'] as Map<String, double>;
     final locationCounts = analysis['locationCounts'] as Map<String, int>;
-    final locationCategories =
-        analysis['locationCategories'] as Map<String, String>;
+    final locationCategories = analysis['locationCategories'] as Map<String, String>;
 
     // Recommendation 1: High spending location alert
     if (topSpending.isNotEmpty) {
@@ -167,8 +136,7 @@ class LocationIntelligenceService {
           description:
               'Anda telah menghabiskan Rp ${_formatCurrency(totalSpent)} di lokasi ini ($count transaksi). Coba cari alternatif lebih hemat di sekitar area.',
           type: RecommendationType.priceAlert,
-          estimatedSavings:
-              (totalSpent * 0.15).toInt(), // Potential 15% savings
+          estimatedSavings: (totalSpent * 0.15).toInt(), // Potential 15% savings
           createdAt: DateTime.now(),
           metadata: {
             'location': locationName,
@@ -196,9 +164,7 @@ class LocationIntelligenceService {
             description:
                 'Anda sering belanja di sini ($visitCount kali) dengan rata-rata Rp ${_formatCurrency(avgSpent)}/transaksi. Pertimbangkan membership atau kartu loyalitas untuk diskon.',
             type: RecommendationType.spendingPattern,
-            estimatedSavings:
-                (avgSpent * visitCount * 0.10)
-                    .toInt(), // 10% potential with loyalty
+            estimatedSavings: (avgSpent * visitCount * 0.10).toInt(), // 10% potential with loyalty
             createdAt: DateTime.now(),
             metadata: {
               'location': locationName,
@@ -227,14 +193,9 @@ class LocationIntelligenceService {
             description:
                 'Rata-rata pengeluaran Anda di lokasi ini Rp ${_formatCurrency(avgSpending)}/kunjungan. Coba bandingkan harga dengan lokasi lain di sekitar.',
             type: RecommendationType.alternativeLocation,
-            estimatedSavings:
-                (avgSpending * visitCount * 0.20).toInt(), // 20% potential
+            estimatedSavings: (avgSpending * visitCount * 0.20).toInt(), // 20% potential
             createdAt: DateTime.now(),
-            metadata: {
-              'location': locationName,
-              'averageSpending': avgSpending,
-              'visitCount': visitCount,
-            },
+            metadata: {'location': locationName, 'averageSpending': avgSpending, 'visitCount': visitCount},
           ),
         );
       }
@@ -291,20 +252,14 @@ class LocationIntelligenceService {
             type: RecommendationType.alternativeLocation,
             estimatedSavings: (spent * 0.20).toInt(),
             createdAt: DateTime.now(),
-            metadata: {
-              'category': category,
-              'location': location,
-              'totalSpent': spent,
-            },
+            metadata: {'category': category, 'location': location, 'totalSpent': spent},
           ),
         );
       }
     });
 
     // Return top 3 most valuable recommendations
-    recommendations.sort(
-      (a, b) => b.estimatedSavings.compareTo(a.estimatedSavings),
-    );
+    recommendations.sort((a, b) => b.estimatedSavings.compareTo(a.estimatedSavings));
     return recommendations.take(3).toList();
   }
 
@@ -378,22 +333,15 @@ class LocationIntelligenceService {
   }
 
   /// Get location-specific recommendations for a category
-  Future<List<LocationRecommendation>> getCategoryLocationAdvice(
-    String category,
-  ) async {
+  Future<List<LocationRecommendation>> getCategoryLocationAdvice(String category) async {
     try {
-      final transactionsData = await _transactionDataService.getTransactions(
-        limit: 100,
-      );
-      final transactions = List<dynamic>.from(
-        transactionsData['transactions'] ?? [],
-      );
+      final transactionsData = await _transactionDataService.getTransactions(limit: 100);
+      final transactions = List<dynamic>.from(transactionsData['transactions'] ?? []);
 
       // Filter by category
       final categoryTransactions =
           transactions.where((t) {
-            final txCategory =
-                t['category_name']?.toString().toLowerCase() ?? '';
+            final txCategory = t['category_name']?.toString().toLowerCase() ?? '';
             return txCategory.contains(category.toLowerCase());
           }).toList();
 

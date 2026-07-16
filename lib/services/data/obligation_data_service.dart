@@ -10,11 +10,9 @@ class ObligationDataService {
   final LocalAuthService _authService;
   final _uuid = const Uuid();
 
-  ObligationDataService({
-    LocalDatabaseService? dbService,
-    LocalAuthService? authService,
-  }) : _dbService = dbService ?? LocalDatabaseService(),
-       _authService = authService ?? LocalAuthService();
+  ObligationDataService({LocalDatabaseService? dbService, LocalAuthService? authService})
+    : _dbService = dbService ?? LocalDatabaseService(),
+      _authService = authService ?? LocalAuthService();
 
   /// Get current user ID
   Future<String?> getCurrentUserId() async {
@@ -41,9 +39,7 @@ class ObligationDataService {
   }
 
   /// Get upcoming obligations
-  Future<List<FinancialObligation>> getUpcomingObligations({
-    int days = 7,
-  }) async {
+  Future<List<FinancialObligation>> getUpcomingObligations({int days = 7}) async {
     final userId = await getCurrentUserId();
     if (userId == null) throw Exception('Not authenticated');
 
@@ -53,8 +49,7 @@ class ObligationDataService {
 
     final obligations = await db.query(
       'financial_obligations_232143',
-      where:
-          'user_id_232143 = ? AND due_date_232143 <= ? AND is_paid_232143 = 0',
+      where: 'user_id_232143 = ? AND due_date_232143 <= ? AND is_paid_232143 = 0',
       whereArgs: [userId, endDate.toIso8601String().split('T')[0]],
       orderBy: 'due_date_232143 ASC',
     );
@@ -63,9 +58,7 @@ class ObligationDataService {
   }
 
   /// Add obligation (supports bill, debt, and subscription types)
-  Future<FinancialObligation> addObligation(
-    Map<String, dynamic> obligationData,
-  ) async {
+  Future<FinancialObligation> addObligation(Map<String, dynamic> obligationData) async {
     final userId = await getCurrentUserId();
     if (userId == null) throw Exception('Not authenticated');
 
@@ -78,21 +71,15 @@ class ObligationDataService {
       'user_id_232143': userId,
       'name_232143': obligationData['name'],
       'description_232143': obligationData['description'],
-      'amount_232143':
-          obligationData['amount'] ?? obligationData['monthly_amount'] ?? 0.0,
-      'due_date_232143':
-          obligationData['due_date']?.toString() ??
-          obligationData['dueDate']?.toString(),
+      'amount_232143': obligationData['amount'] ?? obligationData['monthly_amount'] ?? 0.0,
+      'due_date_232143': obligationData['due_date']?.toString() ?? obligationData['dueDate']?.toString(),
       'frequency_232143': obligationData['frequency'] ?? 'monthly',
       'payment_method_232143': obligationData['payment_method'] ?? 'cash',
       'category_id_232143': obligationData['category_id'],
       'is_paid_232143': 0,
-      'reminder_enabled_232143':
-          obligationData['reminder_enabled'] == true ? 1 : 1,
-      'reminder_days_before_232143':
-          obligationData['reminder_days_before'] ?? 3,
-      'auto_pay_enabled_232143':
-          obligationData['auto_pay_enabled'] == true ? 1 : 0,
+      'reminder_enabled_232143': obligationData['reminder_enabled'] == true ? 1 : 1,
+      'reminder_days_before_232143': obligationData['reminder_days_before'] ?? 3,
+      'auto_pay_enabled_232143': obligationData['auto_pay_enabled'] == true ? 1 : 0,
       'created_at_232143': now,
       'updated_at_232143': now,
     };
@@ -147,10 +134,7 @@ class ObligationDataService {
   }
 
   /// Update obligation
-  Future<FinancialObligation> updateObligation(
-    String obligationId,
-    Map<String, dynamic> obligationData,
-  ) async {
+  Future<FinancialObligation> updateObligation(String obligationId, Map<String, dynamic> obligationData) async {
     final userId = await getCurrentUserId();
     if (userId == null) throw Exception('Not authenticated');
 
@@ -165,16 +149,11 @@ class ObligationDataService {
     if (obligationData.containsKey('description')) {
       data['description_232143'] = obligationData['description'];
     }
-    if (obligationData.containsKey('amount') ||
-        obligationData.containsKey('monthly_amount')) {
-      data['amount_232143'] =
-          obligationData['amount'] ?? obligationData['monthly_amount'];
+    if (obligationData.containsKey('amount') || obligationData.containsKey('monthly_amount')) {
+      data['amount_232143'] = obligationData['amount'] ?? obligationData['monthly_amount'];
     }
-    if (obligationData.containsKey('due_date') ||
-        obligationData.containsKey('dueDate')) {
-      data['due_date_232143'] =
-          obligationData['due_date']?.toString() ??
-          obligationData['dueDate']?.toString();
+    if (obligationData.containsKey('due_date') || obligationData.containsKey('dueDate')) {
+      data['due_date_232143'] = obligationData['due_date']?.toString() ?? obligationData['dueDate']?.toString();
     }
     if (obligationData.containsKey('frequency')) {
       data['frequency_232143'] = obligationData['frequency'];
@@ -192,12 +171,10 @@ class ObligationDataService {
       }
     }
     if (obligationData.containsKey('reminder_enabled')) {
-      data['reminder_enabled_232143'] =
-          obligationData['reminder_enabled'] == true ? 1 : 0;
+      data['reminder_enabled_232143'] = obligationData['reminder_enabled'] == true ? 1 : 0;
     }
     if (obligationData.containsKey('reminder_days_before')) {
-      data['reminder_days_before_232143'] =
-          obligationData['reminder_days_before'];
+      data['reminder_days_before_232143'] = obligationData['reminder_days_before'];
     }
 
     // Type-specific update fields
@@ -269,10 +246,7 @@ class ObligationDataService {
   }
 
   /// Record obligation payment
-  Future<Map<String, dynamic>> recordObligationPayment(
-    String obligationId,
-    Map<String, dynamic> paymentData,
-  ) async {
+  Future<Map<String, dynamic>> recordObligationPayment(String obligationId, Map<String, dynamic> paymentData) async {
     final userId = await getCurrentUserId();
     if (userId == null) throw Exception('Not authenticated');
 
@@ -297,9 +271,7 @@ class ObligationDataService {
   }
 
   /// Calculate obligations summary
-  Map<String, dynamic> calculateObligationsSummary(
-    List<FinancialObligation> obligations,
-  ) {
+  Map<String, dynamic> calculateObligationsSummary(List<FinancialObligation> obligations) {
     double totalMonthly = 0.0;
     double totalDebt = 0.0;
     int activeCount = 0;

@@ -6,17 +6,12 @@ import 'package:financial_app/services/logger_service.dart';
 class ExchangeRateDataService {
   final LocalDatabaseService _dbService;
 
-  ExchangeRateDataService({LocalDatabaseService? dbService})
-    : _dbService = dbService ?? LocalDatabaseService();
+  ExchangeRateDataService({LocalDatabaseService? dbService}) : _dbService = dbService ?? LocalDatabaseService();
 
   Future<Map<String, double>> getExchangeRates() async {
     try {
       final db = await _dbService.database;
-      final rates = await db.query(
-        'exchange_rates_232143',
-        where: 'from_currency_232143 = ?',
-        whereArgs: ['IDR'],
-      );
+      final rates = await db.query('exchange_rates_232143', where: 'from_currency_232143 = ?', whereArgs: ['IDR']);
 
       final rateMap = <String, double>{};
       for (var rate in rates) {

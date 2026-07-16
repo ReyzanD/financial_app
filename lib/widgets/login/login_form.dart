@@ -41,7 +41,7 @@ class _LoginFormState extends State<LoginForm> {
             isPassword: false,
             autofillHints: const [AutofillHints.email],
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: DesignTokens.spacing5),
 
           // Password Field
           CustomTextField(
@@ -64,21 +64,14 @@ class _LoginFormState extends State<LoginForm> {
               },
               child: Text(
                 'Forgot Password ?',
-                style: GoogleFonts.poppins(
-                  color: DesignTokens.primaryColor,
-                  fontWeight: FontWeight.w500,
-                ),
+                style: GoogleFonts.poppins(color: DesignTokens.primaryColor, fontWeight: FontWeight.w500),
               ),
             ),
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: DesignTokens.spacing5),
 
           // Sign In Button
-          AuthButton(
-            text: 'Sign In',
-            onPressed: widget.onLoginPressed,
-            isLoading: widget.isLoading,
-          ),
+          AuthButton(text: 'Sign In', onPressed: widget.onLoginPressed, isLoading: widget.isLoading),
         ],
       ),
     );
@@ -124,7 +117,7 @@ class _RegisterFormState extends State<RegisterForm> {
             isPassword: false,
             autofillHints: const [AutofillHints.name],
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: DesignTokens.spacing5),
 
           // Email Field
           CustomTextField(
@@ -134,7 +127,7 @@ class _RegisterFormState extends State<RegisterForm> {
             isPassword: false,
             autofillHints: const [AutofillHints.email],
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: DesignTokens.spacing5),
 
           // Password Field
           CustomTextField(
@@ -149,11 +142,7 @@ class _RegisterFormState extends State<RegisterForm> {
           const SizedBox(height: 30),
 
           // Sign Up Button
-          AuthButton(
-            text: 'Sign Up',
-            onPressed: widget.onRegisterPressed,
-            isLoading: widget.isLoading,
-          ),
+          AuthButton(text: 'Sign Up', onPressed: widget.onRegisterPressed, isLoading: widget.isLoading),
         ],
       ),
     );

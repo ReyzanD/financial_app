@@ -4,8 +4,7 @@ import 'package:financial_app/services/logger_service.dart';
 
 class CalendarController extends ChangeNotifier {
   final FinancialCalendarService _s;
-  CalendarController({required FinancialCalendarService service})
-    : _s = service;
+  CalendarController({required FinancialCalendarService service}) : _s = service;
 
   bool _isLoading = false;
   String? _error;

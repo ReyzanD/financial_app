@@ -32,10 +32,7 @@ class CategoryCustomizationService {
     return await _categoryData.addCategory(categoryData);
   }
 
-  Future<CategoryModel> updateCustomCategory(
-    String categoryId,
-    Map<String, dynamic> updates,
-  ) async {
+  Future<CategoryModel> updateCustomCategory(String categoryId, Map<String, dynamic> updates) async {
     return await _categoryData.updateCategory(categoryId, updates);
   }
 
@@ -73,76 +70,16 @@ class CategoryCustomizationService {
 
   static List<Map<String, dynamic>> getDefaultCategories() {
     return [
-      {
-        'id': 'food',
-        'name': 'Makanan',
-        'icon': 'restaurant',
-        'color': '#FF5722',
-        'type': 'expense',
-      },
-      {
-        'id': 'transport',
-        'name': 'Transportasi',
-        'icon': 'directions_car',
-        'color': '#2196F3',
-        'type': 'expense',
-      },
-      {
-        'id': 'shopping',
-        'name': 'Belanja',
-        'icon': 'shopping_cart',
-        'color': '#9C27B0',
-        'type': 'expense',
-      },
-      {
-        'id': 'entertainment',
-        'name': 'Hiburan',
-        'icon': 'movie',
-        'color': '#FF9800',
-        'type': 'expense',
-      },
-      {
-        'id': 'bills',
-        'name': 'Tagihan',
-        'icon': 'receipt',
-        'color': '#607D8B',
-        'type': 'expense',
-      },
-      {
-        'id': 'health',
-        'name': 'Kesehatan',
-        'icon': 'local_hospital',
-        'color': '#4CAF50',
-        'type': 'expense',
-      },
-      {
-        'id': 'education',
-        'name': 'Pendidikan',
-        'icon': 'school',
-        'color': '#3F51B5',
-        'type': 'expense',
-      },
-      {
-        'id': 'salary',
-        'name': 'Gaji',
-        'icon': 'work',
-        'color': '#4CAF50',
-        'type': 'income',
-      },
-      {
-        'id': 'freelance',
-        'name': 'Freelance',
-        'icon': 'laptop',
-        'color': '#00BCD4',
-        'type': 'income',
-      },
-      {
-        'id': 'investment',
-        'name': 'Investasi',
-        'icon': 'trending_up',
-        'color': '#8BC34A',
-        'type': 'income',
-      },
+      {'id': 'food', 'name': 'Makanan', 'icon': 'restaurant', 'color': '#FF5722', 'type': 'expense'},
+      {'id': 'transport', 'name': 'Transportasi', 'icon': 'directions_car', 'color': '#2196F3', 'type': 'expense'},
+      {'id': 'shopping', 'name': 'Belanja', 'icon': 'shopping_cart', 'color': '#9C27B0', 'type': 'expense'},
+      {'id': 'entertainment', 'name': 'Hiburan', 'icon': 'movie', 'color': '#FF9800', 'type': 'expense'},
+      {'id': 'bills', 'name': 'Tagihan', 'icon': 'receipt', 'color': '#607D8B', 'type': 'expense'},
+      {'id': 'health', 'name': 'Kesehatan', 'icon': 'local_hospital', 'color': '#4CAF50', 'type': 'expense'},
+      {'id': 'education', 'name': 'Pendidikan', 'icon': 'school', 'color': '#3F51B5', 'type': 'expense'},
+      {'id': 'salary', 'name': 'Gaji', 'icon': 'work', 'color': '#4CAF50', 'type': 'income'},
+      {'id': 'freelance', 'name': 'Freelance', 'icon': 'laptop', 'color': '#00BCD4', 'type': 'income'},
+      {'id': 'investment', 'name': 'Investasi', 'icon': 'trending_up', 'color': '#8BC34A', 'type': 'income'},
     ];
   }
 

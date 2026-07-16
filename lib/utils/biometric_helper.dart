@@ -37,21 +37,14 @@ class BiometricHelper {
       );
 
       if (authenticated) {
-        LoggerService.success(
-          '[BiometricHelper] Biometric authentication successful',
-        );
+        LoggerService.success('[BiometricHelper] Biometric authentication successful');
       } else {
-        LoggerService.warning(
-          '[BiometricHelper] Biometric authentication failed or cancelled',
-        );
+        LoggerService.warning('[BiometricHelper] Biometric authentication failed or cancelled');
       }
 
       return authenticated;
     } catch (e) {
-      LoggerService.error(
-        '[BiometricHelper] Error during biometric authentication',
-        error: e,
-      );
+      LoggerService.error('[BiometricHelper] Error during biometric authentication', error: e);
       return false;
     }
   }
@@ -63,10 +56,7 @@ class BiometricHelper {
       final isEnabled = await _biometricService.isBiometricEnabled();
       return isAvailable && isEnabled;
     } catch (e) {
-      LoggerService.error(
-        '[BiometricHelper] Error checking biometric requirement',
-        error: e,
-      );
+      LoggerService.error('[BiometricHelper] Error checking biometric requirement', error: e);
       return false;
     }
   }

@@ -468,48 +468,24 @@ class LocalDatabaseService {
     ''');
 
     // Create indexes for better performance
-    await db.execute(
-      'CREATE INDEX IF NOT EXISTS idx_users_email ON users_232143(email_232143)',
-    );
+    await db.execute('CREATE INDEX IF NOT EXISTS idx_users_email ON users_232143(email_232143)');
     await db.execute(
       'CREATE INDEX IF NOT EXISTS idx_transactions_user_date ON transactions_232143(user_id_232143, transaction_date_232143)',
     );
     await db.execute(
       'CREATE INDEX IF NOT EXISTS idx_transactions_type_date ON transactions_232143(type_232143, transaction_date_232143)',
     );
-    await db.execute(
-      'CREATE INDEX IF NOT EXISTS idx_categories_user ON categories_232143(user_id_232143)',
-    );
-    await db.execute(
-      'CREATE INDEX IF NOT EXISTS idx_budgets_user ON budgets_232143(user_id_232143)',
-    );
-    await db.execute(
-      'CREATE INDEX IF NOT EXISTS idx_goals_user ON financial_goals_232143(user_id_232143)',
-    );
-    await db.execute(
-      'CREATE INDEX IF NOT EXISTS idx_obligations_user ON financial_obligations_232143(user_id_232143)',
-    );
-    await db.execute(
-      'CREATE INDEX IF NOT EXISTS idx_accounts_user ON accounts_232143(user_id_232143)',
-    );
-    await db.execute(
-      'CREATE INDEX IF NOT EXISTS idx_debts_user ON debts_232143(user_id_232143)',
-    );
-    await db.execute(
-      'CREATE INDEX IF NOT EXISTS idx_debt_payments_debt ON debt_payments_232143(debt_id_232143)',
-    );
-    await db.execute(
-      'CREATE INDEX IF NOT EXISTS idx_subscriptions_user ON subscriptions_232143(user_id_232143)',
-    );
-    await db.execute(
-      'CREATE INDEX IF NOT EXISTS idx_splits_user ON expense_splits_232143(user_id_232143)',
-    );
-    await db.execute(
-      'CREATE INDEX IF NOT EXISTS idx_investments_user ON investments_232143(user_id_232143)',
-    );
-    await db.execute(
-      'CREATE INDEX IF NOT EXISTS idx_challenges_user ON challenges_232143(user_id_232143)',
-    );
+    await db.execute('CREATE INDEX IF NOT EXISTS idx_categories_user ON categories_232143(user_id_232143)');
+    await db.execute('CREATE INDEX IF NOT EXISTS idx_budgets_user ON budgets_232143(user_id_232143)');
+    await db.execute('CREATE INDEX IF NOT EXISTS idx_goals_user ON financial_goals_232143(user_id_232143)');
+    await db.execute('CREATE INDEX IF NOT EXISTS idx_obligations_user ON financial_obligations_232143(user_id_232143)');
+    await db.execute('CREATE INDEX IF NOT EXISTS idx_accounts_user ON accounts_232143(user_id_232143)');
+    await db.execute('CREATE INDEX IF NOT EXISTS idx_debts_user ON debts_232143(user_id_232143)');
+    await db.execute('CREATE INDEX IF NOT EXISTS idx_debt_payments_debt ON debt_payments_232143(debt_id_232143)');
+    await db.execute('CREATE INDEX IF NOT EXISTS idx_subscriptions_user ON subscriptions_232143(user_id_232143)');
+    await db.execute('CREATE INDEX IF NOT EXISTS idx_splits_user ON expense_splits_232143(user_id_232143)');
+    await db.execute('CREATE INDEX IF NOT EXISTS idx_investments_user ON investments_232143(user_id_232143)');
+    await db.execute('CREATE INDEX IF NOT EXISTS idx_challenges_user ON challenges_232143(user_id_232143)');
     await db.execute(
       'CREATE INDEX IF NOT EXISTS idx_net_worth_user_date ON net_worth_history_232143(user_id_232143, snapshot_date_232143)',
     );
@@ -594,12 +570,8 @@ class LocalDatabaseService {
     ''');
 
     // Indexes for the new tables
-    await db.execute(
-      'CREATE INDEX IF NOT EXISTS idx_place_visits_category ON place_visits_232143(category_232143)',
-    );
-    await db.execute(
-      'CREATE INDEX IF NOT EXISTS idx_place_visits_osm ON place_visits_232143(osm_node_id_232143)',
-    );
+    await db.execute('CREATE INDEX IF NOT EXISTS idx_place_visits_category ON place_visits_232143(category_232143)');
+    await db.execute('CREATE INDEX IF NOT EXISTS idx_place_visits_osm ON place_visits_232143(osm_node_id_232143)');
     await db.execute(
       'CREATE INDEX IF NOT EXISTS idx_price_observations_place ON price_observations_232143(place_visit_id_232143)',
     );
@@ -618,9 +590,7 @@ class LocalDatabaseService {
 
   /// Upgrade database schema
   Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
-    LoggerService.info(
-      '📱 Upgrading database from version $oldVersion to $newVersion',
-    );
+    LoggerService.info('📱 Upgrading database from version $oldVersion to $newVersion');
 
     // Wrap all migrations in a transaction for atomicity
     await db.transaction((txn) async {
@@ -646,9 +616,7 @@ class LocalDatabaseService {
           FOREIGN KEY (transaction_id_232143) REFERENCES transactions_232143(transaction_id_232143)
         )
       ''');
-        LoggerService.info(
-          '✅ Migrated to version 2: added receipt_scans table',
-        );
+        LoggerService.info('✅ Migrated to version 2: added receipt_scans table');
       }
 
       if (oldVersion < 3) {
@@ -854,27 +822,13 @@ class LocalDatabaseService {
         )
       ''');
 
-        await db.execute(
-          'CREATE INDEX IF NOT EXISTS idx_accounts_user ON accounts_232143(user_id_232143)',
-        );
-        await db.execute(
-          'CREATE INDEX IF NOT EXISTS idx_debts_user ON debts_232143(user_id_232143)',
-        );
-        await db.execute(
-          'CREATE INDEX IF NOT EXISTS idx_debt_payments_debt ON debt_payments_232143(debt_id_232143)',
-        );
-        await db.execute(
-          'CREATE INDEX IF NOT EXISTS idx_subscriptions_user ON subscriptions_232143(user_id_232143)',
-        );
-        await db.execute(
-          'CREATE INDEX IF NOT EXISTS idx_splits_user ON expense_splits_232143(user_id_232143)',
-        );
-        await db.execute(
-          'CREATE INDEX IF NOT EXISTS idx_investments_user ON investments_232143(user_id_232143)',
-        );
-        await db.execute(
-          'CREATE INDEX IF NOT EXISTS idx_challenges_user ON challenges_232143(user_id_232143)',
-        );
+        await db.execute('CREATE INDEX IF NOT EXISTS idx_accounts_user ON accounts_232143(user_id_232143)');
+        await db.execute('CREATE INDEX IF NOT EXISTS idx_debts_user ON debts_232143(user_id_232143)');
+        await db.execute('CREATE INDEX IF NOT EXISTS idx_debt_payments_debt ON debt_payments_232143(debt_id_232143)');
+        await db.execute('CREATE INDEX IF NOT EXISTS idx_subscriptions_user ON subscriptions_232143(user_id_232143)');
+        await db.execute('CREATE INDEX IF NOT EXISTS idx_splits_user ON expense_splits_232143(user_id_232143)');
+        await db.execute('CREATE INDEX IF NOT EXISTS idx_investments_user ON investments_232143(user_id_232143)');
+        await db.execute('CREATE INDEX IF NOT EXISTS idx_challenges_user ON challenges_232143(user_id_232143)');
         await db.execute(
           'CREATE INDEX IF NOT EXISTS idx_net_worth_user_date ON net_worth_history_232143(user_id_232143, snapshot_date_232143)',
         );
@@ -885,12 +839,8 @@ class LocalDatabaseService {
       }
 
       if (oldVersion < 4) {
-        await db.execute(
-          'ALTER TABLE transactions_232143 ADD COLUMN account_id_232143 TEXT',
-        );
-        LoggerService.info(
-          '✅ Migrated to version 4: added account_id to transactions',
-        );
+        await db.execute('ALTER TABLE transactions_232143 ADD COLUMN account_id_232143 TEXT');
+        LoggerService.info('✅ Migrated to version 4: added account_id to transactions');
       }
 
       if (oldVersion < 5) {
@@ -914,9 +864,7 @@ class LocalDatabaseService {
           'CREATE INDEX IF NOT EXISTS idx_goal_contributions_account ON goal_contributions_232143(account_id_232143)',
         );
 
-        LoggerService.info(
-          '✅ Migrated to version 5: added goal_contributions table',
-        );
+        LoggerService.info('✅ Migrated to version 5: added goal_contributions table');
       }
 
       if (oldVersion < 6) {
@@ -976,9 +924,7 @@ class LocalDatabaseService {
         await db.execute(
           'CREATE INDEX IF NOT EXISTS idx_place_visits_category ON place_visits_232143(category_232143)',
         );
-        await db.execute(
-          'CREATE INDEX IF NOT EXISTS idx_place_visits_osm ON place_visits_232143(osm_node_id_232143)',
-        );
+        await db.execute('CREATE INDEX IF NOT EXISTS idx_place_visits_osm ON place_visits_232143(osm_node_id_232143)');
         await db.execute(
           'CREATE INDEX IF NOT EXISTS idx_price_observations_place ON price_observations_232143(place_visit_id_232143)',
         );
@@ -999,45 +945,19 @@ class LocalDatabaseService {
         await txn.execute(
           "ALTER TABLE financial_obligations_232143 ADD COLUMN type_232143 TEXT NOT NULL DEFAULT 'bill'",
         );
-        await txn.execute(
-          'ALTER TABLE financial_obligations_232143 ADD COLUMN original_amount_232143 REAL',
-        );
-        await txn.execute(
-          'ALTER TABLE financial_obligations_232143 ADD COLUMN current_balance_232143 REAL',
-        );
-        await txn.execute(
-          'ALTER TABLE financial_obligations_232143 ADD COLUMN interest_rate_232143 REAL',
-        );
-        await txn.execute(
-          'ALTER TABLE financial_obligations_232143 ADD COLUMN debt_type_232143 TEXT',
-        );
-        await txn.execute(
-          'ALTER TABLE financial_obligations_232143 ADD COLUMN creditor_name_232143 TEXT',
-        );
-        await txn.execute(
-          'ALTER TABLE financial_obligations_232143 ADD COLUMN notes_232143 TEXT',
-        );
-        await txn.execute(
-          'ALTER TABLE financial_obligations_232143 ADD COLUMN subscription_cycle_232143 TEXT',
-        );
-        await txn.execute(
-          'ALTER TABLE financial_obligations_232143 ADD COLUMN next_renewal_232143 TEXT',
-        );
-        await txn.execute(
-          'ALTER TABLE financial_obligations_232143 ADD COLUMN is_active_232143 INTEGER DEFAULT 1',
-        );
-        await txn.execute(
-          'ALTER TABLE financial_obligations_232143 ADD COLUMN account_id_232143 TEXT',
-        );
-        await txn.execute(
-          'ALTER TABLE financial_obligations_232143 ADD COLUMN category_232143 TEXT',
-        );
-        await txn.execute(
-          'ALTER TABLE financial_obligations_232143 ADD COLUMN minimum_payment_232143 REAL',
-        );
-        await txn.execute(
-          'ALTER TABLE financial_obligations_232143 ADD COLUMN payoff_strategy_232143 TEXT',
-        );
+        await txn.execute('ALTER TABLE financial_obligations_232143 ADD COLUMN original_amount_232143 REAL');
+        await txn.execute('ALTER TABLE financial_obligations_232143 ADD COLUMN current_balance_232143 REAL');
+        await txn.execute('ALTER TABLE financial_obligations_232143 ADD COLUMN interest_rate_232143 REAL');
+        await txn.execute('ALTER TABLE financial_obligations_232143 ADD COLUMN debt_type_232143 TEXT');
+        await txn.execute('ALTER TABLE financial_obligations_232143 ADD COLUMN creditor_name_232143 TEXT');
+        await txn.execute('ALTER TABLE financial_obligations_232143 ADD COLUMN notes_232143 TEXT');
+        await txn.execute('ALTER TABLE financial_obligations_232143 ADD COLUMN subscription_cycle_232143 TEXT');
+        await txn.execute('ALTER TABLE financial_obligations_232143 ADD COLUMN next_renewal_232143 TEXT');
+        await txn.execute('ALTER TABLE financial_obligations_232143 ADD COLUMN is_active_232143 INTEGER DEFAULT 1');
+        await txn.execute('ALTER TABLE financial_obligations_232143 ADD COLUMN account_id_232143 TEXT');
+        await txn.execute('ALTER TABLE financial_obligations_232143 ADD COLUMN category_232143 TEXT');
+        await txn.execute('ALTER TABLE financial_obligations_232143 ADD COLUMN minimum_payment_232143 REAL');
+        await txn.execute('ALTER TABLE financial_obligations_232143 ADD COLUMN payoff_strategy_232143 TEXT');
         await txn.execute(
           'ALTER TABLE financial_obligations_232143 ADD COLUMN is_subscription_232143 INTEGER DEFAULT 0',
         );

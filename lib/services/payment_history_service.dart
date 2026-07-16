@@ -9,9 +9,7 @@ class PaymentHistoryService {
   final ObligationDataService _obligationData = getIt<ObligationDataService>();
 
   /// Get payment history untuk obligation
-  Future<List<Map<String, dynamic>>> getPaymentHistory(
-    String obligationId,
-  ) async {
+  Future<List<Map<String, dynamic>>> getPaymentHistory(String obligationId) async {
     try {
       // Use local storage directly (no API endpoint for payment history in standalone mode)
       return await _getLocalPaymentHistory(obligationId);
@@ -22,9 +20,7 @@ class PaymentHistoryService {
   }
 
   /// Get local payment history (from SharedPreferences)
-  Future<List<Map<String, dynamic>>> _getLocalPaymentHistory(
-    String obligationId,
-  ) async {
+  Future<List<Map<String, dynamic>>> _getLocalPaymentHistory(String obligationId) async {
     try {
       final prefs = await SharedPreferences.getInstance();
       final historyJson = prefs.getString('payment_history_$obligationId');
@@ -41,10 +37,7 @@ class PaymentHistoryService {
   }
 
   /// Record payment untuk obligation
-  Future<void> recordPayment(
-    String obligationId,
-    Map<String, dynamic> paymentData,
-  ) async {
+  Future<void> recordPayment(String obligationId, Map<String, dynamic> paymentData) async {
     try {
       // Record in API
       await _obligationData.recordObligationPayment(obligationId, paymentData);
@@ -62,10 +55,7 @@ class PaymentHistoryService {
   }
 
   /// Save payment to local storage
-  Future<void> _saveLocalPayment(
-    String obligationId,
-    Map<String, dynamic> paymentData,
-  ) async {
+  Future<void> _saveLocalPayment(String obligationId, Map<String, dynamic> paymentData) async {
     try {
       final prefs = await SharedPreferences.getInstance();
       final history = await _getLocalPaymentHistory(obligationId);
@@ -114,8 +104,7 @@ class PaymentHistoryService {
         if (paymentDateStr != null) {
           try {
             final paymentDate = DateTime.parse(paymentDateStr);
-            if (lastPaymentDate == null ||
-                paymentDate.isAfter(lastPaymentDate)) {
+            if (lastPaymentDate == null || paymentDate.isAfter(lastPaymentDate)) {
               lastPaymentDate = paymentDate;
             }
           } catch (e) {
@@ -135,8 +124,7 @@ class PaymentHistoryService {
       return {
         'totalPayments': history.length,
         'totalAmount': totalAmount,
-        'averageAmount':
-            history.isNotEmpty ? totalAmount / history.length : 0.0,
+        'averageAmount': history.isNotEmpty ? totalAmount / history.length : 0.0,
         'lastPaymentDate': lastPaymentDate,
         'onTimePayments': onTimePayments,
         'latePayments': latePayments,
@@ -176,9 +164,7 @@ class PaymentHistoryService {
   Future<List<Map<String, dynamic>>> getAllPayments() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      final keys = prefs.getKeys().where(
-        (key) => key.startsWith('payment_history_'),
-      );
+      final keys = prefs.getKeys().where((key) => key.startsWith('payment_history_'));
 
       final allPayments = <Map<String, dynamic>>[];
       for (var key in keys) {

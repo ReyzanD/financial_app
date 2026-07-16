@@ -31,26 +31,17 @@ class EnhancedErrorState extends StatelessWidget {
     final errorIcon = icon ?? Iconsax.warning_2;
 
     return Semantics(
-      label: AccessibilityHelper.createSemanticLabel(
-        label: title,
-        hint: message,
-      ),
+      label: AccessibilityHelper.createSemanticLabel(label: title, hint: message),
       child: Container(
         width: double.infinity,
-        padding: ResponsiveHelper.padding(
-          context,
-          multiplier: isCompact ? 1.5 : 2.0,
-        ),
+        padding: ResponsiveHelper.padding(context, multiplier: isCompact ? 1.5 : 2.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             // Error Icon
             Container(
               padding: ResponsiveHelper.padding(context, multiplier: 1.5),
-              decoration: BoxDecoration(
-                color: DesignTokens.errorColor.withValues(alpha: 0.1),
-                shape: BoxShape.circle,
-              ),
+              decoration: BoxDecoration(color: DesignTokens.errorColor.withValues(alpha: 0.1), shape: BoxShape.circle),
               child: Icon(
                 errorIcon,
                 size: ResponsiveHelper.iconSize(context, isCompact ? 48 : 64),
@@ -67,10 +58,7 @@ class EnhancedErrorState extends StatelessWidget {
               isHeader: true,
               style: GoogleFonts.poppins(
                 color: DesignTokens.getTextColor(context),
-                fontSize: ResponsiveHelper.fontSize(
-                  context,
-                  DesignTokens.fontSizeHeadlineSmall,
-                ),
+                fontSize: ResponsiveHelper.fontSize(context, DesignTokens.fontSizeHeadlineSmall),
                 fontWeight: DesignTokens.weightBold,
               ),
             ),
@@ -83,10 +71,7 @@ class EnhancedErrorState extends StatelessWidget {
               semanticLabel: message,
               style: GoogleFonts.poppins(
                 color: DesignTokens.getTextColor(context, isPrimary: false),
-                fontSize: ResponsiveHelper.fontSize(
-                  context,
-                  DesignTokens.fontSizeBodyMedium,
-                ),
+                fontSize: ResponsiveHelper.fontSize(context, DesignTokens.fontSizeBodyMedium),
                 height: 1.5,
               ),
             ),
@@ -151,14 +136,7 @@ class EnhancedErrorState extends StatelessWidget {
     );
   }
 
-  factory EnhancedErrorState.generic({
-    required String message,
-    VoidCallback? onRetry,
-  }) {
-    return EnhancedErrorState(
-      title: 'Terjadi Kesalahan',
-      message: message,
-      onRetry: onRetry,
-    );
+  factory EnhancedErrorState.generic({required String message, VoidCallback? onRetry}) {
+    return EnhancedErrorState(title: 'Terjadi Kesalahan', message: message, onRetry: onRetry);
   }
 }

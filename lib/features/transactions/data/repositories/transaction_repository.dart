@@ -35,9 +35,7 @@ class TransactionRepository implements TransactionRepositoryInterface {
   }
 
   @override
-  Future<TransactionEntity> createTransaction(
-    TransactionEntity transaction,
-  ) async {
+  Future<TransactionEntity> createTransaction(TransactionEntity transaction) async {
     try {
       // 1. Save transaction to database
       final result = await _dataSource.createTransaction(transaction.toJson());
@@ -81,14 +79,9 @@ class TransactionRepository implements TransactionRepositoryInterface {
   }
 
   @override
-  Future<TransactionEntity> updateTransaction(
-    TransactionEntity transaction,
-  ) async {
+  Future<TransactionEntity> updateTransaction(TransactionEntity transaction) async {
     try {
-      final result = await _dataSource.updateTransaction(
-        transaction.id,
-        transaction.toJson(),
-      );
+      final result = await _dataSource.updateTransaction(transaction.id, transaction.toJson());
       return TransactionEntity.fromJson(result);
     } catch (e) {
       rethrow;

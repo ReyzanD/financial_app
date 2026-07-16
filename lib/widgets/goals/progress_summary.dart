@@ -39,8 +39,7 @@ class _ProgressSummaryState extends State<ProgressSummary> {
 
     for (final goal in goals) {
       totalTarget += (goal['target_amount_232143'] as num?)?.toDouble() ?? 0.0;
-      totalCurrent +=
-          (goal['current_amount_232143'] as num?)?.toDouble() ?? 0.0;
+      totalCurrent += (goal['current_amount_232143'] as num?)?.toDouble() ?? 0.0;
       if (goal['is_completed_232143'] == 1) {
         completedCount++;
       }
@@ -51,8 +50,7 @@ class _ProgressSummaryState extends State<ProgressSummary> {
       'total_target': totalTarget,
       'total_saved': totalCurrent,
       'completed_goals': completedCount,
-      'avg_progress':
-          totalTarget > 0 ? (totalCurrent / totalTarget) * 100 : 0.0,
+      'avg_progress': totalTarget > 0 ? (totalCurrent / totalTarget) * 100 : 0.0,
     };
     _isLoading = false;
   }
@@ -97,9 +95,7 @@ class _ProgressSummaryState extends State<ProgressSummary> {
           ),
           borderRadius: BorderRadius.circular(20),
         ),
-        child: const Center(
-          child: CircularProgressIndicator(color: Colors.white),
-        ),
+        child: const Center(child: CircularProgressIndicator(color: Colors.white)),
       );
     }
 
@@ -141,19 +137,9 @@ class _ProgressSummaryState extends State<ProgressSummary> {
                 children: [
                   Text(
                     '${(avgProgress * 100).toStringAsFixed(0)}%',
-                    style: GoogleFonts.poppins(
-                      color: Colors.white,
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: GoogleFonts.poppins(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
                   ),
-                  Text(
-                    l10n?.total ?? 'Total',
-                    style: GoogleFonts.poppins(
-                      color: Colors.white70,
-                      fontSize: 10,
-                    ),
-                  ),
+                  Text(l10n?.total ?? 'Total', style: GoogleFonts.poppins(color: Colors.white70, fontSize: 10)),
                 ],
               ),
             ],
@@ -166,20 +152,16 @@ class _ProgressSummaryState extends State<ProgressSummary> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildStatItem(
-                  'Target Tercapai',
-                  '$completedGoals/$totalGoals',
-                  Iconsax.tick_circle,
-                ),
-                const SizedBox(height: 8),
+                _buildStatItem('Target Tercapai', '$completedGoals/$totalGoals', Iconsax.tick_circle),
+                const SizedBox(height: DesignTokens.spacing2),
                 _buildStatItem('Dalam Progress', '$inProgress', Iconsax.clock),
-                const SizedBox(height: 8),
+                const SizedBox(height: DesignTokens.spacing2),
                 _buildStatItem(
                   l10n?.total_target ?? 'Total Target',
                   CurrencyFormatter.formatRupiah(totalTarget),
                   Iconsax.d_cube_scan,
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: DesignTokens.spacing2),
                 _buildStatItem(
                   l10n?.total_saved ?? 'Total Tersimpan',
                   CurrencyFormatter.formatRupiah(totalSaved),
@@ -198,19 +180,9 @@ class _ProgressSummaryState extends State<ProgressSummary> {
       children: [
         Icon(icon, color: Colors.white70, size: 16),
         const SizedBox(width: 8),
-        Text(
-          label,
-          style: GoogleFonts.poppins(color: Colors.white70, fontSize: 12),
-        ),
+        Text(label, style: GoogleFonts.poppins(color: Colors.white70, fontSize: 12)),
         const Spacer(),
-        Text(
-          value,
-          style: GoogleFonts.poppins(
-            color: Colors.white,
-            fontSize: 12,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
+        Text(value, style: GoogleFonts.poppins(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w600)),
       ],
     );
   }

@@ -5,8 +5,7 @@ import 'package:financial_app/services/logger_service.dart';
 
 class TemplateController extends ChangeNotifier {
   final TemplateRepository _r;
-  TemplateController({required TemplateRepository repository})
-    : _r = repository;
+  TemplateController({required TemplateRepository repository}) : _r = repository;
 
   List<TransactionTemplateModel> _templates = [];
   bool _isLoading = false;

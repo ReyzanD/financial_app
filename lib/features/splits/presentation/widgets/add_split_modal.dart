@@ -33,12 +33,7 @@ class _AddSplitModalState extends State<AddSplitModal> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return Padding(
-      padding: EdgeInsets.only(
-        bottom: MediaQuery.of(context).viewInsets.bottom,
-        left: 20,
-        right: 20,
-        top: 20,
-      ),
+      padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom, left: 20, right: 20, top: 20),
       child: SingleChildScrollView(
         child: Form(
           key: _formKey,
@@ -56,7 +51,7 @@ class _AddSplitModalState extends State<AddSplitModal> {
                   ),
                 ),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: DesignTokens.spacing5),
               Text(
                 'Tambah Split',
                 style: GoogleFonts.poppins(
@@ -65,80 +60,56 @@ class _AddSplitModalState extends State<AddSplitModal> {
                   fontWeight: FontWeight.w600,
                 ),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: DesignTokens.spacing5),
               TextFormField(
                 controller: _nameCtl,
                 style: GoogleFonts.poppins(color: DesignTokens.textPrimaryDark),
                 decoration: InputDecoration(
                   labelText: l10n?.name ?? 'Nama',
-                  labelStyle: GoogleFonts.poppins(
-                    color: DesignTokens.textSecondaryDark,
-                  ),
+                  labelStyle: GoogleFonts.poppins(color: DesignTokens.textSecondaryDark),
                   filled: true,
                   fillColor: DesignTokens.surfaceDark,
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(
-                      DesignTokens.radiusMedium,
-                    ),
+                    borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
                     borderSide: BorderSide(color: DesignTokens.borderDark),
                   ),
                 ),
-                validator:
-                    (v) =>
-                        (v == null || v.isEmpty)
-                            ? 'Nama tidak boleh kosong'
-                            : null,
+                validator: (v) => (v == null || v.isEmpty) ? 'Nama tidak boleh kosong' : null,
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: DesignTokens.spacing4),
               TextFormField(
                 controller: _amountCtl,
                 keyboardType: TextInputType.number,
                 style: GoogleFonts.poppins(color: DesignTokens.textPrimaryDark),
                 decoration: InputDecoration(
                   labelText: l10n?.amount ?? 'Jumlah',
-                  labelStyle: GoogleFonts.poppins(
-                    color: DesignTokens.textSecondaryDark,
-                  ),
+                  labelStyle: GoogleFonts.poppins(color: DesignTokens.textSecondaryDark),
                   filled: true,
                   fillColor: DesignTokens.surfaceDark,
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(
-                      DesignTokens.radiusMedium,
-                    ),
+                    borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
                     borderSide: BorderSide(color: DesignTokens.borderDark),
                   ),
                 ),
-                validator:
-                    (v) =>
-                        (v == null || v.isEmpty)
-                            ? 'Jumlah tidak boleh kosong'
-                            : null,
+                validator: (v) => (v == null || v.isEmpty) ? 'Jumlah tidak boleh kosong' : null,
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: DesignTokens.spacing4),
               TextFormField(
                 controller: _friendCtl,
                 style: GoogleFonts.poppins(color: DesignTokens.textPrimaryDark),
                 decoration: InputDecoration(
                   labelText: 'Nama Teman',
-                  labelStyle: GoogleFonts.poppins(
-                    color: DesignTokens.textSecondaryDark,
-                  ),
+                  labelStyle: GoogleFonts.poppins(color: DesignTokens.textSecondaryDark),
                   filled: true,
                   fillColor: DesignTokens.surfaceDark,
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(
-                      DesignTokens.radiusMedium,
-                    ),
+                    borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
                     borderSide: BorderSide(color: DesignTokens.borderDark),
                   ),
                 ),
-                validator:
-                    (v) =>
-                        (v == null || v.isEmpty)
-                            ? 'Nama teman tidak boleh kosong'
-                            : null,
+                validator: (v) => (v == null || v.isEmpty) ? 'Nama teman tidak boleh kosong' : null,
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: DesignTokens.spacing6),
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
@@ -146,23 +117,15 @@ class _AddSplitModalState extends State<AddSplitModal> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: DesignTokens.primaryColor,
                     padding: const EdgeInsets.symmetric(vertical: 14),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(
-                        DesignTokens.radiusMedium,
-                      ),
-                    ),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(DesignTokens.radiusMedium)),
                   ),
                   child: Text(
                     l10n?.add ?? 'Tambah',
-                    style: GoogleFonts.poppins(
-                      color: Colors.white,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                    ),
+                    style: GoogleFonts.poppins(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w600),
                   ),
                 ),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: DesignTokens.spacing5),
             ],
           ),
         ),
@@ -188,10 +151,7 @@ class _AddSplitModalState extends State<AddSplitModal> {
       widget.onSplitAdded();
     } catch (e) {
       if (!mounted) return;
-      ErrorHandlerService.showErrorSnackbar(
-        context,
-        ErrorHandlerService.getUserFriendlyMessage(e),
-      );
+      ErrorHandlerService.showErrorSnackbar(context, ErrorHandlerService.getUserFriendlyMessage(e));
     }
   }
 }

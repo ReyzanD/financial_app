@@ -63,37 +63,21 @@ class _GoalsScreenState extends State<GoalsScreen> {
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
                   color: Colors.red.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(
-                    DesignTokens.radiusMedium,
-                  ),
+                  borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
                   border: Border.all(color: Colors.red.withValues(alpha: 0.3)),
                 ),
                 child: Row(
                   children: [
-                    const Icon(
-                      Icons.error_outline,
-                      color: Colors.red,
-                      size: 20,
-                    ),
+                    const Icon(Icons.error_outline, color: Colors.red, size: 20),
                     const SizedBox(width: 12),
                     Expanded(
                       child: Semantics(
                         liveRegion: true,
-                        child: Text(
-                          controller.errorMessage!,
-                          style: const TextStyle(
-                            color: Colors.red,
-                            fontSize: 13,
-                          ),
-                        ),
+                        child: Text(controller.errorMessage!, style: const TextStyle(color: Colors.red, fontSize: 13)),
                       ),
                     ),
                     IconButton(
-                      icon: const Icon(
-                        Icons.close,
-                        color: Colors.red,
-                        size: 18,
-                      ),
+                      icon: const Icon(Icons.close, color: Colors.red, size: 18),
                       tooltip: l10n?.close_error_message ?? 'Tutup pesan error',
                       onPressed: () => controller.clearError(),
                       padding: EdgeInsets.zero,
@@ -104,10 +88,7 @@ class _GoalsScreenState extends State<GoalsScreen> {
               ),
 
             // Goals Progress Summary — uses controller.summary directly
-            ProgressSummary(
-              key: const ValueKey('progress_summary'),
-              initialGoals: goalsMaps,
-            ),
+            ProgressSummary(key: const ValueKey('progress_summary'), initialGoals: goalsMaps),
 
             Expanded(
               child: RefreshIndicator(
@@ -142,9 +123,7 @@ class _GoalsScreenState extends State<GoalsScreen> {
         context: context,
         backgroundColor: DesignTokens.backgroundDark,
         isScrollControlled: true,
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-        ),
+        shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
         builder: (context) {
           return const AddGoalModal();
         },

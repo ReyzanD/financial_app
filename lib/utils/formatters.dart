@@ -5,8 +5,7 @@ class CurrencyFormatter {
     final formatter = NumberFormat.currency(
       locale: 'id_ID',
       symbol: 'Rp ',
-      decimalDigits:
-          0, // Indonesian Rupiah typically doesn't show decimal places
+      decimalDigits: 0, // Indonesian Rupiah typically doesn't show decimal places
     );
 
     // Format with proper Indonesian thousand separators

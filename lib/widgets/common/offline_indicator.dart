@@ -53,13 +53,8 @@ class _OfflineIndicatorState extends State<OfflineIndicator> {
           const SizedBox(width: 8),
           Expanded(
             child: Text(
-              AppLocalizations.of(context)?.no_connection_title ??
-                  'Tidak ada koneksi internet',
-              style: GoogleFonts.poppins(
-                color: Colors.white,
-                fontSize: 12,
-                fontWeight: FontWeight.w500,
-              ),
+              AppLocalizations.of(context)?.no_connection_title ?? 'Tidak ada koneksi internet',
+              style: GoogleFonts.poppins(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w500),
             ),
           ),
         ],

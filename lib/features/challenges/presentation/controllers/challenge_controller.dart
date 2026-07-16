@@ -7,8 +7,7 @@ import 'package:financial_app/services/logger_service.dart';
 class ChallengeController extends ChangeNotifier {
   final ChallengeRepository _repository;
 
-  ChallengeController({required ChallengeRepository repository})
-    : _repository = repository;
+  ChallengeController({required ChallengeRepository repository}) : _repository = repository;
 
   List<ChallengeModel> _challenges = [];
   Map<String, dynamic> _stats = {};

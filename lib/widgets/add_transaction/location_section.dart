@@ -31,29 +31,19 @@ class LocationSection extends StatelessWidget {
           children: [
             Text(
               l10n?.location ?? 'Lokasi',
-              style: GoogleFonts.poppins(
-                color: Colors.white,
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-              ),
+              style: GoogleFonts.poppins(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600),
             ),
             const SizedBox(width: 8),
             if (isGettingLocation)
               SizedBox(
                 width: 16,
                 height: 16,
-                child: CircularProgressIndicator(
-                  strokeWidth: 2,
-                  color: DesignTokens.primaryColor,
-                ),
+                child: CircularProgressIndicator(strokeWidth: 2, color: DesignTokens.primaryColor),
               ),
           ],
         ),
-        const SizedBox(height: 12),
-        if (currentLocation != null)
-          _buildLocationInfo(l10n)
-        else
-          _buildLocationButton(l10n),
+        const SizedBox(height: DesignTokens.spacing3),
+        if (currentLocation != null) _buildLocationInfo(l10n) else _buildLocationButton(l10n),
       ],
     );
   }
@@ -69,24 +59,17 @@ class LocationSection extends StatelessWidget {
                     ? const SizedBox(
                       width: 16,
                       height: 16,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        color: DesignTokens.primaryColor,
-                      ),
+                      child: CircularProgressIndicator(strokeWidth: 2, color: DesignTokens.primaryColor),
                     )
                     : const Icon(Iconsax.location, size: 16),
             label: Text(
-              isGettingLocation
-                  ? (l10n?.detecting ?? 'Mendeteksi...')
-                  : (l10n?.current_location ?? 'Lokasi Saat Ini'),
+              isGettingLocation ? (l10n?.detecting ?? 'Mendeteksi...') : (l10n?.current_location ?? 'Lokasi Saat Ini'),
               style: GoogleFonts.poppins(fontSize: 12),
             ),
             style: OutlinedButton.styleFrom(
               foregroundColor: DesignTokens.primaryColor,
               side: const BorderSide(color: DesignTokens.primaryColor),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
             ),
           ),
@@ -96,16 +79,11 @@ class LocationSection extends StatelessWidget {
           child: OutlinedButton.icon(
             onPressed: isGettingLocation ? null : onPickFromMap,
             icon: const Icon(Iconsax.map, size: 16),
-            label: Text(
-              'Pilih dari Peta',
-              style: GoogleFonts.poppins(fontSize: 12),
-            ),
+            label: Text('Pilih dari Peta', style: GoogleFonts.poppins(fontSize: 12)),
             style: OutlinedButton.styleFrom(
               foregroundColor: Colors.green,
               side: const BorderSide(color: Colors.green),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
             ),
           ),
@@ -120,10 +98,7 @@ class LocationSection extends StatelessWidget {
       decoration: BoxDecoration(
         color: DesignTokens.surfaceDark,
         borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
-        border: Border.all(
-          color: Color.lerp(Colors.green, Colors.transparent, 0.3)!,
-          width: 0.3,
-        ),
+        border: Border.all(color: Color.lerp(Colors.green, Colors.transparent, 0.3)!, width: 0.3),
       ),
       child: Row(
         children: [
@@ -134,33 +109,22 @@ class LocationSection extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  currentLocation!.placeName ??
-                      (l10n?.location_detected ?? 'Lokasi Terdeteksi'),
-                  style: GoogleFonts.poppins(
-                    color: Colors.white,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                  ),
+                  currentLocation!.placeName ?? (l10n?.location_detected ?? 'Lokasi Terdeteksi'),
+                  style: GoogleFonts.poppins(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w500),
                 ),
                 if (currentLocation!.address != null) ...[
-                  const SizedBox(height: 4),
+                  const SizedBox(height: DesignTokens.spacing1),
                   Text(
                     currentLocation!.address!,
-                    style: GoogleFonts.poppins(
-                      color: Colors.grey[500],
-                      fontSize: 12,
-                    ),
+                    style: GoogleFonts.poppins(color: Colors.grey[500], fontSize: 12),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
                 ],
-                const SizedBox(height: 4),
+                const SizedBox(height: DesignTokens.spacing1),
                 Text(
                   'Lat: ${currentLocation!.latitude.toStringAsFixed(4)}, Lng: ${currentLocation!.longitude.toStringAsFixed(4)}',
-                  style: GoogleFonts.poppins(
-                    color: Colors.grey[600],
-                    fontSize: 10,
-                  ),
+                  style: GoogleFonts.poppins(color: Colors.grey[600], fontSize: 10),
                 ),
               ],
             ),
@@ -168,20 +132,12 @@ class LocationSection extends StatelessWidget {
           Column(
             children: [
               IconButton(
-                icon: const Icon(
-                  Iconsax.edit,
-                  size: 18,
-                  color: DesignTokens.primaryColor,
-                ),
+                icon: const Icon(Iconsax.edit, size: 18, color: DesignTokens.primaryColor),
                 onPressed: onPickFromMap,
                 tooltip: l10n?.edit_on_map ?? 'Edit di peta',
               ),
               IconButton(
-                icon: Icon(
-                  Iconsax.close_circle,
-                  size: 18,
-                  color: Colors.grey[500],
-                ),
+                icon: Icon(Iconsax.close_circle, size: 18, color: Colors.grey[500]),
                 onPressed: onClearLocation,
                 tooltip: l10n?.delete_location ?? 'Hapus lokasi',
               ),

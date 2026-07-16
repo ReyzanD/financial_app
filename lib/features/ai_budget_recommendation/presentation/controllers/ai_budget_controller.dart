@@ -9,8 +9,7 @@ import 'package:financial_app/services/data/budget_data_service.dart';
 class AIBudgetController extends ChangeNotifier {
   final CategoryDataService _categoryData = getIt<CategoryDataService>();
   final BudgetDataService _budgetData = getIt<BudgetDataService>();
-  final BudgetRecommendationService _budgetService =
-      getIt<BudgetRecommendationService>();
+  final BudgetRecommendationService _budgetService = getIt<BudgetRecommendationService>();
 
   bool _isLoading = true;
   bool _isApplying = false;
@@ -57,22 +56,15 @@ class AIBudgetController extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final categories =
-          (await _categoryData.getCategories()).map((c) => c.toMap()).toList();
-      final existingBudgets =
-          (await _budgetData.getBudgets(
-            activeOnly: false,
-          )).map((b) => b.toMap()).toList();
-      final income =
-          _editedIncome ?? (_recommendation!['total_income'] as num).toDouble();
+      final categories = (await _categoryData.getCategories()).map((c) => c.toMap()).toList();
+      final existingBudgets = (await _budgetData.getBudgets(activeOnly: false)).map((b) => b.toMap()).toList();
+      final income = _editedIncome ?? (_recommendation!['total_income'] as num).toDouble();
       final recCategories = _recommendation!['categories'] as List;
 
       int created = 0, updated = 0;
       for (var rec in recCategories) {
         final catName = rec['name'] as String;
-        final pct =
-            _editedPercentages[catName] ??
-            ((rec['percentage'] as num?)?.toDouble() ?? 0.0);
+        final pct = _editedPercentages[catName] ?? ((rec['percentage'] as num?)?.toDouble() ?? 0.0);
         final amount = income * (pct / 100);
         final match = _findMatchingCategory(categories, catName);
         if (match == null) {
@@ -85,12 +77,7 @@ class AIBudgetController extends ChangeNotifier {
         final now = DateTime.now();
         final ps = DateTime(now.year, now.month, 1);
         final pe = DateTime(now.year, now.month + 1, 0);
-        final existing = _findExistingBudget(
-          existingBudgets,
-          categoryId,
-          ps,
-          pe,
-        );
+        final existing = _findExistingBudget(existingBudgets, categoryId, ps, pe);
         if (existing != null) {
           final bid = existing['budget_id_232143'] ?? existing['id'];
           await _budgetData.updateBudget(bid, {
@@ -146,12 +133,7 @@ class AIBudgetController extends ChangeNotifier {
     return null;
   }
 
-  Map<String, dynamic>? _findExistingBudget(
-    List budgets,
-    String catId,
-    DateTime ps,
-    DateTime pe,
-  ) {
+  Map<String, dynamic>? _findExistingBudget(List budgets, String catId, DateTime ps, DateTime pe) {
     for (var b in budgets) {
       if ((b['category_id_232143'] ?? b['category_id']) == catId) {
         return b;

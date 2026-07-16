@@ -72,15 +72,9 @@ class _ChallengesScreenState extends State<ChallengesScreen> {
     );
   }
 
-  Widget _buildHeader(
-    BuildContext context,
-    AppLocalizations? l10n,
-    ChallengeController controller,
-  ) {
-    final activeChallenges =
-        (controller.stats['active_challenges'] as num?)?.toInt() ?? 0;
-    final totalStreak =
-        (controller.stats['total_streak'] as num?)?.toInt() ?? 0;
+  Widget _buildHeader(BuildContext context, AppLocalizations? l10n, ChallengeController controller) {
+    final activeChallenges = (controller.stats['active_challenges'] as num?)?.toInt() ?? 0;
+    final totalStreak = (controller.stats['total_streak'] as num?)?.toInt() ?? 0;
 
     return Container(
       padding: const EdgeInsets.all(DesignTokens.spacing4),
@@ -90,10 +84,7 @@ class _ChallengesScreenState extends State<ChallengesScreen> {
           Row(
             children: [
               IconButton(
-                icon: const Icon(
-                  Iconsax.arrow_left,
-                  color: DesignTokens.textPrimaryDark,
-                ),
+                icon: const Icon(Iconsax.arrow_left, color: DesignTokens.textPrimaryDark),
                 onPressed: () => Navigator.pop(context),
               ),
               const SizedBox(width: 8),
@@ -110,13 +101,8 @@ class _ChallengesScreenState extends State<ChallengesScreen> {
               ),
               const Spacer(),
               Text(
-                controller.activeOnly
-                    ? l10n?.active ?? 'Aktif'
-                    : l10n?.all ?? 'Semua',
-                style: GoogleFonts.poppins(
-                  color: DesignTokens.textSecondaryDark,
-                  fontSize: 12,
-                ),
+                controller.activeOnly ? l10n?.active ?? 'Aktif' : l10n?.all ?? 'Semua',
+                style: GoogleFonts.poppins(color: DesignTokens.textSecondaryDark, fontSize: 12),
               ),
               Switch(
                 value: controller.activeOnly,
@@ -127,7 +113,7 @@ class _ChallengesScreenState extends State<ChallengesScreen> {
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: DesignTokens.spacing3),
           Row(
             children: [
               Expanded(
@@ -135,21 +121,13 @@ class _ChallengesScreenState extends State<ChallengesScreen> {
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     color: DesignTokens.surfaceDark,
-                    borderRadius: BorderRadius.circular(
-                      DesignTokens.radiusMedium,
-                    ),
+                    borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
                     border: Border.all(color: DesignTokens.borderDark),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        'Active',
-                        style: GoogleFonts.poppins(
-                          color: DesignTokens.textSecondaryDark,
-                          fontSize: 11,
-                        ),
-                      ),
+                      Text('Active', style: GoogleFonts.poppins(color: DesignTokens.textSecondaryDark, fontSize: 11)),
                       Text(
                         '$activeChallenges',
                         style: GoogleFonts.poppins(
@@ -168,9 +146,7 @@ class _ChallengesScreenState extends State<ChallengesScreen> {
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     color: DesignTokens.surfaceDark,
-                    borderRadius: BorderRadius.circular(
-                      DesignTokens.radiusMedium,
-                    ),
+                    borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
                     border: Border.all(color: DesignTokens.borderDark),
                   ),
                   child: Column(
@@ -178,10 +154,7 @@ class _ChallengesScreenState extends State<ChallengesScreen> {
                     children: [
                       Text(
                         'Total Streak',
-                        style: GoogleFonts.poppins(
-                          color: DesignTokens.textSecondaryDark,
-                          fontSize: 11,
-                        ),
+                        style: GoogleFonts.poppins(color: DesignTokens.textSecondaryDark, fontSize: 11),
                       ),
                       Text(
                         '$totalStreak days',
@@ -202,15 +175,9 @@ class _ChallengesScreenState extends State<ChallengesScreen> {
     );
   }
 
-  Widget _buildBody(
-    BuildContext context,
-    AppLocalizations? l10n,
-    ChallengeController controller,
-  ) {
+  Widget _buildBody(BuildContext context, AppLocalizations? l10n, ChallengeController controller) {
     if (controller.isLoading) {
-      return Center(
-        child: CircularProgressIndicator(color: DesignTokens.primaryColor),
-      );
+      return Center(child: CircularProgressIndicator(color: DesignTokens.primaryColor));
     }
 
     if (controller.errorMessage != null) {
@@ -233,10 +200,7 @@ class _ChallengesScreenState extends State<ChallengesScreen> {
   }
 
   Widget _buildChallengeCard(ChallengeModel challenge, AppLocalizations? l10n) {
-    final progress =
-        challenge.target > 0
-            ? (challenge.currentProgress / challenge.target).clamp(0.0, 1.0)
-            : 0.0;
+    final progress = challenge.target > 0 ? (challenge.currentProgress / challenge.target).clamp(0.0, 1.0) : 0.0;
     final percentage = (progress * 100).toStringAsFixed(0);
 
     return Container(
@@ -255,18 +219,10 @@ class _ChallengesScreenState extends State<ChallengesScreen> {
               Container(
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: _getChallengeTypeColor(
-                    challenge.type,
-                  ).withValues(alpha: 0.15),
-                  borderRadius: BorderRadius.circular(
-                    DesignTokens.radiusMedium,
-                  ),
+                  color: _getChallengeTypeColor(challenge.type).withValues(alpha: 0.15),
+                  borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
                 ),
-                child: Icon(
-                  Iconsax.medal,
-                  color: _getChallengeTypeColor(challenge.type),
-                  size: 20,
-                ),
+                child: Icon(Iconsax.medal, color: _getChallengeTypeColor(challenge.type), size: 20),
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -283,10 +239,7 @@ class _ChallengesScreenState extends State<ChallengesScreen> {
                     ),
                     Text(
                       _getChallengeTypeLabel(challenge.type),
-                      style: GoogleFonts.poppins(
-                        color: DesignTokens.textSecondaryDark,
-                        fontSize: 12,
-                      ),
+                      style: GoogleFonts.poppins(color: DesignTokens.textSecondaryDark, fontSize: 12),
                     ),
                   ],
                 ),
@@ -300,11 +253,7 @@ class _ChallengesScreenState extends State<ChallengesScreen> {
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Icon(
-                      Iconsax.flash,
-                      color: DesignTokens.successColor,
-                      size: 14,
-                    ),
+                    const Icon(Iconsax.flash, color: DesignTokens.successColor, size: 14),
                     const SizedBox(width: 4),
                     Text(
                       '${challenge.streak}',
@@ -319,57 +268,41 @@ class _ChallengesScreenState extends State<ChallengesScreen> {
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: DesignTokens.spacing3),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
                 '${CurrencyFormatter.formatRupiah(challenge.currentProgress.toInt())} / ${CurrencyFormatter.formatRupiah(challenge.target.toInt())}',
-                style: GoogleFonts.poppins(
-                  color: DesignTokens.textSecondaryDark,
-                  fontSize: 12,
-                ),
+                style: GoogleFonts.poppins(color: DesignTokens.textSecondaryDark, fontSize: 12),
               ),
               Text(
                 '$percentage%',
-                style: GoogleFonts.poppins(
-                  color: DesignTokens.primaryColor,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
-                ),
+                style: GoogleFonts.poppins(color: DesignTokens.primaryColor, fontSize: 12, fontWeight: FontWeight.w600),
               ),
             ],
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: DesignTokens.spacing2),
           ClipRRect(
             borderRadius: BorderRadius.circular(DesignTokens.radiusSmall),
             child: LinearProgressIndicator(
               value: progress,
               backgroundColor: DesignTokens.borderDark,
-              valueColor: AlwaysStoppedAnimation(
-                _getChallengeTypeColor(challenge.type),
-              ),
+              valueColor: AlwaysStoppedAnimation(_getChallengeTypeColor(challenge.type)),
               minHeight: 8,
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: DesignTokens.spacing2),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
                 '${challenge.daysRemaining} ${l10n?.days_left ?? 'hari lagi'}',
-                style: GoogleFonts.poppins(
-                  color: DesignTokens.textTertiaryDark,
-                  fontSize: 11,
-                ),
+                style: GoogleFonts.poppins(color: DesignTokens.textTertiaryDark, fontSize: 11),
               ),
               InkWell(
                 onTap: () => _deleteChallenge(context, challenge),
-                child: Icon(
-                  Iconsax.trash,
-                  size: 16,
-                  color: DesignTokens.errorColor,
-                ),
+                child: Icon(Iconsax.trash, size: 16, color: DesignTokens.errorColor),
               ),
             ],
           ),
@@ -397,39 +330,28 @@ class _ChallengesScreenState extends State<ChallengesScreen> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(Iconsax.medal, size: 64, color: DesignTokens.textTertiaryDark),
-          const SizedBox(height: 16),
+          const SizedBox(height: DesignTokens.spacing4),
           Text(
             l10n?.no_challenges ?? 'Belum Ada Challenges',
-            style: GoogleFonts.poppins(
-              color: DesignTokens.textPrimaryDark,
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-            ),
+            style: GoogleFonts.poppins(color: DesignTokens.textPrimaryDark, fontSize: 18, fontWeight: FontWeight.w600),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: DesignTokens.spacing2),
           Text(
             'Tap + untuk menambah challenge baru',
-            style: GoogleFonts.poppins(
-              color: DesignTokens.textSecondaryDark,
-              fontSize: 14,
-            ),
+            style: GoogleFonts.poppins(color: DesignTokens.textSecondaryDark, fontSize: 14),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildErrorState(
-    BuildContext context,
-    AppLocalizations? l10n,
-    ChallengeController controller,
-  ) {
+  Widget _buildErrorState(BuildContext context, AppLocalizations? l10n, ChallengeController controller) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(Iconsax.warning_2, size: 64, color: DesignTokens.errorColor),
-          const SizedBox(height: 16),
+          const SizedBox(height: DesignTokens.spacing4),
           Semantics(
             liveRegion: true,
             child: Text(
@@ -441,27 +363,19 @@ class _ChallengesScreenState extends State<ChallengesScreen> {
               ),
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: DesignTokens.spacing2),
           Semantics(
             liveRegion: true,
             child: Text(
               controller.errorMessage ?? '',
-              style: GoogleFonts.poppins(
-                color: DesignTokens.textSecondaryDark,
-                fontSize: 14,
-              ),
+              style: GoogleFonts.poppins(color: DesignTokens.textSecondaryDark, fontSize: 14),
             ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: DesignTokens.spacing4),
           ElevatedButton(
             onPressed: controller.refresh,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: DesignTokens.primaryColor,
-            ),
-            child: Text(
-              l10n?.retry ?? 'Coba Lagi',
-              style: GoogleFonts.poppins(color: Colors.white),
-            ),
+            style: ElevatedButton.styleFrom(backgroundColor: DesignTokens.primaryColor),
+            child: Text(l10n?.retry ?? 'Coba Lagi', style: GoogleFonts.poppins(color: Colors.white)),
           ),
         ],
       ),
@@ -473,21 +387,14 @@ class _ChallengesScreenState extends State<ChallengesScreen> {
       context: context,
       backgroundColor: DesignTokens.backgroundDark,
       isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
       builder: (context) {
-        return AddChallengeModal(
-          onChallengeAdded: () => context.read<ChallengeController>().refresh(),
-        );
+        return AddChallengeModal(onChallengeAdded: () => context.read<ChallengeController>().refresh());
       },
     );
   }
 
-  Future<void> _deleteChallenge(
-    BuildContext context,
-    ChallengeModel challenge,
-  ) async {
+  Future<void> _deleteChallenge(BuildContext context, ChallengeModel challenge) async {
     final l10n = AppLocalizations.of(context);
     final confirmed = await showDialog<bool>(
       context: context,
@@ -496,31 +403,17 @@ class _ChallengesScreenState extends State<ChallengesScreen> {
           backgroundColor: DesignTokens.surfaceDark,
           title: Text(
             l10n?.delete ?? 'Hapus',
-            style: GoogleFonts.poppins(
-              color: DesignTokens.textPrimaryDark,
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-            ),
+            style: GoogleFonts.poppins(color: DesignTokens.textPrimaryDark, fontSize: 16, fontWeight: FontWeight.w600),
           ),
           content: Text(
-            l10n?.delete_challenge_confirm ??
-                'Yakin ingin menghapus challenge ini?',
-            style: GoogleFonts.poppins(
-              color: DesignTokens.textSecondaryDark,
-              fontSize: 13,
-            ),
+            l10n?.delete_challenge_confirm ?? 'Yakin ingin menghapus challenge ini?',
+            style: GoogleFonts.poppins(color: DesignTokens.textSecondaryDark, fontSize: 13),
           ),
           actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context, false),
-              child: Text(l10n?.cancel ?? 'Batal'),
-            ),
+            TextButton(onPressed: () => Navigator.pop(context, false), child: Text(l10n?.cancel ?? 'Batal')),
             TextButton(
               onPressed: () => Navigator.pop(context, true),
-              child: Text(
-                l10n?.delete ?? 'Hapus',
-                style: const TextStyle(color: DesignTokens.errorColor),
-              ),
+              child: Text(l10n?.delete ?? 'Hapus', style: const TextStyle(color: DesignTokens.errorColor)),
             ),
           ],
         );
@@ -537,10 +430,7 @@ class _ChallengesScreenState extends State<ChallengesScreen> {
         );
       } catch (e) {
         if (!mounted) return;
-        ErrorHandlerService.showErrorSnackbar(
-          context,
-          ErrorHandlerService.getUserFriendlyMessage(e),
-        );
+        ErrorHandlerService.showErrorSnackbar(context, ErrorHandlerService.getUserFriendlyMessage(e));
       }
     }
   }

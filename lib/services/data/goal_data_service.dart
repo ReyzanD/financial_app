@@ -12,13 +12,10 @@ class GoalDataService {
   final AccountDataService _accountData;
   final _uuid = const Uuid();
 
-  GoalDataService({
-    LocalDatabaseService? dbService,
-    LocalAuthService? authService,
-    AccountDataService? accountData,
-  }) : _dbService = dbService ?? LocalDatabaseService(),
-       _authService = authService ?? LocalAuthService(),
-       _accountData = accountData ?? AccountDataService();
+  GoalDataService({LocalDatabaseService? dbService, LocalAuthService? authService, AccountDataService? accountData})
+    : _dbService = dbService ?? LocalDatabaseService(),
+      _authService = authService ?? LocalAuthService(),
+      _accountData = accountData ?? AccountDataService();
 
   /// Get current user ID
   Future<String?> getCurrentUserId() async {
@@ -71,10 +68,7 @@ class GoalDataService {
   }
 
   /// Update goal
-  Future<GoalModel> updateGoal(
-    String goalId,
-    Map<String, dynamic> goalData,
-  ) async {
+  Future<GoalModel> updateGoal(String goalId, Map<String, dynamic> goalData) async {
     final userId = await getCurrentUserId();
     if (userId == null) throw Exception('Not authenticated');
 
@@ -83,27 +77,17 @@ class GoalDataService {
 
     final data = {
       if (goalData['name'] != null) 'name_232143': goalData['name'],
-      if (goalData['description'] != null)
-        'description_232143': goalData['description'],
-      if (goalData['goal_type'] != null)
-        'goal_type_232143': goalData['goal_type'],
-      if (goalData['target_amount'] != null)
-        'target_amount_232143': goalData['target_amount'],
-      if (goalData['current_amount'] != null)
-        'current_amount_232143': goalData['current_amount'],
-      if (goalData['target_date'] != null)
-        'target_date_232143': goalData['target_date'],
+      if (goalData['description'] != null) 'description_232143': goalData['description'],
+      if (goalData['goal_type'] != null) 'goal_type_232143': goalData['goal_type'],
+      if (goalData['target_amount'] != null) 'target_amount_232143': goalData['target_amount'],
+      if (goalData['current_amount'] != null) 'current_amount_232143': goalData['current_amount'],
+      if (goalData['target_date'] != null) 'target_date_232143': goalData['target_date'],
       if (goalData['priority'] != null) 'priority_232143': goalData['priority'],
-      if (goalData['monthly_target'] != null)
-        'monthly_target_232143': goalData['monthly_target'],
-      if (goalData['is_completed'] != null)
-        'is_completed_232143': goalData['is_completed'] ? 1 : 0,
-      if (goalData['completed_date'] != null)
-        'completed_date_232143': goalData['completed_date'],
-      if (goalData['auto_deduct'] != null)
-        'auto_deduct_232143': goalData['auto_deduct'] ? 1 : 0,
-      if (goalData['deduct_percentage'] != null)
-        'deduct_percentage_232143': goalData['deduct_percentage'],
+      if (goalData['monthly_target'] != null) 'monthly_target_232143': goalData['monthly_target'],
+      if (goalData['is_completed'] != null) 'is_completed_232143': goalData['is_completed'] ? 1 : 0,
+      if (goalData['completed_date'] != null) 'completed_date_232143': goalData['completed_date'],
+      if (goalData['auto_deduct'] != null) 'auto_deduct_232143': goalData['auto_deduct'] ? 1 : 0,
+      if (goalData['deduct_percentage'] != null) 'deduct_percentage_232143': goalData['deduct_percentage'],
       'updated_at_232143': now,
     };
 
@@ -182,8 +166,7 @@ class GoalDataService {
       );
 
       if (accountResult.isNotEmpty) {
-        final currentBalance =
-            (accountResult.first['balance_232143'] as num?)?.toDouble() ?? 0.0;
+        final currentBalance = (accountResult.first['balance_232143'] as num?)?.toDouble() ?? 0.0;
         if (currentBalance < amount) {
           throw Exception('Saldo tidak mencukupi');
         }
@@ -231,10 +214,8 @@ class GoalDataService {
       });
     }
 
-    final currentAmount =
-        (goal.first['current_amount_232143'] as num?)?.toDouble() ?? 0.0;
-    final targetAmount =
-        (goal.first['target_amount_232143'] as num?)?.toDouble() ?? 0.0;
+    final currentAmount = (goal.first['current_amount_232143'] as num?)?.toDouble() ?? 0.0;
+    final targetAmount = (goal.first['target_amount_232143'] as num?)?.toDouble() ?? 0.0;
     final newAmount = currentAmount + amount;
     final isCompleted = newAmount >= targetAmount;
     final now2 = DateTime.now().toIso8601String();
@@ -257,8 +238,7 @@ class GoalDataService {
       'new_amount': newAmount,
       'target_amount': targetAmount,
       'is_completed': isCompleted,
-      'progress_percentage':
-          targetAmount > 0 ? (newAmount / targetAmount * 100) : 0.0,
+      'progress_percentage': targetAmount > 0 ? (newAmount / targetAmount * 100) : 0.0,
     };
   }
 

@@ -11,11 +11,9 @@ class BudgetDataService {
   final LocalAuthService _authService;
   final _uuid = const Uuid();
 
-  BudgetDataService({
-    LocalDatabaseService? dbService,
-    LocalAuthService? authService,
-  }) : _dbService = dbService ?? LocalDatabaseService(),
-       _authService = authService ?? LocalAuthService();
+  BudgetDataService({LocalDatabaseService? dbService, LocalAuthService? authService})
+    : _dbService = dbService ?? LocalDatabaseService(),
+      _authService = authService ?? LocalAuthService();
 
   /// Get current user ID
   Future<String?> getCurrentUserId() async {
@@ -70,8 +68,7 @@ class BudgetDataService {
         'period_end_232143': budgetData['period_end'],
         'spent_amount_232143': 0.0,
         'remaining_amount_232143': budgetData['amount'],
-        'rollover_enabled_232143':
-            budgetData['rollover_enabled'] == true ? 1 : 0,
+        'rollover_enabled_232143': budgetData['rollover_enabled'] == true ? 1 : 0,
         'alert_threshold_232143': budgetData['alert_threshold'] ?? 80,
         'is_active_232143': budgetData['is_active'] == false ? 0 : 1,
         'created_at_232143': now,
@@ -114,10 +111,7 @@ class BudgetDataService {
   }
 
   /// Update budget
-  Future<BudgetModel?> updateBudget(
-    String budgetId,
-    Map<String, dynamic> budgetData,
-  ) async {
+  Future<BudgetModel?> updateBudget(String budgetId, Map<String, dynamic> budgetData) async {
     try {
       final userId = await getCurrentUserId();
       if (userId == null) throw Exception('Not authenticated');
@@ -136,26 +130,19 @@ class BudgetDataService {
           limit: 1,
         );
         if (currentBudget.isNotEmpty) {
-          final currentSpent =
-              (currentBudget.first['spent_amount_232143'] as num?)
-                  ?.toDouble() ??
-              0.0;
+          final currentSpent = (currentBudget.first['spent_amount_232143'] as num?)?.toDouble() ?? 0.0;
           final newAmount = (budgetData['amount'] as num).toDouble();
           newRemaining = newAmount - currentSpent;
         }
       }
 
       final data = <String, dynamic>{
-        if (budgetData['category_id'] != null)
-          'category_id_232143': budgetData['category_id'],
+        if (budgetData['category_id'] != null) 'category_id_232143': budgetData['category_id'],
         if (budgetData['amount'] != null) 'amount_232143': budgetData['amount'],
         if (budgetData['period'] != null) 'period_232143': budgetData['period'],
-        if (budgetData['period_start'] != null)
-          'period_start_232143': budgetData['period_start'],
-        if (budgetData['period_end'] != null)
-          'period_end_232143': budgetData['period_end'],
-        if (budgetData['is_active'] != null)
-          'is_active_232143': budgetData['is_active'] ? 1 : 0,
+        if (budgetData['period_start'] != null) 'period_start_232143': budgetData['period_start'],
+        if (budgetData['period_end'] != null) 'period_end_232143': budgetData['period_end'],
+        if (budgetData['is_active'] != null) 'is_active_232143': budgetData['is_active'] ? 1 : 0,
         if (newRemaining != null) 'remaining_amount_232143': newRemaining,
         'updated_at_232143': now,
       };
@@ -199,14 +186,11 @@ class BudgetDataService {
 
       final budgets = await db.query(
         'budgets_232143',
-        where:
-            'category_id_232143 = ? AND user_id_232143 = ? AND is_active_232143 = 1',
+        where: 'category_id_232143 = ? AND user_id_232143 = ? AND is_active_232143 = 1',
         whereArgs: [categoryId, userId],
       );
 
-      LoggerService.debug(
-        'Found ${budgets.length} budgets for category: $categoryId',
-      );
+      LoggerService.debug('Found ${budgets.length} budgets for category: $categoryId');
       return budgets.map((b) => BudgetModel.fromMap(b)).toList();
     } catch (e) {
       LoggerService.error('Error getting budgets by category', error: e);
@@ -228,17 +212,11 @@ class BudgetDataService {
 
       // Find the budget whose period covers this transaction date
       BudgetModel? matchingBudget;
-      final txDate = DateTime(
-        transactionDate.year,
-        transactionDate.month,
-        transactionDate.day,
-      );
+      final txDate = DateTime(transactionDate.year, transactionDate.month, transactionDate.day);
 
       for (final budget in budgets) {
-        if ((txDate.isAfter(budget.periodStart) ||
-                txDate.isAtSameMomentAs(budget.periodStart)) &&
-            (txDate.isBefore(budget.periodEnd) ||
-                txDate.isAtSameMomentAs(budget.periodEnd))) {
+        if ((txDate.isAfter(budget.periodStart) || txDate.isAtSameMomentAs(budget.periodStart)) &&
+            (txDate.isBefore(budget.periodEnd) || txDate.isAtSameMomentAs(budget.periodEnd))) {
           matchingBudget = budget;
           break;
         }
@@ -255,15 +233,9 @@ class BudgetDataService {
       final newSpentAmount = currentSpent + amount;
       final newRemainingAmount = budgetAmount - newSpentAmount;
 
-      await updateBudgetSpending(
-        budgetId: budgetId,
-        spentAmount: newSpentAmount,
-        remainingAmount: newRemainingAmount,
-      );
+      await updateBudgetSpending(budgetId: budgetId, spentAmount: newSpentAmount, remainingAmount: newRemainingAmount);
 
-      LoggerService.info(
-        '✅ Budget spending updated: $currentSpent → $newSpentAmount (added $amount)',
-      );
+      LoggerService.info('✅ Budget spending updated: $currentSpent → $newSpentAmount (added $amount)');
       return true;
     } catch (e) {
       LoggerService.error('Error updating budget for expense', error: e);
@@ -313,26 +285,20 @@ class BudgetDataService {
 
       final rolloverBudgets = await db.query(
         'budgets_232143',
-        where:
-            'user_id_232143 = ? AND rollover_enabled_232143 = 1 AND is_active_232143 = 1 AND period_end_232143 < ?',
+        where: 'user_id_232143 = ? AND rollover_enabled_232143 = 1 AND is_active_232143 = 1 AND period_end_232143 < ?',
         whereArgs: [userId, now.toIso8601String()],
       );
 
       for (var budget in rolloverBudgets) {
         final budgetId = budget['budget_id_232143'] as String;
         final amount = (budget['amount_232143'] as num?)?.toDouble() ?? 0.0;
-        final spent =
-            (budget['spent_amount_232143'] as num?)?.toDouble() ?? 0.0;
+        final spent = (budget['spent_amount_232143'] as num?)?.toDouble() ?? 0.0;
         final remaining = amount - spent;
         final categoryId = budget['category_id_232143'] as String?;
         final period = budget['period_232143'] as String? ?? 'monthly';
 
         if (remaining <= 0) {
-          await db.delete(
-            'budgets_232143',
-            where: 'budget_id_232143 = ?',
-            whereArgs: [budgetId],
-          );
+          await db.delete('budgets_232143', where: 'budget_id_232143 = ?', whereArgs: [budgetId]);
           continue;
         }
 
@@ -366,17 +332,12 @@ class BudgetDataService {
           'alert_threshold_232143': budget['alert_threshold_232143'] ?? 80,
           'is_active_232143': 1,
           'remaining_amount_232143': amount + remaining,
-          'recommendation_reason_232143':
-              'Rollover: Rp ${remaining.toStringAsFixed(0)} dari periode sebelumnya',
+          'recommendation_reason_232143': 'Rollover: Rp ${remaining.toStringAsFixed(0)} dari periode sebelumnya',
           'created_at_232143': now.toIso8601String(),
           'updated_at_232143': now.toIso8601String(),
         });
 
-        await db.delete(
-          'budgets_232143',
-          where: 'budget_id_232143 = ?',
-          whereArgs: [budgetId],
-        );
+        await db.delete('budgets_232143', where: 'budget_id_232143 = ?', whereArgs: [budgetId]);
 
         processedCount++;
       }
@@ -390,9 +351,7 @@ class BudgetDataService {
   }
 
   /// Get spending trends for budget categories
-  Future<List<Map<String, dynamic>>> getBudgetSpendingTrends({
-    int months = 3,
-  }) async {
+  Future<List<Map<String, dynamic>>> getBudgetSpendingTrends({int months = 3}) async {
     try {
       final userId = await getCurrentUserId();
       if (userId == null) throw Exception('Not authenticated');
@@ -402,8 +361,7 @@ class BudgetDataService {
 
       final budgets = await db.query(
         'budgets_232143',
-        where:
-            'user_id_232143 = ? AND is_active_232143 = 1 AND category_id_232143 IS NOT NULL',
+        where: 'user_id_232143 = ? AND is_active_232143 = 1 AND category_id_232143 IS NOT NULL',
         whereArgs: [userId],
       );
 
@@ -418,10 +376,7 @@ class BudgetDataService {
           whereArgs: [categoryId],
           limit: 1,
         );
-        final categoryName =
-            categoryResult.isNotEmpty
-                ? categoryResult.first['name_232143'] as String?
-                : 'Lainnya';
+        final categoryName = categoryResult.isNotEmpty ? categoryResult.first['name_232143'] as String? : 'Lainnya';
 
         final monthlySpending = <Map<String, dynamic>>[];
         for (var i = 0; i < months; i++) {
@@ -436,33 +391,17 @@ class BudgetDataService {
             AND type_232143 = 'expense'
             AND transaction_date_232143 >= ? AND transaction_date_232143 < ?
             ''',
-            [
-              userId,
-              categoryId,
-              monthStart.toIso8601String().split('T')[0],
-              monthEnd.toIso8601String().split('T')[0],
-            ],
+            [userId, categoryId, monthStart.toIso8601String().split('T')[0], monthEnd.toIso8601String().split('T')[0]],
           );
 
-          final total =
-              (spendingResult.first['total'] as num?)?.toDouble() ?? 0.0;
-          monthlySpending.add({
-            'month': monthStart.month,
-            'year': monthStart.year,
-            'spent': total,
-          });
+          final total = (spendingResult.first['total'] as num?)?.toDouble() ?? 0.0;
+          monthlySpending.add({'month': monthStart.month, 'year': monthStart.year, 'spent': total});
         }
 
-        final budgetAmount =
-            (budget['amount_232143'] as num?)?.toDouble() ?? 0.0;
-        final currentSpent =
-            (budget['spent_amount_232143'] as num?)?.toDouble() ?? 0.0;
-        final averages =
-            monthlySpending.map((m) => m['spent'] as double).toList();
-        final avgSpending =
-            averages.isNotEmpty
-                ? averages.reduce((a, b) => a + b) / averages.length
-                : 0.0;
+        final budgetAmount = (budget['amount_232143'] as num?)?.toDouble() ?? 0.0;
+        final currentSpent = (budget['spent_amount_232143'] as num?)?.toDouble() ?? 0.0;
+        final averages = monthlySpending.map((m) => m['spent'] as double).toList();
+        final avgSpending = averages.isNotEmpty ? averages.reduce((a, b) => a + b) / averages.length : 0.0;
 
         trends.add({
           'budget_id': budget['budget_id_232143'],
@@ -472,10 +411,7 @@ class BudgetDataService {
           'current_spent': currentSpent,
           'avg_monthly_spending': avgSpending,
           'monthly_data': monthlySpending.reversed.toList(),
-          'suggested_amount': (avgSpending * 1.1).clamp(
-            budgetAmount * 0.5,
-            budgetAmount * 2.0,
-          ),
+          'suggested_amount': (avgSpending * 1.1).clamp(budgetAmount * 0.5, budgetAmount * 2.0),
         });
       }
 

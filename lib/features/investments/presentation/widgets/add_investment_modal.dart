@@ -44,12 +44,7 @@ class _AddInvestmentModalState extends State<AddInvestmentModal> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return Padding(
-      padding: EdgeInsets.only(
-        bottom: MediaQuery.of(context).viewInsets.bottom,
-        left: 20,
-        right: 20,
-        top: 20,
-      ),
+      padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom, left: 20, right: 20, top: 20),
       child: SingleChildScrollView(
         child: Form(
           key: _formKey,
@@ -67,7 +62,7 @@ class _AddInvestmentModalState extends State<AddInvestmentModal> {
                   ),
                 ),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: DesignTokens.spacing5),
               Text(
                 l10n?.add_investment ?? 'Tambah Investasi',
                 style: GoogleFonts.poppins(
@@ -76,39 +71,25 @@ class _AddInvestmentModalState extends State<AddInvestmentModal> {
                   fontWeight: FontWeight.w600,
                 ),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: DesignTokens.spacing5),
               TextFormField(
                 controller: _nameController,
                 style: GoogleFonts.poppins(color: DesignTokens.textPrimaryDark),
                 decoration: InputDecoration(
                   labelText: l10n?.name ?? 'Nama',
-                  labelStyle: GoogleFonts.poppins(
-                    color: DesignTokens.textSecondaryDark,
-                  ),
+                  labelStyle: GoogleFonts.poppins(color: DesignTokens.textSecondaryDark),
                   filled: true,
                   fillColor: DesignTokens.surfaceDark,
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(
-                      DesignTokens.radiusMedium,
-                    ),
+                    borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
                     borderSide: BorderSide(color: DesignTokens.borderDark),
                   ),
                 ),
-                validator:
-                    (v) =>
-                        (v == null || v.isEmpty)
-                            ? 'Nama tidak boleh kosong'
-                            : null,
+                validator: (v) => (v == null || v.isEmpty) ? 'Nama tidak boleh kosong' : null,
               ),
-              const SizedBox(height: 16),
-              Text(
-                'Tipe Investasi',
-                style: GoogleFonts.poppins(
-                  color: DesignTokens.textSecondaryDark,
-                  fontSize: 12,
-                ),
-              ),
-              const SizedBox(height: 8),
+              const SizedBox(height: DesignTokens.spacing4),
+              Text('Tipe Investasi', style: GoogleFonts.poppins(color: DesignTokens.textSecondaryDark, fontSize: 12)),
+              const SizedBox(height: DesignTokens.spacing2),
               Wrap(
                 spacing: 8,
                 children:
@@ -118,53 +99,38 @@ class _AddInvestmentModalState extends State<AddInvestmentModal> {
                         label: Text(
                           t['label'],
                           style: GoogleFonts.poppins(
-                            color:
-                                sel
-                                    ? Colors.white
-                                    : DesignTokens.textSecondaryDark,
+                            color: sel ? Colors.white : DesignTokens.textSecondaryDark,
                             fontSize: 12,
                           ),
                         ),
                         selected: sel,
-                        onSelected:
-                            (_) => setState(() => _selectedType = t['value']),
+                        onSelected: (_) => setState(() => _selectedType = t['value']),
                         backgroundColor: DesignTokens.surfaceDark,
                         selectedColor: DesignTokens.primaryColor,
                       );
                     }).toList(),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: DesignTokens.spacing4),
               Row(
                 children: [
                   Expanded(
                     child: TextFormField(
                       controller: _quantityController,
                       keyboardType: TextInputType.number,
-                      style: GoogleFonts.poppins(
-                        color: DesignTokens.textPrimaryDark,
-                      ),
+                      style: GoogleFonts.poppins(color: DesignTokens.textPrimaryDark),
                       decoration: InputDecoration(
                         labelText: l10n?.amount ?? 'Jumlah',
-                        labelStyle: GoogleFonts.poppins(
-                          color: DesignTokens.textSecondaryDark,
-                        ),
+                        labelStyle: GoogleFonts.poppins(color: DesignTokens.textSecondaryDark),
                         filled: true,
                         fillColor: DesignTokens.surfaceDark,
                         border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(
-                            DesignTokens.radiusMedium,
-                          ),
-                          borderSide: BorderSide(
-                            color: DesignTokens.borderDark,
-                          ),
+                          borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                          borderSide: BorderSide(color: DesignTokens.borderDark),
                         ),
                       ),
                       validator:
                           (v) =>
-                              (v == null || v.isEmpty)
-                                  ? (l10n?.amount_required ??
-                                      'Jumlah tidak boleh kosong')
-                                  : null,
+                              (v == null || v.isEmpty) ? (l10n?.amount_required ?? 'Jumlah tidak boleh kosong') : null,
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -172,60 +138,40 @@ class _AddInvestmentModalState extends State<AddInvestmentModal> {
                     child: TextFormField(
                       controller: _buyPriceController,
                       keyboardType: TextInputType.number,
-                      style: GoogleFonts.poppins(
-                        color: DesignTokens.textPrimaryDark,
-                      ),
+                      style: GoogleFonts.poppins(color: DesignTokens.textPrimaryDark),
                       decoration: InputDecoration(
                         labelText: 'Harga Beli',
-                        labelStyle: GoogleFonts.poppins(
-                          color: DesignTokens.textSecondaryDark,
-                        ),
+                        labelStyle: GoogleFonts.poppins(color: DesignTokens.textSecondaryDark),
                         filled: true,
                         fillColor: DesignTokens.surfaceDark,
                         border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(
-                            DesignTokens.radiusMedium,
-                          ),
-                          borderSide: BorderSide(
-                            color: DesignTokens.borderDark,
-                          ),
+                          borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                          borderSide: BorderSide(color: DesignTokens.borderDark),
                         ),
                       ),
-                      validator:
-                          (v) =>
-                              (v == null || v.isEmpty)
-                                  ? 'Harga tidak boleh kosong'
-                                  : null,
+                      validator: (v) => (v == null || v.isEmpty) ? 'Harga tidak boleh kosong' : null,
                     ),
                   ),
                 ],
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: DesignTokens.spacing4),
               TextFormField(
                 controller: _currentPriceController,
                 keyboardType: TextInputType.number,
                 style: GoogleFonts.poppins(color: DesignTokens.textPrimaryDark),
                 decoration: InputDecoration(
                   labelText: 'Harga Saat Ini',
-                  labelStyle: GoogleFonts.poppins(
-                    color: DesignTokens.textSecondaryDark,
-                  ),
+                  labelStyle: GoogleFonts.poppins(color: DesignTokens.textSecondaryDark),
                   filled: true,
                   fillColor: DesignTokens.surfaceDark,
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(
-                      DesignTokens.radiusMedium,
-                    ),
+                    borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
                     borderSide: BorderSide(color: DesignTokens.borderDark),
                   ),
                 ),
-                validator:
-                    (v) =>
-                        (v == null || v.isEmpty)
-                            ? 'Harga tidak boleh kosong'
-                            : null,
+                validator: (v) => (v == null || v.isEmpty) ? 'Harga tidak boleh kosong' : null,
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: DesignTokens.spacing6),
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
@@ -233,23 +179,15 @@ class _AddInvestmentModalState extends State<AddInvestmentModal> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: DesignTokens.primaryColor,
                     padding: const EdgeInsets.symmetric(vertical: 14),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(
-                        DesignTokens.radiusMedium,
-                      ),
-                    ),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(DesignTokens.radiusMedium)),
                   ),
                   child: Text(
                     l10n?.add ?? 'Tambah',
-                    style: GoogleFonts.poppins(
-                      color: Colors.white,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                    ),
+                    style: GoogleFonts.poppins(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w600),
                   ),
                 ),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: DesignTokens.spacing5),
             ],
           ),
         ),
@@ -277,10 +215,7 @@ class _AddInvestmentModalState extends State<AddInvestmentModal> {
       widget.onInvestmentAdded();
     } catch (e) {
       if (!mounted) return;
-      ErrorHandlerService.showErrorSnackbar(
-        context,
-        ErrorHandlerService.getUserFriendlyMessage(e),
-      );
+      ErrorHandlerService.showErrorSnackbar(context, ErrorHandlerService.getUserFriendlyMessage(e));
     }
   }
 }

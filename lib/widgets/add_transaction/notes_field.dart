@@ -19,8 +19,7 @@ class NotesField extends StatelessWidget {
       decoration: InputDecoration(
         labelText: l10n?.notes_optional ?? 'Catatan (Opsional)',
         labelStyle: GoogleFonts.poppins(color: Colors.grey[400]),
-        hintText:
-            l10n?.add_notes_hint ?? 'Tambahkan catatan atau detail tambahan...',
+        hintText: l10n?.add_notes_hint ?? 'Tambahkan catatan atau detail tambahan...',
         hintStyle: GoogleFonts.poppins(color: Colors.grey[600]),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),

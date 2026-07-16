@@ -28,11 +28,7 @@ class CustomTextField extends StatelessWidget {
       controller: controller,
       obscureText: obscureText,
       autofillHints: autofillHints,
-      style: GoogleFonts.poppins(
-        color: Colors.white,
-        fontSize: 16,
-        fontWeight: FontWeight.w400,
-      ),
+      style: GoogleFonts.poppins(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w400),
       decoration: InputDecoration(
         labelText: label,
         labelStyle: GoogleFonts.poppins(color: Colors.grey[400], fontSize: 14),
@@ -41,10 +37,7 @@ class CustomTextField extends StatelessWidget {
         suffixIcon:
             isPassword
                 ? IconButton(
-                  icon: Icon(
-                    obscureText ? Icons.visibility_off : Icons.visibility,
-                    color: Colors.grey[400],
-                  ),
+                  icon: Icon(obscureText ? Icons.visibility_off : Icons.visibility, color: Colors.grey[400]),
                   onPressed: onToggleObscure,
                 )
                 : null,
@@ -65,10 +58,7 @@ class CustomTextField extends StatelessWidget {
             width: 2,
           ),
         ),
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 16,
-          vertical: 18,
-        ),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
       ),
     );
   }

@@ -10,17 +10,13 @@ class NetWorthDataService {
   final LocalAuthService _authService;
   final _uuid = const Uuid();
 
-  NetWorthDataService({
-    LocalDatabaseService? dbService,
-    LocalAuthService? authService,
-  }) : _dbService = dbService ?? LocalDatabaseService(),
-       _authService = authService ?? LocalAuthService();
+  NetWorthDataService({LocalDatabaseService? dbService, LocalAuthService? authService})
+    : _dbService = dbService ?? LocalDatabaseService(),
+      _authService = authService ?? LocalAuthService();
 
   Future<String?> getCurrentUserId() async => _authService.getCurrentUserId();
 
-  Future<Map<String, dynamic>> recordNetWorthSnapshot(
-    Map<String, dynamic> snapshotData,
-  ) async {
+  Future<Map<String, dynamic>> recordNetWorthSnapshot(Map<String, dynamic> snapshotData) async {
     try {
       final userId = await getCurrentUserId();
       if (userId == null) throw Exception('Not authenticated');
@@ -32,19 +28,14 @@ class NetWorthDataService {
       await db.insert('net_worth_history_232143', {
         'snapshot_id_232143': snapshotId,
         'user_id_232143': userId,
-        'snapshot_date_232143':
-            snapshotData['snapshot_date'] ?? now.split('T')[0],
+        'snapshot_date_232143': snapshotData['snapshot_date'] ?? now.split('T')[0],
         'net_worth_232143': snapshotData['net_worth'],
         'total_assets_232143': snapshotData['total_assets'],
         'total_liabilities_232143': snapshotData['total_liabilities'],
         'asset_breakdown_232143':
-            snapshotData['asset_breakdown'] != null
-                ? json.encode(snapshotData['asset_breakdown'])
-                : null,
+            snapshotData['asset_breakdown'] != null ? json.encode(snapshotData['asset_breakdown']) : null,
         'liability_breakdown_232143':
-            snapshotData['liability_breakdown'] != null
-                ? json.encode(snapshotData['liability_breakdown'])
-                : null,
+            snapshotData['liability_breakdown'] != null ? json.encode(snapshotData['liability_breakdown']) : null,
         'created_at_232143': now,
       });
 
@@ -56,9 +47,7 @@ class NetWorthDataService {
     }
   }
 
-  Future<List<Map<String, dynamic>>> getNetWorthHistory({
-    int limit = 90,
-  }) async {
+  Future<List<Map<String, dynamic>>> getNetWorthHistory({int limit = 90}) async {
     try {
       final userId = await getCurrentUserId();
       if (userId == null) throw Exception('Not authenticated');
@@ -119,8 +108,7 @@ class NetWorthDataService {
         return {'trend': 'no_data', 'change': 0.0};
       }
 
-      final first =
-          (result.first['net_worth_232143'] as num?)?.toDouble() ?? 0.0;
+      final first = (result.first['net_worth_232143'] as num?)?.toDouble() ?? 0.0;
       final last = (result.last['net_worth_232143'] as num?)?.toDouble() ?? 0.0;
       final change = first != 0 ? ((last - first) / first.abs()) * 100 : 0.0;
 

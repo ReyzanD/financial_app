@@ -117,72 +117,36 @@ void main() async {
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(
-          create: (context) => AppState(getIt<DataService>()),
-        ),
+        ChangeNotifierProvider(create: (context) => AppState(getIt<DataService>())),
         ChangeNotifierProvider(create: (context) => ThemeService()),
         ChangeNotifierProvider(create: (context) => LocalizationService()),
-        ChangeNotifierProvider(
-          create: (context) => getIt<TransactionController>(),
-        ),
+        ChangeNotifierProvider(create: (context) => getIt<TransactionController>()),
         ChangeNotifierProvider(create: (context) => getIt<BudgetController>()),
         ChangeNotifierProvider(create: (context) => getIt<GoalController>()),
         ChangeNotifierProvider(create: (context) => getIt<AccountController>()),
-        ChangeNotifierProvider(
-          create: (context) => getIt<ChallengeController>(),
-        ),
-        ChangeNotifierProvider(
-          create: (context) => getIt<InvestmentController>(),
-        ),
+        ChangeNotifierProvider(create: (context) => getIt<ChallengeController>()),
+        ChangeNotifierProvider(create: (context) => getIt<InvestmentController>()),
         ChangeNotifierProvider(create: (context) => getIt<SplitController>()),
-        ChangeNotifierProvider(
-          create: (context) => getIt<NetWorthController>(),
-        ),
-        ChangeNotifierProvider(
-          create: (context) => getIt<AnalyticsController>(),
-        ),
-        ChangeNotifierProvider(
-          create: (context) => getIt<CashFlowController>(),
-        ),
-        ChangeNotifierProvider(
-          create: (context) => getIt<ObligationController>(),
-        ),
-        ChangeNotifierProvider(
-          create: (context) => getIt<InsightsController>(),
-        ),
-        ChangeNotifierProvider(
-          create: (context) => getIt<ForecastController>(),
-        ),
+        ChangeNotifierProvider(create: (context) => getIt<NetWorthController>()),
+        ChangeNotifierProvider(create: (context) => getIt<AnalyticsController>()),
+        ChangeNotifierProvider(create: (context) => getIt<CashFlowController>()),
+        ChangeNotifierProvider(create: (context) => getIt<ObligationController>()),
+        ChangeNotifierProvider(create: (context) => getIt<InsightsController>()),
+        ChangeNotifierProvider(create: (context) => getIt<ForecastController>()),
         ChangeNotifierProvider(create: (context) => getIt<AuthController>()),
         ChangeNotifierProvider(create: (context) => getIt<BackupController>()),
         ChangeNotifierProvider(create: (context) => getIt<TagController>()),
         ChangeNotifierProvider(create: (context) => getIt<ProfileController>()),
         ChangeNotifierProvider(create: (context) => getIt<ReceiptController>()),
         ChangeNotifierProvider(create: (context) => getIt<ReportController>()),
-        ChangeNotifierProvider(
-          create: (context) => getIt<TemplateController>(),
-        ),
-        ChangeNotifierProvider(
-          create: (context) => getIt<NotificationCenterController>(),
-        ),
-        ChangeNotifierProvider(
-          create: (context) => getIt<CategoryController>(),
-        ),
-        ChangeNotifierProvider(
-          create: (context) => getIt<CalendarController>(),
-        ),
-        ChangeNotifierProvider(
-          create: (context) => getIt<OnboardingController>(),
-        ),
-        ChangeNotifierProvider(
-          create: (context) => getIt<AIBudgetController>(),
-        ),
-        ChangeNotifierProvider(
-          create: (context) => getIt<SettingsController>(),
-        ),
-        ChangeNotifierProvider<DashboardController>(
-          create: (context) => getIt<DashboardController>(),
-        ),
+        ChangeNotifierProvider(create: (context) => getIt<TemplateController>()),
+        ChangeNotifierProvider(create: (context) => getIt<NotificationCenterController>()),
+        ChangeNotifierProvider(create: (context) => getIt<CategoryController>()),
+        ChangeNotifierProvider(create: (context) => getIt<CalendarController>()),
+        ChangeNotifierProvider(create: (context) => getIt<OnboardingController>()),
+        ChangeNotifierProvider(create: (context) => getIt<AIBudgetController>()),
+        ChangeNotifierProvider(create: (context) => getIt<SettingsController>()),
+        ChangeNotifierProvider<DashboardController>(create: (context) => getIt<DashboardController>()),
       ],
       child: const MyApp(),
     ),
@@ -207,11 +171,7 @@ void _setupErrorHandlers() {
 
   // Handle errors outside of Flutter framework (async errors)
   PlatformDispatcher.instance.onError = (error, stack) {
-    LoggerService.error(
-      'Uncaught error outside Flutter framework',
-      error: error,
-      stackTrace: stack,
-    );
+    LoggerService.error('Uncaught error outside Flutter framework', error: error, stackTrace: stack);
     return true; // Return true to prevent default error handling
   };
 }
@@ -257,20 +217,16 @@ class MyApp extends StatelessWidget {
             '/map': (context) => const MapScreen(),
             '/settings': (context) => const SettingsScreen(),
             '/budgets': (context) => const BudgetsScreen(),
-            '/insights-hub':
-                (context) => const AnalyticsHubScreen(initialTab: 'analytics'),
-            '/analytics':
-                (context) => const AnalyticsHubScreen(initialTab: 'analytics'),
+            '/insights-hub': (context) => const AnalyticsHubScreen(initialTab: 'analytics'),
+            '/analytics': (context) => const AnalyticsHubScreen(initialTab: 'analytics'),
             '/goals': (context) => const GoalsScreen(),
             '/add-transaction': (context) => const AddTransactionScreen(),
-            '/ai-budget-recommendation':
-                (context) => const AIBudgetRecommendationScreen(),
+            '/ai-budget-recommendation': (context) => const AIBudgetRecommendationScreen(),
             '/backup': (context) => const BackupScreen(),
             '/obligations': (context) => const FinancialObligationsScreen(),
             '/forecast': (context) => const ForecastScreen(),
             '/profile': (context) => const ProfileScreen(),
-            '/transaction-history':
-                (context) => const TransactionHistoryScreen(),
+            '/transaction-history': (context) => const TransactionHistoryScreen(),
             '/receipt-history': (context) => const ReceiptHistoryScreen(),
             '/financial-advisor': (context) => const FinancialAdvisorScreen(),
             '/german-finance': (context) => const GermanFinanceScreen(),
@@ -279,9 +235,7 @@ class MyApp extends StatelessWidget {
             '/splits': (context) => const SplitsScreen(),
             '/challenges': (context) => const ChallengesScreen(),
             '/calendar': (context) => const FinancialCalendarScreen(),
-            '/categories':
-                (context) =>
-                    const CategoryTagsScreen(initialMode: 'categories'),
+            '/categories': (context) => const CategoryTagsScreen(initialMode: 'categories'),
             '/templates': (context) => const TemplatesScreen(),
           },
         );
@@ -290,10 +244,7 @@ class MyApp extends StatelessWidget {
   }
 
   /// Build a user-friendly error widget
-  Widget _buildErrorWidget(
-    BuildContext context,
-    FlutterErrorDetails errorDetails,
-  ) {
+  Widget _buildErrorWidget(BuildContext context, FlutterErrorDetails errorDetails) {
     return Scaffold(
       backgroundColor: DesignTokens.backgroundDark,
       body: SafeArea(
@@ -303,60 +254,39 @@ class MyApp extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(
-                  Icons.error_outline_rounded,
-                  size: 64,
-                  color: Colors.red[400],
-                ),
-                const SizedBox(height: 24),
+                Icon(Icons.error_outline_rounded, size: 64, color: Colors.red[400]),
+                const SizedBox(height: DesignTokens.spacing6),
                 Text(
                   'Terjadi Kesalahan',
-                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.headlineSmall?.copyWith(color: Colors.white, fontWeight: FontWeight.bold),
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: DesignTokens.spacing3),
                 Text(
                   'Aplikasi mengalami masalah. Silakan restart aplikasi.',
                   textAlign: TextAlign.center,
-                  style: Theme.of(
-                    context,
-                  ).textTheme.bodyMedium?.copyWith(color: Colors.grey[400]),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.grey[400]),
                 ),
                 if (kDebugMode) ...[
-                  const SizedBox(height: 24),
+                  const SizedBox(height: DesignTokens.spacing6),
                   Container(
                     padding: const EdgeInsets.all(DesignTokens.spacing4),
                     decoration: BoxDecoration(
                       color: Colors.grey[900],
-                      borderRadius: BorderRadius.circular(
-                        DesignTokens.radiusMedium,
-                      ),
+                      borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          'Debug Info:',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          errorDetails.exception.toString(),
-                          style: TextStyle(
-                            color: Colors.red[300],
-                            fontSize: 12,
-                          ),
-                        ),
+                        Text('Debug Info:', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                        const SizedBox(height: DesignTokens.spacing2),
+                        Text(errorDetails.exception.toString(), style: TextStyle(color: Colors.red[300], fontSize: 12)),
                       ],
                     ),
                   ),
                 ],
-                const SizedBox(height: 32),
+                const SizedBox(height: DesignTokens.spacing7),
                 ElevatedButton(
                   onPressed: () {
                     // Try to navigate back or restart
@@ -364,10 +294,7 @@ class MyApp extends StatelessWidget {
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: DesignTokens.primaryColor,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 32,
-                      vertical: 16,
-                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
                   ),
                   child: const Text('Kembali'),
                 ),

@@ -7,8 +7,7 @@ import 'package:financial_app/services/logger_service.dart';
 class GoalController extends ChangeNotifier {
   final GoalRepositoryInterface _repository;
 
-  GoalController({required GoalRepositoryInterface repository})
-    : _repository = repository;
+  GoalController({required GoalRepositoryInterface repository}) : _repository = repository;
 
   List<GoalEntity> _goals = [];
   Map<String, dynamic> _summary = {};

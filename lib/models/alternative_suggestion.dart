@@ -54,8 +54,7 @@ class AlternativeSuggestion {
       suggestedPlaceName: map['suggested_place_name']?.toString() ?? '',
       suggestedOsmNodeId: map['suggested_osm_node_id']?.toString() ?? '',
       suggestedLatitude: (map['suggested_latitude'] as num?)?.toDouble() ?? 0.0,
-      suggestedLongitude:
-          (map['suggested_longitude'] as num?)?.toDouble() ?? 0.0,
+      suggestedLongitude: (map['suggested_longitude'] as num?)?.toDouble() ?? 0.0,
       distanceMeters: (map['distance_meters'] as num?)?.toDouble() ?? 0.0,
       estimatedSavings: (map['estimated_savings'] as num?)?.toDouble(),
       basis: map['basis']?.toString() ?? 'distance_only',

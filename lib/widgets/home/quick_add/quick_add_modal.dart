@@ -38,8 +38,7 @@ class QuickAddModal extends StatefulWidget {
 }
 
 class _QuickAddModalState extends State<QuickAddModal> {
-  final TransactionDataService _transactionData =
-      getIt<TransactionDataService>();
+  final TransactionDataService _transactionData = getIt<TransactionDataService>();
   final CategoryDataService _categoryData = getIt<CategoryDataService>();
   final TextEditingController _amountController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
@@ -75,13 +74,7 @@ class _QuickAddModalState extends State<QuickAddModal> {
       final categories = categoryModels.map((c) => c.toMap()).toList();
       if (mounted) {
         setState(() {
-          _categories =
-              categories
-                  .where(
-                    (cat) =>
-                        cat != null && cat['id'] != null && cat['name'] != null,
-                  )
-                  .toList();
+          _categories = categories.where((cat) => cat != null && cat['id'] != null && cat['name'] != null).toList();
           _isLoadingCategories = false;
         });
       }
@@ -131,16 +124,11 @@ class _QuickAddModalState extends State<QuickAddModal> {
     }
 
     if (_selectedCategoryId == null) {
-      ErrorHandlerService.showWarningSnackbar(
-        context,
-        AppLocalizations.of(context)!.select_category,
-      );
+      ErrorHandlerService.showWarningSnackbar(context, AppLocalizations.of(context)!.select_category);
       return;
     }
 
-    final amount = double.parse(
-      _amountController.text.replaceAll(RegExp(r'[^0-9.]'), ''),
-    );
+    final amount = double.parse(_amountController.text.replaceAll(RegExp(r'[^0-9.]'), ''));
 
     final ctx = context;
 
@@ -194,10 +182,7 @@ class _QuickAddModalState extends State<QuickAddModal> {
       if (!ctx.mounted) return;
       Navigator.pop(ctx);
       if (!ctx.mounted) return;
-      ErrorHandlerService.showSuccessSnackbar(
-        ctx,
-        AppLocalizations.of(ctx)!.transaction_added_successfully,
-      );
+      ErrorHandlerService.showSuccessSnackbar(ctx, AppLocalizations.of(ctx)!.transaction_added_successfully);
       widget.onTransactionAdded?.call();
     } catch (e) {
       setState(() => _isLoading = false);
@@ -212,16 +197,10 @@ class _QuickAddModalState extends State<QuickAddModal> {
   @override
   Widget build(BuildContext context) {
     final typeColor = widget.type == 'income' ? Colors.green : Colors.red;
-    final typeIcon =
-        widget.type == 'income' ? Iconsax.arrow_down_1 : Iconsax.arrow_up_3;
+    final typeIcon = widget.type == 'income' ? Iconsax.arrow_down_1 : Iconsax.arrow_up_3;
 
     return Padding(
-      padding: EdgeInsets.only(
-        bottom: MediaQuery.of(context).viewInsets.bottom,
-        left: 16,
-        right: 16,
-        top: 16,
-      ),
+      padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom, left: 16, right: 16, top: 16),
       child: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -234,9 +213,7 @@ class _QuickAddModalState extends State<QuickAddModal> {
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     color: typeColor.withValues(alpha: 0.2),
-                    borderRadius: BorderRadius.circular(
-                      DesignTokens.radiusMedium,
-                    ),
+                    borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
                   ),
                   child: Icon(typeIcon, color: typeColor, size: 24),
                 ),
@@ -246,11 +223,7 @@ class _QuickAddModalState extends State<QuickAddModal> {
                     widget.type == 'income'
                         ? AppLocalizations.of(context)!.add_income
                         : AppLocalizations.of(context)!.add_expense,
-                    style: GoogleFonts.poppins(
-                      color: Colors.white,
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: GoogleFonts.poppins(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
                   ),
                 ),
                 IconButton(
@@ -259,18 +232,14 @@ class _QuickAddModalState extends State<QuickAddModal> {
                 ),
               ],
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: DesignTokens.spacing5),
 
             // Amount
             Text(
               AppLocalizations.of(context)!.amount,
-              style: GoogleFonts.poppins(
-                color: Colors.white,
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-              ),
+              style: GoogleFonts.poppins(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w600),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: DesignTokens.spacing2),
             TextField(
               controller: _amountController,
               keyboardType: TextInputType.number,
@@ -281,76 +250,46 @@ class _QuickAddModalState extends State<QuickAddModal> {
                 filled: true,
                 fillColor: DesignTokens.surfaceDark,
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(
-                    DesignTokens.radiusMedium,
-                  ),
+                  borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
                   borderSide: BorderSide(color: DesignTokens.borderDark),
                 ),
                 enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(
-                    DesignTokens.radiusMedium,
-                  ),
+                  borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
                   borderSide: BorderSide(color: DesignTokens.borderDark),
                 ),
                 focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(
-                    DesignTokens.radiusMedium,
-                  ),
-                  borderSide: const BorderSide(
-                    color: DesignTokens.primaryColor,
-                    width: 2,
-                  ),
+                  borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                  borderSide: const BorderSide(color: DesignTokens.primaryColor, width: 2),
                 ),
                 prefixIcon: Icon(Iconsax.money_4, color: typeColor),
               ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: DesignTokens.spacing4),
 
             // Category
             Text(
               AppLocalizations.of(context)!.category,
-              style: GoogleFonts.poppins(
-                color: Colors.white,
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-              ),
+              style: GoogleFonts.poppins(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w600),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: DesignTokens.spacing2),
             _isLoadingCategories
-                ? const Center(
-                  child: CircularProgressIndicator(
-                    color: DesignTokens.primaryColor,
-                  ),
-                )
+                ? const Center(child: CircularProgressIndicator(color: DesignTokens.primaryColor))
                 : _categories.isEmpty
                 ? Container(
                   padding: const EdgeInsets.all(DesignTokens.spacing4),
                   decoration: BoxDecoration(
                     color: Colors.orange.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(
-                      DesignTokens.radiusMedium,
-                    ),
-                    border: Border.all(
-                      color: Colors.orange.withValues(alpha: 0.3),
-                    ),
+                    borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                    border: Border.all(color: Colors.orange.withValues(alpha: 0.3)),
                   ),
                   child: Row(
                     children: [
-                      const Icon(
-                        Iconsax.info_circle,
-                        color: Colors.orange,
-                        size: 20,
-                      ),
+                      const Icon(Iconsax.info_circle, color: Colors.orange, size: 20),
                       const SizedBox(width: 12),
                       Expanded(
                         child: Text(
-                          AppLocalizations.of(
-                            context,
-                          )!.no_categories_create_first,
-                          style: GoogleFonts.poppins(
-                            color: Colors.orange,
-                            fontSize: 12,
-                          ),
+                          AppLocalizations.of(context)!.no_categories_create_first,
+                          style: GoogleFonts.poppins(color: Colors.orange, fontSize: 12),
                         ),
                       ),
                     ],
@@ -370,10 +309,7 @@ class _QuickAddModalState extends State<QuickAddModal> {
                             category['category_id']?.toString() ??
                             category['category_id_232143']?.toString() ??
                             '';
-                        final name =
-                            category['name']?.toString() ??
-                            category['name_232143']?.toString() ??
-                            'Unknown';
+                        final name = category['name']?.toString() ?? category['name_232143']?.toString() ?? 'Unknown';
                         return DropdownMenuItem(value: id, child: Text(name));
                       }).toList(),
                   onChanged: (value) {
@@ -382,18 +318,14 @@ class _QuickAddModalState extends State<QuickAddModal> {
                     });
                   },
                 ),
-            const SizedBox(height: 16),
+            const SizedBox(height: DesignTokens.spacing4),
 
             // Description (optional)
             Text(
               'Deskripsi (Opsional)',
-              style: GoogleFonts.poppins(
-                color: Colors.white,
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-              ),
+              style: GoogleFonts.poppins(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w600),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: DesignTokens.spacing2),
             TextField(
               controller: _descriptionController,
               style: GoogleFonts.poppins(color: Colors.white, fontSize: 14),
@@ -403,29 +335,20 @@ class _QuickAddModalState extends State<QuickAddModal> {
                 filled: true,
                 fillColor: DesignTokens.surfaceDark,
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(
-                    DesignTokens.radiusMedium,
-                  ),
+                  borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
                   borderSide: BorderSide(color: DesignTokens.borderDark),
                 ),
                 enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(
-                    DesignTokens.radiusMedium,
-                  ),
+                  borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
                   borderSide: BorderSide(color: DesignTokens.borderDark),
                 ),
                 focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(
-                    DesignTokens.radiusMedium,
-                  ),
-                  borderSide: const BorderSide(
-                    color: DesignTokens.primaryColor,
-                    width: 2,
-                  ),
+                  borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                  borderSide: const BorderSide(color: DesignTokens.primaryColor, width: 2),
                 ),
               ),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: DesignTokens.spacing6),
 
             // Submit button
             SizedBox(
@@ -435,26 +358,18 @@ class _QuickAddModalState extends State<QuickAddModal> {
                 onPressed: _isLoading ? null : _submitTransaction,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: typeColor,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(
-                      DesignTokens.radiusMedium,
-                    ),
-                  ),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(DesignTokens.radiusMedium)),
                 ),
                 child:
                     _isLoading
                         ? const CircularProgressIndicator(color: Colors.white)
                         : Text(
                           AppLocalizations.of(context)!.add_transaction,
-                          style: GoogleFonts.poppins(
-                            color: Colors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                          ),
+                          style: GoogleFonts.poppins(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600),
                         ),
               ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: DesignTokens.spacing4),
           ],
         ),
       ),

@@ -60,23 +60,11 @@ class _HomeHeaderState extends State<HomeHeader> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                Text('Selamat Datang,', style: GoogleFonts.poppins(color: Colors.grey[400], fontSize: 12)),
+                const SizedBox(height: DesignTokens.spacing1),
                 Text(
-                  'Selamat Datang,',
-                  style: GoogleFonts.poppins(
-                    color: Colors.grey[400],
-                    fontSize: 12,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  _isLoading
-                      ? 'Loading...'
-                      : (_userProfile?['full_name'] ?? 'User'),
-                  style: GoogleFonts.poppins(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  _isLoading ? 'Loading...' : (_userProfile?['full_name'] ?? 'User'),
+                  style: GoogleFonts.poppins(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
                 ),
               ],
             ),
@@ -98,11 +86,9 @@ class _HomeHeaderState extends State<HomeHeader> {
                   try {
                     Navigator.pushNamed(context, '/notifications');
                   } catch (e) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Halaman notifikasi belum tersedia'),
-                      ),
-                    );
+                    ScaffoldMessenger.of(
+                      context,
+                    ).showSnackBar(const SnackBar(content: Text('Halaman notifikasi belum tersedia')));
                   }
                 },
                 hasNotification: true,
@@ -115,11 +101,9 @@ class _HomeHeaderState extends State<HomeHeader> {
                   try {
                     Navigator.pushNamed(context, '/settings');
                   } catch (e) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Halaman pengaturan belum tersedia'),
-                      ),
-                    );
+                    ScaffoldMessenger.of(
+                      context,
+                    ).showSnackBar(const SnackBar(content: Text('Halaman pengaturan belum tersedia')));
                   }
                 },
               ),
@@ -158,10 +142,7 @@ class _HomeHeaderState extends State<HomeHeader> {
               borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
               border: Border.all(color: DesignTokens.borderDark),
             ),
-            child: IconButton(
-              icon: Icon(icon, size: 20, color: Colors.white),
-              onPressed: onPressed,
-            ),
+            child: IconButton(icon: Icon(icon, size: 20, color: Colors.white), onPressed: onPressed),
           ),
           if (hasNotification)
             Positioned(
@@ -170,10 +151,7 @@ class _HomeHeaderState extends State<HomeHeader> {
               child: Container(
                 width: 8,
                 height: 8,
-                decoration: const BoxDecoration(
-                  color: DesignTokens.primaryColor,
-                  shape: BoxShape.circle,
-                ),
+                decoration: const BoxDecoration(color: DesignTokens.primaryColor, shape: BoxShape.circle),
               ),
             ),
         ],

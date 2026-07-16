@@ -5,13 +5,7 @@ class LocationData {
   final String? address;
   final String? placeType;
 
-  LocationData({
-    required this.latitude,
-    required this.longitude,
-    this.placeName,
-    this.address,
-    this.placeType,
-  });
+  LocationData({required this.latitude, required this.longitude, this.placeName, this.address, this.placeType});
 
   Map<String, dynamic> toJson() {
     return {
@@ -35,6 +29,5 @@ class LocationData {
     );
   }
 
-  factory LocationData.fromMap(Map<String, dynamic> map) =>
-      LocationData.fromJson(map);
+  factory LocationData.fromMap(Map<String, dynamic> map) => LocationData.fromJson(map);
 }

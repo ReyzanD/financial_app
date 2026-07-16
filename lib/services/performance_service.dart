@@ -50,10 +50,7 @@ class PerformanceService {
   double getAverageApiResponseTime(String endpoint) {
     final times =
         _performanceMetrics
-            .where(
-              (m) =>
-                  m['type'] == 'api_response_time' && m['endpoint'] == endpoint,
-            )
+            .where((m) => m['type'] == 'api_response_time' && m['endpoint'] == endpoint)
             .map((m) => m['response_time_ms'] as int)
             .toList();
 
@@ -100,10 +97,7 @@ class PerformanceService {
   /// Get performance summary
   Map<String, dynamic> getPerformanceSummary() {
     final screenLoadTimes =
-        _performanceMetrics
-            .where((m) => m['type'] == 'screen_load_time')
-            .map((m) => m['load_time_ms'] as int)
-            .toList();
+        _performanceMetrics.where((m) => m['type'] == 'screen_load_time').map((m) => m['load_time_ms'] as int).toList();
 
     final apiResponseTimes =
         _performanceMetrics
@@ -115,35 +109,15 @@ class PerformanceService {
       'total_metrics': _performanceMetrics.length,
       'screen_load_times': {
         'count': screenLoadTimes.length,
-        'average_ms':
-            screenLoadTimes.isEmpty
-                ? 0
-                : screenLoadTimes.reduce((a, b) => a + b) /
-                    screenLoadTimes.length,
-        'min_ms':
-            screenLoadTimes.isEmpty
-                ? 0
-                : screenLoadTimes.reduce((a, b) => a < b ? a : b),
-        'max_ms':
-            screenLoadTimes.isEmpty
-                ? 0
-                : screenLoadTimes.reduce((a, b) => a > b ? a : b),
+        'average_ms': screenLoadTimes.isEmpty ? 0 : screenLoadTimes.reduce((a, b) => a + b) / screenLoadTimes.length,
+        'min_ms': screenLoadTimes.isEmpty ? 0 : screenLoadTimes.reduce((a, b) => a < b ? a : b),
+        'max_ms': screenLoadTimes.isEmpty ? 0 : screenLoadTimes.reduce((a, b) => a > b ? a : b),
       },
       'api_response_times': {
         'count': apiResponseTimes.length,
-        'average_ms':
-            apiResponseTimes.isEmpty
-                ? 0
-                : apiResponseTimes.reduce((a, b) => a + b) /
-                    apiResponseTimes.length,
-        'min_ms':
-            apiResponseTimes.isEmpty
-                ? 0
-                : apiResponseTimes.reduce((a, b) => a < b ? a : b),
-        'max_ms':
-            apiResponseTimes.isEmpty
-                ? 0
-                : apiResponseTimes.reduce((a, b) => a > b ? a : b),
+        'average_ms': apiResponseTimes.isEmpty ? 0 : apiResponseTimes.reduce((a, b) => a + b) / apiResponseTimes.length,
+        'min_ms': apiResponseTimes.isEmpty ? 0 : apiResponseTimes.reduce((a, b) => a < b ? a : b),
+        'max_ms': apiResponseTimes.isEmpty ? 0 : apiResponseTimes.reduce((a, b) => a > b ? a : b),
       },
     };
   }
@@ -188,14 +162,10 @@ class PerformanceService {
 
   /// Track user session
   void startSession() {
-    _recordMetric('session_start', {
-      'timestamp': DateTime.now().toIso8601String(),
-    });
+    _recordMetric('session_start', {'timestamp': DateTime.now().toIso8601String()});
   }
 
   void endSession() {
-    _recordMetric('session_end', {
-      'timestamp': DateTime.now().toIso8601String(),
-    });
+    _recordMetric('session_end', {'timestamp': DateTime.now().toIso8601String()});
   }
 }

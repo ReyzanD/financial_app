@@ -25,8 +25,7 @@ class ChallengeModel {
     required this.createdAt,
   });
 
-  double get progressPercentage =>
-      target > 0 ? (currentProgress / target) * 100 : 0;
+  double get progressPercentage => target > 0 ? (currentProgress / target) * 100 : 0;
 
   int get daysRemaining => endDate.difference(DateTime.now()).inDays;
 
@@ -63,44 +62,21 @@ class ChallengeModel {
 
   factory ChallengeModel.fromJson(Map<String, dynamic> json) {
     return ChallengeModel(
-      id:
-          json['id']?.toString() ??
-          json['challenge_id_232143']?.toString() ??
-          '',
+      id: json['id']?.toString() ?? json['challenge_id_232143']?.toString() ?? '',
       name: json['name']?.toString() ?? json['name_232143']?.toString() ?? '',
-      type:
-          json['type']?.toString() ??
-          json['type_232143']?.toString() ??
-          'no_spend',
-      target:
-          (json['target'] as num?)?.toDouble() ??
-          (json['target_amount_232143'] as num?)?.toDouble() ??
-          0.0,
+      type: json['type']?.toString() ?? json['type_232143']?.toString() ?? 'no_spend',
+      target: (json['target'] as num?)?.toDouble() ?? (json['target_amount_232143'] as num?)?.toDouble() ?? 0.0,
       currentProgress:
-          (json['current_progress'] as num?)?.toDouble() ??
-          (json['current_amount_232143'] as num?)?.toDouble() ??
-          0.0,
-      startDate:
-          _parseDate(json['start_date']) ??
-          _parseDate(json['start_date_232143']) ??
-          DateTime.now(),
+          (json['current_progress'] as num?)?.toDouble() ?? (json['current_amount_232143'] as num?)?.toDouble() ?? 0.0,
+      startDate: _parseDate(json['start_date']) ?? _parseDate(json['start_date_232143']) ?? DateTime.now(),
       endDate:
           _parseDate(json['end_date']) ??
           _parseDate(json['end_date_232143']) ??
           DateTime.now().add(const Duration(days: 30)),
-      isActive:
-          _parseBool(json['is_active']) ??
-          _parseBool(json['is_active_232143']) ??
-          true,
-      streak:
-          (json['streak'] as num?)?.toInt() ??
-          (json['streak_days_232143'] as num?)?.toInt() ??
-          0,
+      isActive: _parseBool(json['is_active']) ?? _parseBool(json['is_active_232143']) ?? true,
+      streak: (json['streak'] as num?)?.toInt() ?? (json['streak_days_232143'] as num?)?.toInt() ?? 0,
       bestStreak: (json['best_streak'] as num?)?.toInt() ?? 0,
-      createdAt:
-          _parseDate(json['created_at']) ??
-          _parseDate(json['created_at_232143']) ??
-          DateTime.now(),
+      createdAt: _parseDate(json['created_at']) ?? _parseDate(json['created_at_232143']) ?? DateTime.now(),
     );
   }
 
@@ -108,42 +84,19 @@ class ChallengeModel {
     return ChallengeModel(
       id: map['challenge_id_232143']?.toString() ?? map['id']?.toString() ?? '',
       name: map['name_232143']?.toString() ?? map['name']?.toString() ?? '',
-      type:
-          map['type_232143']?.toString() ??
-          map['type']?.toString() ??
-          'no_spend',
-      target:
-          (map['target_amount_232143'] as num?)?.toDouble() ??
-          (map['target'] as num?)?.toDouble() ??
-          0.0,
+      type: map['type_232143']?.toString() ?? map['type']?.toString() ?? 'no_spend',
+      target: (map['target_amount_232143'] as num?)?.toDouble() ?? (map['target'] as num?)?.toDouble() ?? 0.0,
       currentProgress:
-          (map['current_amount_232143'] as num?)?.toDouble() ??
-          (map['current_progress'] as num?)?.toDouble() ??
-          0.0,
-      startDate:
-          _parseDate(map['start_date_232143']) ??
-          _parseDate(map['start_date']) ??
-          DateTime.now(),
+          (map['current_amount_232143'] as num?)?.toDouble() ?? (map['current_progress'] as num?)?.toDouble() ?? 0.0,
+      startDate: _parseDate(map['start_date_232143']) ?? _parseDate(map['start_date']) ?? DateTime.now(),
       endDate:
           _parseDate(map['end_date_232143']) ??
           _parseDate(map['end_date']) ??
           DateTime.now().add(const Duration(days: 30)),
-      isActive:
-          _parseBool(map['is_active_232143']) ??
-          _parseBool(map['is_active']) ??
-          true,
-      streak:
-          (map['streak_days_232143'] as num?)?.toInt() ??
-          (map['streak'] as num?)?.toInt() ??
-          0,
-      bestStreak:
-          (map['best_streak_232143'] as num?)?.toInt() ??
-          (map['best_streak'] as num?)?.toInt() ??
-          0,
-      createdAt:
-          _parseDate(map['created_at_232143']) ??
-          _parseDate(map['created_at']) ??
-          DateTime.now(),
+      isActive: _parseBool(map['is_active_232143']) ?? _parseBool(map['is_active']) ?? true,
+      streak: (map['streak_days_232143'] as num?)?.toInt() ?? (map['streak'] as num?)?.toInt() ?? 0,
+      bestStreak: (map['best_streak_232143'] as num?)?.toInt() ?? (map['best_streak'] as num?)?.toInt() ?? 0,
+      createdAt: _parseDate(map['created_at_232143']) ?? _parseDate(map['created_at']) ?? DateTime.now(),
     );
   }
 
@@ -164,10 +117,5 @@ class ChallengeModel {
     return null;
   }
 
-  static List<String> get types => [
-    'no_spend',
-    'savings_target',
-    'budget_limit',
-    'custom',
-  ];
+  static List<String> get types => ['no_spend', 'savings_target', 'budget_limit', 'custom'];
 }

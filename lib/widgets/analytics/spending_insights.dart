@@ -8,11 +8,7 @@ class SpendingInsights extends StatelessWidget {
   final List<dynamic> transactions;
   final Map<String, dynamic> summary;
 
-  const SpendingInsights({
-    super.key,
-    required this.transactions,
-    required this.summary,
-  });
+  const SpendingInsights({super.key, required this.transactions, required this.summary});
 
   @override
   Widget build(BuildContext context) {
@@ -21,32 +17,22 @@ class SpendingInsights extends StatelessWidget {
       decoration: BoxDecoration(
         color: DesignTokens.surfaceDark,
         borderRadius: BorderRadius.circular(DesignTokens.radiusLarge),
-        border: Border.all(
-          color: DesignTokens.primaryColor.withValues(alpha: 0.3),
-        ),
+        border: Border.all(color: DesignTokens.primaryColor.withValues(alpha: 0.3)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Icon(
-                Iconsax.lamp_charge,
-                color: DesignTokens.primaryColor,
-                size: 20,
-              ),
+              Icon(Iconsax.lamp_charge, color: DesignTokens.primaryColor, size: 20),
               const SizedBox(width: 8),
               Text(
                 'AI Insights',
-                style: GoogleFonts.poppins(
-                  color: Colors.white,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                ),
+                style: GoogleFonts.poppins(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600),
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: DesignTokens.spacing3),
           ..._generateInsights(context),
         ],
       ),
@@ -56,10 +42,8 @@ class SpendingInsights extends StatelessWidget {
   List<Widget> _generateInsights(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final summaries = summary['summary'] ?? {};
-    final income =
-        (summaries['income'] as Map<String, dynamic>?)?['total_amount'] ?? 0.0;
-    final expense =
-        (summaries['expense'] as Map<String, dynamic>?)?['total_amount'] ?? 0.0;
+    final income = (summaries['income'] as Map<String, dynamic>?)?['total_amount'] ?? 0.0;
+    final expense = (summaries['expense'] as Map<String, dynamic>?)?['total_amount'] ?? 0.0;
     final balance = income - expense;
     final savingsRate = income > 0 ? ((balance / income) * 100) : 0.0;
 
@@ -73,7 +57,7 @@ class SpendingInsights extends StatelessWidget {
           'Usahakan untuk menabung minimal 20% dari pendapatan.',
         ),
       );
-      insights.add(const SizedBox(height: 8));
+      insights.add(const SizedBox(height: DesignTokens.spacing2));
     } else if (savingsRate >= 20) {
       insights.add(
         _buildInsightText(
@@ -81,13 +65,11 @@ class SpendingInsights extends StatelessWidget {
           'Pertahankan kebiasaan baik ini!',
         ),
       );
-      insights.add(const SizedBox(height: 8));
+      insights.add(const SizedBox(height: DesignTokens.spacing2));
     }
 
     // Transaction count insight
-    final expenseCount =
-        (summaries['expense'] as Map<String, dynamic>?)?['transaction_count'] ??
-        0;
+    final expenseCount = (summaries['expense'] as Map<String, dynamic>?)?['transaction_count'] ?? 0;
     if (expenseCount > 50) {
       insights.add(
         _buildInsightText(
@@ -95,7 +77,7 @@ class SpendingInsights extends StatelessWidget {
           'Pertimbangkan untuk mengurangi pengeluaran kecil yang sering.',
         ),
       );
-      insights.add(const SizedBox(height: 8));
+      insights.add(const SizedBox(height: DesignTokens.spacing2));
     }
 
     // Daily average insight
@@ -103,11 +85,7 @@ class SpendingInsights extends StatelessWidget {
     insights.add(
       Text(
         '📈 Rata-rata pengeluaran harian: Rp ${avgDailyExpense.toStringAsFixed(0)}',
-        style: GoogleFonts.poppins(
-          color: DesignTokens.primaryColor,
-          fontSize: 12,
-          fontWeight: FontWeight.w600,
-        ),
+        style: GoogleFonts.poppins(color: DesignTokens.primaryColor, fontSize: 12, fontWeight: FontWeight.w600),
       ),
     );
 
@@ -124,9 +102,6 @@ class SpendingInsights extends StatelessWidget {
   }
 
   Widget _buildInsightText(String text) {
-    return Text(
-      text,
-      style: GoogleFonts.poppins(color: Colors.white70, fontSize: 12),
-    );
+    return Text(text, style: GoogleFonts.poppins(color: Colors.white70, fontSize: 12));
   }
 }

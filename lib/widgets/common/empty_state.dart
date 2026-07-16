@@ -38,38 +38,26 @@ class EmptyState extends StatelessWidget {
                 shape: BoxShape.circle,
                 gradient: LinearGradient(
                   colors: [
-                    (iconColor ?? DesignTokens.primaryColor).withValues(
-                      alpha: 0.2,
-                    ),
-                    (iconColor ?? DesignTokens.primaryColor).withValues(
-                      alpha: 0.05,
-                    ),
+                    (iconColor ?? DesignTokens.primaryColor).withValues(alpha: 0.2),
+                    (iconColor ?? DesignTokens.primaryColor).withValues(alpha: 0.05),
                   ],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
               ),
-              child: Icon(
-                icon,
-                size: 64,
-                color: iconColor ?? DesignTokens.primaryColor,
-              ),
+              child: Icon(icon, size: 64, color: iconColor ?? DesignTokens.primaryColor),
             ),
 
-            const SizedBox(height: 24),
+            const SizedBox(height: DesignTokens.spacing6),
 
             // Title
             Text(
               title,
-              style: GoogleFonts.poppins(
-                color: Colors.white,
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
+              style: GoogleFonts.poppins(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
               textAlign: TextAlign.center,
             ),
 
-            const SizedBox(height: 8),
+            const SizedBox(height: DesignTokens.spacing2),
 
             // Subtitle
             Text(
@@ -80,7 +68,7 @@ class EmptyState extends StatelessWidget {
 
             // Action button (if provided)
             if (actionText != null && onAction != null) ...[
-              const SizedBox(height: 24),
+              const SizedBox(height: DesignTokens.spacing6),
               Semantics(
                 label: actionText,
                 button: true,
@@ -89,22 +77,12 @@ class EmptyState extends StatelessWidget {
                   icon: Icon(Iconsax.add, color: Colors.white),
                   label: Text(
                     actionText!,
-                    style: GoogleFonts.poppins(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w600,
-                    ),
+                    style: GoogleFonts.poppins(color: Colors.white, fontWeight: FontWeight.w600),
                   ),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: iconColor ?? DesignTokens.primaryColor,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 24,
-                      vertical: 12,
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(
-                        DesignTokens.radiusMedium,
-                      ),
-                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(DesignTokens.radiusMedium)),
                   ),
                 ),
               ),
@@ -124,9 +102,7 @@ class EmptyStates {
     return EmptyState(
       icon: Iconsax.wallet,
       title: l10n?.no_transactions_title ?? 'Belum Ada Transaksi',
-      subtitle:
-          l10n?.no_transactions_subtitle ??
-          'Mulai catat pengeluaran dan pemasukan Anda',
+      subtitle: l10n?.no_transactions_subtitle ?? 'Mulai catat pengeluaran dan pemasukan Anda',
       actionText: l10n?.add_transaction ?? 'Tambah Transaksi',
       onAction: onAdd,
     );
@@ -138,9 +114,7 @@ class EmptyStates {
     return EmptyState(
       icon: Iconsax.chart,
       title: l10n?.no_budgets_title ?? 'Belum Ada Budget',
-      subtitle:
-          l10n?.no_budgets_subtitle ??
-          'Atur budget untuk mengontrol pengeluaran Anda',
+      subtitle: l10n?.no_budgets_subtitle ?? 'Atur budget untuk mengontrol pengeluaran Anda',
       actionText: l10n?.create_budget ?? 'Buat Budget',
       onAction: onAdd,
     );
@@ -152,9 +126,7 @@ class EmptyStates {
     return EmptyState(
       icon: Iconsax.flag,
       title: l10n?.no_goals_title ?? 'Belum Ada Target',
-      subtitle:
-          l10n?.no_goals_subtitle ??
-          'Tetapkan target keuangan dan capai impian Anda',
+      subtitle: l10n?.no_goals_subtitle ?? 'Tetapkan target keuangan dan capai impian Anda',
       actionText: l10n?.add_target ?? 'Tambah Target',
       onAction: onAdd,
     );
@@ -166,9 +138,7 @@ class EmptyStates {
     return EmptyState(
       icon: Iconsax.notification,
       title: l10n?.no_notifications_title ?? 'Belum Ada Notifikasi',
-      subtitle:
-          l10n?.no_notifications_subtitle ??
-          'Notifikasi Anda akan muncul di sini',
+      subtitle: l10n?.no_notifications_subtitle ?? 'Notifikasi Anda akan muncul di sini',
     );
   }
 
@@ -178,9 +148,7 @@ class EmptyStates {
     return EmptyState(
       icon: Iconsax.search_normal,
       title: l10n?.no_search_results_title ?? 'Tidak Ada Hasil',
-      subtitle:
-          l10n?.no_search_results_subtitle ??
-          'Coba kata kunci lain atau filter berbeda',
+      subtitle: l10n?.no_search_results_subtitle ?? 'Coba kata kunci lain atau filter berbeda',
     );
   }
 
@@ -190,30 +158,20 @@ class EmptyStates {
     return EmptyState(
       icon: Iconsax.receipt_text,
       title: l10n?.no_obligations_title ?? 'Belum Ada Kewajiban',
-      subtitle:
-          l10n?.no_obligations_subtitle ??
-          'Catat tagihan dan subscription Anda',
+      subtitle: l10n?.no_obligations_subtitle ?? 'Catat tagihan dan subscription Anda',
       actionText: l10n?.add_obligation ?? 'Tambah Kewajiban',
       onAction: onAdd,
     );
   }
 
   /// No recurring transactions
-  static Widget noRecurringTransactions(
-    VoidCallback onAdd,
-    BuildContext context,
-  ) {
+  static Widget noRecurringTransactions(VoidCallback onAdd, BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return EmptyState(
       icon: Iconsax.repeat,
-      title:
-          l10n?.no_recurring_transactions_title ??
-          'Belum Ada Transaksi Berulang',
-      subtitle:
-          l10n?.no_recurring_transactions_subtitle ??
-          'Otomatis catat transaksi yang terjadi secara rutin',
-      actionText:
-          l10n?.add_recurring_transaction ?? 'Tambah Transaksi Berulang',
+      title: l10n?.no_recurring_transactions_title ?? 'Belum Ada Transaksi Berulang',
+      subtitle: l10n?.no_recurring_transactions_subtitle ?? 'Otomatis catat transaksi yang terjadi secara rutin',
+      actionText: l10n?.add_recurring_transaction ?? 'Tambah Transaksi Berulang',
       onAction: onAdd,
     );
   }
@@ -224,9 +182,7 @@ class EmptyStates {
     return EmptyState(
       icon: Iconsax.wifi,
       title: l10n?.no_connection_title ?? 'Tidak Ada Koneksi',
-      subtitle:
-          l10n?.no_connection_subtitle ??
-          'Periksa koneksi internet Anda dan coba lagi',
+      subtitle: l10n?.no_connection_subtitle ?? 'Periksa koneksi internet Anda dan coba lagi',
       actionText: l10n?.try_again ?? 'Coba Lagi',
       onAction: onRetry,
       iconColor: Colors.orange,
@@ -239,9 +195,7 @@ class EmptyStates {
     return EmptyState(
       icon: Iconsax.warning_2,
       title: l10n?.server_error_title ?? 'Terjadi Kesalahan',
-      subtitle:
-          l10n?.server_error_subtitle ??
-          'Server sedang bermasalah. Coba lagi dalam beberapa saat',
+      subtitle: l10n?.server_error_subtitle ?? 'Server sedang bermasalah. Coba lagi dalam beberapa saat',
       actionText: l10n?.try_again ?? 'Coba Lagi',
       onAction: onRetry,
       iconColor: Colors.red,

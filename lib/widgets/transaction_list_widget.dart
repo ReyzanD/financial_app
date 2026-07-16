@@ -20,14 +20,8 @@ class TransactionListWidget extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Semantics(
-                  liveRegion: true,
-                  child: Text('Error: ${appState.error}'),
-                ),
-                ElevatedButton(
-                  onPressed: () => appState.refreshData(),
-                  child: const Text('Retry'),
-                ),
+                Semantics(liveRegion: true, child: Text('Error: ${appState.error}')),
+                ElevatedButton(onPressed: () => appState.refreshData(), child: const Text('Retry')),
               ],
             ),
           );
@@ -60,16 +54,11 @@ class TransactionListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final numberFormat = NumberFormat.currency(
-      locale: 'id_ID',
-      symbol: 'Rp',
-      decimalDigits: 0,
-    );
+    final numberFormat = NumberFormat.currency(locale: 'id_ID', symbol: 'Rp', decimalDigits: 0);
 
     final dateFormat = DateFormat('dd MMM yyyy');
 
-    Color amountColor =
-        transaction.type == 'income' ? Colors.green : Colors.red;
+    Color amountColor = transaction.type == 'income' ? Colors.green : Colors.red;
 
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -78,20 +67,13 @@ class TransactionListItem extends StatelessWidget {
           width: 40,
           height: 40,
           decoration: BoxDecoration(
-            color: Color(
-              int.parse(transaction.categoryColor.replaceAll('#', '0xFF')),
-            ),
+            color: Color(int.parse(transaction.categoryColor.replaceAll('#', '0xFF'))),
             borderRadius: BorderRadius.circular(8),
           ),
           child: Icon(Icons.category, color: Colors.white),
         ),
-        title: Text(
-          transaction.description,
-          style: const TextStyle(fontWeight: FontWeight.bold),
-        ),
-        subtitle: Text(
-          '${transaction.categoryName} • ${dateFormat.format(transaction.transactionDate)}',
-        ),
+        title: Text(transaction.description, style: const TextStyle(fontWeight: FontWeight.bold)),
+        subtitle: Text('${transaction.categoryName} • ${dateFormat.format(transaction.transactionDate)}'),
         trailing: Text(
           numberFormat.format(transaction.amount),
           style: TextStyle(color: amountColor, fontWeight: FontWeight.bold),

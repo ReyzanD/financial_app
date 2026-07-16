@@ -30,13 +30,10 @@ class _MapScreenState extends State<MapScreen> {
   bool _showAlternatives = false;
   bool _isLoadingAlternatives = false;
   String? _errorMessage;
-  final TransactionDataService _transactionDataService =
-      getIt<TransactionDataService>();
+  final TransactionDataService _transactionDataService = getIt<TransactionDataService>();
   final OverpassApiService _overpassApiService = getIt<OverpassApiService>();
-  final PlaceVisitDataService _placeVisitDataService =
-      getIt<PlaceVisitDataService>();
-  final AlternativeSuggestionDataService _alternativeDataService =
-      getIt<AlternativeSuggestionDataService>();
+  final PlaceVisitDataService _placeVisitDataService = getIt<PlaceVisitDataService>();
+  final AlternativeSuggestionDataService _alternativeDataService = getIt<AlternativeSuggestionDataService>();
 
   @override
   void initState() {
@@ -126,10 +123,7 @@ class _MapScreenState extends State<MapScreen> {
       }
 
       if (mounted) {
-        ErrorHandlerService.showInfoSnackbar(
-          context,
-          '$totalMarkers tempat alternatif ditampilkan',
-        );
+        ErrorHandlerService.showInfoSnackbar(context, '$totalMarkers tempat alternatif ditampilkan');
       }
     } catch (e) {
       LoggerService.error('Error loading alternative markers', error: e);
@@ -153,11 +147,7 @@ class _MapScreenState extends State<MapScreen> {
                 shape: BoxShape.circle,
                 border: Border.all(color: Colors.white, width: 2),
                 boxShadow: [
-                  BoxShadow(
-                    color: DesignTokens.primaryColor.withValues(alpha: 0.4),
-                    blurRadius: 8,
-                    spreadRadius: 1,
-                  ),
+                  BoxShadow(color: DesignTokens.primaryColor.withValues(alpha: 0.4), blurRadius: 8, spreadRadius: 1),
                 ],
               ),
               child: const Icon(Iconsax.shop, color: Colors.white, size: 18),
@@ -180,9 +170,7 @@ class _MapScreenState extends State<MapScreen> {
       builder:
           (c) => AlertDialog(
             backgroundColor: DesignTokens.surfaceDark,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(DesignTokens.radiusLarge),
-            ),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(DesignTokens.radiusLarge)),
             title: Row(
               children: [
                 Icon(Iconsax.shop, color: DesignTokens.primaryColor, size: 24),
@@ -190,11 +178,7 @@ class _MapScreenState extends State<MapScreen> {
                 Expanded(
                   child: Text(
                     pt.name,
-                    style: GoogleFonts.poppins(
-                      color: Colors.white,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                    ),
+                    style: GoogleFonts.poppins(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600),
                   ),
                 ),
               ],
@@ -204,27 +188,15 @@ class _MapScreenState extends State<MapScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 _buildInfoRow('Jarak', distanceText, Colors.grey),
-                if (pt.confidence != null)
-                  _buildInfoRow(
-                    'Confidence',
-                    '${pt.confidence}%',
-                    DesignTokens.successColor,
-                  ),
+                if (pt.confidence != null) _buildInfoRow('Confidence', '${pt.confidence}%', DesignTokens.successColor),
                 if (pt.savings != null && pt.savings! > 0)
-                  _buildInfoRow(
-                    'Estimasi Hemat',
-                    'Rp ${pt.savings!.toStringAsFixed(0)}',
-                    DesignTokens.successColor,
-                  ),
+                  _buildInfoRow('Estimasi Hemat', 'Rp ${pt.savings!.toStringAsFixed(0)}', DesignTokens.successColor),
               ],
             ),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(c),
-                child: Text(
-                  'Tutup',
-                  style: GoogleFonts.poppins(color: DesignTokens.primaryColor),
-                ),
+                child: Text('Tutup', style: GoogleFonts.poppins(color: DesignTokens.primaryColor)),
               ),
             ],
           ),
@@ -237,18 +209,8 @@ class _MapScreenState extends State<MapScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(
-            label,
-            style: GoogleFonts.poppins(color: Colors.grey[400], fontSize: 13),
-          ),
-          Text(
-            value,
-            style: GoogleFonts.poppins(
-              color: color,
-              fontSize: 13,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
+          Text(label, style: GoogleFonts.poppins(color: Colors.grey[400], fontSize: 13)),
+          Text(value, style: GoogleFonts.poppins(color: color, fontSize: 13, fontWeight: FontWeight.w600)),
         ],
       ),
     );
@@ -273,11 +235,7 @@ class _MapScreenState extends State<MapScreen> {
                       l10n?.your_location ?? 'Your Location',
                       l10n?.current_position ?? 'Current position',
                     ),
-                child: const Icon(
-                  Icons.location_on,
-                  color: Colors.blue,
-                  size: 40,
-                ),
+                child: const Icon(Icons.location_on, color: Colors.blue, size: 40),
               ),
             ),
           );
@@ -300,8 +258,7 @@ class _MapScreenState extends State<MapScreen> {
     final l10n = AppLocalizations.of(context);
     ErrorHandlerService.showErrorSnackbar(
       context,
-      l10n?.unable_to_get_location_permission ??
-          'Unable to get current location. Please check permissions.',
+      l10n?.unable_to_get_location_permission ?? 'Unable to get current location. Please check permissions.',
     );
   }
 
@@ -314,22 +271,18 @@ class _MapScreenState extends State<MapScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(Icons.error_outline_rounded, size: 64, color: Colors.red[400]),
-            const SizedBox(height: 16),
+            const SizedBox(height: DesignTokens.spacing4),
             Text(
               l10n?.failed_to_load_data ?? 'Gagal Memuat Data',
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-                color: Colors.white,
-              ),
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: Colors.white),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: DesignTokens.spacing2),
             Text(
               _errorMessage ?? '',
               textAlign: TextAlign.center,
               style: const TextStyle(color: Colors.grey, fontSize: 14),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: DesignTokens.spacing6),
             ElevatedButton.icon(
               onPressed: () {
                 setState(() {
@@ -342,9 +295,7 @@ class _MapScreenState extends State<MapScreen> {
               },
               icon: const Icon(Icons.refresh),
               label: Text(l10n?.try_again ?? 'Coba Lagi'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: DesignTokens.primaryColor,
-              ),
+              style: ElevatedButton.styleFrom(backgroundColor: DesignTokens.primaryColor),
             ),
           ],
         ),
@@ -355,20 +306,15 @@ class _MapScreenState extends State<MapScreen> {
   Future<void> _loadTransactionMarkers() async {
     final l10n = AppLocalizations.of(context);
     try {
-      final transactionsData = await _transactionDataService.getTransactions(
-        limit: 100,
-      );
-      final transactions = List<Map<String, dynamic>>.from(
-        transactionsData['transactions'] ?? [],
-      );
+      final transactionsData = await _transactionDataService.getTransactions(limit: 100);
+      final transactions = List<Map<String, dynamic>>.from(transactionsData['transactions'] ?? []);
       for (var tx in transactions) {
         final lat = (tx['latitude_232143'] as num?)?.toDouble();
         final lng = (tx['longitude_232143'] as num?)?.toDouble();
         if (lat != null && lng != null) {
           _addTransactionMarker(
             LatLng(lat, lng),
-            tx['description_232143']?.toString() ??
-                (l10n?.transaction ?? 'Transaksi'),
+            tx['description_232143']?.toString() ?? (l10n?.transaction ?? 'Transaksi'),
             tx['type_232143']?.toString() ?? 'expense',
             (tx['amount_232143'] ?? 0).toDouble(),
             tx['transaction_date_232143']?.toString() ?? '',
@@ -413,13 +359,7 @@ class _MapScreenState extends State<MapScreen> {
     }
   }
 
-  void _addTransactionMarker(
-    LatLng position,
-    String description,
-    String type,
-    double amount,
-    String date,
-  ) {
+  void _addTransactionMarker(LatLng position, String description, String type, double amount, String date) {
     final color = _getMarkerColor(type);
     final icon = _getMarkerIcon(type);
     setState(() {
@@ -429,17 +369,12 @@ class _MapScreenState extends State<MapScreen> {
           width: 45,
           height: 45,
           child: GestureDetector(
-            onTap:
-                () =>
-                    _showTransactionMarkerInfo(description, type, amount, date),
+            onTap: () => _showTransactionMarkerInfo(description, type, amount, date),
             child: Stack(
               alignment: Alignment.center,
               children: [
                 Icon(Icons.location_on, color: color, size: 45),
-                Positioned(
-                  top: 8,
-                  child: Icon(icon, color: Colors.white, size: 16),
-                ),
+                Positioned(top: 8, child: Icon(icon, color: Colors.white, size: 16)),
               ],
             ),
           ),
@@ -456,29 +391,18 @@ class _MapScreenState extends State<MapScreen> {
           (c) => AlertDialog(
             backgroundColor: DesignTokens.surfaceDark,
             title: Text(title, style: GoogleFonts.poppins(color: Colors.white)),
-            content: Text(
-              subtitle,
-              style: GoogleFonts.poppins(color: Colors.grey[400]),
-            ),
+            content: Text(subtitle, style: GoogleFonts.poppins(color: Colors.grey[400])),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(c),
-                child: Text(
-                  l10n?.close ?? 'Tutup',
-                  style: GoogleFonts.poppins(color: DesignTokens.primaryColor),
-                ),
+                child: Text(l10n?.close ?? 'Tutup', style: GoogleFonts.poppins(color: DesignTokens.primaryColor)),
               ),
             ],
           ),
     );
   }
 
-  void _showTransactionMarkerInfo(
-    String description,
-    String type,
-    double amount,
-    String date,
-  ) {
+  void _showTransactionMarkerInfo(String description, String type, double amount, String date) {
     final l10n = AppLocalizations.of(context);
     final typeLabel =
         type == 'income'
@@ -492,9 +416,7 @@ class _MapScreenState extends State<MapScreen> {
       builder:
           (c) => AlertDialog(
             backgroundColor: DesignTokens.surfaceDark,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(DesignTokens.radiusLarge),
-            ),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(DesignTokens.radiusLarge)),
             title: Row(
               children: [
                 Icon(_getMarkerIcon(type), color: color, size: 24),
@@ -502,11 +424,7 @@ class _MapScreenState extends State<MapScreen> {
                 Expanded(
                   child: Text(
                     description,
-                    style: GoogleFonts.poppins(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600,
-                    ),
+                    style: GoogleFonts.poppins(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w600),
                   ),
                 ),
               ],
@@ -516,29 +434,22 @@ class _MapScreenState extends State<MapScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 _buildInfoRow(l10n?.type ?? 'Tipe', typeLabel, color),
-                const SizedBox(height: 12),
+                const SizedBox(height: DesignTokens.spacing3),
                 _buildInfoRow(
                   l10n?.amount ?? 'Jumlah',
                   'Rp ${amount.toStringAsFixed(0).replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]}.')}',
                   color,
                 ),
                 if (date.isNotEmpty) ...[
-                  const SizedBox(height: 12),
-                  _buildInfoRow(
-                    l10n?.date ?? 'Tanggal',
-                    date.split('T')[0],
-                    Colors.grey,
-                  ),
+                  const SizedBox(height: DesignTokens.spacing3),
+                  _buildInfoRow(l10n?.date ?? 'Tanggal', date.split('T')[0], Colors.grey),
                 ],
               ],
             ),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(c),
-                child: Text(
-                  l10n?.close ?? 'Tutup',
-                  style: GoogleFonts.poppins(color: DesignTokens.primaryColor),
-                ),
+                child: Text(l10n?.close ?? 'Tutup', style: GoogleFonts.poppins(color: DesignTokens.primaryColor)),
               ),
             ],
           ),
@@ -553,10 +464,7 @@ class _MapScreenState extends State<MapScreen> {
         backgroundColor: DesignTokens.backgroundDark,
         title: Text(
           l10n?.transaction_map ?? 'Peta Transaksi',
-          style: GoogleFonts.poppins(
-            color: Colors.white,
-            fontWeight: FontWeight.w600,
-          ),
+          style: GoogleFonts.poppins(color: Colors.white, fontWeight: FontWeight.w600),
         ),
         leading: IconButton(
           icon: const Icon(Iconsax.arrow_left, color: Colors.white),
@@ -569,26 +477,17 @@ class _MapScreenState extends State<MapScreen> {
               child: SizedBox(
                 width: 18,
                 height: 18,
-                child: CircularProgressIndicator(
-                  strokeWidth: 2,
-                  color: Colors.white,
-                ),
+                child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
               ),
             )
           else
             IconButton(
               icon: Icon(
                 _showAlternatives ? Iconsax.shop : Iconsax.shop_add,
-                color:
-                    _showAlternatives
-                        ? DesignTokens.primaryColor
-                        : Colors.white,
+                color: _showAlternatives ? DesignTokens.primaryColor : Colors.white,
               ),
               onPressed: _toggleAlternatives,
-              tooltip:
-                  _showAlternatives
-                      ? 'Sembunyikan alternatif'
-                      : 'Tampilkan alternatif',
+              tooltip: _showAlternatives ? 'Sembunyikan alternatif' : 'Tampilkan alternatif',
             ),
           IconButton(
             icon: const Icon(Iconsax.refresh, color: Colors.white),
@@ -613,8 +512,7 @@ class _MapScreenState extends State<MapScreen> {
                     : FlutterMap(
                       mapController: _mapController,
                       options: MapOptions(
-                        initialCenter:
-                            _currentPosition ?? const LatLng(-5.1477, 119.4327),
+                        initialCenter: _currentPosition ?? const LatLng(-5.1477, 119.4327),
                         initialZoom: 15.0,
                         minZoom: 5.0,
                         maxZoom: 18.0,
@@ -634,8 +532,7 @@ class _MapScreenState extends State<MapScreen> {
         heroTag: 'map_fab',
         onPressed: () async {
           final pos = await LocationService.getCurrentLatLng();
-          if (pos != null)
-            _mapController.move(LatLng(pos.latitude, pos.longitude), 18.0);
+          if (pos != null) _mapController.move(LatLng(pos.latitude, pos.longitude), 18.0);
         },
         backgroundColor: DesignTokens.primaryColor,
         child: const Icon(Iconsax.gps, color: Colors.white),

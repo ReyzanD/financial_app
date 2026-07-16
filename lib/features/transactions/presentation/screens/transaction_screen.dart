@@ -27,8 +27,7 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
   @override
   void initState() {
     super.initState();
-    _selectedFilter =
-        'Semua'; // Default value, will be updated in didChangeDependencies
+    _selectedFilter = 'Semua'; // Default value, will be updated in didChangeDependencies
     _searchController.addListener(() {
       setState(() {
         _searchQuery = _searchController.text;
@@ -38,10 +37,7 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
       try {
         context.read<TransactionController>().loadTransactions();
       } catch (e) {
-        LoggerService.error(
-          '[TransactionsScreen] Error refreshing data',
-          error: e,
-        );
+        LoggerService.error('[TransactionsScreen] Error refreshing data', error: e);
       }
     });
   }
@@ -82,17 +78,12 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                 decoration: InputDecoration(
                   hintText: AppLocalizations.of(context)?.search ?? 'Search',
                   hintStyle: GoogleFonts.poppins(color: Colors.grey[600]),
-                  prefixIcon: Icon(
-                    Iconsax.search_normal,
-                    color: Colors.grey[600],
-                  ),
+                  prefixIcon: Icon(Iconsax.search_normal, color: Colors.grey[600]),
                   suffixIcon:
                       _searchQuery.isNotEmpty
                           ? IconButton(
                             icon: Icon(Icons.clear, color: Colors.grey[600]),
-                            tooltip:
-                                AppLocalizations.of(context)?.delete_search ??
-                                'Hapus pencarian',
+                            tooltip: AppLocalizations.of(context)?.delete_search ?? 'Hapus pencarian',
                             onPressed: () {
                               _searchController.clear();
                             },
@@ -101,25 +92,16 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                   filled: true,
                   fillColor: DesignTokens.surfaceDark,
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(
-                      DesignTokens.radiusMedium,
-                    ),
+                    borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
                     borderSide: BorderSide(color: DesignTokens.borderDark),
                   ),
                   enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(
-                      DesignTokens.radiusMedium,
-                    ),
+                    borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
                     borderSide: BorderSide(color: DesignTokens.borderDark),
                   ),
                   focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(
-                      DesignTokens.radiusMedium,
-                    ),
-                    borderSide: const BorderSide(
-                      color: DesignTokens.primaryColor,
-                      width: 2,
-                    ),
+                    borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                    borderSide: const BorderSide(color: DesignTokens.primaryColor, width: 2),
                   ),
                 ),
               ),
@@ -137,10 +119,7 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
             ),
 
             // Transactions List
-            TransactionList(
-              selectedFilter: _selectedFilter,
-              searchQuery: _searchQuery,
-            ),
+            TransactionList(selectedFilter: _selectedFilter, searchQuery: _searchQuery),
           ],
         ),
       ),

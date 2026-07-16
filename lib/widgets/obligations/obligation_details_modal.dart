@@ -64,10 +64,7 @@ class _ObligationDetailsModalState extends State<ObligationDetailsModal> {
       if (!mounted) return;
 
       Navigator.pop(context, true);
-      ErrorHandlerService.showSuccessSnackbar(
-        context,
-        AppLocalizations.of(context)!.obligation_deleted_successfully,
-      );
+      ErrorHandlerService.showSuccessSnackbar(context, AppLocalizations.of(context)!.obligation_deleted_successfully);
     } catch (e) {
       if (!mounted) return;
       setState(() {
@@ -101,11 +98,8 @@ class _ObligationDetailsModalState extends State<ObligationDetailsModal> {
       context: context,
       isScrollControlled: true,
       backgroundColor: DesignTokens.surfaceModal,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder:
-          (context) => AddObligationModal(initialObligation: obligationData),
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      builder: (context) => AddObligationModal(initialObligation: obligationData),
     );
 
     if (result == true && mounted) {
@@ -153,12 +147,7 @@ class _ObligationDetailsModalState extends State<ObligationDetailsModal> {
     final color = _getObligationColor();
 
     return Container(
-      padding: EdgeInsets.only(
-        bottom: MediaQuery.of(context).viewInsets.bottom + 20,
-        left: 20,
-        right: 20,
-        top: 20,
-      ),
+      padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom + 20, left: 20, right: 20, top: 20),
       child: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -166,12 +155,9 @@ class _ObligationDetailsModalState extends State<ObligationDetailsModal> {
             Container(
               width: 40,
               height: 4,
-              decoration: BoxDecoration(
-                color: Colors.grey[600],
-                borderRadius: BorderRadius.circular(2),
-              ),
+              decoration: BoxDecoration(color: Colors.grey[600], borderRadius: BorderRadius.circular(2)),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: DesignTokens.spacing5),
 
             // Header
             Row(
@@ -180,9 +166,7 @@ class _ObligationDetailsModalState extends State<ObligationDetailsModal> {
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     color: color.withValues(alpha: 0.2),
-                    borderRadius: BorderRadius.circular(
-                      DesignTokens.radiusMedium,
-                    ),
+                    borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
                   ),
                   child: Icon(_getObligationIcon(), color: color, size: 24),
                 ),
@@ -193,22 +177,15 @@ class _ObligationDetailsModalState extends State<ObligationDetailsModal> {
                     children: [
                       Text(
                         widget.obligation.name,
-                        style: GoogleFonts.poppins(
-                          color: Colors.white,
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
+                        style: GoogleFonts.poppins(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
                       ),
-                      Text(
-                        _getTypeName(),
-                        style: TextStyle(color: color, fontSize: 14),
-                      ),
+                      Text(_getTypeName(), style: TextStyle(color: color, fontSize: 14)),
                     ],
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: DesignTokens.spacing6),
 
             // Monthly Amount Card
             Container(
@@ -220,16 +197,9 @@ class _ObligationDetailsModalState extends State<ObligationDetailsModal> {
                   end: Alignment.bottomRight,
                 ),
                 borderRadius: BorderRadius.circular(DesignTokens.radiusLarge),
-                border: Border.all(
-                  color: color.withValues(alpha: 0.3),
-                  width: 1.5,
-                ),
+                border: Border.all(color: color.withValues(alpha: 0.3), width: 1.5),
                 boxShadow: [
-                  BoxShadow(
-                    color: color.withValues(alpha: 0.15),
-                    blurRadius: 12,
-                    offset: const Offset(0, 4),
-                  ),
+                  BoxShadow(color: color.withValues(alpha: 0.15), blurRadius: 12, offset: const Offset(0, 4)),
                 ],
               ),
               child: Row(
@@ -242,21 +212,12 @@ class _ObligationDetailsModalState extends State<ObligationDetailsModal> {
                       children: [
                         Text(
                           AppLocalizations.of(context)!.monthly_amount,
-                          style: TextStyle(
-                            color: Colors.grey[400],
-                            fontSize: 12,
-                          ),
+                          style: TextStyle(color: Colors.grey[400], fontSize: 12),
                         ),
-                        const SizedBox(height: 4),
+                        const SizedBox(height: DesignTokens.spacing1),
                         Text(
-                          CurrencyFormatter.formatRupiah(
-                            widget.obligation.monthlyAmount,
-                          ),
-                          style: GoogleFonts.poppins(
-                            color: Colors.white,
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
+                          CurrencyFormatter.formatRupiah(widget.obligation.monthlyAmount),
+                          style: GoogleFonts.poppins(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
                         ),
                       ],
                     ),
@@ -264,7 +225,7 @@ class _ObligationDetailsModalState extends State<ObligationDetailsModal> {
                 ],
               ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: DesignTokens.spacing4),
 
             // Details Grid
             _buildDetailRow(
@@ -277,26 +238,19 @@ class _ObligationDetailsModalState extends State<ObligationDetailsModal> {
                 '${widget.obligation.daysUntilDue} ${AppLocalizations.of(context)!.days}',
               ),
             if (widget.obligation.category != null)
-              _buildDetailRow(
-                AppLocalizations.of(context)!.category,
-                _getCategoryName(widget.obligation.category!),
-              ),
+              _buildDetailRow(AppLocalizations.of(context)!.category, _getCategoryName(widget.obligation.category!)),
 
             // Debt specific details
             if (widget.obligation.type == ObligationType.debt) ...[
               if (widget.obligation.currentBalance != null)
                 _buildDetailRow(
                   AppLocalizations.of(context)!.current_balance,
-                  CurrencyFormatter.formatRupiah(
-                    widget.obligation.currentBalance!,
-                  ),
+                  CurrencyFormatter.formatRupiah(widget.obligation.currentBalance!),
                 ),
               if (widget.obligation.originalAmount != null)
                 _buildDetailRow(
                   AppLocalizations.of(context)!.original_amount,
-                  CurrencyFormatter.formatRupiah(
-                    widget.obligation.originalAmount!,
-                  ),
+                  CurrencyFormatter.formatRupiah(widget.obligation.originalAmount!),
                 ),
               if (widget.obligation.interestRate != null)
                 _buildDetailRow(
@@ -306,9 +260,7 @@ class _ObligationDetailsModalState extends State<ObligationDetailsModal> {
               if (widget.obligation.minimumPayment != null)
                 _buildDetailRow(
                   AppLocalizations.of(context)!.minimum_payment,
-                  CurrencyFormatter.formatRupiah(
-                    widget.obligation.minimumPayment!,
-                  ),
+                  CurrencyFormatter.formatRupiah(widget.obligation.minimumPayment!),
                 ),
             ],
 
@@ -317,17 +269,15 @@ class _ObligationDetailsModalState extends State<ObligationDetailsModal> {
               if (widget.obligation.subscriptionCycle != null)
                 _buildDetailRow(
                   AppLocalizations.of(context)!.cycle,
-                  _getSubscriptionCycleName(
-                    widget.obligation.subscriptionCycle!,
-                  ),
+                  _getSubscriptionCycleName(widget.obligation.subscriptionCycle!),
                 ),
             ],
 
-            const SizedBox(height: 24),
+            const SizedBox(height: DesignTokens.spacing6),
 
             // Reminder Settings
             ReminderSettings(obligation: widget.obligation),
-            const SizedBox(height: 16),
+            const SizedBox(height: DesignTokens.spacing4),
 
             // Action Buttons
             Row(
@@ -340,21 +290,14 @@ class _ObligationDetailsModalState extends State<ObligationDetailsModal> {
                             ? const SizedBox(
                               width: 16,
                               height: 16,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                color: Colors.red,
-                              ),
+                              child: CircularProgressIndicator(strokeWidth: 2, color: Colors.red),
                             )
                             : const Icon(Iconsax.trash, size: 18),
                     label: Text(AppLocalizations.of(context)!.delete),
                     style: OutlinedButton.styleFrom(
                       foregroundColor: Colors.red,
                       side: const BorderSide(color: Colors.red),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(
-                          DesignTokens.radiusMedium,
-                        ),
-                      ),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(DesignTokens.radiusMedium)),
                       padding: const EdgeInsets.symmetric(vertical: 14),
                     ),
                   ),
@@ -368,11 +311,7 @@ class _ObligationDetailsModalState extends State<ObligationDetailsModal> {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: DesignTokens.primaryColor,
                       foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(
-                          DesignTokens.radiusMedium,
-                        ),
-                      ),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(DesignTokens.radiusMedium)),
                       padding: const EdgeInsets.symmetric(vertical: 14),
                     ),
                   ),
@@ -392,14 +331,7 @@ class _ObligationDetailsModalState extends State<ObligationDetailsModal> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(label, style: TextStyle(color: Colors.grey[400], fontSize: 14)),
-          Text(
-            value,
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 14,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
+          Text(value, style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w500)),
         ],
       ),
     );

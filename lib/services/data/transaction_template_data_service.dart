@@ -43,9 +43,7 @@ class TransactionTemplateDataService {
     }
   }
 
-  Future<TransactionTemplateModel> addTransactionTemplate(
-    Map<String, dynamic> templateData,
-  ) async {
+  Future<TransactionTemplateModel> addTransactionTemplate(Map<String, dynamic> templateData) async {
     try {
       final userId = await getCurrentUserId();
       if (userId == null) throw Exception('Not authenticated');
@@ -104,9 +102,7 @@ class TransactionTemplateDataService {
     }
   }
 
-  Future<TransactionModel> createTransactionFromTemplate(
-    String templateId,
-  ) async {
+  Future<TransactionModel> createTransactionFromTemplate(String templateId) async {
     try {
       final userId = await getCurrentUserId();
       if (userId == null) throw Exception('Not authenticated');

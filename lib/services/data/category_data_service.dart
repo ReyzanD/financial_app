@@ -11,11 +11,9 @@ class CategoryDataService {
   final LocalAuthService _authService;
   final _uuid = const Uuid();
 
-  CategoryDataService({
-    LocalDatabaseService? dbService,
-    LocalAuthService? authService,
-  }) : _dbService = dbService ?? LocalDatabaseService(),
-       _authService = authService ?? LocalAuthService();
+  CategoryDataService({LocalDatabaseService? dbService, LocalAuthService? authService})
+    : _dbService = dbService ?? LocalDatabaseService(),
+      _authService = authService ?? LocalAuthService();
 
   /// Get current user ID
   Future<String?> getCurrentUserId() async {
@@ -36,9 +34,7 @@ class CategoryDataService {
         orderBy: 'type_232143, display_order_232143',
       );
 
-      return List<Map<String, dynamic>>.from(
-        categories,
-      ).map((m) => CategoryModel.fromMap(m)).toList();
+      return List<Map<String, dynamic>>.from(categories).map((m) => CategoryModel.fromMap(m)).toList();
     } catch (e) {
       LoggerService.error('Error getting categories', error: e);
       rethrow;
@@ -79,10 +75,7 @@ class CategoryDataService {
   }
 
   /// Update category
-  Future<CategoryModel> updateCategory(
-    String id,
-    Map<String, dynamic> categoryData,
-  ) async {
+  Future<CategoryModel> updateCategory(String id, Map<String, dynamic> categoryData) async {
     try {
       final userId = await getCurrentUserId();
       if (userId == null) throw Exception('Not authenticated');

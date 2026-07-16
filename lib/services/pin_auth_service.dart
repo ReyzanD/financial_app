@@ -51,10 +51,7 @@ class PinAuthService {
 
     await _secureStorage.write(key: _pinKey, value: hashedPin);
     await _secureStorage.write(key: _pinSaltKey, value: salt);
-    await _secureStorage.write(
-      key: _pinLengthKey,
-      value: pin.length.toString(),
-    );
+    await _secureStorage.write(key: _pinLengthKey, value: pin.length.toString());
     await _secureStorage.write(key: _hasPinKey, value: 'true');
     await _secureStorage.write(key: _pinCreatedAtKey, value: now);
     await _secureStorage.write(key: _failedAttemptsKey, value: '0');
@@ -80,10 +77,7 @@ class PinAuthService {
     if (isValid) {
       // Reset failed attempts and update last unlock
       await _secureStorage.write(key: _failedAttemptsKey, value: '0');
-      await _secureStorage.write(
-        key: _lastUnlockKey,
-        value: DateTime.now().toIso8601String(),
-      );
+      await _secureStorage.write(key: _lastUnlockKey, value: DateTime.now().toIso8601String());
       return true;
     } else {
       // Increment failed attempts
@@ -165,26 +159,17 @@ class PinAuthService {
     final attempts = await getFailedAttempts();
     final newAttempts = attempts + 1;
 
-    await _secureStorage.write(
-      key: _failedAttemptsKey,
-      value: newAttempts.toString(),
-    );
+    await _secureStorage.write(key: _failedAttemptsKey, value: newAttempts.toString());
 
     // Lock for 30 seconds after 3 attempts
     if (newAttempts >= 3 && newAttempts < 5) {
       final lockUntil = DateTime.now().add(const Duration(seconds: 30));
-      await _secureStorage.write(
-        key: _lockUntilKey,
-        value: lockUntil.toIso8601String(),
-      );
+      await _secureStorage.write(key: _lockUntilKey, value: lockUntil.toIso8601String());
     }
     // Lock for 5 minutes after 5 attempts
     else if (newAttempts >= 5) {
       final lockUntil = DateTime.now().add(const Duration(minutes: 5));
-      await _secureStorage.write(
-        key: _lockUntilKey,
-        value: lockUntil.toIso8601String(),
-      );
+      await _secureStorage.write(key: _lockUntilKey, value: lockUntil.toIso8601String());
     }
   }
 
@@ -219,9 +204,7 @@ class PinAuthService {
   }
 
   /// Check if should auto-lock (based on inactivity)
-  Future<bool> shouldAutoLock({
-    Duration inactivityTimeout = const Duration(minutes: 5),
-  }) async {
+  Future<bool> shouldAutoLock({Duration inactivityTimeout = const Duration(minutes: 5)}) async {
     final lastUnlock = await getLastUnlockTime();
     if (lastUnlock == null) return true;
 

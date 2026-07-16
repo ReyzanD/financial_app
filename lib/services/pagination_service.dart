@@ -11,11 +11,9 @@ class PaginationService<T> {
   List<T> _allItems = [];
   String? _error;
 
-  PaginationService({
-    required Future<List<T>> Function(int page, int limit) fetchFunction,
-    int pageSize = 20,
-  }) : _fetchFunction = fetchFunction,
-       _pageSize = pageSize;
+  PaginationService({required Future<List<T>> Function(int page, int limit) fetchFunction, int pageSize = 20})
+    : _fetchFunction = fetchFunction,
+      _pageSize = pageSize;
 
   /// Get current items
   List<T> get items => List.unmodifiable(_allItems);
@@ -51,9 +49,7 @@ class PaginationService<T> {
     _error = null;
 
     try {
-      LoggerService.debug(
-        '[PaginationService] Loading page $_currentPage (pageSize: $_pageSize)',
-      );
+      LoggerService.debug('[PaginationService] Loading page $_currentPage (pageSize: $_pageSize)');
 
       final newItems = await _fetchFunction(_currentPage, _pageSize);
 
@@ -69,9 +65,7 @@ class PaginationService<T> {
           _hasMore = false;
         }
 
-        LoggerService.success(
-          '[PaginationService] Loaded ${newItems.length} items (total: ${_allItems.length})',
-        );
+        LoggerService.success('[PaginationService] Loaded ${newItems.length} items (total: ${_allItems.length})');
       }
 
       return _allItems;

@@ -16,18 +16,11 @@ class GoalsHeader extends StatelessWidget {
             header: true,
             child: Text(
               'Target Keuangan',
-              style: GoogleFonts.poppins(
-                color: Colors.white,
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-              ),
+              style: GoogleFonts.poppins(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
             ),
           ),
-          const SizedBox(height: 8),
-          Text(
-            'Raih impian finansial Anda',
-            style: GoogleFonts.poppins(color: Colors.grey[400], fontSize: 14),
-          ),
+          const SizedBox(height: DesignTokens.spacing2),
+          Text('Raih impian finansial Anda', style: GoogleFonts.poppins(color: Colors.grey[400], fontSize: 14)),
         ],
       ),
     );

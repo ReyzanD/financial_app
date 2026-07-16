@@ -10,11 +10,7 @@ class TransactionController extends ChangeNotifier {
   final CreateTransactionUseCase _createTransactionUseCase;
   final DeleteTransactionUseCase _deleteTransactionUseCase;
 
-  TransactionController(
-    this._getTransactionsUseCase,
-    this._createTransactionUseCase,
-    this._deleteTransactionUseCase,
-  );
+  TransactionController(this._getTransactionsUseCase, this._createTransactionUseCase, this._deleteTransactionUseCase);
 
   List<TransactionEntity> _transactions = [];
   bool _isLoading = false;
@@ -25,12 +21,7 @@ class TransactionController extends ChangeNotifier {
   String? get error => _error;
 
   /// Load transactions
-  Future<void> loadTransactions({
-    String? type,
-    DateTime? startDate,
-    DateTime? endDate,
-    String? categoryId,
-  }) async {
+  Future<void> loadTransactions({String? type, DateTime? startDate, DateTime? endDate, String? categoryId}) async {
     _isLoading = true;
     _error = null;
     notifyListeners();

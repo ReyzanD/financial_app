@@ -44,37 +44,24 @@ class _ForecastScreenState extends State<ForecastScreen> {
                         Semantics(
                           header: true,
                           child: Text(
-                            l10n?.forecast_and_prediction ??
-                                'Forecast & Prediksi',
-                            style: GoogleFonts.poppins(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w600,
-                              fontSize: 20,
-                            ),
+                            l10n?.forecast_and_prediction ?? 'Forecast & Prediksi',
+                            style: GoogleFonts.poppins(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 20),
                           ),
                         ),
                         Row(
                           children: [
                             Tooltip(
-                              message:
-                                  'Tip: Forecast dapat diakses dari More > Forecast',
+                              message: 'Tip: Forecast dapat diakses dari More > Forecast',
                               decoration: BoxDecoration(
                                 color: DesignTokens.surfaceDark,
                                 borderRadius: BorderRadius.circular(8),
                               ),
-                              child: Icon(
-                                Iconsax.info_circle,
-                                color: Colors.grey[500],
-                                size: 20,
-                              ),
+                              child: Icon(Iconsax.info_circle, color: Colors.grey[500], size: 20),
                             ),
                             Consumer<ForecastController>(
                               builder:
                                   (_, ctrl, __) => IconButton(
-                                    icon: const Icon(
-                                      Iconsax.refresh,
-                                      color: Colors.white,
-                                    ),
+                                    icon: const Icon(Iconsax.refresh, color: Colors.white),
                                     tooltip: 'Segarkan',
                                     onPressed: ctrl.refresh,
                                   ),
@@ -88,39 +75,32 @@ class _ForecastScreenState extends State<ForecastScreen> {
                     child: Consumer<ForecastController>(
                       builder: (context, ctrl, _) {
                         if (ctrl.isLoading) {
-                          return const Center(
-                            child: CircularProgressIndicator(
-                              color: DesignTokens.primaryColor,
-                            ),
-                          );
+                          return const Center(child: CircularProgressIndicator(color: DesignTokens.primaryColor));
                         }
                         if (ctrl.error != null) return _buildErrorState(ctrl);
                         return RefreshIndicator(
                           onRefresh: ctrl.refresh,
                           color: DesignTokens.primaryColor,
                           child: ListView(
-                            padding: const EdgeInsets.all(
-                              DesignTokens.spacing4,
-                            ),
+                            padding: const EdgeInsets.all(DesignTokens.spacing4),
                             children: [
                               _buildForecastSummary(ctrl),
-                              const SizedBox(height: 20),
+                              const SizedBox(height: DesignTokens.spacing5),
                               _buildSpendingTrendChart(ctrl),
-                              const SizedBox(height: 20),
+                              const SizedBox(height: DesignTokens.spacing5),
                               if (ctrl.budgetRisks.isNotEmpty) ...[
                                 _buildBudgetRisks(ctrl),
-                                const SizedBox(height: 20),
+                                const SizedBox(height: DesignTokens.spacing5),
                               ],
                               if (ctrl.categoryForecasts.isNotEmpty) ...[
                                 _buildCategoryForecast(ctrl),
-                                const SizedBox(height: 20),
+                                const SizedBox(height: DesignTokens.spacing5),
                               ],
                               if (ctrl.suggestedBudgets.isNotEmpty) ...[
                                 _buildSuggestedBudgets(ctrl),
-                                const SizedBox(height: 20),
+                                const SizedBox(height: DesignTokens.spacing5),
                               ],
-                              if (ctrl.patternAnalysis['trends'] != null)
-                                _buildSpendingInsights(ctrl),
+                              if (ctrl.patternAnalysis['trends'] != null) _buildSpendingInsights(ctrl),
                             ],
                           ),
                         );
@@ -145,30 +125,24 @@ class _ForecastScreenState extends State<ForecastScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(Iconsax.warning_2, size: 64, color: DesignTokens.errorColor),
-            const SizedBox(height: 16),
+            const SizedBox(height: DesignTokens.spacing4),
             Semantics(
               liveRegion: true,
               child: Text(
                 l10n?.failed_to_load_forecast ?? 'Gagal Memuat Forecast',
-                style: GoogleFonts.poppins(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.white,
-                ),
+                style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.w600, color: Colors.white),
               ),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: DesignTokens.spacing2),
             Semantics(
               liveRegion: true,
               child: Text(
                 'Butuh data transaksi untuk membuat prediksi',
                 textAlign: TextAlign.center,
-                style: GoogleFonts.poppins(
-                  color: DesignTokens.textSecondaryDark,
-                ),
+                style: GoogleFonts.poppins(color: DesignTokens.textSecondaryDark),
               ),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: DesignTokens.spacing6),
             ElevatedButton.icon(
               onPressed: ctrl.refresh,
               icon: const Icon(Iconsax.refresh),
@@ -223,24 +197,16 @@ class _ForecastScreenState extends State<ForecastScreen> {
               const SizedBox(width: 8),
               Text(
                 'Prediksi 30 Hari Kedepan',
-                style: GoogleFonts.poppins(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.white,
-                ),
+                style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.white),
               ),
             ],
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: DesignTokens.spacing4),
           Text(
             'Rp ${_formatNumber(forecastAmount)}',
-            style: GoogleFonts.poppins(
-              fontSize: 28,
-              fontWeight: FontWeight.w700,
-              color: DesignTokens.primaryColor,
-            ),
+            style: GoogleFonts.poppins(fontSize: 28, fontWeight: FontWeight.w700, color: DesignTokens.primaryColor),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: DesignTokens.spacing2),
           Row(
             children: [
               Icon(trendIcon, size: 20, color: trendColor),
@@ -251,25 +217,18 @@ class _ForecastScreenState extends State<ForecastScreen> {
                     : trend == 'decreasing'
                     ? (l10n?.spending_decreased ?? 'Pengeluaran menurun')
                     : (l10n?.spending_stable ?? 'Pengeluaran stabil'),
-                style: GoogleFonts.poppins(
-                  fontSize: 13,
-                  color: trendColor,
-                  fontWeight: FontWeight.w500,
-                ),
+                style: GoogleFonts.poppins(fontSize: 13, color: trendColor, fontWeight: FontWeight.w500),
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: DesignTokens.spacing3),
           _buildConfidenceBar(confidence),
-          const SizedBox(height: 8),
+          const SizedBox(height: DesignTokens.spacing2),
           Text(
             'Akurasi: ${(confidence * 100).toInt()}%',
-            style: GoogleFonts.poppins(
-              fontSize: 12,
-              color: DesignTokens.textSecondaryDark,
-            ),
+            style: GoogleFonts.poppins(fontSize: 12, color: DesignTokens.textSecondaryDark),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: DesignTokens.spacing2),
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
@@ -281,20 +240,10 @@ class _ForecastScreenState extends State<ForecastScreen> {
               children: [
                 Column(
                   children: [
-                    Text(
-                      'Minimum',
-                      style: GoogleFonts.poppins(
-                        fontSize: 11,
-                        color: DesignTokens.textSecondaryDark,
-                      ),
-                    ),
+                    Text('Minimum', style: GoogleFonts.poppins(fontSize: 11, color: DesignTokens.textSecondaryDark)),
                     Text(
                       'Rp ${_formatNumber(lower)}',
-                      style: GoogleFonts.poppins(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.white,
-                      ),
+                      style: GoogleFonts.poppins(fontSize: 13, fontWeight: FontWeight.w600, color: Colors.white),
                     ),
                   ],
                 ),
@@ -308,20 +257,10 @@ class _ForecastScreenState extends State<ForecastScreen> {
                 ),
                 Column(
                   children: [
-                    Text(
-                      'Maksimum',
-                      style: GoogleFonts.poppins(
-                        fontSize: 11,
-                        color: DesignTokens.textSecondaryDark,
-                      ),
-                    ),
+                    Text('Maksimum', style: GoogleFonts.poppins(fontSize: 11, color: DesignTokens.textSecondaryDark)),
                     Text(
                       'Rp ${_formatNumber(upper)}',
-                      style: GoogleFonts.poppins(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.white,
-                      ),
+                      style: GoogleFonts.poppins(fontSize: 13, fontWeight: FontWeight.w600, color: Colors.white),
                     ),
                   ],
                 ),
@@ -357,14 +296,8 @@ class _ForecastScreenState extends State<ForecastScreen> {
     if (periodData.isEmpty) return const SizedBox.shrink();
 
     final sortedMonths = periodData.keys.toList()..sort();
-    final expenses =
-        sortedMonths
-            .map((m) => (periodData[m]['expense'] as num?)?.toDouble() ?? 0.0)
-            .toList();
-    final incomes =
-        sortedMonths
-            .map((m) => (periodData[m]['income'] as num?)?.toDouble() ?? 0.0)
-            .toList();
+    final expenses = sortedMonths.map((m) => (periodData[m]['expense'] as num?)?.toDouble() ?? 0.0).toList();
+    final incomes = sortedMonths.map((m) => (periodData[m]['income'] as num?)?.toDouble() ?? 0.0).toList();
     if (expenses.length < 2) return const SizedBox.shrink();
 
     final maxVal = [...expenses, ...incomes].reduce((a, b) => a > b ? a : b);
@@ -382,13 +315,9 @@ class _ForecastScreenState extends State<ForecastScreen> {
         children: [
           Text(
             'Tren Pengeluaran 3 Bulan',
-            style: GoogleFonts.poppins(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-              color: Colors.white,
-            ),
+            style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.white),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: DesignTokens.spacing4),
           SizedBox(
             height: 200,
             child: BarChart(
@@ -404,10 +333,7 @@ class _ForecastScreenState extends State<ForecastScreen> {
                       getTitlesWidget:
                           (value, meta) => Text(
                             'Rp${(value / 1000000).toStringAsFixed(0)}jt',
-                            style: GoogleFonts.poppins(
-                              fontSize: 10,
-                              color: DesignTokens.textSecondaryDark,
-                            ),
+                            style: GoogleFonts.poppins(fontSize: 10, color: DesignTokens.textSecondaryDark),
                           ),
                     ),
                   ),
@@ -415,8 +341,7 @@ class _ForecastScreenState extends State<ForecastScreen> {
                     sideTitles: SideTitles(
                       showTitles: true,
                       getTitlesWidget: (value, meta) {
-                        if (value.toInt() >= sortedMonths.length)
-                          return const SizedBox.shrink();
+                        if (value.toInt() >= sortedMonths.length) return const SizedBox.shrink();
                         final parts = sortedMonths[value.toInt()].split('-');
                         return Text(
                           _monthName(int.tryParse(parts[1]) ?? 1),
@@ -429,12 +354,8 @@ class _ForecastScreenState extends State<ForecastScreen> {
                       },
                     ),
                   ),
-                  topTitles: const AxisTitles(
-                    sideTitles: SideTitles(showTitles: false),
-                  ),
-                  rightTitles: const AxisTitles(
-                    sideTitles: SideTitles(showTitles: false),
-                  ),
+                  topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                  rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
                 ),
                 borderData: FlBorderData(show: false),
                 barGroups: List.generate(
@@ -446,17 +367,13 @@ class _ForecastScreenState extends State<ForecastScreen> {
                         toY: expenses[i],
                         color: DesignTokens.errorColor,
                         width: 16,
-                        borderRadius: const BorderRadius.vertical(
-                          top: Radius.circular(4),
-                        ),
+                        borderRadius: const BorderRadius.vertical(top: Radius.circular(4)),
                       ),
                       BarChartRodData(
                         toY: incomes[i],
                         color: DesignTokens.successColor,
                         width: 16,
-                        borderRadius: const BorderRadius.vertical(
-                          top: Radius.circular(4),
-                        ),
+                        borderRadius: const BorderRadius.vertical(top: Radius.circular(4)),
                       ),
                     ],
                   ),
@@ -464,19 +381,13 @@ class _ForecastScreenState extends State<ForecastScreen> {
               ),
             ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: DesignTokens.spacing3),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              _buildLegend(
-                l10n?.expense ?? 'Pengeluaran',
-                DesignTokens.errorColor,
-              ),
+              _buildLegend(l10n?.expense ?? 'Pengeluaran', DesignTokens.errorColor),
               const SizedBox(width: 20),
-              _buildLegend(
-                l10n?.income ?? 'Pemasukan',
-                DesignTokens.successColor,
-              ),
+              _buildLegend(l10n?.income ?? 'Pemasukan', DesignTokens.successColor),
             ],
           ),
         ],
@@ -486,12 +397,7 @@ class _ForecastScreenState extends State<ForecastScreen> {
 
   Widget _buildBudgetRisks(ForecastController ctrl) {
     final l10n = AppLocalizations.of(context);
-    final critical =
-        ctrl.budgetRisks
-            .where(
-              (r) => r['risk_level'] == 'critical' || r['risk_level'] == 'high',
-            )
-            .toList();
+    final critical = ctrl.budgetRisks.where((r) => r['risk_level'] == 'critical' || r['risk_level'] == 'high').toList();
     if (critical.isEmpty) {
       return Container(
         padding: const EdgeInsets.all(20),
@@ -502,20 +408,12 @@ class _ForecastScreenState extends State<ForecastScreen> {
         ),
         child: Row(
           children: [
-            Icon(
-              Iconsax.tick_circle,
-              color: DesignTokens.successColor,
-              size: 32,
-            ),
+            Icon(Iconsax.tick_circle, color: DesignTokens.successColor, size: 32),
             const SizedBox(width: 12),
             Expanded(
               child: Text(
                 l10n?.all_budgets_safe ?? 'Semua budget dalam kondisi aman',
-                style: GoogleFonts.poppins(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                  color: DesignTokens.successColor,
-                ),
+                style: GoogleFonts.poppins(fontSize: 14, fontWeight: FontWeight.w500, color: DesignTokens.successColor),
               ),
             ),
           ],
@@ -539,15 +437,11 @@ class _ForecastScreenState extends State<ForecastScreen> {
               const SizedBox(width: 8),
               Text(
                 l10n?.budget_warning ?? 'Peringatan Budget',
-                style: GoogleFonts.poppins(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.white,
-                ),
+                style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.white),
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: DesignTokens.spacing3),
           ...critical.map((risk) => _buildBudgetRiskItem(risk)),
         ],
       ),
@@ -583,35 +477,18 @@ class _ForecastScreenState extends State<ForecastScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Expanded(
-                child: Text(
-                  category,
-                  style: GoogleFonts.poppins(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 14,
-                  ),
-                ),
-              ),
+              Expanded(child: Text(category, style: GoogleFonts.poppins(fontWeight: FontWeight.w600, fontSize: 14))),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                decoration: BoxDecoration(
-                  color: color,
-                  borderRadius: BorderRadius.circular(
-                    DesignTokens.radiusMedium,
-                  ),
-                ),
+                decoration: BoxDecoration(color: color, borderRadius: BorderRadius.circular(DesignTokens.radiusMedium)),
                 child: Text(
                   '${usagePercent.toInt()}%',
-                  style: GoogleFonts.poppins(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.white,
-                  ),
+                  style: GoogleFonts.poppins(fontSize: 12, fontWeight: FontWeight.w600, color: Colors.white),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: DesignTokens.spacing2),
           ClipRRect(
             borderRadius: BorderRadius.circular(4),
             child: LinearProgressIndicator(
@@ -621,15 +498,12 @@ class _ForecastScreenState extends State<ForecastScreen> {
               valueColor: AlwaysStoppedAnimation<Color>(color),
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: DesignTokens.spacing2),
           Text(
             daysUntil != null
                 ? 'Sisa Rp ${_formatNumber(remaining)} - Habis dalam $daysUntil hari'
                 : 'Sisa Rp ${_formatNumber(remaining)}',
-            style: GoogleFonts.poppins(
-              fontSize: 12,
-              color: DesignTokens.textSecondaryDark,
-            ),
+            style: GoogleFonts.poppins(fontSize: 12, color: DesignTokens.textSecondaryDark),
           ),
         ],
       ),
@@ -637,9 +511,7 @@ class _ForecastScreenState extends State<ForecastScreen> {
   }
 
   Widget _buildCategoryForecast(ForecastController ctrl) {
-    final sorted =
-        ctrl.categoryForecasts.entries.toList()
-          ..sort((a, b) => b.value.amount.compareTo(a.value.amount));
+    final sorted = ctrl.categoryForecasts.entries.toList()..sort((a, b) => b.value.amount.compareTo(a.value.amount));
 
     return Container(
       padding: const EdgeInsets.all(20),
@@ -657,15 +529,11 @@ class _ForecastScreenState extends State<ForecastScreen> {
               const SizedBox(width: 8),
               Text(
                 'Prediksi per Kategori',
-                style: GoogleFonts.poppins(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.white,
-                ),
+                style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.white),
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: DesignTokens.spacing3),
           ...sorted
               .take(8)
               .map(
@@ -682,22 +550,10 @@ class _ForecastScreenState extends State<ForecastScreen> {
                         ),
                       ),
                       const SizedBox(width: 12),
-                      Expanded(
-                        child: Text(
-                          entry.key,
-                          style: GoogleFonts.poppins(
-                            fontSize: 14,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
+                      Expanded(child: Text(entry.key, style: GoogleFonts.poppins(fontSize: 14, color: Colors.white))),
                       Text(
                         'Rp ${_formatNumber(entry.value.toDouble())}',
-                        style: GoogleFonts.poppins(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.white,
-                        ),
+                        style: GoogleFonts.poppins(fontSize: 14, fontWeight: FontWeight.w600, color: Colors.white),
                       ),
                     ],
                   ),
@@ -709,9 +565,7 @@ class _ForecastScreenState extends State<ForecastScreen> {
   }
 
   Widget _buildSuggestedBudgets(ForecastController ctrl) {
-    final sorted =
-        ctrl.suggestedBudgets.entries.toList()
-          ..sort((a, b) => b.value.compareTo(a.value));
+    final sorted = ctrl.suggestedBudgets.entries.toList()..sort((a, b) => b.value.compareTo(a.value));
 
     return Container(
       padding: const EdgeInsets.all(20),
@@ -729,51 +583,29 @@ class _ForecastScreenState extends State<ForecastScreen> {
               const SizedBox(width: 8),
               Text(
                 'Saran Budget Optimal',
-                style: GoogleFonts.poppins(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.white,
-                ),
+                style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.white),
               ),
             ],
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: DesignTokens.spacing2),
           Text(
             'Berdasarkan rata-rata pengeluaran + buffer 10%',
-            style: GoogleFonts.poppins(
-              fontSize: 12,
-              color: DesignTokens.textSecondaryDark,
-            ),
+            style: GoogleFonts.poppins(fontSize: 12, color: DesignTokens.textSecondaryDark),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: DesignTokens.spacing3),
           ...sorted.map(
             (entry) => Padding(
               padding: const EdgeInsets.symmetric(vertical: 6),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Expanded(
-                    child: Text(
-                      entry.key,
-                      style: GoogleFonts.poppins(
-                        fontSize: 14,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
+                  Expanded(child: Text(entry.key, style: GoogleFonts.poppins(fontSize: 14, color: Colors.white))),
                   Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 4,
-                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                     decoration: BoxDecoration(
                       color: DesignTokens.warningColor.withValues(alpha: 0.15),
-                      borderRadius: BorderRadius.circular(
-                        DesignTokens.radiusMedium,
-                      ),
-                      border: Border.all(
-                        color: DesignTokens.warningColor.withValues(alpha: 0.3),
-                      ),
+                      borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                      border: Border.all(color: DesignTokens.warningColor.withValues(alpha: 0.3)),
                     ),
                     child: Text(
                       'Rp ${_formatNumber(entry.value.toDouble())}',
@@ -796,10 +628,8 @@ class _ForecastScreenState extends State<ForecastScreen> {
   Widget _buildSpendingInsights(ForecastController ctrl) {
     final l10n = AppLocalizations.of(context);
     final trends = ctrl.patternAnalysis['trends'] as Map? ?? {};
-    final dayPatterns =
-        ctrl.patternAnalysis['day_of_week_patterns'] as Map? ?? {};
-    final merchants =
-        (ctrl.patternAnalysis['frequent_merchants'] as List?) ?? [];
+    final dayPatterns = ctrl.patternAnalysis['day_of_week_patterns'] as Map? ?? {};
+    final merchants = (ctrl.patternAnalysis['frequent_merchants'] as List?) ?? [];
 
     final insights = <Widget>[];
 
@@ -861,8 +691,7 @@ class _ForecastScreenState extends State<ForecastScreen> {
       );
     }
 
-    final frequentMerchants =
-        merchants.where((m) => (m['frequency'] as int? ?? 0) >= 3).toList();
+    final frequentMerchants = merchants.where((m) => (m['frequency'] as int? ?? 0) >= 3).toList();
     if (frequentMerchants.isNotEmpty) {
       final top = frequentMerchants.first;
       insights.add(
@@ -892,15 +721,11 @@ class _ForecastScreenState extends State<ForecastScreen> {
               const SizedBox(width: 8),
               Text(
                 'Wawasan Pengeluaran',
-                style: GoogleFonts.poppins(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.white,
-                ),
+                style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.white),
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: DesignTokens.spacing3),
           ...insights,
         ],
       ),
@@ -911,21 +736,13 @@ class _ForecastScreenState extends State<ForecastScreen> {
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(8),
-      ),
+      decoration: BoxDecoration(color: color.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(8)),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Icon(icon, size: 20, color: color),
           const SizedBox(width: 12),
-          Expanded(
-            child: Text(
-              text,
-              style: GoogleFonts.poppins(fontSize: 13, color: Colors.white),
-            ),
-          ),
+          Expanded(child: Text(text, style: GoogleFonts.poppins(fontSize: 13, color: Colors.white))),
         ],
       ),
     );
@@ -937,45 +754,20 @@ class _ForecastScreenState extends State<ForecastScreen> {
         Container(
           width: 12,
           height: 12,
-          decoration: BoxDecoration(
-            color: color,
-            borderRadius: BorderRadius.circular(2),
-          ),
+          decoration: BoxDecoration(color: color, borderRadius: BorderRadius.circular(2)),
         ),
         const SizedBox(width: 6),
-        Text(
-          label,
-          style: GoogleFonts.poppins(fontSize: 12, color: Colors.white),
-        ),
+        Text(label, style: GoogleFonts.poppins(fontSize: 12, color: Colors.white)),
       ],
     );
   }
 
   String _formatNumber(double value) {
-    return value
-        .toStringAsFixed(0)
-        .replaceAllMapped(
-          RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
-          (m) => '${m[1]}.',
-        );
+    return value.toStringAsFixed(0).replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (m) => '${m[1]}.');
   }
 
   String _monthName(int month) {
-    const names = [
-      '',
-      'Jan',
-      'Feb',
-      'Mar',
-      'Apr',
-      'Mei',
-      'Jun',
-      'Jul',
-      'Agu',
-      'Sep',
-      'Okt',
-      'Nov',
-      'Des',
-    ];
+    const names = ['', 'Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
     return names[month];
   }
 }

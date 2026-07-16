@@ -38,13 +38,7 @@ class _BackupScreenState extends State<BackupScreen> {
           tooltip: l10n.back,
           onPressed: () => Navigator.pop(context),
         ),
-        title: Text(
-          'Backup & Restore',
-          style: GoogleFonts.poppins(
-            color: Colors.white,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
+        title: Text('Backup & Restore', style: GoogleFonts.poppins(color: Colors.white, fontWeight: FontWeight.w600)),
       ),
       body: Column(
         children: [
@@ -53,16 +47,12 @@ class _BackupScreenState extends State<BackupScreen> {
             child: Consumer<BackupController>(
               builder: (context, ctrl, _) {
                 if (ctrl.isLoading)
-                  return const Center(
-                    child: CircularProgressIndicator(
-                      color: DesignTokens.primaryColor,
-                    ),
-                  );
+                  return const Center(child: CircularProgressIndicator(color: DesignTokens.primaryColor));
                 return ListView(
                   padding: const EdgeInsets.all(DesignTokens.spacing4),
                   children: [
                     _buildActionCard(context, l10n),
-                    const SizedBox(height: 24),
+                    const SizedBox(height: DesignTokens.spacing6),
                     _buildBackupList(context, l10n, ctrl),
                   ],
                 );
@@ -82,36 +72,23 @@ class _BackupScreenState extends State<BackupScreen> {
             decoration: BoxDecoration(
               color: DesignTokens.primaryColor.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(DesignTokens.radiusLarge),
-              border: Border.all(
-                color: DesignTokens.primaryColor.withValues(alpha: 0.3),
-              ),
+              border: Border.all(color: DesignTokens.primaryColor.withValues(alpha: 0.3)),
             ),
             child: Column(
               children: [
-                const Icon(
-                  Iconsax.cloud,
-                  size: 48,
-                  color: DesignTokens.primaryColor,
-                ),
-                const SizedBox(height: 16),
+                const Icon(Iconsax.cloud, size: 48, color: DesignTokens.primaryColor),
+                const SizedBox(height: DesignTokens.spacing4),
                 Text(
                   'Backup Data',
-                  style: GoogleFonts.poppins(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                  ),
+                  style: GoogleFonts.poppins(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w600),
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: DesignTokens.spacing2),
                 Text(
                   l10n.backup_description,
-                  style: GoogleFonts.poppins(
-                    color: Colors.grey[400],
-                    fontSize: 13,
-                  ),
+                  style: GoogleFonts.poppins(color: Colors.grey[400], fontSize: 13),
                   textAlign: TextAlign.center,
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: DesignTokens.spacing5),
                 Row(
                   children: [
                     Expanded(
@@ -124,10 +101,7 @@ class _BackupScreenState extends State<BackupScreen> {
                           try {
                             await ctrl.createBackup();
                             if (context.mounted)
-                              ErrorHandlerService.showSuccessSnackbar(
-                                context,
-                                l10n.backup_created_successfully,
-                              );
+                              ErrorHandlerService.showSuccessSnackbar(context, l10n.backup_created_successfully);
                           } catch (e) {
                             if (context.mounted)
                               ErrorHandlerService.showErrorSnackbar(
@@ -149,10 +123,7 @@ class _BackupScreenState extends State<BackupScreen> {
                           try {
                             await ctrl.createBackup(share: true);
                             if (context.mounted)
-                              ErrorHandlerService.showSuccessSnackbar(
-                                context,
-                                '✅ ${l10n.backup_created_and_ready}',
-                              );
+                              ErrorHandlerService.showSuccessSnackbar(context, '✅ ${l10n.backup_created_and_ready}');
                           } catch (e) {
                             if (context.mounted)
                               ErrorHandlerService.showErrorSnackbar(
@@ -193,23 +164,16 @@ class _BackupScreenState extends State<BackupScreen> {
                   child: SizedBox(
                     width: 20,
                     height: 20,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      color: Colors.white,
-                    ),
+                    child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
                   ),
                 )
                 : Column(
                   children: [
                     Icon(icon, color: Colors.white, size: 24),
-                    const SizedBox(height: 4),
+                    const SizedBox(height: DesignTokens.spacing1),
                     Text(
                       label,
-                      style: GoogleFonts.poppins(
-                        color: Colors.white,
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
-                      ),
+                      style: GoogleFonts.poppins(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w500),
                     ),
                   ],
                 ),
@@ -217,23 +181,15 @@ class _BackupScreenState extends State<BackupScreen> {
     );
   }
 
-  Widget _buildBackupList(
-    BuildContext context,
-    AppLocalizations l10n,
-    BackupController ctrl,
-  ) {
+  Widget _buildBackupList(BuildContext context, AppLocalizations l10n, BackupController ctrl) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           l10n.backup_history,
-          style: GoogleFonts.poppins(
-            color: Colors.white,
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-          ),
+          style: GoogleFonts.poppins(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600),
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: DesignTokens.spacing3),
         if (ctrl.backups.isEmpty)
           Container(
             padding: const EdgeInsets.all(32),
@@ -242,13 +198,7 @@ class _BackupScreenState extends State<BackupScreen> {
               borderRadius: BorderRadius.circular(DesignTokens.radiusLarge),
             ),
             child: Center(
-              child: Text(
-                l10n.no_backups,
-                style: GoogleFonts.poppins(
-                  color: Colors.grey[500],
-                  fontSize: 14,
-                ),
-              ),
+              child: Text(l10n.no_backups, style: GoogleFonts.poppins(color: Colors.grey[500], fontSize: 14)),
             ),
           )
         else
@@ -267,11 +217,7 @@ class _BackupScreenState extends State<BackupScreen> {
               ),
               child: Row(
                 children: [
-                  const Icon(
-                    Iconsax.document,
-                    color: DesignTokens.primaryColor,
-                    size: 32,
-                  ),
+                  const Icon(Iconsax.document, color: DesignTokens.primaryColor, size: 32),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Column(
@@ -279,68 +225,40 @@ class _BackupScreenState extends State<BackupScreen> {
                       children: [
                         Text(
                           name,
-                          style: GoogleFonts.poppins(
-                            color: Colors.white,
-                            fontSize: 13,
-                            fontWeight: FontWeight.w500,
-                          ),
+                          style: GoogleFonts.poppins(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w500),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
-                        const SizedBox(height: 4),
+                        const SizedBox(height: DesignTokens.spacing1),
                         Text(
                           '${_formatSize(size)} - ${DateFormat('dd/MM/yy HH:mm').format(modified)}',
-                          style: GoogleFonts.poppins(
-                            color: Colors.grey[500],
-                            fontSize: 11,
-                          ),
+                          style: GoogleFonts.poppins(color: Colors.grey[500], fontSize: 11),
                         ),
                       ],
                     ),
                   ),
                   IconButton(
-                    icon: const Icon(
-                      Iconsax.trash,
-                      color: Colors.red,
-                      size: 20,
-                    ),
+                    icon: const Icon(Iconsax.trash, color: Colors.red, size: 20),
                     onPressed: () async {
                       final confirm = await showDialog<bool>(
                         context: context,
                         builder:
                             (ctx) => AlertDialog(
                               backgroundColor: DesignTokens.surfaceDark,
-                              title: Text(
-                                l10n.delete_backup_title,
-                                style: GoogleFonts.poppins(color: Colors.white),
-                              ),
+                              title: Text(l10n.delete_backup_title, style: GoogleFonts.poppins(color: Colors.white)),
                               content: Text(
                                 l10n.delete_backup_warning,
-                                style: GoogleFonts.poppins(
-                                  color: Colors.grey[400],
-                                ),
+                                style: GoogleFonts.poppins(color: Colors.grey[400]),
                               ),
                               actions: [
                                 TextButton(
                                   onPressed: () => Navigator.pop(ctx, false),
-                                  child: Text(
-                                    l10n.cancel,
-                                    style: GoogleFonts.poppins(
-                                      color: Colors.grey,
-                                    ),
-                                  ),
+                                  child: Text(l10n.cancel, style: GoogleFonts.poppins(color: Colors.grey)),
                                 ),
                                 ElevatedButton(
                                   onPressed: () => Navigator.pop(ctx, true),
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.red,
-                                  ),
-                                  child: Text(
-                                    l10n.delete,
-                                    style: GoogleFonts.poppins(
-                                      color: Colors.white,
-                                    ),
-                                  ),
+                                  style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                                  child: Text(l10n.delete, style: GoogleFonts.poppins(color: Colors.white)),
                                 ),
                               ],
                             ),
@@ -349,10 +267,7 @@ class _BackupScreenState extends State<BackupScreen> {
                         try {
                           await ctrl.deleteBackup(file.path);
                           if (context.mounted)
-                            ErrorHandlerService.showSuccessSnackbar(
-                              context,
-                              l10n.backup_deleted_message,
-                            );
+                            ErrorHandlerService.showSuccessSnackbar(context, l10n.backup_deleted_message);
                         } catch (e) {
                           if (context.mounted)
                             ErrorHandlerService.showErrorSnackbar(

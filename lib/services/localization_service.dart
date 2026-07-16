@@ -42,10 +42,7 @@ class LocalizationService extends ChangeNotifier {
     }
   }
 
-  List<Locale> get supportedLocales => [
-    const Locale('id', 'ID'),
-    const Locale('en', 'US'),
-  ];
+  List<Locale> get supportedLocales => [const Locale('id', 'ID'), const Locale('en', 'US')];
 
   String getLanguageName(Locale locale) {
     switch (locale.languageCode) {

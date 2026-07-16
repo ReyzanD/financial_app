@@ -32,10 +32,8 @@ class AlternativesScreen extends StatefulWidget {
 }
 
 class _AlternativesScreenState extends State<AlternativesScreen> {
-  final AlternativeRecommendationEngine _engine =
-      getIt<AlternativeRecommendationEngine>();
-  final PlaceVisitDataService _placeVisitDataService =
-      getIt<PlaceVisitDataService>();
+  final AlternativeRecommendationEngine _engine = getIt<AlternativeRecommendationEngine>();
+  final PlaceVisitDataService _placeVisitDataService = getIt<PlaceVisitDataService>();
 
   List<AlternativeSuggestion> _suggestions = [];
   bool _isLoading = true;
@@ -58,14 +56,10 @@ class _AlternativesScreenState extends State<AlternativesScreen> {
       // First, check if we already have one by approximate location
       List<AlternativeSuggestion> results = [];
       if (widget.latitude != null && widget.longitude != null) {
-        final existingPV = await _placeVisitDataService
-            .findByApproximateLocation(widget.latitude!, widget.longitude!);
+        final existingPV = await _placeVisitDataService.findByApproximateLocation(widget.latitude!, widget.longitude!);
 
         if (existingPV != null) {
-          results = await _engine.getAlternativesForPlace(
-            existingPV,
-            forceRefresh: forceRefresh,
-          );
+          results = await _engine.getAlternativesForPlace(existingPV, forceRefresh: forceRefresh);
         } else {
           // No PlaceVisit yet — create a synthetic one for this query
           final syntheticPV = PlaceVisit(
@@ -77,10 +71,7 @@ class _AlternativesScreenState extends State<AlternativesScreen> {
             firstVisit: DateTime.now(),
             lastVisit: DateTime.now(),
           );
-          results = await _engine.getAlternativesForPlace(
-            syntheticPV,
-            forceRefresh: forceRefresh,
-          );
+          results = await _engine.getAlternativesForPlace(syntheticPV, forceRefresh: forceRefresh);
         }
       } else {
         _error = 'Transaksi ini tidak memiliki data lokasi';
@@ -108,13 +99,7 @@ class _AlternativesScreenState extends State<AlternativesScreen> {
     return Scaffold(
       backgroundColor: DesignTokens.backgroundDark,
       appBar: AppBar(
-        title: Text(
-          'Alternatif Hemat',
-          style: GoogleFonts.poppins(
-            color: Colors.white,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
+        title: Text('Alternatif Hemat', style: GoogleFonts.poppins(color: Colors.white, fontWeight: FontWeight.w600)),
         backgroundColor: DesignTokens.surfaceDark,
         elevation: 0,
         leading: IconButton(
@@ -155,35 +140,24 @@ class _AlternativesScreenState extends State<AlternativesScreen> {
         children: [
           Row(
             children: [
-              Icon(
-                Iconsax.location,
-                color: DesignTokens.primaryColor,
-                size: 20,
-              ),
+              Icon(Iconsax.location, color: DesignTokens.primaryColor, size: 20),
               const SizedBox(width: 8),
               Text(
                 widget.locationName ?? 'Lokasi',
-                style: GoogleFonts.poppins(
-                  color: Colors.white,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
-                ),
+                style: GoogleFonts.poppins(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w500),
               ),
             ],
           ),
-          const SizedBox(height: 8),
-          Text(
-            'Kategori: ${widget.category}',
-            style: GoogleFonts.poppins(color: Colors.grey[500], fontSize: 12),
-          ),
+          const SizedBox(height: DesignTokens.spacing2),
+          Text('Kategori: ${widget.category}', style: GoogleFonts.poppins(color: Colors.grey[500], fontSize: 12)),
           if (widget.latitude != null && widget.longitude != null) ...[
-            const SizedBox(height: 4),
+            const SizedBox(height: DesignTokens.spacing1),
             Text(
               '${widget.latitude!.toStringAsFixed(4)}, ${widget.longitude!.toStringAsFixed(4)}',
               style: GoogleFonts.poppins(color: Colors.grey[600], fontSize: 10),
             ),
           ],
-          const SizedBox(height: 12),
+          const SizedBox(height: DesignTokens.spacing3),
           if (!_isLoading)
             Text(
               '$count ${count == 1 ? 'alternatif ditemukan' : 'alternatif ditemukan'}',
@@ -208,9 +182,7 @@ class _AlternativesScreenState extends State<AlternativesScreen> {
       child: ListView.builder(
         padding: const EdgeInsets.all(DesignTokens.spacing4),
         itemCount: _suggestions.length,
-        itemBuilder:
-            (context, index) =>
-                AlternativeSuggestionCard(suggestion: _suggestions[index]),
+        itemBuilder: (context, index) => AlternativeSuggestionCard(suggestion: _suggestions[index]),
       ),
     );
   }
@@ -221,16 +193,13 @@ class _AlternativesScreenState extends State<AlternativesScreen> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           CircularProgressIndicator(color: DesignTokens.primaryColor),
-          const SizedBox(height: 16),
+          const SizedBox(height: DesignTokens.spacing4),
           Text(
             'Mencari alternatif dari OpenStreetMap...',
             style: GoogleFonts.poppins(color: Colors.grey[500], fontSize: 13),
           ),
-          const SizedBox(height: 8),
-          Text(
-            'Radius 1 km di sekitar lokasi',
-            style: GoogleFonts.poppins(color: Colors.grey[600], fontSize: 11),
-          ),
+          const SizedBox(height: DesignTokens.spacing2),
+          Text('Radius 1 km di sekitar lokasi', style: GoogleFonts.poppins(color: Colors.grey[600], fontSize: 11)),
         ],
       ),
     );
@@ -244,13 +213,13 @@ class _AlternativesScreenState extends State<AlternativesScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(Iconsax.warning_2, color: Colors.orange, size: 48),
-            const SizedBox(height: 16),
+            const SizedBox(height: DesignTokens.spacing4),
             Text(
               _error!,
               style: GoogleFonts.poppins(color: Colors.grey[400], fontSize: 13),
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: DesignTokens.spacing5),
             ElevatedButton.icon(
               onPressed: () => _loadSuggestions(forceRefresh: true),
               icon: const Icon(Iconsax.refresh, size: 18),
@@ -274,23 +243,19 @@ class _AlternativesScreenState extends State<AlternativesScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(Iconsax.empty_wallet, color: Colors.grey[600], size: 48),
-            const SizedBox(height: 16),
+            const SizedBox(height: DesignTokens.spacing4),
             Text(
               'Belum ada alternatif ditemukan',
-              style: GoogleFonts.poppins(
-                color: Colors.grey[500],
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
-              ),
+              style: GoogleFonts.poppins(color: Colors.grey[500], fontSize: 16, fontWeight: FontWeight.w500),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: DesignTokens.spacing2),
             Text(
               'Coba refresh atau perluas area pencarian.\n'
               'Data berasal dari OpenStreetMap.',
               style: GoogleFonts.poppins(color: Colors.grey[600], fontSize: 12),
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: DesignTokens.spacing5),
             ElevatedButton.icon(
               onPressed: () => _loadSuggestions(forceRefresh: true),
               icon: const Icon(Iconsax.refresh, size: 18),

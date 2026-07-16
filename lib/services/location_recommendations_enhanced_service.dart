@@ -5,24 +5,17 @@ import 'package:financial_app/services/data/transaction_data_service.dart';
 
 /// Enhanced Location Recommendations Service dengan price comparisons, alternative suggestions, dan analytics
 class LocationRecommendationsEnhancedService {
-  final TransactionDataService _transactionDataService =
-      getIt<TransactionDataService>();
-  final LocationIntelligenceService _locationService =
-      getIt<LocationIntelligenceService>();
+  final TransactionDataService _transactionDataService = getIt<TransactionDataService>();
+  final LocationIntelligenceService _locationService = getIt<LocationIntelligenceService>();
 
   /// Get location recommendations dengan price comparisons
-  Future<List<Map<String, dynamic>>>
-  getLocationRecommendationsWithPrices() async {
+  Future<List<Map<String, dynamic>>> getLocationRecommendationsWithPrices() async {
     try {
       final recommendations = await _locationService.generateLocationInsights();
 
       // Get transactions untuk price analysis
-      final transactionsData = await _transactionDataService.getTransactions(
-        limit: 200,
-      );
-      final transactions = List<Map<String, dynamic>>.from(
-        transactionsData['transactions'] ?? [],
-      );
+      final transactionsData = await _transactionDataService.getTransactions(limit: 200);
+      final transactions = List<Map<String, dynamic>>.from(transactionsData['transactions'] ?? []);
 
       // Analyze prices per location
       final priceAnalysis = _analyzeLocationPrices(transactions);
@@ -32,50 +25,33 @@ class LocationRecommendationsEnhancedService {
       for (var rec in recommendations) {
         // Get location name from metadata or title
         final locationName =
-            rec.metadata?['location']?.toString() ??
-            rec.title.replaceAll(RegExp(r'[^\w\s]'), '').trim();
+            rec.metadata?['location']?.toString() ?? rec.title.replaceAll(RegExp(r'[^\w\s]'), '').trim();
         final priceData = priceAnalysis[locationName];
 
         enhanced.add({
           'recommendation': rec.toMap(),
           'price_data': priceData,
-          'alternatives': await _getAlternativeLocations(
-            locationName,
-            priceAnalysis,
-          ),
+          'alternatives': await _getAlternativeLocations(locationName, priceAnalysis),
           'analytics': _getLocationAnalytics(locationName, transactions),
         });
       }
 
       return enhanced;
     } catch (e) {
-      LoggerService.error(
-        'Error getting location recommendations with prices',
-        error: e,
-      );
+      LoggerService.error('Error getting location recommendations with prices', error: e);
       return [];
     }
   }
 
-  Map<String, Map<String, dynamic>> _analyzeLocationPrices(
-    List<dynamic> transactions,
-  ) {
+  Map<String, Map<String, dynamic>> _analyzeLocationPrices(List<dynamic> transactions) {
     final locationPrices = <String, List<double>>{};
     final locationCategories = <String, String>{};
 
     for (var t in transactions) {
-      final locationName =
-          t['location_name_232143']?.toString() ??
-          t['location_name']?.toString();
-      final amount =
-          (t['amount_232143'] as num?)?.toDouble() ??
-          (t['amount'] as num?)?.toDouble() ??
-          0.0;
+      final locationName = t['location_name_232143']?.toString() ?? t['location_name']?.toString();
+      final amount = (t['amount_232143'] as num?)?.toDouble() ?? (t['amount'] as num?)?.toDouble() ?? 0.0;
       final category = t['category_name']?.toString() ?? 'Lainnya';
-      final type =
-          t['type_232143']?.toString().toLowerCase() ??
-          t['type']?.toString().toLowerCase() ??
-          'expense';
+      final type = t['type_232143']?.toString().toLowerCase() ?? t['type']?.toString().toLowerCase() ?? 'expense';
 
       if (locationName != null && type == 'expense' && amount > 0) {
         locationPrices[locationName] ??= [];
@@ -129,8 +105,7 @@ class LocationRecommendationsEnhancedService {
           'location': location,
           'price_data': data,
           'savings': currentAvg - (data['average'] as double),
-          'savings_percentage':
-              ((currentAvg - (data['average'] as double)) / currentAvg) * 100,
+          'savings_percentage': ((currentAvg - (data['average'] as double)) / currentAvg) * 100,
         });
       }
     });
@@ -145,42 +120,27 @@ class LocationRecommendationsEnhancedService {
     return alternatives.take(3).toList();
   }
 
-  Map<String, dynamic> _getLocationAnalytics(
-    String locationName,
-    List<dynamic> transactions,
-  ) {
+  Map<String, dynamic> _getLocationAnalytics(String locationName, List<dynamic> transactions) {
     final locationTransactions =
         transactions.where((t) {
-          final locName =
-              t['location_name_232143']?.toString() ??
-              t['location_name']?.toString();
+          final locName = t['location_name_232143']?.toString() ?? t['location_name']?.toString();
           return locName == locationName;
         }).toList();
 
     if (locationTransactions.isEmpty) {
-      return {
-        'total_visits': 0,
-        'total_spent': 0.0,
-        'average_per_visit': 0.0,
-        'last_visit': null,
-      };
+      return {'total_visits': 0, 'total_spent': 0.0, 'average_per_visit': 0.0, 'last_visit': null};
     }
 
     double totalSpent = 0.0;
     DateTime? lastVisit;
 
     for (var t in locationTransactions) {
-      final amount =
-          (t['amount_232143'] as num?)?.toDouble() ??
-          (t['amount'] as num?)?.toDouble() ??
-          0.0;
+      final amount = (t['amount_232143'] as num?)?.toDouble() ?? (t['amount'] as num?)?.toDouble() ?? 0.0;
       totalSpent += amount;
 
       try {
         final dateStr =
-            t['transaction_date_232143']?.toString() ??
-            t['transaction_date']?.toString() ??
-            t['date']?.toString();
+            t['transaction_date_232143']?.toString() ?? t['transaction_date']?.toString() ?? t['date']?.toString();
         if (dateStr != null) {
           final date = DateTime.parse(dateStr);
           if (lastVisit == null || date.isAfter(lastVisit)) {
@@ -203,31 +163,20 @@ class LocationRecommendationsEnhancedService {
   /// Get spending pattern analysis per location
   Future<Map<String, dynamic>> getLocationSpendingPatterns() async {
     try {
-      final transactionsData = await _transactionDataService.getTransactions(
-        limit: 500,
-      );
-      final transactions = List<Map<String, dynamic>>.from(
-        transactionsData['transactions'] ?? [],
-      );
+      final transactionsData = await _transactionDataService.getTransactions(limit: 500);
+      final transactions = List<Map<String, dynamic>>.from(transactionsData['transactions'] ?? []);
       final patterns = <String, Map<String, dynamic>>{};
 
       // Group by location
       final locationGroups = <String, List<Map<String, dynamic>>>{};
       for (var t in transactions) {
-        final locationName =
-            t['location_name_232143']?.toString() ??
-            t['location_name']?.toString();
+        final locationName = t['location_name_232143']?.toString() ?? t['location_name']?.toString();
         if (locationName != null) {
           locationGroups[locationName] ??= [];
           locationGroups[locationName]!.add({
-            'amount':
-                (t['amount_232143'] as num?)?.toDouble() ??
-                (t['amount'] as num?)?.toDouble() ??
-                0.0,
+            'amount': (t['amount_232143'] as num?)?.toDouble() ?? (t['amount'] as num?)?.toDouble() ?? 0.0,
             'date':
-                t['transaction_date_232143']?.toString() ??
-                t['transaction_date']?.toString() ??
-                t['date']?.toString(),
+                t['transaction_date_232143']?.toString() ?? t['transaction_date']?.toString() ?? t['date']?.toString(),
             'category': t['category_name'] ?? 'Lainnya',
           });
         }
@@ -250,18 +199,12 @@ class LocationRecommendationsEnhancedService {
           final recent = trans.take(trans.length ~/ 2).toList();
           final older = trans.skip(trans.length ~/ 2).toList();
 
-          final recentAvg =
-              recent.map((t) => t['amount'] as double).reduce((a, b) => a + b) /
-              recent.length;
-          final olderAvg =
-              older.map((t) => t['amount'] as double).reduce((a, b) => a + b) /
-              older.length;
+          final recentAvg = recent.map((t) => t['amount'] as double).reduce((a, b) => a + b) / recent.length;
+          final olderAvg = older.map((t) => t['amount'] as double).reduce((a, b) => a + b) / older.length;
 
           patterns[location] = {
             'total_visits': trans.length,
-            'total_spent': trans
-                .map((t) => t['amount'] as double)
-                .reduce((a, b) => a + b),
+            'total_spent': trans.map((t) => t['amount'] as double).reduce((a, b) => a + b),
             'trend':
                 recentAvg > olderAvg * 1.1
                     ? 'increasing'

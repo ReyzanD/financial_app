@@ -36,12 +36,7 @@ class ResponsiveHelper {
 
   /// Get responsive padding
   /// Default: phone = 16, tablet = 24
-  static EdgeInsets padding(
-    BuildContext context, {
-    double? multiplier,
-    double? phone,
-    double? tablet,
-  }) {
+  static EdgeInsets padding(BuildContext context, {double? multiplier, double? phone, double? tablet}) {
     final basePhone = phone ?? 16.0;
     final baseTablet = tablet ?? 24.0;
     final base = isTablet(context) ? baseTablet : basePhone;
@@ -50,12 +45,7 @@ class ResponsiveHelper {
   }
 
   /// Get responsive horizontal padding
-  static EdgeInsets horizontalPadding(
-    BuildContext context, {
-    double? multiplier,
-    double? phone,
-    double? tablet,
-  }) {
+  static EdgeInsets horizontalPadding(BuildContext context, {double? multiplier, double? phone, double? tablet}) {
     final basePhone = phone ?? 16.0;
     final baseTablet = tablet ?? 24.0;
     final base = isTablet(context) ? baseTablet : basePhone;
@@ -64,12 +54,7 @@ class ResponsiveHelper {
   }
 
   /// Get responsive vertical padding
-  static EdgeInsets verticalPadding(
-    BuildContext context, {
-    double? multiplier,
-    double? phone,
-    double? tablet,
-  }) {
+  static EdgeInsets verticalPadding(BuildContext context, {double? multiplier, double? phone, double? tablet}) {
     final basePhone = phone ?? 16.0;
     final baseTablet = tablet ?? 24.0;
     final base = isTablet(context) ? baseTablet : basePhone;
@@ -78,12 +63,7 @@ class ResponsiveHelper {
   }
 
   /// Get responsive symmetric padding
-  static EdgeInsets symmetricPadding(
-    BuildContext context, {
-    double? horizontal,
-    double? vertical,
-    double? multiplier,
-  }) {
+  static EdgeInsets symmetricPadding(BuildContext context, {double? horizontal, double? vertical, double? multiplier}) {
     final h = horizontal ?? 16.0;
     final v = vertical ?? 16.0;
     final mult = multiplier ?? 1.0;
@@ -94,12 +74,7 @@ class ResponsiveHelper {
 
   /// Get responsive font size
   /// Scales based on device type and text scale factor
-  static double fontSize(
-    BuildContext context,
-    double baseSize, {
-    double? phoneMultiplier,
-    double? tabletMultiplier,
-  }) {
+  static double fontSize(BuildContext context, double baseSize, {double? phoneMultiplier, double? tabletMultiplier}) {
     final textScaler = MediaQuery.of(context).textScaler.scale(1.0);
     final phoneMult = phoneMultiplier ?? 1.0;
     final tabletMult = tabletMultiplier ?? 1.2;
@@ -108,36 +83,21 @@ class ResponsiveHelper {
   }
 
   /// Get responsive vertical spacing
-  static double verticalSpacing(
-    BuildContext context,
-    double baseSpacing, {
-    double? multiplier,
-  }) {
+  static double verticalSpacing(BuildContext context, double baseSpacing, {double? multiplier}) {
     final mult = multiplier ?? 1.0;
-    final spacing =
-        isTablet(context) ? baseSpacing * 1.5 * mult : baseSpacing * mult;
+    final spacing = isTablet(context) ? baseSpacing * 1.5 * mult : baseSpacing * mult;
     return spacing;
   }
 
   /// Get responsive horizontal spacing
-  static double horizontalSpacing(
-    BuildContext context,
-    double baseSpacing, {
-    double? multiplier,
-  }) {
+  static double horizontalSpacing(BuildContext context, double baseSpacing, {double? multiplier}) {
     final mult = multiplier ?? 1.0;
-    final spacing =
-        isTablet(context) ? baseSpacing * 1.5 * mult : baseSpacing * mult;
+    final spacing = isTablet(context) ? baseSpacing * 1.5 * mult : baseSpacing * mult;
     return spacing;
   }
 
   /// Get responsive grid cross axis count
-  static int gridCrossAxisCount(
-    BuildContext context, {
-    int phone = 2,
-    int tablet = 3,
-    int? desktop,
-  }) {
+  static int gridCrossAxisCount(BuildContext context, {int phone = 2, int tablet = 3, int? desktop}) {
     if (isDesktop(context) && desktop != null) {
       return desktop;
     }
@@ -156,41 +116,25 @@ class ResponsiveHelper {
   }
 
   /// Get responsive icon size
-  static double iconSize(
-    BuildContext context,
-    double baseSize, {
-    double? multiplier,
-  }) {
+  static double iconSize(BuildContext context, double baseSize, {double? multiplier}) {
     final mult = multiplier ?? 1.0;
     return isTablet(context) ? baseSize * 1.2 * mult : baseSize * mult;
   }
 
   /// Get responsive border radius
-  static double borderRadius(
-    BuildContext context,
-    double baseRadius, {
-    double? multiplier,
-  }) {
+  static double borderRadius(BuildContext context, double baseRadius, {double? multiplier}) {
     final mult = multiplier ?? 1.0;
     return isTablet(context) ? baseRadius * 1.2 * mult : baseRadius * mult;
   }
 
   /// Get responsive card height
-  static double cardHeight(
-    BuildContext context,
-    double baseHeight, {
-    double? multiplier,
-  }) {
+  static double cardHeight(BuildContext context, double baseHeight, {double? multiplier}) {
     final mult = multiplier ?? 1.0;
     return isTablet(context) ? baseHeight * 1.3 * mult : baseHeight * mult;
   }
 
   /// Get responsive button height
-  static double buttonHeight(
-    BuildContext context, {
-    double? phone,
-    double? tablet,
-  }) {
+  static double buttonHeight(BuildContext context, {double? phone, double? tablet}) {
     final basePhone = phone ?? 48.0;
     final baseTablet = tablet ?? 56.0;
     return isTablet(context) ? baseTablet : basePhone;
@@ -208,11 +152,7 @@ class ResponsiveHelper {
   }
 
   /// Get responsive aspect ratio for images/cards
-  static double aspectRatio(
-    BuildContext context,
-    double baseRatio, {
-    double? multiplier,
-  }) {
+  static double aspectRatio(BuildContext context, double baseRatio, {double? multiplier}) {
     final mult = multiplier ?? 1.0;
     return isTablet(context) ? baseRatio * 1.1 * mult : baseRatio * mult;
   }
@@ -228,11 +168,7 @@ class ResponsiveHelper {
   }
 
   /// Get responsive layout berdasarkan orientation
-  static T responsiveByOrientation<T>(
-    BuildContext context, {
-    required T portrait,
-    required T landscape,
-  }) {
+  static T responsiveByOrientation<T>(BuildContext context, {required T portrait, required T landscape}) {
     return isLandscape(context) ? landscape : portrait;
   }
 
@@ -267,11 +203,7 @@ class ResponsiveHelper {
   }
 
   /// Get responsive spacing berdasarkan orientation
-  static double adaptiveSpacing(
-    BuildContext context,
-    double baseSpacing, {
-    double? landscapeMultiplier,
-  }) {
+  static double adaptiveSpacing(BuildContext context, double baseSpacing, {double? landscapeMultiplier}) {
     final mult = landscapeMultiplier ?? 0.8; // Less spacing in landscape
     return isLandscape(context) ? baseSpacing * mult : baseSpacing;
   }

@@ -7,8 +7,7 @@ import 'package:financial_app/utils/key_normalizer.dart';
 
 class AnalyticsController extends ChangeNotifier {
   final AnalyticsRepository _r;
-  AnalyticsController({required AnalyticsRepository repository})
-    : _r = repository;
+  AnalyticsController({required AnalyticsRepository repository}) : _r = repository;
 
   String _selectedPeriod = '';
   bool _isLoading = false;
@@ -51,19 +50,10 @@ class AnalyticsController extends ChangeNotifier {
         startDate = _resolvePeriod(now, _selectedPeriod);
       }
 
-      final transactionsData = await _r.getTransactions(
-        limit: 100,
-        startDate: startDate,
-        endDate: endDate,
-      );
-      final summary = await _r.getFinancialSummary(
-        year: now.year,
-        month: now.month,
-      );
+      final transactionsData = await _r.getTransactions(limit: 100, startDate: startDate, endDate: endDate);
+      final summary = await _r.getFinancialSummary(year: now.year, month: now.month);
 
-      final rawTransactions = List<dynamic>.from(
-        transactionsData['transactions'] ?? [],
-      );
+      final rawTransactions = List<dynamic>.from(transactionsData['transactions'] ?? []);
       _transactions = KeyNormalizer.normalizeTransactions(rawTransactions);
       _summary = summary;
 
@@ -87,9 +77,7 @@ class AnalyticsController extends ChangeNotifier {
     if (lower.contains('week') || lower.contains('minggu')) {
       return today.subtract(Duration(days: today.weekday - 1));
     }
-    if (lower.contains('month') ||
-        lower.contains('bulan') ||
-        lower.contains('3')) {
+    if (lower.contains('month') || lower.contains('bulan') || lower.contains('3')) {
       if (lower.contains('3') || lower.contains('three')) {
         return DateTime(now.year, now.month - 2, 1);
       }

@@ -44,8 +44,7 @@ class AppState extends ChangeNotifier {
       _dataService.transactions.listen(
         (data) {
           if (!_isDisposed) {
-            _transactions =
-                data.map((json) => TransactionModel.fromJson(json)).toList();
+            _transactions = data.map((json) => TransactionModel.fromJson(json)).toList();
             notifyListeners();
           }
         },
@@ -62,8 +61,7 @@ class AppState extends ChangeNotifier {
       _dataService.categories.listen(
         (data) {
           if (!_isDisposed) {
-            _categories =
-                data.map((json) => CategoryModel.fromJson(json)).toList();
+            _categories = data.map((json) => CategoryModel.fromJson(json)).toList();
             notifyListeners();
           }
         },
@@ -103,18 +101,14 @@ class AppState extends ChangeNotifier {
 
   // Methods
   Future<void> refreshData({bool forceRefresh = false}) async {
-    LoggerService.debug(
-      '[AppState] refreshData called (forceRefresh: $forceRefresh)',
-    );
+    LoggerService.debug('[AppState] refreshData called (forceRefresh: $forceRefresh)');
     _isLoading = true;
     _error = null;
     notifyListeners();
 
     try {
       await _dataService.refreshAllData(forceRefresh: forceRefresh);
-      LoggerService.success(
-        '[AppState] refreshData completed - transactions: ${_transactions.length}',
-      );
+      LoggerService.success('[AppState] refreshData completed - transactions: ${_transactions.length}');
     } catch (e) {
       LoggerService.error('[AppState] refreshData error', error: e);
       _error = e.toString();

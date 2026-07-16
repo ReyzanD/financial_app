@@ -16,8 +16,7 @@ class CategoryTagsScreen extends StatefulWidget {
   State<CategoryTagsScreen> createState() => _CategoryTagsScreenState();
 }
 
-class _CategoryTagsScreenState extends State<CategoryTagsScreen>
-    with SingleTickerProviderStateMixin {
+class _CategoryTagsScreenState extends State<CategoryTagsScreen> with SingleTickerProviderStateMixin {
   late final TabController _tabController;
   int _currentIndex = 0;
 
@@ -33,11 +32,7 @@ class _CategoryTagsScreenState extends State<CategoryTagsScreen>
   void initState() {
     super.initState();
     _currentIndex = _initialIndex(widget.initialMode);
-    _tabController = TabController(
-      length: 2,
-      vsync: this,
-      initialIndex: _currentIndex,
-    );
+    _tabController = TabController(length: 2, vsync: this, initialIndex: _currentIndex);
     _tabController.addListener(() {
       if (!_tabController.indexIsChanging) {
         setState(() => _currentIndex = _tabController.index);
@@ -65,11 +60,7 @@ class _CategoryTagsScreenState extends State<CategoryTagsScreen>
         ),
         title: Text(
           _tabLabels[_currentIndex],
-          style: GoogleFonts.poppins(
-            color: Colors.white,
-            fontWeight: FontWeight.w600,
-            fontSize: 18,
-          ),
+          style: GoogleFonts.poppins(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 18),
         ),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(48),
@@ -81,14 +72,8 @@ class _CategoryTagsScreenState extends State<CategoryTagsScreen>
               indicatorColor: DesignTokens.primaryColor,
               labelColor: DesignTokens.primaryColor,
               unselectedLabelColor: Colors.grey,
-              labelStyle: GoogleFonts.poppins(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-              ),
-              unselectedLabelStyle: GoogleFonts.poppins(
-                fontSize: 14,
-                fontWeight: FontWeight.w400,
-              ),
+              labelStyle: GoogleFonts.poppins(fontSize: 14, fontWeight: FontWeight.w600),
+              unselectedLabelStyle: GoogleFonts.poppins(fontSize: 14, fontWeight: FontWeight.w400),
               indicatorSize: TabBarIndicatorSize.label,
               tabs: const [Tab(text: 'Kategori'), Tab(text: 'Tag')],
             ),
@@ -97,10 +82,7 @@ class _CategoryTagsScreenState extends State<CategoryTagsScreen>
       ),
       body: TabBarView(
         controller: _tabController,
-        children: const [
-          CategoryCustomizationScreen(),
-          TagsScreen(showAppBar: false),
-        ],
+        children: const [CategoryCustomizationScreen(), TagsScreen(showAppBar: false)],
       ),
     );
   }

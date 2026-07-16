@@ -46,10 +46,7 @@ class _NetWorthScreenState extends State<NetWorthScreen> {
                 color: DesignTokens.primaryColor,
                 backgroundColor: DesignTokens.surfaceDark,
                 onRefresh: () => context.read<NetWorthController>().refresh(),
-                child: Consumer<NetWorthController>(
-                  builder:
-                      (context, ctrl, _) => _buildBody(context, l10n, ctrl),
-                ),
+                child: Consumer<NetWorthController>(builder: (context, ctrl, _) => _buildBody(context, l10n, ctrl)),
               ),
             ),
           ],
@@ -72,16 +69,10 @@ class _NetWorthScreenState extends State<NetWorthScreen> {
       await context.read<NetWorthController>().recordSnapshot();
       if (!mounted) return;
       final l10n = AppLocalizations.of(context);
-      ErrorHandlerService.showSuccessSnackbar(
-        context,
-        l10n?.snapshot_recorded ?? 'Snapshot recorded',
-      );
+      ErrorHandlerService.showSuccessSnackbar(context, l10n?.snapshot_recorded ?? 'Snapshot recorded');
     } catch (e) {
       if (!mounted) return;
-      ErrorHandlerService.showErrorSnackbar(
-        context,
-        ErrorHandlerService.getUserFriendlyMessage(e),
-      );
+      ErrorHandlerService.showErrorSnackbar(context, ErrorHandlerService.getUserFriendlyMessage(e));
     }
   }
 
@@ -89,8 +80,7 @@ class _NetWorthScreenState extends State<NetWorthScreen> {
     final ctrl = context.watch<NetWorthController>();
     final netWorth = (ctrl.data['net_worth'] as num?)?.toDouble() ?? 0.0;
     final totalAssets = (ctrl.data['total_assets'] as num?)?.toDouble() ?? 0.0;
-    final totalLiabilities =
-        (ctrl.data['total_liabilities'] as num?)?.toDouble() ?? 0.0;
+    final totalLiabilities = (ctrl.data['total_liabilities'] as num?)?.toDouble() ?? 0.0;
     final trend = ctrl.trend['trend'] ?? 'neutral';
     final change = (ctrl.trend['change'] as num?)?.toDouble() ?? 0.0;
     final isPositive = trend == 'up' || change > 0;
@@ -104,10 +94,7 @@ class _NetWorthScreenState extends State<NetWorthScreen> {
             children: [
               if (!widget.embedded) ...[
                 IconButton(
-                  icon: const Icon(
-                    Iconsax.arrow_left,
-                    color: DesignTokens.textPrimaryDark,
-                  ),
+                  icon: const Icon(Iconsax.arrow_left, color: DesignTokens.textPrimaryDark),
                   onPressed: () => Navigator.pop(context),
                 ),
                 const SizedBox(width: 8),
@@ -125,15 +112,9 @@ class _NetWorthScreenState extends State<NetWorthScreen> {
               ),
               const Spacer(),
               Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 10,
-                  vertical: 6,
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                 decoration: BoxDecoration(
-                  color: (isPositive
-                          ? DesignTokens.successColor
-                          : DesignTokens.errorColor)
-                      .withValues(alpha: 0.15),
+                  color: (isPositive ? DesignTokens.successColor : DesignTokens.errorColor).withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(DesignTokens.radiusSmall),
                 ),
                 child: Row(
@@ -141,20 +122,14 @@ class _NetWorthScreenState extends State<NetWorthScreen> {
                   children: [
                     Icon(
                       isPositive ? Iconsax.arrow_up_1 : Iconsax.arrow_down,
-                      color:
-                          isPositive
-                              ? DesignTokens.successColor
-                              : DesignTokens.errorColor,
+                      color: isPositive ? DesignTokens.successColor : DesignTokens.errorColor,
                       size: 14,
                     ),
                     const SizedBox(width: 4),
                     Text(
                       '${change.toStringAsFixed(1)}%',
                       style: GoogleFonts.poppins(
-                        color:
-                            isPositive
-                                ? DesignTokens.successColor
-                                : DesignTokens.errorColor,
+                        color: isPositive ? DesignTokens.successColor : DesignTokens.errorColor,
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
                       ),
@@ -164,7 +139,7 @@ class _NetWorthScreenState extends State<NetWorthScreen> {
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: DesignTokens.spacing3),
           Container(
             padding: const EdgeInsets.all(DesignTokens.spacing4),
             decoration: BoxDecoration(
@@ -175,26 +150,17 @@ class _NetWorthScreenState extends State<NetWorthScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  'Net Worth',
-                  style: GoogleFonts.poppins(
-                    color: DesignTokens.textSecondaryDark,
-                    fontSize: 12,
-                  ),
-                ),
-                const SizedBox(height: 4),
+                Text('Net Worth', style: GoogleFonts.poppins(color: DesignTokens.textSecondaryDark, fontSize: 12)),
+                const SizedBox(height: DesignTokens.spacing1),
                 Text(
                   CurrencyFormatter.formatRupiah(netWorth.toInt()),
                   style: GoogleFonts.poppins(
-                    color:
-                        netWorth >= 0
-                            ? DesignTokens.successColor
-                            : DesignTokens.errorColor,
+                    color: netWorth >= 0 ? DesignTokens.successColor : DesignTokens.errorColor,
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: DesignTokens.spacing3),
                 Row(
                   children: [
                     Expanded(
@@ -203,10 +169,7 @@ class _NetWorthScreenState extends State<NetWorthScreen> {
                         children: [
                           Text(
                             'Assets',
-                            style: GoogleFonts.poppins(
-                              color: DesignTokens.textSecondaryDark,
-                              fontSize: 11,
-                            ),
+                            style: GoogleFonts.poppins(color: DesignTokens.textSecondaryDark, fontSize: 11),
                           ),
                           Text(
                             CurrencyFormatter.formatRupiah(totalAssets.toInt()),
@@ -225,15 +188,10 @@ class _NetWorthScreenState extends State<NetWorthScreen> {
                         children: [
                           Text(
                             'Liabilities',
-                            style: GoogleFonts.poppins(
-                              color: DesignTokens.textSecondaryDark,
-                              fontSize: 11,
-                            ),
+                            style: GoogleFonts.poppins(color: DesignTokens.textSecondaryDark, fontSize: 11),
                           ),
                           Text(
-                            CurrencyFormatter.formatRupiah(
-                              totalLiabilities.toInt(),
-                            ),
+                            CurrencyFormatter.formatRupiah(totalLiabilities.toInt()),
                             style: GoogleFonts.poppins(
                               color: DesignTokens.errorColor,
                               fontSize: 14,
@@ -253,15 +211,9 @@ class _NetWorthScreenState extends State<NetWorthScreen> {
     );
   }
 
-  Widget _buildBody(
-    BuildContext context,
-    AppLocalizations? l10n,
-    NetWorthController ctrl,
-  ) {
+  Widget _buildBody(BuildContext context, AppLocalizations? l10n, NetWorthController ctrl) {
     if (ctrl.isLoading) {
-      return Center(
-        child: CircularProgressIndicator(color: DesignTokens.primaryColor),
-      );
+      return Center(child: CircularProgressIndicator(color: DesignTokens.primaryColor));
     }
     if (ctrl.errorMessage != null) {
       return _buildErrorState(context, l10n, ctrl);
@@ -270,43 +222,27 @@ class _NetWorthScreenState extends State<NetWorthScreen> {
       padding: const EdgeInsets.all(DesignTokens.spacing4),
       children: [
         _buildBreakdown(context, l10n, ctrl.data),
-        const SizedBox(height: 16),
+        const SizedBox(height: DesignTokens.spacing4),
         _buildHistory(context, l10n, ctrl.history),
       ],
     );
   }
 
-  Widget _buildBreakdown(
-    BuildContext context,
-    AppLocalizations? l10n,
-    Map<String, dynamic> data,
-  ) {
-    final assetBreakdown =
-        (data['asset_breakdown'] as Map?)?.cast<String, double>() ?? {};
-    final liabilityBreakdown =
-        (data['liability_breakdown'] as Map?)?.cast<String, double>() ?? {};
+  Widget _buildBreakdown(BuildContext context, AppLocalizations? l10n, Map<String, dynamic> data) {
+    final assetBreakdown = (data['asset_breakdown'] as Map?)?.cast<String, double>() ?? {};
+    final liabilityBreakdown = (data['liability_breakdown'] as Map?)?.cast<String, double>() ?? {};
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           'Breakdown',
-          style: GoogleFonts.poppins(
-            color: DesignTokens.textPrimaryDark,
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-          ),
+          style: GoogleFonts.poppins(color: DesignTokens.textPrimaryDark, fontSize: 16, fontWeight: FontWeight.w600),
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: DesignTokens.spacing3),
         if (assetBreakdown.isNotEmpty) ...[
-          Text(
-            'Assets',
-            style: GoogleFonts.poppins(
-              color: DesignTokens.textSecondaryDark,
-              fontSize: 12,
-            ),
-          ),
-          const SizedBox(height: 8),
+          Text('Assets', style: GoogleFonts.poppins(color: DesignTokens.textSecondaryDark, fontSize: 12)),
+          const SizedBox(height: DesignTokens.spacing2),
           ...assetBreakdown.entries.map(
             (entry) => Container(
               margin: const EdgeInsets.only(bottom: 8),
@@ -321,10 +257,7 @@ class _NetWorthScreenState extends State<NetWorthScreen> {
                 children: [
                   Text(
                     _getAssetTypeLabel(entry.key),
-                    style: GoogleFonts.poppins(
-                      color: DesignTokens.textPrimaryDark,
-                      fontSize: 13,
-                    ),
+                    style: GoogleFonts.poppins(color: DesignTokens.textPrimaryDark, fontSize: 13),
                   ),
                   Text(
                     CurrencyFormatter.formatRupiah(entry.value.toInt()),
@@ -338,17 +271,11 @@ class _NetWorthScreenState extends State<NetWorthScreen> {
               ),
             ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: DesignTokens.spacing3),
         ],
         if (liabilityBreakdown.isNotEmpty) ...[
-          Text(
-            'Liabilities',
-            style: GoogleFonts.poppins(
-              color: DesignTokens.textSecondaryDark,
-              fontSize: 12,
-            ),
-          ),
-          const SizedBox(height: 8),
+          Text('Liabilities', style: GoogleFonts.poppins(color: DesignTokens.textSecondaryDark, fontSize: 12)),
+          const SizedBox(height: DesignTokens.spacing2),
           ...liabilityBreakdown.entries.map(
             (entry) => Container(
               margin: const EdgeInsets.only(bottom: 8),
@@ -363,10 +290,7 @@ class _NetWorthScreenState extends State<NetWorthScreen> {
                 children: [
                   Text(
                     _getLiabilityTypeLabel(entry.key),
-                    style: GoogleFonts.poppins(
-                      color: DesignTokens.textPrimaryDark,
-                      fontSize: 13,
-                    ),
+                    style: GoogleFonts.poppins(color: DesignTokens.textPrimaryDark, fontSize: 13),
                   ),
                   Text(
                     CurrencyFormatter.formatRupiah(entry.value.toInt()),
@@ -385,24 +309,16 @@ class _NetWorthScreenState extends State<NetWorthScreen> {
     );
   }
 
-  Widget _buildHistory(
-    BuildContext context,
-    AppLocalizations? l10n,
-    List<Map<String, dynamic>> history,
-  ) {
+  Widget _buildHistory(BuildContext context, AppLocalizations? l10n, List<Map<String, dynamic>> history) {
     if (history.isEmpty) {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             'Trend',
-            style: GoogleFonts.poppins(
-              color: DesignTokens.textPrimaryDark,
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-            ),
+            style: GoogleFonts.poppins(color: DesignTokens.textPrimaryDark, fontSize: 16, fontWeight: FontWeight.w600),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: DesignTokens.spacing3),
           Container(
             width: double.infinity,
             padding: const EdgeInsets.all(24),
@@ -413,20 +329,12 @@ class _NetWorthScreenState extends State<NetWorthScreen> {
             ),
             child: Column(
               children: [
-                Icon(
-                  Iconsax.chart,
-                  size: 48,
-                  color: DesignTokens.textSecondaryDark.withValues(alpha: 0.5),
-                ),
-                const SizedBox(height: 12),
+                Icon(Iconsax.chart, size: 48, color: DesignTokens.textSecondaryDark.withValues(alpha: 0.5)),
+                const SizedBox(height: DesignTokens.spacing3),
                 Text(
-                  l10n?.chart_placeholder ??
-                      'Grafik akan tersedia setelah beberapa periode',
+                  l10n?.chart_placeholder ?? 'Grafik akan tersedia setelah beberapa periode',
                   textAlign: TextAlign.center,
-                  style: GoogleFonts.poppins(
-                    color: DesignTokens.textSecondaryDark,
-                    fontSize: 13,
-                  ),
+                  style: GoogleFonts.poppins(color: DesignTokens.textSecondaryDark, fontSize: 13),
                 ),
               ],
             ),
@@ -439,13 +347,9 @@ class _NetWorthScreenState extends State<NetWorthScreen> {
       children: [
         Text(
           'Trend',
-          style: GoogleFonts.poppins(
-            color: DesignTokens.textPrimaryDark,
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-          ),
+          style: GoogleFonts.poppins(color: DesignTokens.textPrimaryDark, fontSize: 16, fontWeight: FontWeight.w600),
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: DesignTokens.spacing3),
         Container(
           padding: const EdgeInsets.all(DesignTokens.spacing4),
           decoration: BoxDecoration(
@@ -456,45 +360,25 @@ class _NetWorthScreenState extends State<NetWorthScreen> {
           child: Column(
             children: [
               // Trend line chart
-              SizedBox(
-                height: 180,
-                child: _buildTrendChart(
-                  history.take(12).toList().reversed.toList(),
-                ),
-              ),
+              SizedBox(height: 180, child: _buildTrendChart(history.take(12).toList().reversed.toList())),
               const Divider(color: DesignTokens.borderDark, height: 24),
               // Compact list below chart
               ...history.take(5).map((snapshot) {
                 final date = snapshot['snapshot_date'] ?? '';
-                final netWorth =
-                    (snapshot['net_worth'] as num?)?.toDouble() ?? 0.0;
+                final netWorth = (snapshot['net_worth'] as num?)?.toDouble() ?? 0.0;
                 return Container(
                   padding: const EdgeInsets.symmetric(vertical: 6),
                   decoration: BoxDecoration(
-                    border: Border(
-                      bottom: BorderSide(
-                        color: DesignTokens.borderDark,
-                        width: 0.5,
-                      ),
-                    ),
+                    border: Border(bottom: BorderSide(color: DesignTokens.borderDark, width: 0.5)),
                   ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
-                        date,
-                        style: GoogleFonts.poppins(
-                          color: DesignTokens.textSecondaryDark,
-                          fontSize: 11,
-                        ),
-                      ),
+                      Text(date, style: GoogleFonts.poppins(color: DesignTokens.textSecondaryDark, fontSize: 11)),
                       Text(
                         CurrencyFormatter.formatRupiah(netWorth.toInt()),
                         style: GoogleFonts.poppins(
-                          color:
-                              netWorth >= 0
-                                  ? DesignTokens.successColor
-                                  : DesignTokens.errorColor,
+                          color: netWorth >= 0 ? DesignTokens.successColor : DesignTokens.errorColor,
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
                         ),
@@ -537,18 +421,11 @@ class _NetWorthScreenState extends State<NetWorthScreen> {
           drawVerticalLine: false,
           horizontalInterval: (maxY - minY) / 4,
           getDrawingHorizontalLine:
-              (value) => FlLine(
-                color: DesignTokens.borderDark.withValues(alpha: 0.3),
-                strokeWidth: 1,
-              ),
+              (value) => FlLine(color: DesignTokens.borderDark.withValues(alpha: 0.3), strokeWidth: 1),
         ),
         titlesData: FlTitlesData(
-          topTitles: const AxisTitles(
-            sideTitles: SideTitles(showTitles: false),
-          ),
-          rightTitles: const AxisTitles(
-            sideTitles: SideTitles(showTitles: false),
-          ),
+          topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
           leftTitles: AxisTitles(
             sideTitles: SideTitles(
               showTitles: true,
@@ -556,10 +433,7 @@ class _NetWorthScreenState extends State<NetWorthScreen> {
               getTitlesWidget:
                   (value, meta) => Text(
                     CurrencyFormatter.formatRupiah(value.toInt()),
-                    style: GoogleFonts.poppins(
-                      color: DesignTokens.textSecondaryDark,
-                      fontSize: 9,
-                    ),
+                    style: GoogleFonts.poppins(color: DesignTokens.textSecondaryDark, fontSize: 9),
                   ),
             ),
           ),
@@ -571,20 +445,15 @@ class _NetWorthScreenState extends State<NetWorthScreen> {
               interval: 1,
               getTitlesWidget: (value, meta) {
                 final idx = value.toInt();
-                if (idx < 0 || idx >= history.length)
-                  return const SizedBox.shrink();
+                if (idx < 0 || idx >= history.length) return const SizedBox.shrink();
                 final dateStr = history[idx]['snapshot_date'] as String? ?? '';
                 // Show month-day only
-                final shortDate =
-                    dateStr.length >= 10 ? dateStr.substring(5, 10) : dateStr;
+                final shortDate = dateStr.length >= 10 ? dateStr.substring(5, 10) : dateStr;
                 return Padding(
                   padding: const EdgeInsets.only(top: 4),
                   child: Text(
                     shortDate,
-                    style: GoogleFonts.poppins(
-                      color: DesignTokens.textSecondaryDark,
-                      fontSize: 8,
-                    ),
+                    style: GoogleFonts.poppins(color: DesignTokens.textSecondaryDark, fontSize: 8),
                   ),
                 );
               },
@@ -612,10 +481,7 @@ class _NetWorthScreenState extends State<NetWorthScreen> {
                     strokeColor: Colors.white,
                   ),
             ),
-            belowBarData: BarAreaData(
-              show: true,
-              color: DesignTokens.primaryColor.withValues(alpha: 0.1),
-            ),
+            belowBarData: BarAreaData(show: true, color: DesignTokens.primaryColor.withValues(alpha: 0.1)),
           ),
         ],
         lineTouchData: LineTouchData(
@@ -624,16 +490,10 @@ class _NetWorthScreenState extends State<NetWorthScreen> {
             getTooltipItems:
                 (touchedSpots) =>
                     touchedSpots.map((spot) {
-                      final value = CurrencyFormatter.formatRupiah(
-                        spot.y.toInt(),
-                      );
+                      final value = CurrencyFormatter.formatRupiah(spot.y.toInt());
                       return LineTooltipItem(
                         value,
-                        TextStyle(
-                          color: Colors.white,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                        ),
+                        TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w600),
                       );
                     }).toList(),
           ),
@@ -674,17 +534,13 @@ class _NetWorthScreenState extends State<NetWorthScreen> {
     }
   }
 
-  Widget _buildErrorState(
-    BuildContext context,
-    AppLocalizations? l10n,
-    NetWorthController ctrl,
-  ) {
+  Widget _buildErrorState(BuildContext context, AppLocalizations? l10n, NetWorthController ctrl) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(Iconsax.warning_2, size: 64, color: DesignTokens.errorColor),
-          const SizedBox(height: 16),
+          const SizedBox(height: DesignTokens.spacing4),
           Semantics(
             liveRegion: true,
             child: Text(
@@ -696,27 +552,19 @@ class _NetWorthScreenState extends State<NetWorthScreen> {
               ),
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: DesignTokens.spacing2),
           Semantics(
             liveRegion: true,
             child: Text(
               ctrl.errorMessage ?? '',
-              style: GoogleFonts.poppins(
-                color: DesignTokens.textSecondaryDark,
-                fontSize: 14,
-              ),
+              style: GoogleFonts.poppins(color: DesignTokens.textSecondaryDark, fontSize: 14),
             ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: DesignTokens.spacing4),
           ElevatedButton(
             onPressed: ctrl.refresh,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: DesignTokens.primaryColor,
-            ),
-            child: Text(
-              l10n?.retry ?? 'Coba Lagi',
-              style: GoogleFonts.poppins(color: Colors.white),
-            ),
+            style: ElevatedButton.styleFrom(backgroundColor: DesignTokens.primaryColor),
+            child: Text(l10n?.retry ?? 'Coba Lagi', style: GoogleFonts.poppins(color: Colors.white)),
           ),
         ],
       ),

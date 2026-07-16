@@ -10,8 +10,7 @@ class IncrementalSyncService {
   static const String _lastGoalSyncKey = 'last_goal_sync';
 
   // Singleton pattern
-  static final IncrementalSyncService _instance =
-      IncrementalSyncService._internal();
+  static final IncrementalSyncService _instance = IncrementalSyncService._internal();
   factory IncrementalSyncService() => _instance;
   IncrementalSyncService._internal();
 
@@ -23,10 +22,7 @@ class IncrementalSyncService {
       if (timestamp == null) return null;
       return DateTime.fromMillisecondsSinceEpoch(timestamp);
     } catch (e) {
-      LoggerService.error(
-        '[IncrementalSyncService] Error getting last sync time',
-        error: e,
-      );
+      LoggerService.error('[IncrementalSyncService] Error getting last sync time', error: e);
       return null;
     }
   }
@@ -37,14 +33,9 @@ class IncrementalSyncService {
       final prefs = await SharedPreferences.getInstance();
       final now = DateTime.now().millisecondsSinceEpoch;
       await prefs.setInt(_getSyncKey(syncType), now);
-      LoggerService.debug(
-        '[IncrementalSyncService] Updated last sync time for $syncType',
-      );
+      LoggerService.debug('[IncrementalSyncService] Updated last sync time for $syncType');
     } catch (e) {
-      LoggerService.error(
-        '[IncrementalSyncService] Error updating sync time',
-        error: e,
-      );
+      LoggerService.error('[IncrementalSyncService] Error updating sync time', error: e);
     }
   }
 
@@ -72,10 +63,7 @@ class IncrementalSyncService {
       final age = DateTime.now().difference(lastSync);
       return age > maxAgeDuration;
     } catch (e) {
-      LoggerService.error(
-        '[IncrementalSyncService] Error checking sync need',
-        error: e,
-      );
+      LoggerService.error('[IncrementalSyncService] Error checking sync need', error: e);
       return true; // Default to sync on error
     }
   }
@@ -86,80 +74,55 @@ class IncrementalSyncService {
   }) async {
     try {
       final lastSync = await getLastSyncTime('transactions');
-      LoggerService.debug(
-        '[IncrementalSyncService] Syncing transactions since: ${lastSync ?? "never"}',
-      );
+      LoggerService.debug('[IncrementalSyncService] Syncing transactions since: ${lastSync ?? "never"}');
 
       final newTransactions = await fetchFunction(lastSync);
 
       await updateLastSyncTime('transactions');
 
-      LoggerService.success(
-        '[IncrementalSyncService] Synced ${newTransactions.length} new transactions',
-      );
+      LoggerService.success('[IncrementalSyncService] Synced ${newTransactions.length} new transactions');
 
       return newTransactions;
     } catch (e) {
-      LoggerService.error(
-        '[IncrementalSyncService] Error syncing transactions',
-        error: e,
-      );
+      LoggerService.error('[IncrementalSyncService] Error syncing transactions', error: e);
       rethrow;
     }
   }
 
   /// Sync budgets incrementally
-  Future<List<dynamic>> syncBudgets({
-    required Future<List<dynamic>> Function(DateTime? since) fetchFunction,
-  }) async {
+  Future<List<dynamic>> syncBudgets({required Future<List<dynamic>> Function(DateTime? since) fetchFunction}) async {
     try {
       final lastSync = await getLastSyncTime('budgets');
-      LoggerService.debug(
-        '[IncrementalSyncService] Syncing budgets since: ${lastSync ?? "never"}',
-      );
+      LoggerService.debug('[IncrementalSyncService] Syncing budgets since: ${lastSync ?? "never"}');
 
       final newBudgets = await fetchFunction(lastSync);
 
       await updateLastSyncTime('budgets');
 
-      LoggerService.success(
-        '[IncrementalSyncService] Synced ${newBudgets.length} new/updated budgets',
-      );
+      LoggerService.success('[IncrementalSyncService] Synced ${newBudgets.length} new/updated budgets');
 
       return newBudgets;
     } catch (e) {
-      LoggerService.error(
-        '[IncrementalSyncService] Error syncing budgets',
-        error: e,
-      );
+      LoggerService.error('[IncrementalSyncService] Error syncing budgets', error: e);
       rethrow;
     }
   }
 
   /// Sync goals incrementally
-  Future<List<dynamic>> syncGoals({
-    required Future<List<dynamic>> Function(DateTime? since) fetchFunction,
-  }) async {
+  Future<List<dynamic>> syncGoals({required Future<List<dynamic>> Function(DateTime? since) fetchFunction}) async {
     try {
       final lastSync = await getLastSyncTime('goals');
-      LoggerService.debug(
-        '[IncrementalSyncService] Syncing goals since: ${lastSync ?? "never"}',
-      );
+      LoggerService.debug('[IncrementalSyncService] Syncing goals since: ${lastSync ?? "never"}');
 
       final newGoals = await fetchFunction(lastSync);
 
       await updateLastSyncTime('goals');
 
-      LoggerService.success(
-        '[IncrementalSyncService] Synced ${newGoals.length} new/updated goals',
-      );
+      LoggerService.success('[IncrementalSyncService] Synced ${newGoals.length} new/updated goals');
 
       return newGoals;
     } catch (e) {
-      LoggerService.error(
-        '[IncrementalSyncService] Error syncing goals',
-        error: e,
-      );
+      LoggerService.error('[IncrementalSyncService] Error syncing goals', error: e);
       rethrow;
     }
   }
@@ -172,14 +135,9 @@ class IncrementalSyncService {
       await prefs.remove(_lastTransactionSyncKey);
       await prefs.remove(_lastBudgetSyncKey);
       await prefs.remove(_lastGoalSyncKey);
-      LoggerService.info(
-        '[IncrementalSyncService] All sync timestamps cleared',
-      );
+      LoggerService.info('[IncrementalSyncService] All sync timestamps cleared');
     } catch (e) {
-      LoggerService.error(
-        '[IncrementalSyncService] Error clearing sync times',
-        error: e,
-      );
+      LoggerService.error('[IncrementalSyncService] Error clearing sync times', error: e);
     }
   }
 }

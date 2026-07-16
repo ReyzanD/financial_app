@@ -34,9 +34,7 @@ class DropdownHelper {
       prefixIcon: prefixIcon,
       filled: true,
       fillColor: DesignTokens.surfaceDark,
-      contentPadding:
-          contentPadding ??
-          const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      contentPadding: contentPadding ?? const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
         borderSide: BorderSide.none,

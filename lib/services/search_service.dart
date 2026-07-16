@@ -7,8 +7,7 @@ import 'package:financial_app/core/di/service_locator.dart';
 
 /// Service untuk global search functionality
 class SearchService {
-  final TransactionDataService _transactionData =
-      getIt<TransactionDataService>();
+  final TransactionDataService _transactionData = getIt<TransactionDataService>();
   final BudgetDataService _budgetData = getIt<BudgetDataService>();
   final GoalDataService _goalData = getIt<GoalDataService>();
 
@@ -25,23 +24,18 @@ class SearchService {
     try {
       // Get all transactions
       final transactionsData = await _transactionData.getTransactions();
-      final transactions = List<Map<String, dynamic>>.from(
-        transactionsData['transactions'] ?? [],
-      );
+      final transactions = List<Map<String, dynamic>>.from(transactionsData['transactions'] ?? []);
 
       // Filter transactions
       final filtered =
           transactions.where((transaction) {
             // Text search
             if (query.isNotEmpty) {
-              final description =
-                  (transaction['description'] ?? '').toString().toLowerCase();
-              final categoryName =
-                  (transaction['category_name'] ?? '').toString().toLowerCase();
+              final description = (transaction['description'] ?? '').toString().toLowerCase();
+              final categoryName = (transaction['category_name'] ?? '').toString().toLowerCase();
               final searchQuery = query.toLowerCase();
 
-              if (!description.contains(searchQuery) &&
-                  !categoryName.contains(searchQuery)) {
+              if (!description.contains(searchQuery) && !categoryName.contains(searchQuery)) {
                 return false;
               }
             }
@@ -103,14 +97,9 @@ class SearchService {
   }
 
   /// Search budgets
-  Future<List<Map<String, dynamic>>> searchBudgets({
-    required String query,
-    bool? activeOnly,
-  }) async {
+  Future<List<Map<String, dynamic>>> searchBudgets({required String query, bool? activeOnly}) async {
     try {
-      final budgetModels = await _budgetData.getBudgets(
-        activeOnly: activeOnly ?? false,
-      );
+      final budgetModels = await _budgetData.getBudgets(activeOnly: activeOnly ?? false);
       final budgets = budgetModels.map((b) => b.toMap()).toList();
 
       if (query.isEmpty) {
@@ -118,8 +107,7 @@ class SearchService {
       }
 
       return budgets.where((budget) {
-        final categoryName =
-            (budget['category_name'] ?? '').toString().toLowerCase();
+        final categoryName = (budget['category_name'] ?? '').toString().toLowerCase();
         final searchQuery = query.toLowerCase();
         return categoryName.contains(searchQuery);
       }).toList();
@@ -130,9 +118,7 @@ class SearchService {
   }
 
   /// Search goals
-  Future<List<Map<String, dynamic>>> searchGoals({
-    required String query,
-  }) async {
+  Future<List<Map<String, dynamic>>> searchGoals({required String query}) async {
     try {
       final goalModels = await _goalData.getGoals();
       final goals = goalModels.map((g) => g.toMap()).toList();
@@ -188,16 +174,13 @@ class SearchService {
     try {
       // Get recent transactions untuk suggestions
       final transactionsData = await _transactionData.getTransactions();
-      final transactions = List<Map<String, dynamic>>.from(
-        transactionsData['transactions'] ?? [],
-      );
+      final transactions = List<Map<String, dynamic>>.from(transactionsData['transactions'] ?? []);
 
       // Extract unique descriptions
       final suggestions = <String>{};
       for (var transaction in transactions) {
         final description = (transaction['description'] ?? '').toString();
-        if (description.isNotEmpty &&
-            description.toLowerCase().contains(query.toLowerCase())) {
+        if (description.isNotEmpty && description.toLowerCase().contains(query.toLowerCase())) {
           suggestions.add(description);
         }
       }

@@ -57,8 +57,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get add_income => 'Tambah Pemasukan';
 
   @override
-  String get add_income_first =>
-      'Tambahkan pemasukan terlebih dahulu atau kurangi jumlah pengeluaran.';
+  String get add_income_first => 'Tambahkan pemasukan terlebih dahulu atau kurangi jumlah pengeluaran.';
 
   @override
   String get add_obligation => 'Tambah Kewajiban';
@@ -135,12 +134,10 @@ class AppLocalizationsId extends AppLocalizations {
   String get authentication_required => 'Autentikasi diperlukan';
 
   @override
-  String get authentication_required_for_delete =>
-      'Autentikasi diperlukan untuk menghapus akun';
+  String get authentication_required_for_delete => 'Autentikasi diperlukan untuk menghapus akun';
 
   @override
-  String get authentication_required_for_export =>
-      'Autentikasi diperlukan untuk mengekspor data';
+  String get authentication_required_for_export => 'Autentikasi diperlukan untuk mengekspor data';
 
   @override
   String get available_balance => 'Saldo Tersedia';
@@ -204,12 +201,10 @@ class AppLocalizationsId extends AppLocalizations {
   String get cannot_recognize_amount => 'Tidak dapat mengenali jumlah dari';
 
   @override
-  String get cannot_scan_receipt =>
-      'Tidak dapat memindai struk. Pastikan gambar jelas dan mengandung teks.';
+  String get cannot_scan_receipt => 'Tidak dapat memindai struk. Pastikan gambar jelas dan mengandung teks.';
 
   @override
-  String get cannot_scan_receipt_try_again =>
-      'Tidak dapat memindai struk. Coba lagi.';
+  String get cannot_scan_receipt_try_again => 'Tidak dapat memindai struk. Coba lagi.';
 
   @override
   String get car_loan => 'Kredit Mobil';
@@ -233,8 +228,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get change_password => 'Ubah Kata Sandi';
 
   @override
-  String get change_password_security =>
-      'Ubah kata sandi dan pengaturan keamanan';
+  String get change_password_security => 'Ubah kata sandi dan pengaturan keamanan';
 
   @override
   String get change_password_title => 'Ubah Password';
@@ -303,8 +297,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get data_privacy => 'Data & Privasi';
 
   @override
-  String get data_saved_to_clipboard =>
-      'Data tersimpan di clipboard. Simpan di tempat aman!';
+  String get data_saved_to_clipboard => 'Data tersimpan di clipboard. Simpan di tempat aman!';
 
   @override
   String get date => 'Tanggal';
@@ -371,8 +364,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get delete_label => 'Hapus';
 
   @override
-  String get delete_notification_history_message =>
-      'Semua riwayat notifikasi akan dihapus';
+  String get delete_notification_history_message => 'Semua riwayat notifikasi akan dihapus';
 
   @override
   String get delete_obligation => 'Hapus Kewajiban';
@@ -441,8 +433,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get emergency_fund => 'Dana Darurat';
 
   @override
-  String get enable_for_local_recommendations =>
-      'Aktifkan untuk rekomendasi lokal';
+  String get enable_for_local_recommendations => 'Aktifkan untuk rekomendasi lokal';
 
   @override
   String get enable_reminders => 'Aktifkan Pengingat';
@@ -475,8 +466,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get error_scanning => 'Error scanning';
 
   @override
-  String get error_scanning_receipt =>
-      'Terjadi kesalahan saat memindai struk. Coba lagi.';
+  String get error_scanning_receipt => 'Terjadi kesalahan saat memindai struk. Coba lagi.';
 
   @override
   String get every_day_at => 'Setiap hari pukul';
@@ -512,8 +502,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get failed_to_delete_notification => 'Gagal menghapus';
 
   @override
-  String get failed_to_get_location =>
-      'Gagal mendapatkan lokasi. Pastikan izin lokasi aktif.';
+  String get failed_to_get_location => 'Gagal mendapatkan lokasi. Pastikan izin lokasi aktif.';
 
   @override
   String get failed_to_load_analytics => 'Gagal memuat analitik';
@@ -708,8 +697,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get minimum_payment_optional => 'Pembayaran Minimum (Opsional)';
 
   @override
-  String get monitor_expenses_income =>
-      'Pantau setiap pengeluaran dan pemasukan';
+  String get monitor_expenses_income => 'Pantau setiap pengeluaran dan pemasukan';
 
   @override
   String get monthly => 'Bulanan';
@@ -751,8 +739,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get no_accounts => 'Belum Ada Akun';
 
   @override
-  String get no_budgets_subtitle =>
-      'Atur budget untuk mengontrol pengeluaran Anda';
+  String get no_budgets_subtitle => 'Atur budget untuk mengontrol pengeluaran Anda';
 
   @override
   String get no_budgets_title => 'Belum Ada Budget';
@@ -761,12 +748,10 @@ class AppLocalizationsId extends AppLocalizations {
   String get no_categories_available => 'Tidak ada kategori tersedia';
 
   @override
-  String get no_categories_create_first =>
-      'Tidak ada kategori. Buat kategori terlebih dahulu di menu Budget.';
+  String get no_categories_create_first => 'Tidak ada kategori. Buat kategori terlebih dahulu di menu Budget.';
 
   @override
-  String get no_connection_subtitle =>
-      'Periksa koneksi internet Anda dan coba lagi';
+  String get no_connection_subtitle => 'Periksa koneksi internet Anda dan coba lagi';
 
   @override
   String get no_connection_title => 'Tidak Ada Koneksi';
@@ -775,12 +760,10 @@ class AppLocalizationsId extends AppLocalizations {
   String get no_debts => 'Tidak ada hutang aktif';
 
   @override
-  String get no_frequent_categories =>
-      'Belum ada kategori yang sering digunakan';
+  String get no_frequent_categories => 'Belum ada kategori yang sering digunakan';
 
   @override
-  String get no_goals_subtitle =>
-      'Tetapkan target keuangan dan capai impian Anda';
+  String get no_goals_subtitle => 'Tetapkan target keuangan dan capai impian Anda';
 
   @override
   String get no_goals_title => 'Belum Ada Target';
@@ -807,8 +790,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get no_payment_history => 'Belum ada riwayat pembayaran';
 
   @override
-  String get no_recurring_transactions_subtitle =>
-      'Otomatis catat transaksi yang terjadi secara rutin';
+  String get no_recurring_transactions_subtitle => 'Otomatis catat transaksi yang terjadi secara rutin';
 
   @override
   String get no_recurring_transactions_title => 'Belum Ada Transaksi Berulang';
@@ -823,8 +805,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get no_search_results => 'Tidak ada yang cocok dengan pencarian';
 
   @override
-  String get no_search_results_subtitle =>
-      'Coba kata kunci lain atau filter berbeda';
+  String get no_search_results_subtitle => 'Coba kata kunci lain atau filter berbeda';
 
   @override
   String get no_search_results_title => 'Tidak Ada Hasil';
@@ -833,12 +814,10 @@ class AppLocalizationsId extends AppLocalizations {
   String get no_subscriptions => 'Tidak ada langganan aktif';
 
   @override
-  String get no_transactions_for_period =>
-      'Tidak ada transaksi untuk periode yang dipilih';
+  String get no_transactions_for_period => 'Tidak ada transaksi untuk periode yang dipilih';
 
   @override
-  String get no_transactions_subtitle =>
-      'Mulai catat pengeluaran dan pemasukan Anda';
+  String get no_transactions_subtitle => 'Mulai catat pengeluaran dan pemasukan Anda';
 
   @override
   String get no_transactions_title => 'Belum Ada Transaksi';
@@ -862,20 +841,16 @@ class AppLocalizationsId extends AppLocalizations {
   String get notifications => 'Notifikasi';
 
   @override
-  String get notifications_bills_due =>
-      'Notifikasi tagihan yang akan jatuh tempo';
+  String get notifications_bills_due => 'Notifikasi tagihan yang akan jatuh tempo';
 
   @override
-  String get notifications_budget_almost_empty =>
-      'Notifikasi saat budget hampir/sudah habis';
+  String get notifications_budget_almost_empty => 'Notifikasi saat budget hampir/sudah habis';
 
   @override
-  String get notifications_help_stay_updated =>
-      'Notifikasi membantu Anda tetap update dengan keuangan';
+  String get notifications_help_stay_updated => 'Notifikasi membantu Anda tetap update dengan keuangan';
 
   @override
-  String get notifications_progress_achievements =>
-      'Notifikasi progress dan pencapaian tujuan';
+  String get notifications_progress_achievements => 'Notifikasi progress dan pencapaian tujuan';
 
   @override
   String get notifications_will_appear_here => 'Notifikasi akan muncul di sini';
@@ -989,8 +964,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get please_select_month => 'Silakan pilih bulan';
 
   @override
-  String get please_select_period_first =>
-      'Silakan pilih periode terlebih dahulu';
+  String get please_select_period_first => 'Silakan pilih periode terlebih dahulu';
 
   @override
   String get please_select_year => 'Silakan pilih tahun';
@@ -1020,8 +994,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get quick_income => 'Quick Income';
 
   @override
-  String get receipt_scanned_successfully =>
-      'Struk berhasil dipindai! Form telah diisi otomatis.';
+  String get receipt_scanned_successfully => 'Struk berhasil dipindai! Form telah diisi otomatis.';
 
   @override
   String get record_payment => 'Catat Pembayaran';
@@ -1039,8 +1012,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get reminder_days => 'Pengingat diatur untuk';
 
   @override
-  String get reminder_description =>
-      'Dapatkan notifikasi sebelum tagihan jatuh tempo';
+  String get reminder_description => 'Dapatkan notifikasi sebelum tagihan jatuh tempo';
 
   @override
   String get reminder_disabled => 'Pengingat dinonaktifkan';
@@ -1133,8 +1105,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get select_year => 'Pilih Tahun';
 
   @override
-  String get server_error_subtitle =>
-      'Server sedang bermasalah. Coba lagi dalam beberapa saat';
+  String get server_error_subtitle => 'Server sedang bermasalah. Coba lagi dalam beberapa saat';
 
   @override
   String get server_error_title => 'Terjadi Kesalahan';
@@ -1177,8 +1148,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get spent => 'Terpakai';
 
   @override
-  String get start_managing_finances =>
-      'Mari mulai mengelola keuangan Anda dengan lebih baik';
+  String get start_managing_finances => 'Mari mulai mengelola keuangan Anda dengan lebih baik';
 
   @override
   String get status => 'Status';
@@ -1338,8 +1308,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get use_iris => 'Gunakan Iris';
 
   @override
-  String get use_pin_to_unlock =>
-      'Gunakan PIN ini untuk membuka aplikasi dengan cepat setiap kali Anda masuk';
+  String get use_pin_to_unlock => 'Gunakan PIN ini untuk membuka aplikasi dengan cepat setiap kali Anda masuk';
 
   @override
   String get user_profile => 'Profil Pengguna';
@@ -1354,8 +1323,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get vehicle => 'Kendaraan';
 
   @override
-  String get view_today_financial_activity =>
-      'Lihat aktivitas keuangan Anda hari ini';
+  String get view_today_financial_activity => 'Lihat aktivitas keuangan Anda hari ini';
 
   @override
   String get visit => 'Kunjungi';
@@ -1382,8 +1350,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get yearly => 'Tahunan';
 
   @override
-  String get you_need_to_login_again =>
-      'Anda perlu login kembali dengan email dan password.';
+  String get you_need_to_login_again => 'Anda perlu login kembali dengan email dan password.';
 
   @override
   String get delete_transaction_confirm => 'Hapus Transaksi?';
@@ -1393,15 +1360,13 @@ class AppLocalizationsId extends AppLocalizations {
       'Apakah Anda yakin ingin menghapus transaksi ini? Saldo akan dikembalikan.';
 
   @override
-  String get delete_transaction_message_short =>
-      'Apakah Anda yakin ingin menghapus transaksi ini?';
+  String get delete_transaction_message_short => 'Apakah Anda yakin ingin menghapus transaksi ini?';
 
   @override
   String get failed_to_delete_transaction => 'Gagal menghapus transaksi';
 
   @override
-  String get transaction_added_successfully =>
-      'Transaksi berhasil ditambahkan!';
+  String get transaction_added_successfully => 'Transaksi berhasil ditambahkan!';
 
   @override
   String get delete_goal_confirm => 'Hapus Goal?';
@@ -1428,15 +1393,13 @@ class AppLocalizationsId extends AppLocalizations {
   String get budget_added_successfully => 'Budget berhasil ditambahkan.';
 
   @override
-  String get all_bills_paid =>
-      'Semua tagihan Anda sudah dibayar atau belum jatuh tempo';
+  String get all_bills_paid => 'Semua tagihan Anda sudah dibayar atau belum jatuh tempo';
 
   @override
   String get no_data_for_recommendation => 'Belum ada data untuk rekomendasi';
 
   @override
-  String get authentication_required_to_delete =>
-      'Autentikasi diperlukan untuk menghapus transaksi';
+  String get authentication_required_to_delete => 'Autentikasi diperlukan untuk menghapus transaksi';
 
   @override
   String get failed_to_delete_goal => 'Gagal menghapus goal';
@@ -1511,8 +1474,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get edit_percentage => 'Edit Persentase';
 
   @override
-  String get failed_to_load_transactions =>
-      'Gagal memuat data. Tap untuk coba lagi.';
+  String get failed_to_load_transactions => 'Gagal memuat data. Tap untuk coba lagi.';
 
   @override
   String get failed_to_connect => 'Gagal terhubung ke server';
@@ -1524,12 +1486,10 @@ class AppLocalizationsId extends AppLocalizations {
   String get no_budget_yet => 'Belum ada budget';
 
   @override
-  String get create_budget_to_manage =>
-      'Buat budget untuk kelola keuangan lebih baik';
+  String get create_budget_to_manage => 'Buat budget untuk kelola keuangan lebih baik';
 
   @override
-  String get no_recommendations_available =>
-      'Belum ada rekomendasi AI tersedia';
+  String get no_recommendations_available => 'Belum ada rekomendasi AI tersedia';
 
   @override
   String get failed_to_load_budget_suggestions => 'Gagal memuat saran budget';
@@ -1565,15 +1525,13 @@ class AppLocalizationsId extends AppLocalizations {
   String get investment_deleted_successfully => 'Investasi berhasil dihapus';
 
   @override
-  String get delete_investment_confirm =>
-      'Yakin ingin menghapus investasi ini?';
+  String get delete_investment_confirm => 'Yakin ingin menghapus investasi ini?';
 
   @override
   String get subscription_deleted_successfully => 'Langganan berhasil dihapus';
 
   @override
-  String get delete_subscription_confirm =>
-      'Yakin ingin menghapus langganan ini?';
+  String get delete_subscription_confirm => 'Yakin ingin menghapus langganan ini?';
 
   @override
   String get split_deleted_successfully => 'Split berhasil dihapus';
@@ -1675,8 +1633,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get recurring_transactions => 'Transaksi Berulang';
 
   @override
-  String get feature_coming_soon =>
-      'Fitur transaksi berulang akan segera hadir';
+  String get feature_coming_soon => 'Fitur transaksi berulang akan segera hadir';
 
   @override
   String get no_recurring_transactions => 'Belum ada transaksi berulang';
@@ -1733,8 +1690,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get no_active_debts => 'Tidak ada hutang aktif';
 
   @override
-  String get receipt_scanned_success =>
-      'Struk berhasil dipindai! Form telah diisi otomatis.';
+  String get receipt_scanned_success => 'Struk berhasil dipindai! Form telah diisi otomatis.';
 
   @override
   String get month => 'Bulan';
@@ -1764,8 +1720,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get period => 'Periode';
 
   @override
-  String get future_date_error =>
-      'Tanggal pengeluaran tidak boleh di masa depan';
+  String get future_date_error => 'Tanggal pengeluaran tidak boleh di masa depan';
 
   @override
   String get insufficient_balance_title => 'Saldo Tidak Cukup';
@@ -1780,15 +1735,13 @@ class AppLocalizationsId extends AppLocalizations {
   String get no_challenges => 'Belum Ada Challenges';
 
   @override
-  String get no_alternative_recommendations =>
-      'Tidak ada rekomendasi alternatif untuk kategori ini';
+  String get no_alternative_recommendations => 'Tidak ada rekomendasi alternatif untuk kategori ini';
 
   @override
   String get add_category => 'Tambah Kategori';
 
   @override
-  String get transaction_created_from_receipt =>
-      'Transaksi berhasil dibuat dari struk:';
+  String get transaction_created_from_receipt => 'Transaksi berhasil dibuat dari struk:';
 
   @override
   String get enter_balance => 'Masukkan saldo';
@@ -1836,8 +1789,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get set_budget_per_category => 'Atur anggaran per kategori';
 
   @override
-  String get enable_features_for_best_experience =>
-      'Aktifkan fitur untuk pengalaman terbaik';
+  String get enable_features_for_best_experience => 'Aktifkan fitur untuk pengalaman terbaik';
 
   @override
   String get just_now => 'Baru saja';
@@ -1888,8 +1840,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get notes_optional => 'Catatan (Opsional)';
 
   @override
-  String get cannot_get_current_location =>
-      'Tidak dapat mendapatkan lokasi saat ini';
+  String get cannot_get_current_location => 'Tidak dapat mendapatkan lokasi saat ini';
 
   @override
   String get current_position => 'Posisi saat ini';
@@ -1925,8 +1876,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get select => 'Pilih';
 
   @override
-  String get select_location_on_map_first =>
-      'Pilih lokasi di peta terlebih dahulu';
+  String get select_location_on_map_first => 'Pilih lokasi di peta terlebih dahulu';
 
   @override
   String get selected_location => 'Lokasi Terpilih';
@@ -1945,8 +1895,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get transaction_map => 'Peta Transaksi';
 
   @override
-  String get unable_to_get_location_permission =>
-      'Tidak dapat mendapatkan lokasi. Periksa izin lokasi.';
+  String get unable_to_get_location_permission => 'Tidak dapat mendapatkan lokasi. Periksa izin lokasi.';
 
   @override
   String get your_location => 'Lokasi Anda';
@@ -1982,6 +1931,5 @@ class AppLocalizationsId extends AppLocalizations {
   String get add_template => 'Tambah Template';
 
   @override
-  String get chart_placeholder =>
-      'Grafik akan tersedia setelah beberapa periode';
+  String get chart_placeholder => 'Grafik akan tersedia setelah beberapa periode';
 }

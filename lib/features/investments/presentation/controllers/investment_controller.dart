@@ -5,8 +5,7 @@ import 'package:financial_app/services/logger_service.dart';
 
 class InvestmentController extends ChangeNotifier {
   final InvestmentRepository _r;
-  InvestmentController({required InvestmentRepository repository})
-    : _r = repository;
+  InvestmentController({required InvestmentRepository repository}) : _r = repository;
 
   List<InvestmentModel> _investments = [];
   Map<String, dynamic> _summary = {};
@@ -23,10 +22,7 @@ class InvestmentController extends ChangeNotifier {
     _errorMessage = null;
     notifyListeners();
     try {
-      final results = await Future.wait([
-        _r.getInvestments(),
-        _r.getPortfolioSummary(),
-      ]);
+      final results = await Future.wait([_r.getInvestments(), _r.getPortfolioSummary()]);
       _investments = results[0] as List<InvestmentModel>;
       _summary = results[1] as Map<String, dynamic>;
     } catch (e) {

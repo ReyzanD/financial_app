@@ -131,9 +131,7 @@ Future<void> setupServiceLocator() async {
   // ========== Core Services ==========
   getIt.registerLazySingleton<LoggerService>(() => LoggerService());
   getIt.registerLazySingleton<ErrorHandlerService>(() => ErrorHandlerService());
-  getIt.registerLazySingleton<ObligationDataService>(
-    () => ObligationDataService(),
-  );
+  getIt.registerLazySingleton<ObligationDataService>(() => ObligationDataService());
   getIt.registerLazySingleton<ThemeService>(() => ThemeService());
   getIt.registerLazySingleton<LocalizationService>(() => LocalizationService());
 
@@ -150,73 +148,44 @@ Future<void> setupServiceLocator() async {
 
   // ========== Notification Services ==========
   getIt.registerLazySingleton<NotificationService>(() => NotificationService());
-  getIt.registerLazySingleton<NotificationHistoryService>(
-    () => NotificationHistoryService(),
-  );
-  getIt.registerLazySingleton<ObligationReminderService>(
-    () => ObligationReminderService(),
-  );
+  getIt.registerLazySingleton<NotificationHistoryService>(() => NotificationHistoryService());
+  getIt.registerLazySingleton<ObligationReminderService>(() => ObligationReminderService());
 
   // ========== Financial Services ==========
   getIt.registerLazySingleton<FinancialCalculator>(() => FinancialCalculator());
   getIt.registerLazySingleton<AnalyticsService>(() => AnalyticsService());
-  getIt.registerLazySingleton<SpendingPatternAnalyzer>(
-    () => SpendingPatternAnalyzer(),
-  );
-  getIt.registerLazySingleton<SmartCategorizationService>(
-    () => SmartCategorizationService(),
-  );
-  getIt.registerLazySingleton<GoalForecastingService>(
-    () => GoalForecastingService(),
-  );
+  getIt.registerLazySingleton<SpendingPatternAnalyzer>(() => SpendingPatternAnalyzer());
+  getIt.registerLazySingleton<SmartCategorizationService>(() => SmartCategorizationService());
+  getIt.registerLazySingleton<GoalForecastingService>(() => GoalForecastingService());
   getIt.registerLazySingleton<ExpensePredictor>(() => ExpensePredictor());
   getIt.registerLazySingleton<BudgetPredictor>(() => BudgetPredictor());
-  getIt.registerLazySingleton<BudgetForecastService>(
-    () => BudgetForecastService(),
-  );
-  getIt.registerLazySingleton<BudgetRecommendationService>(
-    () => BudgetRecommendationService(),
-  );
-  getIt.registerLazySingleton<QuickActionsAnalyticsService>(
-    () => QuickActionsAnalyticsService(),
-  );
-  getIt.registerLazySingleton<AIRecommendationsEnhancedService>(
-    () => AIRecommendationsEnhancedService(),
-  );
+  getIt.registerLazySingleton<BudgetForecastService>(() => BudgetForecastService());
+  getIt.registerLazySingleton<BudgetRecommendationService>(() => BudgetRecommendationService());
+  getIt.registerLazySingleton<QuickActionsAnalyticsService>(() => QuickActionsAnalyticsService());
+  getIt.registerLazySingleton<AIRecommendationsEnhancedService>(() => AIRecommendationsEnhancedService());
   getIt.registerLazySingleton<ObligationService>(() => ObligationService());
   getIt.registerLazySingleton<BillTemplateService>(() => BillTemplateService());
 
   // ========== Business Services ==========
   getIt.registerLazySingleton<NetWorthService>(() => NetWorthService());
   getIt.registerLazySingleton<BackupService>(() => BackupService());
-  getIt.registerLazySingleton<PaymentHistoryService>(
-    () => PaymentHistoryService(),
-  );
+  getIt.registerLazySingleton<PaymentHistoryService>(() => PaymentHistoryService());
   getIt.registerLazySingleton<AIService>(() => AIService());
 
   // ========== Feature Services ==========
-  getIt.registerLazySingleton<ReceiptScanningService>(
-    () => ReceiptScanningService(),
-  );
+  getIt.registerLazySingleton<ReceiptScanningService>(() => ReceiptScanningService());
   getIt.registerLazySingleton<VoiceInputService>(() => VoiceInputService());
-  getIt.registerLazySingleton<TransactionTemplatesService>(
-    () => TransactionTemplatesService(),
-  );
+  getIt.registerLazySingleton<TransactionTemplatesService>(() => TransactionTemplatesService());
 
   // ========== Analytics & Monitoring ==========
   getIt.registerLazySingleton<PerformanceService>(() => PerformanceService());
   getIt.registerLazySingleton<UserFeedbackService>(() => UserFeedbackService());
 
   // ========== Transactions Feature (Clean Architecture) ==========
-  getIt.registerLazySingleton<TransactionRemoteDataSource>(
-    () => TransactionRemoteDataSource(),
-  );
+  getIt.registerLazySingleton<TransactionRemoteDataSource>(() => TransactionRemoteDataSource());
 
   getIt.registerLazySingleton<TransactionRepositoryInterface>(
-    () => TransactionRepository(
-      getIt<TransactionRemoteDataSource>(),
-      getIt<BudgetDataService>(),
-    ),
+    () => TransactionRepository(getIt<TransactionRemoteDataSource>(), getIt<BudgetDataService>()),
   );
 
   getIt.registerLazySingleton<GetTransactionsUseCase>(
@@ -239,166 +208,104 @@ Future<void> setupServiceLocator() async {
 
   // ========== Budgets Feature ==========
   getIt.registerLazySingleton<BudgetRepository>(() => BudgetRepository());
-  getIt.registerFactory<BudgetController>(
-    () => BudgetController(getIt<BudgetRepository>()),
-  );
+  getIt.registerFactory<BudgetController>(() => BudgetController(getIt<BudgetRepository>()));
 
   // ========== Goals Feature (Clean Architecture) ==========
-  getIt.registerLazySingleton<GoalRepositoryInterface>(
-    () => GoalRepository(goalData: getIt<GoalDataService>()),
-  );
+  getIt.registerLazySingleton<GoalRepositoryInterface>(() => GoalRepository(goalData: getIt<GoalDataService>()));
 
-  getIt.registerLazySingleton<GetGoalsUseCase>(
-    () => GetGoalsUseCase(getIt<GoalRepositoryInterface>()),
-  );
-  getIt.registerLazySingleton<CreateGoalUseCase>(
-    () => CreateGoalUseCase(getIt<GoalRepositoryInterface>()),
-  );
-  getIt.registerLazySingleton<DeleteGoalUseCase>(
-    () => DeleteGoalUseCase(getIt<GoalRepositoryInterface>()),
-  );
+  getIt.registerLazySingleton<GetGoalsUseCase>(() => GetGoalsUseCase(getIt<GoalRepositoryInterface>()));
+  getIt.registerLazySingleton<CreateGoalUseCase>(() => CreateGoalUseCase(getIt<GoalRepositoryInterface>()));
+  getIt.registerLazySingleton<DeleteGoalUseCase>(() => DeleteGoalUseCase(getIt<GoalRepositoryInterface>()));
 
-  getIt.registerFactory<GoalController>(
-    () => GoalController(repository: getIt<GoalRepositoryInterface>()),
-  );
+  getIt.registerFactory<GoalController>(() => GoalController(repository: getIt<GoalRepositoryInterface>()));
 
   // ========== Accounts Feature (Clean Architecture) ==========
-  getIt.registerLazySingleton<AccountRepository>(
-    () => AccountRepository(accountService: getIt<AccountService>()),
-  );
+  getIt.registerLazySingleton<AccountRepository>(() => AccountRepository(accountService: getIt<AccountService>()));
 
-  getIt.registerFactory<AccountController>(
-    () => AccountController(repository: getIt<AccountRepository>()),
-  );
+  getIt.registerFactory<AccountController>(() => AccountController(repository: getIt<AccountRepository>()));
 
   // ========== Challenges Feature (Clean Architecture) ==========
-  getIt.registerLazySingleton<ChallengeDataService>(
-    () => ChallengeDataService(),
-  );
+  getIt.registerLazySingleton<ChallengeDataService>(() => ChallengeDataService());
   getIt.registerLazySingleton<ChallengeRepository>(
     () => ChallengeRepository(challengeData: getIt<ChallengeDataService>()),
   );
 
-  getIt.registerFactory<ChallengeController>(
-    () => ChallengeController(repository: getIt<ChallengeRepository>()),
-  );
+  getIt.registerFactory<ChallengeController>(() => ChallengeController(repository: getIt<ChallengeRepository>()));
 
   // ========== Investments Feature ==========
-  getIt.registerLazySingleton<InvestmentRepository>(
-    () => InvestmentRepository(),
-  );
-  getIt.registerFactory<InvestmentController>(
-    () => InvestmentController(repository: getIt<InvestmentRepository>()),
-  );
+  getIt.registerLazySingleton<InvestmentRepository>(() => InvestmentRepository());
+  getIt.registerFactory<InvestmentController>(() => InvestmentController(repository: getIt<InvestmentRepository>()));
 
   // ========== Splits Feature ==========
   getIt.registerLazySingleton<SplitRepository>(() => SplitRepository());
-  getIt.registerFactory<SplitController>(
-    () => SplitController(repository: getIt<SplitRepository>()),
-  );
+  getIt.registerFactory<SplitController>(() => SplitController(repository: getIt<SplitRepository>()));
 
   // ========== Net Worth Feature ==========
   getIt.registerLazySingleton<NetWorthRepository>(() => NetWorthRepository());
-  getIt.registerFactory<NetWorthController>(
-    () => NetWorthController(repository: getIt<NetWorthRepository>()),
-  );
+  getIt.registerFactory<NetWorthController>(() => NetWorthController(repository: getIt<NetWorthRepository>()));
 
   // ========== Analytics Feature ==========
   getIt.registerLazySingleton<AnalyticsRepository>(() => AnalyticsRepository());
-  getIt.registerFactory<AnalyticsController>(
-    () => AnalyticsController(repository: getIt<AnalyticsRepository>()),
-  );
+  getIt.registerFactory<AnalyticsController>(() => AnalyticsController(repository: getIt<AnalyticsRepository>()));
 
   // ========== Cash Flow Feature ==========
-  getIt.registerLazySingleton<CashFlowRepository>(
-    () => CashFlowRepository(service: getIt<CashFlowForecastService>()),
-  );
-  getIt.registerFactory<CashFlowController>(
-    () => CashFlowController(repository: getIt<CashFlowRepository>()),
-  );
+  getIt.registerLazySingleton<CashFlowRepository>(() => CashFlowRepository(service: getIt<CashFlowForecastService>()));
+  getIt.registerFactory<CashFlowController>(() => CashFlowController(repository: getIt<CashFlowRepository>()));
 
   // ========== Obligations Feature ==========
-  getIt.registerLazySingleton<ObligationRepository>(
-    () => ObligationRepository(service: getIt<ObligationService>()),
-  );
-  getIt.registerFactory<ObligationController>(
-    () => ObligationController(repository: getIt<ObligationRepository>()),
-  );
+  getIt.registerLazySingleton<ObligationRepository>(() => ObligationRepository(service: getIt<ObligationService>()));
+  getIt.registerFactory<ObligationController>(() => ObligationController(repository: getIt<ObligationRepository>()));
 
   // ========== Insights Feature ==========
   getIt.registerLazySingleton<InsightsRepository>(() => InsightsRepository());
-  getIt.registerFactory<InsightsController>(
-    () => InsightsController(repository: getIt<InsightsRepository>()),
-  );
+  getIt.registerFactory<InsightsController>(() => InsightsController(repository: getIt<InsightsRepository>()));
 
   // ========== Forecast Feature ==========
   getIt.registerLazySingleton<ForecastRepository>(() => ForecastRepository());
-  getIt.registerFactory<ForecastController>(
-    () => ForecastController(repository: getIt<ForecastRepository>()),
-  );
+  getIt.registerFactory<ForecastController>(() => ForecastController(repository: getIt<ForecastRepository>()));
 
   // ========== Auth Feature (Clean Architecture) ==========
   getIt.registerFactory<AuthController>(() => AuthController());
 
   // ========== Backup Feature ==========
   getIt.registerLazySingleton<BackupRepository>(() => BackupRepository());
-  getIt.registerFactory<BackupController>(
-    () => BackupController(repository: getIt<BackupRepository>()),
-  );
+  getIt.registerFactory<BackupController>(() => BackupController(repository: getIt<BackupRepository>()));
 
   // ========== Tags Feature (Clean Architecture) ==========
   getIt.registerLazySingleton<TagDataService>(() => TagDataService());
   getIt.registerLazySingleton<TagRepository>(() => TagRepository());
-  getIt.registerFactory<TagController>(
-    () => TagController(repository: getIt<TagRepository>()),
-  );
+  getIt.registerFactory<TagController>(() => TagController(repository: getIt<TagRepository>()));
 
   // ========== Profile Feature ==========
   getIt.registerLazySingleton<ProfileRepository>(() => ProfileRepository());
-  getIt.registerFactory<ProfileController>(
-    () => ProfileController(repository: getIt<ProfileRepository>()),
-  );
+  getIt.registerFactory<ProfileController>(() => ProfileController(repository: getIt<ProfileRepository>()));
 
   // ========== Receipt History Feature ==========
   getIt.registerLazySingleton<ReceiptRepository>(() => ReceiptRepository());
-  getIt.registerFactory<ReceiptController>(
-    () => ReceiptController(repository: getIt<ReceiptRepository>()),
-  );
+  getIt.registerFactory<ReceiptController>(() => ReceiptController(repository: getIt<ReceiptRepository>()));
 
   // ========== Report Feature (Clean Architecture) ==========
   getIt.registerLazySingleton<ReportRepository>(() => ReportRepository());
-  getIt.registerFactory<ReportController>(
-    () => ReportController(repository: getIt<ReportRepository>()),
-  );
+  getIt.registerFactory<ReportController>(() => ReportController(repository: getIt<ReportRepository>()));
 
   // ========== Templates Feature (Clean Architecture) ==========
-  getIt.registerLazySingleton<TransactionTemplateDataService>(
-    () => TransactionTemplateDataService(),
-  );
+  getIt.registerLazySingleton<TransactionTemplateDataService>(() => TransactionTemplateDataService());
   getIt.registerLazySingleton<TemplateRepository>(
     () => TemplateRepository(service: getIt<TransactionTemplateDataService>()),
   );
-  getIt.registerFactory<TemplateController>(
-    () => TemplateController(repository: getIt<TemplateRepository>()),
-  );
+  getIt.registerFactory<TemplateController>(() => TemplateController(repository: getIt<TemplateRepository>()));
 
   // ========== Notification Center Feature ==========
-  getIt.registerLazySingleton<NotificationRepository>(
-    () => NotificationRepository(),
-  );
+  getIt.registerLazySingleton<NotificationRepository>(() => NotificationRepository());
   getIt.registerFactory<NotificationCenterController>(
-    () => NotificationCenterController(
-      repository: getIt<NotificationRepository>(),
-    ),
+    () => NotificationCenterController(repository: getIt<NotificationRepository>()),
   );
 
   // ========== Category Customization Feature (Clean Architecture) ==========
   getIt.registerFactory<CategoryController>(() => CategoryController());
 
   // ========== Calendar Feature (Clean Architecture) ==========
-  getIt.registerFactory<CalendarController>(
-    () => CalendarController(service: getIt<FinancialCalendarService>()),
-  );
+  getIt.registerFactory<CalendarController>(() => CalendarController(service: getIt<FinancialCalendarService>()));
 
   // ========== Map Feature (no controller registration - uses direct state) ==========
 
@@ -417,55 +324,31 @@ Future<void> setupServiceLocator() async {
   // ========== Domain Services (CRUD operations via focused data services) ==========
   getIt.registerLazySingleton<AccountService>(() => AccountService());
   getIt.registerLazySingleton<AccountDataService>(() => AccountDataService());
-  getIt.registerLazySingleton<InvestmentDataService>(
-    () => InvestmentDataService(),
-  );
+  getIt.registerLazySingleton<InvestmentDataService>(() => InvestmentDataService());
   getIt.registerLazySingleton<InvestmentService>(() => InvestmentService());
   getIt.registerLazySingleton<ExpenseSplitService>(() => ExpenseSplitService());
 
   // ========== Data Services (CRUD operations) ==========
   getIt.registerLazySingleton<CategoryDataService>(() => CategoryDataService());
   getIt.registerLazySingleton<GoalDataService>(() => GoalDataService());
-  getIt.registerLazySingleton<TransactionDataService>(
-    () => TransactionDataService(),
-  );
+  getIt.registerLazySingleton<TransactionDataService>(() => TransactionDataService());
   getIt.registerLazySingleton<BudgetDataService>(() => BudgetDataService());
-  getIt.registerLazySingleton<ReceiptScanDataService>(
-    () => ReceiptScanDataService(),
-  );
-  getIt.registerLazySingleton<ExchangeRateDataService>(
-    () => ExchangeRateDataService(),
-  );
+  getIt.registerLazySingleton<ReceiptScanDataService>(() => ReceiptScanDataService());
+  getIt.registerLazySingleton<ExchangeRateDataService>(() => ExchangeRateDataService());
   getIt.registerLazySingleton<NetWorthDataService>(() => NetWorthDataService());
 
   // ========== Phase 2: Alternative Recommendation Services ==========
-  getIt.registerLazySingleton<PlaceVisitDataService>(
-    () => PlaceVisitDataService(),
-  );
-  getIt.registerLazySingleton<PriceObservationDataService>(
-    () => PriceObservationDataService(),
-  );
-  getIt.registerLazySingleton<AlternativeSuggestionDataService>(
-    () => AlternativeSuggestionDataService(),
-  );
-  getIt.registerLazySingleton<OsmCategoryMappingService>(
-    () => OsmCategoryMappingService(),
-  );
+  getIt.registerLazySingleton<PlaceVisitDataService>(() => PlaceVisitDataService());
+  getIt.registerLazySingleton<PriceObservationDataService>(() => PriceObservationDataService());
+  getIt.registerLazySingleton<AlternativeSuggestionDataService>(() => AlternativeSuggestionDataService());
+  getIt.registerLazySingleton<OsmCategoryMappingService>(() => OsmCategoryMappingService());
   getIt.registerLazySingleton<OverpassApiService>(() => OverpassApiService());
-  getIt.registerLazySingleton<AlternativeRecommendationEngine>(
-    () => AlternativeRecommendationEngine(),
-  );
-  getIt.registerLazySingleton<LocationIntelligenceService>(
-    () => LocationIntelligenceService(),
-  );
-  getIt.registerLazySingleton<LocationRecommendationsEnhancedService>(
-    () => LocationRecommendationsEnhancedService(),
-  );
+  getIt.registerLazySingleton<AlternativeRecommendationEngine>(() => AlternativeRecommendationEngine());
+  getIt.registerLazySingleton<LocationIntelligenceService>(() => LocationIntelligenceService());
+  getIt.registerLazySingleton<LocationRecommendationsEnhancedService>(() => LocationRecommendationsEnhancedService());
 
   // ========== Phase 3: Financial Advisor Service ==========
-  getIt.registerLazySingleton<FinancialAdvisorService>(
-    () => FinancialAdvisorService(),
-  );
+  getIt.registerLazySingleton<FinancialAdvisorService>(() => FinancialAdvisorService());
 
   // ========== Composite Domain Services ==========
   getIt.registerLazySingleton<CashFlowForecastService>(
@@ -490,9 +373,7 @@ Future<void> setupServiceLocator() async {
 
   // ========== Phase 2 startup sync: transactions → PlaceVisits ==========
   try {
-    await getIt<PlaceVisitDataService>().syncFromTransactions(
-      getIt<TransactionDataService>(),
-    );
+    await getIt<PlaceVisitDataService>().syncFromTransactions(getIt<TransactionDataService>());
   } catch (e) {
     LoggerService.error('PlaceVisit startup sync failed (non-fatal)', error: e);
   }

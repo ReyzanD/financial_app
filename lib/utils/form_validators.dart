@@ -128,17 +128,13 @@ class FormValidators {
     for (var transaction in recentTransactions) {
       final txAmount = (transaction['amount'] as num?)?.toDouble() ?? 0.0;
       final txDescription = transaction['description']?.toString() ?? '';
-      final txDate =
-          transaction['date'] != null
-              ? DateTime.tryParse(transaction['date'].toString())
-              : null;
+      final txDate = transaction['date'] != null ? DateTime.tryParse(transaction['date'].toString()) : null;
 
       if (txDate == null) continue;
 
       // Check if same amount, similar description, and within time window
       if ((txAmount - amount).abs() < 0.01 && // Same amount (within 1 cent)
-          txDescription.toLowerCase().trim() ==
-              description.toLowerCase().trim() &&
+          txDescription.toLowerCase().trim() == description.toLowerCase().trim() &&
           txDate.isAfter(threshold)) {
         return true;
       }

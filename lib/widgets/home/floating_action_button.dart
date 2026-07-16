@@ -11,12 +11,10 @@ class HomeFloatingActionButton extends StatefulWidget {
   const HomeFloatingActionButton({super.key});
 
   @override
-  State<HomeFloatingActionButton> createState() =>
-      _HomeFloatingActionButtonState();
+  State<HomeFloatingActionButton> createState() => _HomeFloatingActionButtonState();
 }
 
-class _HomeFloatingActionButtonState extends State<HomeFloatingActionButton>
-    with SingleTickerProviderStateMixin {
+class _HomeFloatingActionButtonState extends State<HomeFloatingActionButton> with SingleTickerProviderStateMixin {
   bool _isOpen = false;
   late AnimationController _animController;
   late Animation<double> _expandAnimation;
@@ -25,17 +23,12 @@ class _HomeFloatingActionButtonState extends State<HomeFloatingActionButton>
   @override
   void initState() {
     super.initState();
-    _animController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 250),
-    );
-    _expandAnimation = CurvedAnimation(
-      parent: _animController,
-      curve: Curves.easeOutBack,
-    );
-    _rotateAnimation = Tween<double>(begin: 0, end: 0.5).animate(
-      CurvedAnimation(parent: _animController, curve: Curves.easeInOut),
-    );
+    _animController = AnimationController(vsync: this, duration: const Duration(milliseconds: 250));
+    _expandAnimation = CurvedAnimation(parent: _animController, curve: Curves.easeOutBack);
+    _rotateAnimation = Tween<double>(
+      begin: 0,
+      end: 0.5,
+    ).animate(CurvedAnimation(parent: _animController, curve: Curves.easeInOut));
   }
 
   @override
@@ -63,9 +56,7 @@ class _HomeFloatingActionButtonState extends State<HomeFloatingActionButton>
     _close();
     final result = await Navigator.push(
       context,
-      MaterialPageRoute(
-        builder: (context) => AddTransactionScreen(defaultType: defaultType),
-      ),
+      MaterialPageRoute(builder: (context) => AddTransactionScreen(defaultType: defaultType)),
     );
     if (!context.mounted) return;
     if (result == true) {
@@ -77,10 +68,7 @@ class _HomeFloatingActionButtonState extends State<HomeFloatingActionButton>
 
   void _scanReceipt() {
     _close();
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => const ReceiptHistoryScreen()),
-    );
+    Navigator.push(context, MaterialPageRoute(builder: (context) => const ReceiptHistoryScreen()));
   }
 
   @override
@@ -121,10 +109,7 @@ class _HomeFloatingActionButtonState extends State<HomeFloatingActionButton>
           // Main FAB
           Semantics(
             label: _isOpen ? 'Tutup menu' : 'Tambah Transaksi',
-            hint:
-                _isOpen
-                    ? 'Ketuk untuk menutup'
-                    : 'Ketuk untuk membuka menu tambah',
+            hint: _isOpen ? 'Ketuk untuk menutup' : 'Ketuk untuk membuka menu tambah',
             child: FloatingActionButton(
               heroTag: 'home_fab',
               onPressed: _toggle,
@@ -181,11 +166,7 @@ class _HomeFloatingActionButtonState extends State<HomeFloatingActionButton>
                         padding: const EdgeInsets.only(left: 6),
                         child: Text(
                           label,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                          ),
+                          style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w600),
                         ),
                       ),
                   ],

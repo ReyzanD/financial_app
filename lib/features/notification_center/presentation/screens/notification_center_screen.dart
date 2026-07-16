@@ -17,16 +17,13 @@ class NotificationCenterScreen extends StatefulWidget {
   const NotificationCenterScreen({super.key});
 
   @override
-  State<NotificationCenterScreen> createState() =>
-      _NotificationCenterScreenState();
+  State<NotificationCenterScreen> createState() => _NotificationCenterScreenState();
 }
 
-class _NotificationCenterScreenState extends State<NotificationCenterScreen>
-    with SingleTickerProviderStateMixin {
+class _NotificationCenterScreenState extends State<NotificationCenterScreen> with SingleTickerProviderStateMixin {
   late TabController _tabController;
   final NotificationService _notificationService = getIt<NotificationService>();
-  final NotificationHistoryService _historyService =
-      getIt<NotificationHistoryService>();
+  final NotificationHistoryService _historyService = getIt<NotificationHistoryService>();
 
   List<Map<String, dynamic>> _history = [];
   int _unreadCount = 0;
@@ -106,12 +103,9 @@ class _NotificationCenterScreenState extends State<NotificationCenterScreen>
     final now = DateTime.now();
     final diff = now.difference(date);
     if (diff.inMinutes < 1) return l10n?.just_now ?? 'Baru saja';
-    if (diff.inHours < 1)
-      return '${diff.inMinutes} ${l10n?.minutes_ago ?? 'menit yang lalu'}';
-    if (diff.inHours < 24)
-      return '${diff.inHours} ${l10n?.hours_ago ?? 'jam yang lalu'}';
-    if (diff.inDays < 7)
-      return '${diff.inDays} ${l10n?.days_ago ?? 'hari yang lalu'}';
+    if (diff.inHours < 1) return '${diff.inMinutes} ${l10n?.minutes_ago ?? 'menit yang lalu'}';
+    if (diff.inHours < 24) return '${diff.inHours} ${l10n?.hours_ago ?? 'jam yang lalu'}';
+    if (diff.inDays < 7) return '${diff.inDays} ${l10n?.days_ago ?? 'hari yang lalu'}';
     return DateFormat('dd MMM yyyy').format(date);
   }
 
@@ -129,11 +123,7 @@ class _NotificationCenterScreenState extends State<NotificationCenterScreen>
         ),
         title: Text(
           AppLocalizations.of(context)?.notifications ?? 'Notifications',
-          style: GoogleFonts.poppins(
-            color: Colors.white,
-            fontSize: 20,
-            fontWeight: FontWeight.w600,
-          ),
+          style: GoogleFonts.poppins(color: Colors.white, fontSize: 20, fontWeight: FontWeight.w600),
         ),
         actions: [
           if (_unreadCount > 0)
@@ -144,10 +134,7 @@ class _NotificationCenterScreenState extends State<NotificationCenterScreen>
               },
               child: Text(
                 AppLocalizations.of(context)!.mark_all,
-                style: GoogleFonts.poppins(
-                  color: DesignTokens.primaryColor,
-                  fontSize: 13,
-                ),
+                style: GoogleFonts.poppins(color: DesignTokens.primaryColor, fontSize: 13),
               ),
             ),
         ],
@@ -156,10 +143,7 @@ class _NotificationCenterScreenState extends State<NotificationCenterScreen>
           indicatorColor: DesignTokens.primaryColor,
           labelColor: DesignTokens.primaryColor,
           unselectedLabelColor: Colors.grey,
-          labelStyle: GoogleFonts.poppins(
-            fontSize: 14,
-            fontWeight: FontWeight.w600,
-          ),
+          labelStyle: GoogleFonts.poppins(fontSize: 14, fontWeight: FontWeight.w600),
           tabs: [
             Tab(text: AppLocalizations.of(context)!.history),
             Tab(text: AppLocalizations.of(context)!.scheduled),
@@ -173,20 +157,12 @@ class _NotificationCenterScreenState extends State<NotificationCenterScreen>
           Expanded(
             child:
                 _isLoading
-                    ? const Center(
-                      child: CircularProgressIndicator(
-                        color: DesignTokens.primaryColor,
-                      ),
-                    )
+                    ? const Center(child: CircularProgressIndicator(color: DesignTokens.primaryColor))
                     : _errorMessage != null
                     ? _buildErrorState()
                     : TabBarView(
                       controller: _tabController,
-                      children: [
-                        _buildHistoryTab(),
-                        _buildPendingTab(),
-                        _buildSettingsTab(),
-                      ],
+                      children: [_buildHistoryTab(), _buildPendingTab(), _buildSettingsTab()],
                     ),
           ),
         ],
@@ -203,27 +179,17 @@ class _NotificationCenterScreenState extends State<NotificationCenterScreen>
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(Icons.error_outline_rounded, size: 64, color: Colors.red[400]),
-            const SizedBox(height: 16),
+            const SizedBox(height: DesignTokens.spacing4),
             Text(
               l10n?.error ?? 'Terjadi kesalahan',
-              style: GoogleFonts.poppins(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-                color: Colors.white,
-              ),
+              style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.w600, color: Colors.white),
             ),
-            const SizedBox(height: 8),
-            Text(
-              _errorMessage ?? '',
-              textAlign: TextAlign.center,
-              style: GoogleFonts.poppins(color: Colors.grey[600]),
-            ),
-            const SizedBox(height: 24),
+            const SizedBox(height: DesignTokens.spacing2),
+            Text(_errorMessage ?? '', textAlign: TextAlign.center, style: GoogleFonts.poppins(color: Colors.grey[600])),
+            const SizedBox(height: DesignTokens.spacing6),
             ElevatedButton(
               onPressed: _loadData,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: DesignTokens.primaryColor,
-              ),
+              style: ElevatedButton.styleFrom(backgroundColor: DesignTokens.primaryColor),
               child: Text(l10n?.retry ?? 'Coba Lagi'),
             ),
           ],
@@ -239,12 +205,12 @@ class _NotificationCenterScreenState extends State<NotificationCenterScreen>
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const Icon(Iconsax.notification, size: 80, color: Colors.grey),
-            const SizedBox(height: 16),
+            const SizedBox(height: DesignTokens.spacing4),
             Text(
               AppLocalizations.of(context)!.no_notifications_yet,
               style: GoogleFonts.poppins(color: Colors.grey, fontSize: 16),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: DesignTokens.spacing2),
             Text(
               AppLocalizations.of(context)!.notifications_will_appear_here,
               style: GoogleFonts.poppins(color: Colors.grey[600], fontSize: 13),
@@ -277,16 +243,12 @@ class _NotificationCenterScreenState extends State<NotificationCenterScreen>
           onDismissed: (_) async {
             setState(() {
               _history.removeAt(index);
-              if (notification['read'] == false && _unreadCount > 0)
-                _unreadCount--;
+              if (notification['read'] == false && _unreadCount > 0) _unreadCount--;
             });
             try {
               await _historyService.deleteNotification(notification['id']);
               if (mounted)
-                ErrorHandlerService.showSuccessSnackbar(
-                  context,
-                  AppLocalizations.of(context)!.notification_deleted,
-                );
+                ErrorHandlerService.showSuccessSnackbar(context, AppLocalizations.of(context)!.notification_deleted);
             } catch (e) {
               _loadData();
               if (mounted)
@@ -307,16 +269,10 @@ class _NotificationCenterScreenState extends State<NotificationCenterScreen>
               margin: const EdgeInsets.only(bottom: 12),
               padding: const EdgeInsets.all(DesignTokens.spacing4),
               decoration: BoxDecoration(
-                color:
-                    isUnread
-                        ? DesignTokens.surfaceDark
-                        : DesignTokens.surfaceModalAlt,
+                color: isUnread ? DesignTokens.surfaceDark : DesignTokens.surfaceModalAlt,
                 borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
                 border: Border.all(
-                  color:
-                      isUnread
-                          ? DesignTokens.primaryColor.withValues(alpha: 0.3)
-                          : Colors.grey[900]!,
+                  color: isUnread ? DesignTokens.primaryColor.withValues(alpha: 0.3) : Colors.grey[900]!,
                 ),
               ),
               child: Row(
@@ -325,9 +281,7 @@ class _NotificationCenterScreenState extends State<NotificationCenterScreen>
                     width: 48,
                     height: 48,
                     decoration: BoxDecoration(
-                      color: Color(
-                        _historyService.getColorForType(notification['type']),
-                      ).withValues(alpha: 0.2),
+                      color: Color(_historyService.getColorForType(notification['type'])).withValues(alpha: 0.2),
                       shape: BoxShape.circle,
                     ),
                     child: Center(
@@ -347,30 +301,20 @@ class _NotificationCenterScreenState extends State<NotificationCenterScreen>
                           style: GoogleFonts.poppins(
                             color: Colors.white,
                             fontSize: 14,
-                            fontWeight:
-                                isUnread ? FontWeight.w600 : FontWeight.normal,
+                            fontWeight: isUnread ? FontWeight.w600 : FontWeight.normal,
                           ),
                         ),
-                        const SizedBox(height: 4),
+                        const SizedBox(height: DesignTokens.spacing1),
                         Text(
                           notification['body'],
-                          style: GoogleFonts.poppins(
-                            color: Colors.grey[400],
-                            fontSize: 12,
-                          ),
+                          style: GoogleFonts.poppins(color: Colors.grey[400], fontSize: 12),
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                         ),
-                        const SizedBox(height: 4),
+                        const SizedBox(height: DesignTokens.spacing1),
                         Text(
-                          _formatTimestamp(
-                            notification['timestamp'],
-                            AppLocalizations.of(context),
-                          ),
-                          style: GoogleFonts.poppins(
-                            color: Colors.grey[600],
-                            fontSize: 11,
-                          ),
+                          _formatTimestamp(notification['timestamp'], AppLocalizations.of(context)),
+                          style: GoogleFonts.poppins(color: Colors.grey[600], fontSize: 11),
                         ),
                       ],
                     ),
@@ -379,10 +323,7 @@ class _NotificationCenterScreenState extends State<NotificationCenterScreen>
                     Container(
                       width: 8,
                       height: 8,
-                      decoration: const BoxDecoration(
-                        color: DesignTokens.primaryColor,
-                        shape: BoxShape.circle,
-                      ),
+                      decoration: const BoxDecoration(color: DesignTokens.primaryColor, shape: BoxShape.circle),
                     ),
                 ],
               ),
@@ -397,10 +338,7 @@ class _NotificationCenterScreenState extends State<NotificationCenterScreen>
     return FutureBuilder<List<PendingNotificationRequest>>(
       future: _notificationService.getPendingNotifications(),
       builder: (context, snapshot) {
-        if (!snapshot.hasData)
-          return const Center(
-            child: CircularProgressIndicator(color: DesignTokens.primaryColor),
-          );
+        if (!snapshot.hasData) return const Center(child: CircularProgressIndicator(color: DesignTokens.primaryColor));
         final pending = snapshot.data!;
         if (pending.isEmpty) {
           return Center(
@@ -408,7 +346,7 @@ class _NotificationCenterScreenState extends State<NotificationCenterScreen>
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 const Icon(Iconsax.calendar, size: 80, color: Colors.grey),
-                const SizedBox(height: 16),
+                const SizedBox(height: DesignTokens.spacing4),
                 Text(
                   AppLocalizations.of(context)!.no_scheduled_notifications,
                   style: GoogleFonts.poppins(color: Colors.grey, fontSize: 16),
@@ -439,13 +377,7 @@ class _NotificationCenterScreenState extends State<NotificationCenterScreen>
                       color: DesignTokens.primaryColor.withValues(alpha: 0.2),
                       shape: BoxShape.circle,
                     ),
-                    child: const Center(
-                      child: Icon(
-                        Iconsax.clock,
-                        color: DesignTokens.primaryColor,
-                        size: 24,
-                      ),
-                    ),
+                    child: const Center(child: Icon(Iconsax.clock, color: DesignTokens.primaryColor, size: 24)),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
@@ -453,35 +385,20 @@ class _NotificationCenterScreenState extends State<NotificationCenterScreen>
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          n.title ??
-                              AppLocalizations.of(context)?.notifications ??
-                              'Notifications',
-                          style: GoogleFonts.poppins(
-                            color: Colors.white,
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                          ),
+                          n.title ?? AppLocalizations.of(context)?.notifications ?? 'Notifications',
+                          style: GoogleFonts.poppins(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w600),
                         ),
                         if (n.body != null) ...[
-                          const SizedBox(height: 4),
+                          const SizedBox(height: DesignTokens.spacing1),
                           Text(
                             n.body!,
-                            style: GoogleFonts.poppins(
-                              color: Colors.grey[400],
-                              fontSize: 12,
-                            ),
+                            style: GoogleFonts.poppins(color: Colors.grey[400], fontSize: 12),
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                           ),
                         ],
-                        const SizedBox(height: 4),
-                        Text(
-                          'ID: ${n.id}',
-                          style: GoogleFonts.poppins(
-                            color: Colors.grey[600],
-                            fontSize: 11,
-                          ),
-                        ),
+                        const SizedBox(height: DesignTokens.spacing1),
+                        Text('ID: ${n.id}', style: GoogleFonts.poppins(color: Colors.grey[600], fontSize: 11)),
                       ],
                     ),
                   ),
@@ -513,13 +430,9 @@ class _NotificationCenterScreenState extends State<NotificationCenterScreen>
       children: [
         Text(
           l10n?.notification_type ?? 'Jenis Notifikasi',
-          style: GoogleFonts.poppins(
-            color: Colors.white,
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-          ),
+          style: GoogleFonts.poppins(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600),
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: DesignTokens.spacing3),
         _buildSettingTile(
           icon: Iconsax.warning_2,
           title: l10n?.budget_warning ?? 'Peringatan Budget',
@@ -553,32 +466,26 @@ class _NotificationCenterScreenState extends State<NotificationCenterScreen>
         _buildSettingTile(
           icon: Iconsax.flash,
           title: l10n?.ai_insights ?? 'Insight AI',
-          subtitle:
-              l10n?.ai_insights_subtitle ?? 'Saran dan rekomendasi finansial',
+          subtitle: l10n?.ai_insights_subtitle ?? 'Saran dan rekomendasi finansial',
           value: _aiInsightsEnabled,
           onChanged: (v) {
             setState(() => _aiInsightsEnabled = v);
             _saveSetting('ai_insights', v);
           },
         ),
-        const SizedBox(height: 24),
+        const SizedBox(height: DesignTokens.spacing6),
         Text(
           l10n?.periodic_summary ?? 'Ringkasan Berkala',
-          style: GoogleFonts.poppins(
-            color: Colors.white,
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-          ),
+          style: GoogleFonts.poppins(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600),
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: DesignTokens.spacing3),
         _buildSettingTile(
           icon: Iconsax.calendar_1,
           title: l10n?.daily_summary ?? 'Ringkasan Harian',
           subtitle:
               _dailySummaryEnabled
                   ? '${l10n?.every_day_at ?? 'Setiap hari pukul'} $_dailySummaryHour:00'
-                  : (l10n?.view_today_financial_activity ??
-                      'Lihat aktivitas keuangan Anda hari ini'),
+                  : (l10n?.view_today_financial_activity ?? 'Lihat aktivitas keuangan Anda hari ini'),
           value: _dailySummaryEnabled,
           onChanged: (v) async {
             setState(() => _dailySummaryEnabled = v);
@@ -587,13 +494,8 @@ class _NotificationCenterScreenState extends State<NotificationCenterScreen>
               await _notificationService.scheduleDailyNotification(
                 id: 999,
                 title: l10n?.daily_summary ?? 'Ringkasan Harian',
-                body:
-                    l10n?.view_today_financial_activity ??
-                    'Lihat aktivitas keuangan Anda hari ini',
-                time: NotificationServiceTimeOfDay(
-                  hour: _dailySummaryHour,
-                  minute: 0,
-                ),
+                body: l10n?.view_today_financial_activity ?? 'Lihat aktivitas keuangan Anda hari ini',
+                time: NotificationServiceTimeOfDay(hour: _dailySummaryHour, minute: 0),
               );
             else
               await _notificationService.cancelNotification(999);
@@ -602,15 +504,14 @@ class _NotificationCenterScreenState extends State<NotificationCenterScreen>
         _buildSettingTile(
           icon: Iconsax.calendar,
           title: l10n?.weekly_summary ?? 'Ringkasan Mingguan',
-          subtitle:
-              l10n?.weekly_summary_subtitle ?? 'Ringkasan transaksi mingguan',
+          subtitle: l10n?.weekly_summary_subtitle ?? 'Ringkasan transaksi mingguan',
           value: _weeklySummaryEnabled,
           onChanged: (v) {
             setState(() => _weeklySummaryEnabled = v);
             _saveSetting('weekly_summary', v);
           },
         ),
-        const SizedBox(height: 24),
+        const SizedBox(height: DesignTokens.spacing6),
         Container(
           padding: const EdgeInsets.all(DesignTokens.spacing4),
           decoration: BoxDecoration(
@@ -625,16 +526,13 @@ class _NotificationCenterScreenState extends State<NotificationCenterScreen>
               Expanded(
                 child: Text(
                   AppLocalizations.of(context)!.notifications_help_stay_updated,
-                  style: GoogleFonts.poppins(
-                    color: Colors.grey[400],
-                    fontSize: 12,
-                  ),
+                  style: GoogleFonts.poppins(color: Colors.grey[400], fontSize: 12),
                 ),
               ),
             ],
           ),
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: DesignTokens.spacing4),
         OutlinedButton(
           onPressed: () async {
             final confirm = await showDialog<bool>(
@@ -647,9 +545,7 @@ class _NotificationCenterScreenState extends State<NotificationCenterScreen>
                       style: GoogleFonts.poppins(color: Colors.white),
                     ),
                     content: Text(
-                      AppLocalizations.of(
-                        context,
-                      )!.delete_notification_history_message,
+                      AppLocalizations.of(context)!.delete_notification_history_message,
                       style: GoogleFonts.poppins(color: Colors.grey[400]),
                     ),
                     actions: [
@@ -662,9 +558,7 @@ class _NotificationCenterScreenState extends State<NotificationCenterScreen>
                       ),
                       ElevatedButton(
                         onPressed: () => Navigator.pop(c, true),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.red,
-                        ),
+                        style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
                         child: Text(
                           AppLocalizations.of(context)!.delete,
                           style: GoogleFonts.poppins(color: Colors.white),
@@ -689,10 +583,7 @@ class _NotificationCenterScreenState extends State<NotificationCenterScreen>
           ),
           child: Text(
             AppLocalizations.of(context)!.delete_all_history,
-            style: GoogleFonts.poppins(
-              color: Colors.red,
-              fontWeight: FontWeight.w600,
-            ),
+            style: GoogleFonts.poppins(color: Colors.red, fontWeight: FontWeight.w600),
           ),
         ),
       ],
@@ -722,30 +613,13 @@ class _NotificationCenterScreenState extends State<NotificationCenterScreen>
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  title,
-                  style: GoogleFonts.poppins(
-                    color: Colors.white,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
+                Text(title, style: GoogleFonts.poppins(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w600)),
                 const SizedBox(height: 2),
-                Text(
-                  subtitle,
-                  style: GoogleFonts.poppins(
-                    color: Colors.grey[400],
-                    fontSize: 12,
-                  ),
-                ),
+                Text(subtitle, style: GoogleFonts.poppins(color: Colors.grey[400], fontSize: 12)),
               ],
             ),
           ),
-          Switch(
-            value: value,
-            onChanged: onChanged,
-            activeThumbColor: DesignTokens.primaryColor,
-          ),
+          Switch(value: value, onChanged: onChanged, activeThumbColor: DesignTokens.primaryColor),
         ],
       ),
     );

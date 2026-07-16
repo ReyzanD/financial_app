@@ -31,9 +31,7 @@ class DatePickerHelper {
               surface: DesignTokens.surfaceDark,
               onSurface: Colors.white,
             ),
-            dialogTheme: const DialogThemeData(
-              backgroundColor: DesignTokens.backgroundDark,
-            ),
+            dialogTheme: const DialogThemeData(backgroundColor: DesignTokens.backgroundDark),
           ),
           child: child!,
         );
