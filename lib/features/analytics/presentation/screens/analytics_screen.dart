@@ -99,22 +99,28 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                   size: ResponsiveHelper.iconSize(context, 40),
                 ),
                 SizedBox(height: ResponsiveHelper.verticalSpacing(context, 12)),
-                Text(
-                  AppLocalizations.of(context)?.failed_to_load_analytics ??
-                      'Gagal memuat data analitik',
-                  style: GoogleFonts.poppins(
-                    color: Colors.grey[300],
-                    fontSize: ResponsiveHelper.fontSize(context, 16),
-                    fontWeight: FontWeight.w600,
+                Semantics(
+                  liveRegion: true,
+                  child: Text(
+                    AppLocalizations.of(context)?.failed_to_load_analytics ??
+                        'Gagal memuat data analitik',
+                    style: GoogleFonts.poppins(
+                      color: Colors.grey[300],
+                      fontSize: ResponsiveHelper.fontSize(context, 16),
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
                 SizedBox(height: ResponsiveHelper.verticalSpacing(context, 8)),
-                Text(
-                  ctrl.errorMessage!,
-                  textAlign: TextAlign.center,
-                  style: GoogleFonts.poppins(
-                    color: Colors.grey[500],
-                    fontSize: ResponsiveHelper.fontSize(context, 12),
+                Semantics(
+                  liveRegion: true,
+                  child: Text(
+                    ctrl.errorMessage!,
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.poppins(
+                      color: Colors.grey[500],
+                      fontSize: ResponsiveHelper.fontSize(context, 12),
+                    ),
                   ),
                 ),
               ],

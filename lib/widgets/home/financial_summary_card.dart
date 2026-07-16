@@ -278,12 +278,15 @@ class _FinancialSummaryCardState extends State<FinancialSummaryCard>
                   size: ResponsiveHelper.iconSize(context, 48),
                 ),
                 SizedBox(height: ResponsiveHelper.verticalSpacing(context, 12)),
-                Text(
-                  _errorMessage!,
-                  textAlign: TextAlign.center,
-                  style: GoogleFonts.poppins(
-                    color: Colors.white70,
-                    fontSize: ResponsiveHelper.fontSize(context, 14),
+                Semantics(
+                  liveRegion: true,
+                  child: Text(
+                    _errorMessage!,
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.poppins(
+                      color: Colors.white70,
+                      fontSize: ResponsiveHelper.fontSize(context, 14),
+                    ),
                   ),
                 ),
               ],

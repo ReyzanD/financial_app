@@ -87,12 +87,15 @@ class _BudgetsScreenState extends State<BudgetsScreen> {
                 onPressed: () => Navigator.pop(context),
               ),
               SizedBox(width: ResponsiveHelper.horizontalSpacing(context, 8)),
-              Text(
-                AppLocalizations.of(context)!.budget,
-                style: GoogleFonts.poppins(
-                  color: Colors.white,
-                  fontSize: ResponsiveHelper.fontSize(context, 20),
-                  fontWeight: FontWeight.bold,
+              Semantics(
+                header: true,
+                child: Text(
+                  AppLocalizations.of(context)!.budget,
+                  style: GoogleFonts.poppins(
+                    color: Colors.white,
+                    fontSize: ResponsiveHelper.fontSize(context, 20),
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
               const Spacer(),

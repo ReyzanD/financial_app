@@ -199,6 +199,7 @@ class _GermanFinanceScreenState extends State<GermanFinanceScreen> {
         ),
         leading: IconButton(
           icon: const Icon(Iconsax.arrow_left, color: Colors.white),
+          tooltip: 'Kembali',
           onPressed: () => Navigator.pop(context),
         ),
       ),

@@ -11,7 +11,11 @@ import 'package:financial_app/widgets/common/offline_indicator.dart';
 import 'package:financial_app/features/net_worth/presentation/controllers/net_worth_controller.dart';
 
 class NetWorthScreen extends StatefulWidget {
-  const NetWorthScreen({super.key});
+  /// When [embedded] is true (e.g. inside AnalyticsHubScreen),
+  /// the custom back button is suppressed (hub's AppBar handles navigation).
+  final bool embedded;
+
+  const NetWorthScreen({super.key, this.embedded = false});
 
   @override
   State<NetWorthScreen> createState() => _NetWorthScreenState();
@@ -98,20 +102,25 @@ class _NetWorthScreenState extends State<NetWorthScreen> {
         children: [
           Row(
             children: [
-              IconButton(
-                icon: const Icon(
-                  Iconsax.arrow_left,
-                  color: DesignTokens.textPrimaryDark,
+              if (!widget.embedded) ...[
+                IconButton(
+                  icon: const Icon(
+                    Iconsax.arrow_left,
+                    color: DesignTokens.textPrimaryDark,
+                  ),
+                  onPressed: () => Navigator.pop(context),
                 ),
-                onPressed: () => Navigator.pop(context),
-              ),
-              const SizedBox(width: 8),
-              Text(
-                'Net Worth',
-                style: GoogleFonts.poppins(
-                  color: DesignTokens.textPrimaryDark,
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
+                const SizedBox(width: 8),
+              ],
+              Semantics(
+                header: true,
+                child: Text(
+                  'Net Worth',
+                  style: GoogleFonts.poppins(
+                    color: DesignTokens.textPrimaryDark,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
               const Spacer(),
@@ -675,20 +684,26 @@ class _NetWorthScreenState extends State<NetWorthScreen> {
         children: [
           Icon(Iconsax.warning_2, size: 64, color: DesignTokens.errorColor),
           const SizedBox(height: 16),
-          Text(
-            l10n?.error ?? 'Terjadi kesalahan',
-            style: GoogleFonts.poppins(
-              color: DesignTokens.textPrimaryDark,
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
+          Semantics(
+            liveRegion: true,
+            child: Text(
+              l10n?.error ?? 'Terjadi kesalahan',
+              style: GoogleFonts.poppins(
+                color: DesignTokens.textPrimaryDark,
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+              ),
             ),
           ),
           const SizedBox(height: 8),
-          Text(
-            ctrl.errorMessage ?? '',
-            style: GoogleFonts.poppins(
-              color: DesignTokens.textSecondaryDark,
-              fontSize: 14,
+          Semantics(
+            liveRegion: true,
+            child: Text(
+              ctrl.errorMessage ?? '',
+              style: GoogleFonts.poppins(
+                color: DesignTokens.textSecondaryDark,
+                fontSize: 14,
+              ),
             ),
           ),
           const SizedBox(height: 16),

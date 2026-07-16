@@ -38,12 +38,15 @@ class TransactionHeader extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    AppLocalizations.of(context)?.transactions ?? 'Transaksi',
-                    style: GoogleFonts.poppins(
-                      color: Colors.white,
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
+                  Semantics(
+                    header: true,
+                    child: Text(
+                      AppLocalizations.of(context)?.transactions ?? 'Transaksi',
+                      style: GoogleFonts.poppins(
+                        color: Colors.white,
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                   if (!controller.isLoading && controller.error == null)

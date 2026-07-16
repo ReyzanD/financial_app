@@ -111,12 +111,15 @@ class _TemplatesScreenState extends State<TemplatesScreen> {
             onPressed: () => Navigator.pop(context),
           ),
           const SizedBox(width: 8),
-          Text(
-            'Templates',
-            style: GoogleFonts.poppins(
-              color: DesignTokens.textPrimaryDark,
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
+          Semantics(
+            header: true,
+            child: Text(
+              'Templates',
+              style: GoogleFonts.poppins(
+                color: DesignTokens.textPrimaryDark,
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
           const Spacer(),

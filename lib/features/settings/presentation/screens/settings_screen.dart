@@ -58,6 +58,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         ),
         leading: IconButton(
           icon: const Icon(Iconsax.arrow_left, color: Colors.white),
+          tooltip: l10n.back,
           onPressed: () => Navigator.of(context).pop(),
         ),
       ),

@@ -200,6 +200,7 @@ class _PinChangeScreenState extends State<PinChangeScreen> {
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Iconsax.arrow_left, color: Colors.white),
+          tooltip: l10n?.back ?? 'Kembali',
           onPressed: _onBack,
         ),
         title: Text(

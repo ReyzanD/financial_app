@@ -159,13 +159,16 @@ class _HealthScoreCardState extends State<HealthScoreCard> {
         children: [
           Icon(Icons.error_outline, color: DesignTokens.errorColor, size: 32),
           const SizedBox(height: 8),
-          Text(
-            _errorMessage!,
-            style: GoogleFonts.poppins(
-              color: Colors.grey[400],
-              fontSize: 13,
+          Semantics(
+            liveRegion: true,
+            child: Text(
+              _errorMessage!,
+              style: GoogleFonts.poppins(
+                color: Colors.grey[400],
+                fontSize: 13,
+              ),
+              textAlign: TextAlign.center,
             ),
-            textAlign: TextAlign.center,
           ),
           const SizedBox(height: 12),
           TextButton.icon(

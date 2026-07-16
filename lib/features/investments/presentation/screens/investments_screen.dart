@@ -97,12 +97,15 @@ class _InvestmentsScreenState extends State<InvestmentsScreen> {
                 onPressed: () => Navigator.pop(context),
               ),
               const SizedBox(width: 8),
-              Text(
-                l10n?.investment ?? 'Investasi',
-                style: GoogleFonts.poppins(
-                  color: DesignTokens.textPrimaryDark,
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
+              Semantics(
+                header: true,
+                child: Text(
+                  l10n?.investment ?? 'Investasi',
+                  style: GoogleFonts.poppins(
+                    color: DesignTokens.textPrimaryDark,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
             ],

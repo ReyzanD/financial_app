@@ -256,11 +256,13 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Iconsax.arrow_left, color: Colors.white),
+          tooltip: 'Kembali',
           onPressed: () => Navigator.pop(context),
         ),
         actions: [
           IconButton(
             icon: const Icon(Iconsax.edit_2, color: Colors.white),
+            tooltip: 'Edit',
             onPressed: () {
               Navigator.push(
                 context,

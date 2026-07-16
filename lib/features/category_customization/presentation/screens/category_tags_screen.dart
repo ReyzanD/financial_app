@@ -63,6 +63,7 @@ class _CategoryTagsScreenState extends State<CategoryTagsScreen>
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
+          tooltip: 'Kembali',
           onPressed: () => Navigator.of(context).pop(),
         ),
         title: Text(

@@ -124,6 +124,7 @@ class _NotificationCenterScreenState extends State<NotificationCenterScreen>
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Iconsax.arrow_left, color: Colors.white),
+          tooltip: 'Kembali',
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
@@ -485,6 +486,7 @@ class _NotificationCenterScreenState extends State<NotificationCenterScreen>
                   ),
                   IconButton(
                     icon: const Icon(Iconsax.trash, color: Colors.red),
+                    tooltip: AppLocalizations.of(context)?.delete ?? 'Hapus',
                     onPressed: () async {
                       await _notificationService.cancelNotification(n.id);
                       if (mounted) setState(() {});

@@ -796,6 +796,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Iconsax.arrow_left, color: Colors.white),
+          tooltip: l10n?.back ?? 'Kembali',
           onPressed: () => Navigator.pop(context),
         ),
         actions: [
@@ -811,6 +812,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                       ),
                     )
                     : const Icon(Iconsax.scan_barcode, color: Colors.white),
+            tooltip: l10n?.scan_receipt ?? 'Pindai',
             onPressed: _isScanningReceipt ? null : _showReceiptScanOptions,
           ),
           IconButton(
@@ -888,16 +890,19 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                               },
                             ),
                             if (field.hasError)
-                              Padding(
-                                padding: const EdgeInsets.only(
-                                  top: 4,
-                                  left: 12,
-                                ),
-                                child: Text(
-                                  field.errorText!,
-                                  style: TextStyle(
-                                    color: Colors.red[400],
-                                    fontSize: 12,
+                              Semantics(
+                                liveRegion: true,
+                                child: Padding(
+                                  padding: const EdgeInsets.only(
+                                    top: 4,
+                                    left: 12,
+                                  ),
+                                  child: Text(
+                                    field.errorText!,
+                                    style: TextStyle(
+                                      color: Colors.red[400],
+                                      fontSize: 12,
+                                    ),
                                   ),
                                 ),
                               ),
@@ -998,13 +1003,16 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                               onSelectTime: _selectTime,
                             ),
                             if (field.hasError)
-                              Padding(
-                                padding: const EdgeInsets.only(top: 4),
-                                child: Text(
-                                  field.errorText!,
-                                  style: TextStyle(
-                                    color: Colors.red[400],
-                                    fontSize: 12,
+                              Semantics(
+                                liveRegion: true,
+                                child: Padding(
+                                  padding: const EdgeInsets.only(top: 4),
+                                  child: Text(
+                                    field.errorText!,
+                                    style: TextStyle(
+                                      color: Colors.red[400],
+                                      fontSize: 12,
+                                    ),
                                   ),
                                 ),
                               ),

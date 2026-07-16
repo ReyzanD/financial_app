@@ -87,9 +87,14 @@ class _AnalyticsHubScreenState extends State<AnalyticsHubScreen>
       appBar: AppBar(
         backgroundColor: DesignTokens.backgroundDark,
         elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () => Navigator.of(context).pop(),
+        leading: Semantics(
+          label: 'Kembali',
+          button: true,
+          child: IconButton(
+            icon: const Icon(Icons.arrow_back, color: Colors.white),
+            tooltip: 'Kembali',
+            onPressed: () => Navigator.of(context).pop(),
+          ),
         ),
         title: Text(
           _tabLabels[_currentIndex],
@@ -139,10 +144,10 @@ class _AnalyticsHubScreenState extends State<AnalyticsHubScreen>
           controller: _tabController,
           children: const [
             AnalyticsScreen(),
-            FinancialInsightsScreen(),
-            NetWorthScreen(),
-            CashFlowScreen(),
-            ReportScreen(),
+            FinancialInsightsScreen(embedded: true),
+            NetWorthScreen(embedded: true),
+            CashFlowScreen(embedded: true),
+            ReportScreen(embedded: true),
           ],
         ),
       ),

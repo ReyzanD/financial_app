@@ -20,7 +20,10 @@ class TransactionListWidget extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text('Error: ${appState.error}'),
+                Semantics(
+                  liveRegion: true,
+                  child: Text('Error: ${appState.error}'),
+                ),
                 ElevatedButton(
                   onPressed: () => appState.refreshData(),
                   child: const Text('Retry'),

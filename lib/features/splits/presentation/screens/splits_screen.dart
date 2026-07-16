@@ -77,12 +77,15 @@ class _SplitsScreenState extends State<SplitsScreen> {
                 onPressed: () => Navigator.pop(context),
               ),
               const SizedBox(width: 8),
-              Text(
-                'Split',
-                style: GoogleFonts.poppins(
-                  color: DesignTokens.textPrimaryDark,
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
+              Semantics(
+                header: true,
+                child: Text(
+                  'Split',
+                  style: GoogleFonts.poppins(
+                    color: DesignTokens.textPrimaryDark,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
               const Spacer(),

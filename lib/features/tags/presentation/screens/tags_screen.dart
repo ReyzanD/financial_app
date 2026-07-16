@@ -34,6 +34,7 @@ class _TagsScreenState extends State<TagsScreen> {
               elevation: 0,
               leading: IconButton(
                 icon: const Icon(Iconsax.arrow_left, color: Colors.white),
+                tooltip: 'Kembali',
                 onPressed: () => Navigator.pop(context),
               ),
               title: Text(

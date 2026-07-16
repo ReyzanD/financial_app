@@ -92,6 +92,7 @@ class _FinancialAdvisorScreenState extends State<FinancialAdvisorScreen> {
         ),
         leading: IconButton(
           icon: const Icon(Iconsax.arrow_left, color: Colors.white),
+          tooltip: 'Kembali',
           onPressed: () => Navigator.pop(context),
         ),
       ),

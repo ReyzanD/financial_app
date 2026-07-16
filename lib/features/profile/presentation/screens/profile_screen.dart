@@ -52,6 +52,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Iconsax.arrow_left, color: Colors.white),
+          tooltip: l10n.back,
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(

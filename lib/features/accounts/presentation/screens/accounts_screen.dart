@@ -103,12 +103,15 @@ class _AccountsScreenState extends State<AccountsScreen> {
                 onPressed: () => Navigator.pop(context),
               ),
               const SizedBox(width: 8),
-              Text(
-                l10n?.account ?? 'Akun',
-                style: GoogleFonts.poppins(
-                  color: DesignTokens.textPrimaryDark,
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
+              Semantics(
+                header: true,
+                child: Text(
+                  l10n?.account ?? 'Akun',
+                  style: GoogleFonts.poppins(
+                    color: DesignTokens.textPrimaryDark,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
               const Spacer(),
@@ -381,20 +384,26 @@ class _AccountsScreenState extends State<AccountsScreen> {
         children: [
           Icon(Iconsax.warning_2, size: 64, color: DesignTokens.errorColor),
           const SizedBox(height: 16),
-          Text(
-            l10n?.error ?? 'Terjadi kesalahan',
-            style: GoogleFonts.poppins(
-              color: DesignTokens.textPrimaryDark,
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
+          Semantics(
+            liveRegion: true,
+            child: Text(
+              l10n?.error ?? 'Terjadi kesalahan',
+              style: GoogleFonts.poppins(
+                color: DesignTokens.textPrimaryDark,
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+              ),
             ),
           ),
           const SizedBox(height: 8),
-          Text(
-            controller.errorMessage ?? '',
-            style: GoogleFonts.poppins(
-              color: DesignTokens.textSecondaryDark,
-              fontSize: 14,
+          Semantics(
+            liveRegion: true,
+            child: Text(
+              controller.errorMessage ?? '',
+              style: GoogleFonts.poppins(
+                color: DesignTokens.textSecondaryDark,
+                fontSize: 14,
+              ),
             ),
           ),
           const SizedBox(height: 16),

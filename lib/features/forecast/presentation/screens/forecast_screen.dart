@@ -41,13 +41,16 @@ class _ForecastScreenState extends State<ForecastScreen> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(
-                          l10n?.forecast_and_prediction ??
-                              'Forecast & Prediksi',
-                          style: GoogleFonts.poppins(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w600,
-                            fontSize: 20,
+                        Semantics(
+                          header: true,
+                          child: Text(
+                            l10n?.forecast_and_prediction ??
+                                'Forecast & Prediksi',
+                            style: GoogleFonts.poppins(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 20,
+                            ),
                           ),
                         ),
                         Row(
@@ -72,6 +75,7 @@ class _ForecastScreenState extends State<ForecastScreen> {
                                       Iconsax.refresh,
                                       color: Colors.white,
                                     ),
+                                    tooltip: 'Segarkan',
                                     onPressed: ctrl.refresh,
                                   ),
                             ),
@@ -140,19 +144,25 @@ class _ForecastScreenState extends State<ForecastScreen> {
           children: [
             Icon(Iconsax.warning_2, size: 64, color: DesignTokens.errorColor),
             const SizedBox(height: 16),
-            Text(
-              l10n?.failed_to_load_forecast ?? 'Gagal Memuat Forecast',
-              style: GoogleFonts.poppins(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-                color: Colors.white,
+            Semantics(
+              liveRegion: true,
+              child: Text(
+                l10n?.failed_to_load_forecast ?? 'Gagal Memuat Forecast',
+                style: GoogleFonts.poppins(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white,
+                ),
               ),
             ),
             const SizedBox(height: 8),
-            Text(
-              'Butuh data transaksi untuk membuat prediksi',
-              textAlign: TextAlign.center,
-              style: GoogleFonts.poppins(color: DesignTokens.textSecondaryDark),
+            Semantics(
+              liveRegion: true,
+              child: Text(
+                'Butuh data transaksi untuk membuat prediksi',
+                textAlign: TextAlign.center,
+                style: GoogleFonts.poppins(color: DesignTokens.textSecondaryDark),
+              ),
             ),
             const SizedBox(height: 24),
             ElevatedButton.icon(

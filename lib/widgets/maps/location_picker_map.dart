@@ -293,6 +293,7 @@ class _LocationPickerMapState extends State<LocationPickerMap> {
         ),
         leading: IconButton(
           icon: const Icon(Iconsax.arrow_left, color: Colors.white),
+          tooltip: l10n?.back ?? 'Kembali',
           onPressed: () => Navigator.pop(context),
         ),
         actions: [

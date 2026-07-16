@@ -190,19 +190,25 @@ class _HomeScreenState extends State<HomeScreen> {
           children: [
             Icon(Icons.error_outline_rounded, size: 64, color: Colors.red[400]),
             SizedBox(height: ResponsiveHelper.verticalSpacing(context, 16)),
-            Text(
-              l10n?.error ?? 'Terjadi kesalahan',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-                color: Colors.white,
+            Semantics(
+              liveRegion: true,
+              child: Text(
+                l10n?.error ?? 'Terjadi kesalahan',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white,
+                ),
               ),
             ),
             SizedBox(height: ResponsiveHelper.verticalSpacing(context, 8)),
-            Text(
-              _errorMessage ?? '',
-              textAlign: TextAlign.center,
-              style: const TextStyle(color: Colors.grey, fontSize: 14),
+            Semantics(
+              liveRegion: true,
+              child: Text(
+                _errorMessage ?? '',
+                textAlign: TextAlign.center,
+                style: const TextStyle(color: Colors.grey, fontSize: 14),
+              ),
             ),
             SizedBox(height: ResponsiveHelper.verticalSpacing(context, 24)),
             Semantics(

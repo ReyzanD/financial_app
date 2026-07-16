@@ -263,23 +263,29 @@ class _BudgetProgressState extends State<BudgetProgress>
                   SizedBox(
                     height: ResponsiveHelper.verticalSpacing(context, 12),
                   ),
-                  Text(
-                    'Terjadi Kesalahan',
-                    style: GoogleFonts.poppins(
-                      color: Colors.grey[400],
-                      fontSize: ResponsiveHelper.fontSize(context, 16),
-                      fontWeight: FontWeight.w600,
+                  Semantics(
+                    liveRegion: true,
+                    child: Text(
+                      'Terjadi Kesalahan',
+                      style: GoogleFonts.poppins(
+                        color: Colors.grey[400],
+                        fontSize: ResponsiveHelper.fontSize(context, 16),
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ),
                   SizedBox(
                     height: ResponsiveHelper.verticalSpacing(context, 4),
                   ),
-                  Text(
-                    _errorMessage!,
-                    textAlign: TextAlign.center,
-                    style: GoogleFonts.poppins(
-                      color: Colors.grey[600],
-                      fontSize: ResponsiveHelper.fontSize(context, 12),
+                  Semantics(
+                    liveRegion: true,
+                    child: Text(
+                      _errorMessage!,
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.poppins(
+                        color: Colors.grey[600],
+                        fontSize: ResponsiveHelper.fontSize(context, 12),
+                      ),
                     ),
                   ),
                   SizedBox(

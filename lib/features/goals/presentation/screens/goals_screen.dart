@@ -75,9 +75,12 @@ class _GoalsScreenState extends State<GoalsScreen> {
                     ),
                     const SizedBox(width: 12),
                     Expanded(
-                      child: Text(
-                        controller.errorMessage!,
-                        style: const TextStyle(color: Colors.red, fontSize: 13),
+                      child: Semantics(
+                        liveRegion: true,
+                        child: Text(
+                          controller.errorMessage!,
+                          style: const TextStyle(color: Colors.red, fontSize: 13),
+                        ),
                       ),
                     ),
                     IconButton(

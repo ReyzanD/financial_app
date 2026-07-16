@@ -19,7 +19,11 @@ import 'package:financial_app/utils/design_tokens.dart';
 import 'package:financial_app/utils/date_picker_helper.dart';
 
 class ReportScreen extends StatefulWidget {
-  const ReportScreen({super.key});
+  /// When [embedded] is true (e.g. inside AnalyticsHubScreen),
+  /// the own AppBar is suppressed (hub's AppBar handles navigation).
+  final bool embedded;
+
+  const ReportScreen({super.key, this.embedded = false});
 
   @override
   State<ReportScreen> createState() => _ReportScreenState();
@@ -291,22 +295,25 @@ class _ReportScreenState extends State<ReportScreen> {
     if (!_localeInitialized) {
       return Scaffold(
         backgroundColor: DesignTokens.backgroundDark,
-        appBar: AppBar(
-          backgroundColor: DesignTokens.backgroundDark,
-          elevation: 0,
-          leading: IconButton(
-            icon: const Icon(Iconsax.arrow_left, color: Colors.white),
-            onPressed: () => Navigator.pop(context),
-          ),
-          title: Text(
-            l10n?.create_report ?? 'Buat Laporan',
-            style: GoogleFonts.poppins(
-              color: Colors.white,
-              fontSize: 20,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ),
+        appBar: widget.embedded
+            ? null
+            : AppBar(
+                backgroundColor: DesignTokens.backgroundDark,
+                elevation: 0,
+                leading: IconButton(
+                  icon: const Icon(Iconsax.arrow_left, color: Colors.white),
+                  tooltip: l10n?.back ?? 'Kembali',
+                  onPressed: () => Navigator.pop(context),
+                ),
+                title: Text(
+                  l10n?.create_report ?? 'Buat Laporan',
+                  style: GoogleFonts.poppins(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
         body: const Column(
           children: [
             OfflineIndicator(),
@@ -324,22 +331,25 @@ class _ReportScreenState extends State<ReportScreen> {
 
     return Scaffold(
       backgroundColor: DesignTokens.backgroundDark,
-      appBar: AppBar(
-        backgroundColor: DesignTokens.backgroundDark,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Iconsax.arrow_left, color: Colors.white),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: Text(
-          l10n?.create_report ?? 'Buat Laporan',
-          style: GoogleFonts.poppins(
-            color: Colors.white,
-            fontSize: 20,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-      ),
+      appBar: widget.embedded
+          ? null
+          : AppBar(
+              backgroundColor: DesignTokens.backgroundDark,
+              elevation: 0,
+              leading: IconButton(
+                icon: const Icon(Iconsax.arrow_left, color: Colors.white),
+                tooltip: l10n?.back ?? 'Kembali',
+                onPressed: () => Navigator.pop(context),
+              ),
+              title: Text(
+                l10n?.create_report ?? 'Buat Laporan',
+                style: GoogleFonts.poppins(
+                  color: Colors.white,
+                  fontSize: 20,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
       body: Column(
         children: [
           const OfflineIndicator(),

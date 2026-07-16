@@ -360,6 +360,7 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Iconsax.arrow_left, color: Colors.white),
+          tooltip: l10n?.back ?? 'Kembali',
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(

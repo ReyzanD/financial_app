@@ -25,12 +25,12 @@ The application is built with awareness of the **European Accessibility Act (EAA
 
 ## Current accessibility features
 
-- **Semantic labels** on 24 interactive elements across 15 files (home header icons, empty-state action buttons, expandable section toggles, menu grid items).
-- **Minimum touch target** of 48dp enforced on colour picker and other small interactive controls.
+- **Semantic labels** on 42 interactive elements across 26 files (home header icons, empty-state action buttons, expandable section toggles, analytics hub back button, permission request cards, transaction cards, error live-regions, menu grid items, and AppBar back/action button tooltips). Plus **13 `Semantics(header: true)`** markers on screen titles for navigation landmarks.
+- **Minimum touch target** of 48dp enforced across all AppBar buttons, colour picker, and onboarding navigation controls — including Skip and Back buttons that previously used `minWidth: 0`.
 - **Material text scaling** — the app respects the system `textScaleFactor` throughout, and no font size is hardcoded below the platform minimum.
 - **Colour contrast** — all colours come from `DesignTokens`, which provides a verified palette. No hardcoded colours remain in the codebase.
 - **Offline indicator** — present on all 39 screens, notifying users of connectivity state without relying on colour alone.
-- **Screen-reader friendly** — all `FlatButton`/`IconButton` equivalents use `Semantics(button: true)` and a descriptive label.
+- **Screen-reader friendly** — all `FlatButton`/`IconButton` equivalents use `Semantics(button: true)` and a descriptive label or `tooltip`. All 17 AppBar leading back buttons have `tooltip: 'Kembali'`. Error states announce via `Semantics(liveRegion: true)`. Screen titles are marked as `Semantics(header: true)`.
 
 ---
 
@@ -38,11 +38,11 @@ The application is built with awareness of the **European Accessibility Act (EAA
 
 These are acknowledged limitations, prioritised by impact:
 
-1. **Form error announcements** — form validation errors are shown visually but not programmatically announced to screen readers. This is a common gap in Flutter apps and would require `Semantics(liveRegion:)` integration.
+1. ~~**Form error announcements** — form validation errors are shown visually but not programmatically announced to screen readers.~~ **RESOLVED** — 19 inline error `Text` widgets across 12 screens now wrapped with `Semantics(liveRegion: true)`, ensuring screen readers announce dynamic error messages as soon as they appear.
 2. **Focus indicators** — custom `InkWell` and `GestureDetector` widgets in some screens lack visible focus outlines for keyboard navigation (relevant for the web target).
-3. **Heading hierarchy** — screen titles are styled visually but not always marked up with `Semantics(headers:)`, which would help screen-reader navigation.
-4. **Language attribute** — the `<html>` lang attribute on the web target defaults to `en` even when the UI language is Indonesian. This requires a build-config fix.
-5. **Touch target audit** — only the most-visited screens (home, transactions, obligations, analytics, More tab, German finance) have been audited for 48dp touch targets. Remaining screens may have smaller targets.
+3. ~~**Heading hierarchy** — screen titles are styled visually but not always marked up with `Semantics(headers:)`.~~ **RESOLVED** — 13 screen title `Text` widgets across 10 screens + 3 reusable header components are now wrapped with `Semantics(header: true)` for screen-reader navigation landmarks.
+4. **Language attribute** — **N/A** — the project has no `web/` directory; web build has not been generated. Only relevant if `flutter create --platforms=web` is run in the future.
+5. **Touch target audit** — partially resolved — 17 AppBar back buttons now have `tooltip` labels. Onboarding Skip/Back buttons fixed from `minWidth: 0` to 48dp default. Remaining screens may still have smaller interactive targets, pending future audit.
 
 ---
 
