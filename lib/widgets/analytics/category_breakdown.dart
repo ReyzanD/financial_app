@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:financial_app/services/logger_service.dart';
 import 'package:financial_app/utils/design_tokens.dart';
+import 'package:financial_app/utils/formatters.dart';
 
 class CategoryBreakdown extends StatelessWidget {
   final List<dynamic> transactions;
@@ -12,7 +13,9 @@ class CategoryBreakdown extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    LoggerService.debug('CategoryBreakdown: Processing ${transactions.length} transactions');
+    LoggerService.debug(
+      'CategoryBreakdown: Processing ${transactions.length} transactions',
+    );
 
     // Calculate category data from all transactions
     final Map<String, Map<String, dynamic>> categoryMap = {};
@@ -20,31 +23,41 @@ class CategoryBreakdown extends StatelessWidget {
 
     // Count all transactions
     for (var transaction in transactions) {
-      final amount = double.tryParse(transaction['amount']?.toString() ?? '0') ?? 0.0;
+      final amount =
+          double.tryParse(transaction['amount']?.toString() ?? '0') ?? 0.0;
       final category = transaction['category']?.toString() ?? 'Uncategorized';
-      final categoryColor =
-          transaction['category_color'] != null
-              ? Color(int.parse(transaction['category_color'].substring(1, 7), radix: 16) + 0xFF000000)
-              : Colors.grey;
+      final categoryColor = ColorParsing.parse(
+        transaction['category_color']?.toString(),
+      );
 
       if (!categoryMap.containsKey(category)) {
-        categoryMap[category] = {'name': category, 'amount': 0.0, 'color': categoryColor};
+        categoryMap[category] = {
+          'name': category,
+          'amount': 0.0,
+          'color': categoryColor,
+        };
       }
-      categoryMap[category]!['amount'] = (categoryMap[category]!['amount'] as double) + amount;
+      categoryMap[category]!['amount'] =
+          (categoryMap[category]!['amount'] as double) + amount;
       totalAmount += amount;
     }
 
     // Convert to list and sort by amount
     final categories =
-        categoryMap.values.toList()..sort((a, b) => (b['amount'] as double).compareTo(a['amount'] as double));
+        categoryMap.values.toList()..sort(
+          (a, b) => (b['amount'] as double).compareTo(a['amount'] as double),
+        );
 
     // Calculate percentages
     for (var category in categories) {
       final amount = category['amount'] as double;
-      category['percentage'] = totalAmount > 0 ? (amount / totalAmount * 100).toInt() : 0;
+      category['percentage'] =
+          totalAmount > 0 ? (amount / totalAmount * 100).toInt() : 0;
     }
 
-    LoggerService.debug('Found ${categories.length} categories, total amount: $totalAmount');
+    LoggerService.debug(
+      'Found ${categories.length} categories, total amount: $totalAmount',
+    );
     if (categories.isNotEmpty) {
       LoggerService.debug('Top category: ${categories.first['name']}');
     }
@@ -59,7 +72,8 @@ class CategoryBreakdown extends StatelessWidget {
         ),
         child: Center(
           child: Text(
-            AppLocalizations.of(context)?.no_transactions_title ?? 'Belum ada transaksi',
+            AppLocalizations.of(context)?.no_transactions_title ??
+                'Belum ada transaksi',
             style: GoogleFonts.poppins(color: Colors.grey[500]),
           ),
         ),
@@ -78,7 +92,11 @@ class CategoryBreakdown extends StatelessWidget {
         children: [
           Text(
             'Breakdown Transaksi per Kategori',
-            style: GoogleFonts.poppins(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600),
+            style: GoogleFonts.poppins(
+              color: Colors.white,
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+            ),
           ),
           const SizedBox(height: DesignTokens.spacing6),
 
@@ -97,7 +115,11 @@ class CategoryBreakdown extends StatelessWidget {
                         value: (category['amount'] as double),
                         title: '$percentage%',
                         radius: 50,
-                        titleStyle: GoogleFonts.poppins(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w600),
+                        titleStyle: GoogleFonts.poppins(
+                          color: Colors.white,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                        ),
                       );
                     }).toList(),
               ),
@@ -121,23 +143,36 @@ class CategoryBreakdown extends StatelessWidget {
           Container(
             width: 12,
             height: 12,
-            decoration: BoxDecoration(color: category['color'] as Color, borderRadius: BorderRadius.circular(3)),
+            decoration: BoxDecoration(
+              color: category['color'] as Color,
+              borderRadius: BorderRadius.circular(3),
+            ),
           ),
           const SizedBox(width: 12),
 
           // Category Name
           Expanded(
-            child: Text(category['name'] as String, style: GoogleFonts.poppins(color: Colors.white, fontSize: 14)),
+            child: Text(
+              category['name'] as String,
+              style: GoogleFonts.poppins(color: Colors.white, fontSize: 14),
+            ),
           ),
 
           // Percentage
-          Text('${category['percentage']}%', style: GoogleFonts.poppins(color: Colors.grey[400], fontSize: 12)),
+          Text(
+            '${category['percentage']}%',
+            style: GoogleFonts.poppins(color: Colors.grey[400], fontSize: 12),
+          ),
           const SizedBox(width: 12),
 
           // Amount
           Text(
             'Rp ${category['amount'].toStringAsFixed(0)}',
-            style: GoogleFonts.poppins(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w600),
+            style: GoogleFonts.poppins(
+              color: Colors.white,
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+            ),
           ),
         ],
       ),

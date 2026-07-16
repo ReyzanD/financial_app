@@ -17,7 +17,12 @@ class TransactionCard extends StatefulWidget {
   final VoidCallback? onDeleted;
   final VoidCallback? onUpdated;
 
-  const TransactionCard({super.key, required this.transaction, this.onDeleted, this.onUpdated});
+  const TransactionCard({
+    super.key,
+    required this.transaction,
+    this.onDeleted,
+    this.onUpdated,
+  });
 
   @override
   State<TransactionCard> createState() => _TransactionCardState();
@@ -44,21 +49,13 @@ class _TransactionCardState extends State<TransactionCard> {
     );
 
     final isIncome = widget.transaction['type'] == 'income';
-    final amount = double.tryParse(widget.transaction['amount']?.toString() ?? '0') ?? 0.0;
-    final category = widget.transaction['category'] as String? ?? 'Uncategorized';
-    Color categoryColor = Colors.grey;
-    if (widget.transaction['category_color'] != null) {
-      final hex = widget.transaction['category_color'].toString();
-      try {
-        // Handle formats: #RRGGBB, #RGB, RRGGBB, or just a color name
-        final cleanHex = hex.startsWith('#') ? hex.substring(1) : hex;
-        if (cleanHex.length >= 6) {
-          categoryColor = Color(int.parse(cleanHex.substring(0, 6), radix: 16) + 0xFF000000);
-        }
-      } catch (_) {
-        categoryColor = Colors.grey;
-      }
-    }
+    final amount =
+        double.tryParse(widget.transaction['amount']?.toString() ?? '0') ?? 0.0;
+    final category =
+        widget.transaction['category'] as String? ?? 'Uncategorized';
+    final categoryColor = ColorParsing.parse(
+      widget.transaction['category_color']?.toString(),
+    );
     final date = widget.transaction['date'] as String? ?? '';
     final location = widget.transaction['location'] as String? ?? '';
     final accountName = widget.transaction['account_name'] as String?;
@@ -85,11 +82,17 @@ class _TransactionCardState extends State<TransactionCard> {
               actions: [
                 TextButton(
                   onPressed: () => Navigator.of(context).pop(false),
-                  child: Text(l10n?.cancel ?? 'Batal', style: GoogleFonts.poppins(color: Colors.grey)),
+                  child: Text(
+                    l10n?.cancel ?? 'Batal',
+                    style: GoogleFonts.poppins(color: Colors.grey),
+                  ),
                 ),
                 TextButton(
                   onPressed: () => Navigator.of(context).pop(true),
-                  child: Text(l10n?.delete ?? 'Hapus', style: GoogleFonts.poppins(color: Colors.red)),
+                  child: Text(
+                    l10n?.delete ?? 'Hapus',
+                    style: GoogleFonts.poppins(color: Colors.red),
+                  ),
                 ),
               ],
             );
@@ -104,7 +107,9 @@ class _TransactionCardState extends State<TransactionCard> {
         });
 
         final transactionId = widget.transaction['id']?.toString() ?? '';
-        LoggerService.debug('[TransactionCard] Dismissed, starting deletion for ID: $transactionId');
+        LoggerService.debug(
+          '[TransactionCard] Dismissed, starting deletion for ID: $transactionId',
+        );
 
         // Perform async deletion - onDeleted will be called after successful deletion
         _performDeletion(transactionId);
@@ -112,7 +117,10 @@ class _TransactionCardState extends State<TransactionCard> {
       background: Container(
         alignment: Alignment.centerRight,
         padding: const EdgeInsets.only(right: 20),
-        decoration: BoxDecoration(color: Colors.red, borderRadius: BorderRadius.circular(DesignTokens.radiusLarge)),
+        decoration: BoxDecoration(
+          color: Colors.red,
+          borderRadius: BorderRadius.circular(DesignTokens.radiusLarge),
+        ),
         child: const Icon(Icons.delete, color: Colors.white, size: 32),
       ),
       child: Semantics(
@@ -135,17 +143,28 @@ class _TransactionCardState extends State<TransactionCard> {
             );
           },
           child: Container(
-            margin: EdgeInsets.only(bottom: ResponsiveHelper.verticalSpacing(context, 12)),
+            margin: EdgeInsets.only(
+              bottom: ResponsiveHelper.verticalSpacing(context, 12),
+            ),
             padding: ResponsiveHelper.padding(context),
             decoration: BoxDecoration(
               color: DesignTokens.surfaceDark,
-              borderRadius: BorderRadius.circular(ResponsiveHelper.borderRadius(context, 16)),
+              borderRadius: BorderRadius.circular(
+                ResponsiveHelper.borderRadius(context, 16),
+              ),
               border: Border.all(
-                color: isIncome ? Colors.green.withValues(alpha: 0.2) : Colors.red.withValues(alpha: 0.2),
+                color:
+                    isIncome
+                        ? Colors.green.withValues(alpha: 0.2)
+                        : Colors.red.withValues(alpha: 0.2),
                 width: 1,
               ),
               boxShadow: [
-                BoxShadow(color: Colors.black.withValues(alpha: 0.3), blurRadius: 8, offset: const Offset(0, 2)),
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.3),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
               ],
             ),
             child: Row(
@@ -156,8 +175,13 @@ class _TransactionCardState extends State<TransactionCard> {
                   height: ResponsiveHelper.iconSize(context, 52),
                   decoration: BoxDecoration(
                     color: categoryColor.withValues(alpha: 0.15),
-                    borderRadius: BorderRadius.circular(ResponsiveHelper.borderRadius(context, 14)),
-                    border: Border.all(color: categoryColor.withValues(alpha: 0.3), width: 1.5),
+                    borderRadius: BorderRadius.circular(
+                      ResponsiveHelper.borderRadius(context, 14),
+                    ),
+                    border: Border.all(
+                      color: categoryColor.withValues(alpha: 0.3),
+                      width: 1.5,
+                    ),
                   ),
                   child: Icon(
                     getCategoryIcon(category),
@@ -166,7 +190,9 @@ class _TransactionCardState extends State<TransactionCard> {
                   ),
                 ),
 
-                SizedBox(width: ResponsiveHelper.horizontalSpacing(context, 12)),
+                SizedBox(
+                  width: ResponsiveHelper.horizontalSpacing(context, 12),
+                ),
 
                 // Transaction Details
                 Expanded(
@@ -174,18 +200,22 @@ class _TransactionCardState extends State<TransactionCard> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        widget.transaction['description'] as String? ?? 'No description',
+                        widget.transaction['description'] as String? ??
+                            'No description',
                         style: GoogleFonts.poppins(
                           color: Colors.white,
                           fontSize: ResponsiveHelper.fontSize(context, 16),
                           fontWeight: FontWeight.w500,
                         ),
                       ),
-                      SizedBox(height: ResponsiveHelper.verticalSpacing(context, 4)),
+                      SizedBox(
+                        height: ResponsiveHelper.verticalSpacing(context, 4),
+                      ),
                       Text(
                         [
                           category,
-                          if (accountName != null && accountName.isNotEmpty) accountName,
+                          if (accountName != null && accountName.isNotEmpty)
+                            accountName,
                           if (location.isNotEmpty) location,
                         ].join(' • '),
                         style: GoogleFonts.poppins(
@@ -193,7 +223,9 @@ class _TransactionCardState extends State<TransactionCard> {
                           fontSize: ResponsiveHelper.fontSize(context, 12),
                         ),
                       ),
-                      SizedBox(height: ResponsiveHelper.verticalSpacing(context, 4)),
+                      SizedBox(
+                        height: ResponsiveHelper.verticalSpacing(context, 4),
+                      ),
                       Text(
                         formatDate(date),
                         style: GoogleFonts.poppins(
@@ -217,14 +249,26 @@ class _TransactionCardState extends State<TransactionCard> {
                         fontWeight: FontWeight.w600,
                       ),
                     ),
-                    SizedBox(height: ResponsiveHelper.verticalSpacing(context, 4)),
+                    SizedBox(
+                      height: ResponsiveHelper.verticalSpacing(context, 4),
+                    ),
                     Container(
-                      padding: ResponsiveHelper.symmetricPadding(context, horizontal: 8, vertical: 2),
+                      padding: ResponsiveHelper.symmetricPadding(
+                        context,
+                        horizontal: 8,
+                        vertical: 2,
+                      ),
                       decoration: BoxDecoration(
-                        color: isIncome ? Colors.green.withValues(alpha: 0.15) : Colors.red.withValues(alpha: 0.15),
+                        color:
+                            isIncome
+                                ? Colors.green.withValues(alpha: 0.15)
+                                : Colors.red.withValues(alpha: 0.15),
                         borderRadius: BorderRadius.circular(10),
                         border: Border.all(
-                          color: isIncome ? Colors.green.withValues(alpha: 0.4) : Colors.red.withValues(alpha: 0.4),
+                          color:
+                              isIncome
+                                  ? Colors.green.withValues(alpha: 0.4)
+                                  : Colors.red.withValues(alpha: 0.4),
                           width: 1,
                         ),
                       ),
@@ -232,7 +276,9 @@ class _TransactionCardState extends State<TransactionCard> {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Icon(
-                            isIncome ? Icons.arrow_downward_rounded : Icons.arrow_upward_rounded,
+                            isIncome
+                                ? Icons.arrow_downward_rounded
+                                : Icons.arrow_upward_rounded,
                             size: 12,
                             color: isIncome ? Colors.green : Colors.red,
                           ),
@@ -274,7 +320,9 @@ class _TransactionCardState extends State<TransactionCard> {
       // Biometric is available and enabled - require authentication
       final authenticated = await BiometricHelper.requestBiometricAuth(
         context: currentContext, // Use captured context
-        reason: l10n?.authentication_required_to_delete ?? 'Autentikasi diperlukan untuk menghapus transaksi',
+        reason:
+            l10n?.authentication_required_to_delete ??
+            'Autentikasi diperlukan untuk menghapus transaksi',
       );
 
       if (!authenticated) {
@@ -302,7 +350,9 @@ class _TransactionCardState extends State<TransactionCard> {
 
     final ctrl = getIt<TransactionController>();
 
-    LoggerService.debug('[TransactionCard] Starting deletion for ID: $transactionId');
+    LoggerService.debug(
+      '[TransactionCard] Starting deletion for ID: $transactionId',
+    );
 
     try {
       await ctrl.deleteTransaction(transactionId);
@@ -314,7 +364,8 @@ class _TransactionCardState extends State<TransactionCard> {
       if (currentContext.mounted) {
         ErrorHandlerService.showSuccessSnackbar(
           currentContext,
-          l10n?.transaction_deleted_successfully ?? 'Transaksi berhasil dihapus',
+          l10n?.transaction_deleted_successfully ??
+              'Transaksi berhasil dihapus',
         );
       }
     } catch (e) {

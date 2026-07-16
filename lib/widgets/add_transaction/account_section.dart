@@ -6,12 +6,17 @@ import 'package:financial_app/core/di/service_locator.dart';
 import 'package:financial_app/models/account_model.dart';
 import 'package:financial_app/services/data/account_data_service.dart';
 import 'package:financial_app/utils/design_tokens.dart';
+import 'package:financial_app/utils/formatters.dart';
 
 class AccountSection extends StatefulWidget {
   final String? selectedAccountId;
   final Function(String?) onAccountSelected;
 
-  const AccountSection({super.key, this.selectedAccountId, required this.onAccountSelected});
+  const AccountSection({
+    super.key,
+    this.selectedAccountId,
+    required this.onAccountSelected,
+  });
 
   @override
   State<AccountSection> createState() => _AccountSectionState();
@@ -38,7 +43,10 @@ class _AccountSectionState extends State<AccountSection> {
         });
         // Auto-select default account if none selected
         if (widget.selectedAccountId == null && accounts.isNotEmpty) {
-          final defaultAccount = accounts.firstWhere((a) => a.isDefault, orElse: () => accounts.first);
+          final defaultAccount = accounts.firstWhere(
+            (a) => a.isDefault,
+            orElse: () => accounts.first,
+          );
           widget.onAccountSelected(defaultAccount.id);
         }
       }
@@ -75,10 +83,16 @@ class _AccountSectionState extends State<AccountSection> {
         children: [
           Text(
             l10n?.account ?? 'Akun',
-            style: GoogleFonts.poppins(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600),
+            style: GoogleFonts.poppins(
+              color: Colors.white,
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+            ),
           ),
           const SizedBox(height: DesignTokens.spacing3),
-          const Center(child: CircularProgressIndicator(color: DesignTokens.primaryColor)),
+          const Center(
+            child: CircularProgressIndicator(color: DesignTokens.primaryColor),
+          ),
         ],
       );
     }
@@ -92,7 +106,11 @@ class _AccountSectionState extends State<AccountSection> {
       children: [
         Text(
           l10n?.account ?? 'Akun',
-          style: GoogleFonts.poppins(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600),
+          style: GoogleFonts.poppins(
+            color: Colors.white,
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+          ),
         ),
         const SizedBox(height: DesignTokens.spacing3),
         Wrap(
@@ -102,15 +120,23 @@ class _AccountSectionState extends State<AccountSection> {
             GestureDetector(
               onTap: () => widget.onAccountSelected(null),
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 10,
+                ),
                 decoration: BoxDecoration(
                   color:
                       widget.selectedAccountId == null
                           ? DesignTokens.primaryColor.withValues(alpha: 0.3)
                           : DesignTokens.surfaceDark,
-                  borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                  borderRadius: BorderRadius.circular(
+                    DesignTokens.radiusMedium,
+                  ),
                   border: Border.all(
-                    color: widget.selectedAccountId == null ? DesignTokens.primaryColor : Colors.grey[700]!,
+                    color:
+                        widget.selectedAccountId == null
+                            ? DesignTokens.primaryColor
+                            : Colors.grey[700]!,
                   ),
                 ),
                 child: Row(
@@ -119,13 +145,19 @@ class _AccountSectionState extends State<AccountSection> {
                     Icon(
                       Iconsax.global,
                       size: 18,
-                      color: widget.selectedAccountId == null ? DesignTokens.primaryColor : Colors.grey[500],
+                      color:
+                          widget.selectedAccountId == null
+                              ? DesignTokens.primaryColor
+                              : Colors.grey[500],
                     ),
                     const SizedBox(width: 6),
                     Text(
                       l10n?.all ?? 'Semua',
                       style: GoogleFonts.poppins(
-                        color: widget.selectedAccountId == null ? DesignTokens.primaryColor : Colors.grey[500],
+                        color:
+                            widget.selectedAccountId == null
+                                ? DesignTokens.primaryColor
+                                : Colors.grey[500],
                         fontSize: 13,
                         fontWeight: FontWeight.w500,
                       ),
@@ -139,16 +171,26 @@ class _AccountSectionState extends State<AccountSection> {
               final type = account.type;
               final name = account.name;
               final colorHex = account.color ?? '#8B5FBF';
-              final accountColor = Color(int.parse(colorHex.replaceFirst('#', '0xFF')));
+              final accountColor = ColorParsing.parse(colorHex);
 
               return GestureDetector(
                 onTap: () => widget.onAccountSelected(account.id),
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 10,
+                  ),
                   decoration: BoxDecoration(
-                    color: isSelected ? accountColor.withValues(alpha: 0.3) : DesignTokens.surfaceDark,
-                    borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
-                    border: Border.all(color: isSelected ? accountColor : Colors.grey[700]!),
+                    color:
+                        isSelected
+                            ? accountColor.withValues(alpha: 0.3)
+                            : DesignTokens.surfaceDark,
+                    borderRadius: BorderRadius.circular(
+                      DesignTokens.radiusMedium,
+                    ),
+                    border: Border.all(
+                      color: isSelected ? accountColor : Colors.grey[700]!,
+                    ),
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
@@ -156,13 +198,19 @@ class _AccountSectionState extends State<AccountSection> {
                       Icon(
                         _getAccountIcon(type),
                         size: 18,
-                        color: isSelected ? DesignTokens.primaryColor : Colors.grey[500],
+                        color:
+                            isSelected
+                                ? DesignTokens.primaryColor
+                                : Colors.grey[500],
                       ),
                       const SizedBox(width: 6),
                       Text(
                         name,
                         style: GoogleFonts.poppins(
-                          color: isSelected ? DesignTokens.primaryColor : Colors.grey[500],
+                          color:
+                              isSelected
+                                  ? DesignTokens.primaryColor
+                                  : Colors.grey[500],
                           fontSize: 13,
                           fontWeight: FontWeight.w500,
                         ),

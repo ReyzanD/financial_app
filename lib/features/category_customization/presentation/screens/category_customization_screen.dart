@@ -6,6 +6,7 @@ import 'package:financial_app/features/category_customization/presentation/contr
 import 'package:financial_app/models/category_model.dart';
 import 'package:financial_app/services/category_customization_service.dart';
 import 'package:financial_app/utils/design_tokens.dart';
+import 'package:financial_app/utils/formatters.dart';
 import 'package:financial_app/l10n/app_localizations.dart';
 import 'package:financial_app/services/error_handler_service.dart';
 import 'package:financial_app/widgets/common/offline_indicator.dart';
@@ -13,24 +14,22 @@ import 'package:financial_app/widgets/common/offline_indicator.dart';
 class CategoryCustomizationScreen extends StatefulWidget {
   const CategoryCustomizationScreen({super.key});
   @override
-  State<CategoryCustomizationScreen> createState() => _CategoryCustomizationScreenState();
+  State<CategoryCustomizationScreen> createState() =>
+      _CategoryCustomizationScreenState();
 }
 
-class _CategoryCustomizationScreenState extends State<CategoryCustomizationScreen> {
+class _CategoryCustomizationScreenState
+    extends State<CategoryCustomizationScreen> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) => context.read<CategoryController>().loadData());
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) => context.read<CategoryController>().loadData(),
+    );
   }
 
-  Color _getCategoryColor(String? color) {
-    if (color == null || color.isEmpty) return DesignTokens.primaryColor;
-    try {
-      return Color(int.parse(color.replaceFirst('#', '0xFF')));
-    } catch (_) {
-      return DesignTokens.primaryColor;
-    }
-  }
+  Color _getCategoryColor(String? color) =>
+      ColorParsing.parse(color, fallback: DesignTokens.primaryColor);
 
   @override
   Widget build(BuildContext context) {
@@ -50,18 +49,25 @@ class _CategoryCustomizationScreenState extends State<CategoryCustomizationScree
                 child: Consumer<CategoryController>(
                   builder: (_, ctrl, __) {
                     if (ctrl.isLoading)
-                      return Center(child: CircularProgressIndicator(color: DesignTokens.primaryColor));
-                    if (ctrl.error != null) return _buildErrorState(context, l10n, ctrl);
+                      return Center(
+                        child: CircularProgressIndicator(
+                          color: DesignTokens.primaryColor,
+                        ),
+                      );
+                    if (ctrl.error != null)
+                      return _buildErrorState(context, l10n, ctrl);
                     final items = <Object>[];
                     if (ctrl.customCategories.isNotEmpty) {
                       items.add('custom_header');
                       items.add('spacing_12');
-                      for (final cat in ctrl.customCategories) items.add(_CategoryListItem(cat, isCustom: true));
+                      for (final cat in ctrl.customCategories)
+                        items.add(_CategoryListItem(cat, isCustom: true));
                       items.add('spacing_16');
                     }
                     items.add('default_header');
                     items.add('spacing_12');
-                    for (final cat in ctrl.defaultCategories) items.add(_CategoryListItem(cat, isCustom: false));
+                    for (final cat in ctrl.defaultCategories)
+                      items.add(_CategoryListItem(cat, isCustom: false));
                     return ListView.builder(
                       padding: const EdgeInsets.all(DesignTokens.spacing4),
                       itemCount: items.length,
@@ -86,14 +92,26 @@ class _CategoryCustomizationScreenState extends State<CategoryCustomizationScree
                                 fontWeight: FontWeight.w600,
                               ),
                             );
-                          if (item == 'spacing_12') return const SizedBox(height: DesignTokens.spacing3);
-                          if (item == 'spacing_16') return const SizedBox(height: DesignTokens.spacing4);
+                          if (item == 'spacing_12')
+                            return const SizedBox(
+                              height: DesignTokens.spacing3,
+                            );
+                          if (item == 'spacing_16')
+                            return const SizedBox(
+                              height: DesignTokens.spacing4,
+                            );
                           return const SizedBox.shrink();
                         }
                         final li = item as _CategoryListItem;
                         return Padding(
                           padding: const EdgeInsets.only(bottom: 8),
-                          child: _buildCategoryCard(ctx, li.category, l10n, isCustom: li.isCustom, ctrl: ctrl),
+                          child: _buildCategoryCard(
+                            ctx,
+                            li.category,
+                            l10n,
+                            isCustom: li.isCustom,
+                            ctrl: ctrl,
+                          ),
                         );
                       },
                     );
@@ -119,27 +137,42 @@ class _CategoryCustomizationScreenState extends State<CategoryCustomizationScree
       child: Row(
         children: [
           IconButton(
-            icon: const Icon(Iconsax.arrow_left, color: DesignTokens.textPrimaryDark),
+            icon: const Icon(
+              Iconsax.arrow_left,
+              color: DesignTokens.textPrimaryDark,
+            ),
             onPressed: () => Navigator.pop(context),
           ),
           const SizedBox(width: 8),
           Text(
             l10n?.category ?? 'Kategori',
-            style: GoogleFonts.poppins(color: DesignTokens.textPrimaryDark, fontSize: 20, fontWeight: FontWeight.bold),
+            style: GoogleFonts.poppins(
+              color: DesignTokens.textPrimaryDark,
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            ),
           ),
           const Spacer(),
           Consumer<CategoryController>(
             builder:
                 (_, ctrl, __) => Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
                   decoration: BoxDecoration(
                     color: DesignTokens.surfaceDark,
-                    borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                    borderRadius: BorderRadius.circular(
+                      DesignTokens.radiusMedium,
+                    ),
                     border: Border.all(color: DesignTokens.borderDark),
                   ),
                   child: Text(
                     '${ctrl.defaultCategories.length + ctrl.customCategories.length} ${l10n?.total_categories ?? 'kategori'}',
-                    style: GoogleFonts.poppins(color: DesignTokens.textSecondaryDark, fontSize: 12),
+                    style: GoogleFonts.poppins(
+                      color: DesignTokens.textSecondaryDark,
+                      fontSize: 12,
+                    ),
                   ),
                 ),
           ),
@@ -171,7 +204,11 @@ class _CategoryCustomizationScreenState extends State<CategoryCustomizationScree
               color: _getCategoryColor(category.color).withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(DesignTokens.radiusSmall),
             ),
-            child: Icon(_getIconData(category.icon), color: _getCategoryColor(category.color), size: 20),
+            child: Icon(
+              _getIconData(category.icon),
+              color: _getCategoryColor(category.color),
+              size: 20,
+            ),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -188,7 +225,10 @@ class _CategoryCustomizationScreenState extends State<CategoryCustomizationScree
                 ),
                 Text(
                   category.type == 'income' ? 'Income' : 'Expense',
-                  style: GoogleFonts.poppins(color: DesignTokens.textSecondaryDark, fontSize: 11),
+                  style: GoogleFonts.poppins(
+                    color: DesignTokens.textSecondaryDark,
+                    fontSize: 11,
+                  ),
                 ),
               ],
             ),
@@ -196,14 +236,22 @@ class _CategoryCustomizationScreenState extends State<CategoryCustomizationScree
           if (isCustom)
             InkWell(
               onTap: () => _deleteCategory(category, ctrl),
-              child: Icon(Iconsax.trash, size: 16, color: DesignTokens.errorColor),
+              child: Icon(
+                Iconsax.trash,
+                size: 16,
+                color: DesignTokens.errorColor,
+              ),
             ),
         ],
       ),
     );
   }
 
-  Widget _buildErrorState(BuildContext context, AppLocalizations? l10n, CategoryController ctrl) {
+  Widget _buildErrorState(
+    BuildContext context,
+    AppLocalizations? l10n,
+    CategoryController ctrl,
+  ) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -212,15 +260,30 @@ class _CategoryCustomizationScreenState extends State<CategoryCustomizationScree
           const SizedBox(height: DesignTokens.spacing4),
           Text(
             l10n?.error ?? 'Terjadi kesalahan',
-            style: GoogleFonts.poppins(color: DesignTokens.textPrimaryDark, fontSize: 18, fontWeight: FontWeight.w600),
+            style: GoogleFonts.poppins(
+              color: DesignTokens.textPrimaryDark,
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
+            ),
           ),
           const SizedBox(height: DesignTokens.spacing2),
-          Text(ctrl.error ?? '', style: GoogleFonts.poppins(color: DesignTokens.textSecondaryDark, fontSize: 14)),
+          Text(
+            ctrl.error ?? '',
+            style: GoogleFonts.poppins(
+              color: DesignTokens.textSecondaryDark,
+              fontSize: 14,
+            ),
+          ),
           const SizedBox(height: DesignTokens.spacing4),
           ElevatedButton(
             onPressed: ctrl.refresh,
-            style: ElevatedButton.styleFrom(backgroundColor: DesignTokens.primaryColor),
-            child: Text(l10n?.retry ?? 'Coba Lagi', style: GoogleFonts.poppins(color: Colors.white)),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: DesignTokens.primaryColor,
+            ),
+            child: Text(
+              l10n?.retry ?? 'Coba Lagi',
+              style: GoogleFonts.poppins(color: Colors.white),
+            ),
           ),
         ],
       ),
@@ -259,12 +322,21 @@ class _CategoryCustomizationScreenState extends State<CategoryCustomizationScree
       context: context,
       backgroundColor: DesignTokens.backgroundDark,
       isScrollControlled: true,
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
-      builder: (c) => _AddCategoryModal(onCategoryAdded: () => context.read<CategoryController>().loadData()),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder:
+          (c) => _AddCategoryModal(
+            onCategoryAdded:
+                () => context.read<CategoryController>().loadData(),
+          ),
     );
   }
 
-  Future<void> _deleteCategory(CategoryModel category, CategoryController ctrl) async {
+  Future<void> _deleteCategory(
+    CategoryModel category,
+    CategoryController ctrl,
+  ) async {
     final l10n = AppLocalizations.of(context);
     final confirmed = await showDialog<bool>(
       context: context,
@@ -280,14 +352,24 @@ class _CategoryCustomizationScreenState extends State<CategoryCustomizationScree
               ),
             ),
             content: Text(
-              l10n?.delete_category_confirm ?? 'Yakin ingin menghapus kategori ini?',
-              style: GoogleFonts.poppins(color: DesignTokens.textSecondaryDark, fontSize: 13),
+              l10n?.delete_category_confirm ??
+                  'Yakin ingin menghapus kategori ini?',
+              style: GoogleFonts.poppins(
+                color: DesignTokens.textSecondaryDark,
+                fontSize: 13,
+              ),
             ),
             actions: [
-              TextButton(onPressed: () => Navigator.pop(c, false), child: Text(l10n?.cancel ?? 'Batal')),
+              TextButton(
+                onPressed: () => Navigator.pop(c, false),
+                child: Text(l10n?.cancel ?? 'Batal'),
+              ),
               TextButton(
                 onPressed: () => Navigator.pop(c, true),
-                child: Text(l10n?.delete ?? 'Hapus', style: const TextStyle(color: DesignTokens.errorColor)),
+                child: Text(
+                  l10n?.delete ?? 'Hapus',
+                  style: const TextStyle(color: DesignTokens.errorColor),
+                ),
               ),
             ],
           ),
@@ -296,9 +378,16 @@ class _CategoryCustomizationScreenState extends State<CategoryCustomizationScree
       try {
         await ctrl.deleteCategory(category);
         if (mounted)
-          ErrorHandlerService.showSuccessSnackbar(context, l10n?.category_deleted ?? 'Kategori berhasil dihapus');
+          ErrorHandlerService.showSuccessSnackbar(
+            context,
+            l10n?.category_deleted ?? 'Kategori berhasil dihapus',
+          );
       } catch (e) {
-        if (mounted) ErrorHandlerService.showErrorSnackbar(context, ErrorHandlerService.getUserFriendlyMessage(e));
+        if (mounted)
+          ErrorHandlerService.showErrorSnackbar(
+            context,
+            ErrorHandlerService.getUserFriendlyMessage(e),
+          );
       }
     }
   }
@@ -328,7 +417,14 @@ class _AddCategoryModalState extends State<_AddCategoryModal> {
     {'value': 'expense', 'label': 'Expense'},
     {'value': 'income', 'label': 'Income'},
   ];
-  final List<String> _colors = ['#8B5FBF', '#4CAF50', '#2196F3', '#FF9800', '#F44336', '#9C27B0'];
+  final List<String> _colors = [
+    '#8B5FBF',
+    '#4CAF50',
+    '#2196F3',
+    '#FF9800',
+    '#F44336',
+    '#9C27B0',
+  ];
   final List<Map<String, dynamic>> _icons = [
     {'value': 'restaurant', 'label': 'Food'},
     {'value': 'directions_car', 'label': 'Transport'},
@@ -373,7 +469,12 @@ class _AddCategoryModalState extends State<_AddCategoryModal> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return Padding(
-      padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom, left: 20, right: 20, top: 20),
+      padding: EdgeInsets.only(
+        bottom: MediaQuery.of(context).viewInsets.bottom,
+        left: 20,
+        right: 20,
+        top: 20,
+      ),
       child: SingleChildScrollView(
         child: Form(
           key: _formKey,
@@ -406,18 +507,32 @@ class _AddCategoryModalState extends State<_AddCategoryModal> {
                 style: GoogleFonts.poppins(color: DesignTokens.textPrimaryDark),
                 decoration: InputDecoration(
                   labelText: l10n?.name ?? 'Nama',
-                  labelStyle: GoogleFonts.poppins(color: DesignTokens.textSecondaryDark),
+                  labelStyle: GoogleFonts.poppins(
+                    color: DesignTokens.textSecondaryDark,
+                  ),
                   filled: true,
                   fillColor: DesignTokens.surfaceDark,
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(DesignTokens.radiusMedium),
+                    borderRadius: BorderRadius.circular(
+                      DesignTokens.radiusMedium,
+                    ),
                     borderSide: BorderSide(color: DesignTokens.borderDark),
                   ),
                 ),
-                validator: (v) => (v == null || v.isEmpty) ? 'Nama tidak boleh kosong' : null,
+                validator:
+                    (v) =>
+                        (v == null || v.isEmpty)
+                            ? 'Nama tidak boleh kosong'
+                            : null,
               ),
               const SizedBox(height: DesignTokens.spacing4),
-              Text('Tipe', style: GoogleFonts.poppins(color: DesignTokens.textSecondaryDark, fontSize: 12)),
+              Text(
+                'Tipe',
+                style: GoogleFonts.poppins(
+                  color: DesignTokens.textSecondaryDark,
+                  fontSize: 12,
+                ),
+              ),
               const SizedBox(height: DesignTokens.spacing2),
               Wrap(
                 spacing: 8,
@@ -428,19 +543,29 @@ class _AddCategoryModalState extends State<_AddCategoryModal> {
                         label: Text(
                           t['label'],
                           style: GoogleFonts.poppins(
-                            color: sel ? Colors.white : DesignTokens.textSecondaryDark,
+                            color:
+                                sel
+                                    ? Colors.white
+                                    : DesignTokens.textSecondaryDark,
                             fontSize: 12,
                           ),
                         ),
                         selected: sel,
-                        onSelected: (_) => setState(() => _selectedType = t['value']),
+                        onSelected:
+                            (_) => setState(() => _selectedType = t['value']),
                         backgroundColor: DesignTokens.surfaceDark,
                         selectedColor: DesignTokens.primaryColor,
                       );
                     }).toList(),
               ),
               const SizedBox(height: DesignTokens.spacing4),
-              Text('Icon', style: GoogleFonts.poppins(color: DesignTokens.textSecondaryDark, fontSize: 12)),
+              Text(
+                'Icon',
+                style: GoogleFonts.poppins(
+                  color: DesignTokens.textSecondaryDark,
+                  fontSize: 12,
+                ),
+              ),
               const SizedBox(height: DesignTokens.spacing2),
               Wrap(
                 spacing: 8,
@@ -448,17 +573,33 @@ class _AddCategoryModalState extends State<_AddCategoryModal> {
                     _icons.map((ic) {
                       final sel = _selectedIcon == ic['value'];
                       return GestureDetector(
-                        onTap: () => setState(() => _selectedIcon = ic['value']),
+                        onTap:
+                            () => setState(() => _selectedIcon = ic['value']),
                         child: Container(
                           padding: const EdgeInsets.all(10),
                           decoration: BoxDecoration(
-                            color: sel ? DesignTokens.primaryColor.withValues(alpha: 0.15) : DesignTokens.surfaceDark,
-                            borderRadius: BorderRadius.circular(DesignTokens.radiusSmall),
-                            border: Border.all(color: sel ? DesignTokens.primaryColor : DesignTokens.borderDark),
+                            color:
+                                sel
+                                    ? DesignTokens.primaryColor.withValues(
+                                      alpha: 0.15,
+                                    )
+                                    : DesignTokens.surfaceDark,
+                            borderRadius: BorderRadius.circular(
+                              DesignTokens.radiusSmall,
+                            ),
+                            border: Border.all(
+                              color:
+                                  sel
+                                      ? DesignTokens.primaryColor
+                                      : DesignTokens.borderDark,
+                            ),
                           ),
                           child: Icon(
                             _getIconData(ic['value']),
-                            color: sel ? DesignTokens.primaryColor : DesignTokens.textSecondaryDark,
+                            color:
+                                sel
+                                    ? DesignTokens.primaryColor
+                                    : DesignTokens.textSecondaryDark,
                             size: 20,
                           ),
                         ),
@@ -466,7 +607,13 @@ class _AddCategoryModalState extends State<_AddCategoryModal> {
                     }).toList(),
               ),
               const SizedBox(height: DesignTokens.spacing4),
-              Text('Warna', style: GoogleFonts.poppins(color: DesignTokens.textSecondaryDark, fontSize: 12)),
+              Text(
+                'Warna',
+                style: GoogleFonts.poppins(
+                  color: DesignTokens.textSecondaryDark,
+                  fontSize: 12,
+                ),
+              ),
               const SizedBox(height: DesignTokens.spacing2),
               Wrap(
                 spacing: 8,
@@ -479,9 +626,12 @@ class _AddCategoryModalState extends State<_AddCategoryModal> {
                           width: 36,
                           height: 36,
                           decoration: BoxDecoration(
-                            color: Color(int.parse(c.replaceFirst('#', '0xFF'))),
+                            color: ColorParsing.parse(c),
                             shape: BoxShape.circle,
-                            border: sel ? Border.all(color: Colors.white, width: 3) : null,
+                            border:
+                                sel
+                                    ? Border.all(color: Colors.white, width: 3)
+                                    : null,
                           ),
                         ),
                       );
@@ -495,11 +645,19 @@ class _AddCategoryModalState extends State<_AddCategoryModal> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: DesignTokens.primaryColor,
                     padding: const EdgeInsets.symmetric(vertical: 14),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(DesignTokens.radiusMedium)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(
+                        DesignTokens.radiusMedium,
+                      ),
+                    ),
                   ),
                   child: Text(
                     l10n?.add ?? 'Tambah',
-                    style: GoogleFonts.poppins(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w600),
+                    style: GoogleFonts.poppins(
+                      color: Colors.white,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
               ),
@@ -524,7 +682,11 @@ class _AddCategoryModalState extends State<_AddCategoryModal> {
       Navigator.pop(context);
       widget.onCategoryAdded();
     } catch (e) {
-      if (mounted) ErrorHandlerService.showErrorSnackbar(context, ErrorHandlerService.getUserFriendlyMessage(e));
+      if (mounted)
+        ErrorHandlerService.showErrorSnackbar(
+          context,
+          ErrorHandlerService.getUserFriendlyMessage(e),
+        );
     }
   }
 }

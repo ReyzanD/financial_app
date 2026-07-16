@@ -309,6 +309,39 @@ One new regression test added (goal-forecasting empty-history fallback).
 
 ---
 
+## Code Review Pass 3 — defensive color parsing & unsafe casts (COMPLETE)
+
+Third sweep: centralized all stored-hex color parsing (fragile `int.parse` on
+corrupted/wrong-length values) behind one safe helper, and removed the remaining
+unsafe `as` casts on stored/external data.
+
+**Analyzer:** `flutter analyze` → 0 errors, 0 warnings (128 pre-existing info).
+**Tests:** 318 pass; 31 failures are the pre-existing `databaseFactory not initialized`
+(missing system `libsqlite3.so`) environment-only SQLite tests — not code defects.
+Added `test/utils/color_parsing_test.dart` (9 cases).
+
+### Centralized color parsing
+- Added `ColorParsing.parse(String?, {Color fallback})` in `lib/utils/formatters.dart`
+  — handles `#RRGGBB`, `RRGGBB`, `0xFF…`, `AARRGGBB`; returns `fallback` (never throws)
+  on null / empty / non-hex / wrong-length / `"null"` string.
+- Replaced raw `int.parse(...)` color parsing at 10 sites with `ColorParsing.parse`:
+  `transaction_list_widget`, `transaction_card`, `add_transaction/account_section`,
+  `add_transaction/category_section`, `accounts_screen`, `add_account_modal`,
+  `category_customization_screen` (×2), `quick_actions_enhanced`, `category_breakdown`.
+  (Several already had `try/catch` — now consistent and guaranteed safe.)
+
+### Unsafe `as` casts removed
+- `recommendation_personalizer.dart:153` — `data as Map<String,dynamic>` on a stored
+  feedback value → `data is Map<String,dynamic> ? data : <String,dynamic>{}`.
+- `transaction_detail_screen.dart:66-67` — `_decodedLocationData!['latitude'] as double`
+  (inconsistent with the safe `as double?` used elsewhere) → `(as num?)?.toDouble() ?? 0.0`.
+
+### Deliberately left as-is (verified safe)
+- `api_security_service.dart` `!` assertions are all preceded by `containsKey` guards.
+- `analytics_service` / `budget_forecast_service` `!` on self-built, pre-seeded maps.
+
+---
+
 ## Phase H — Packaging for reviewers (~2–3 weeks, do this close to application time)
 
 - Host the Flutter **web** build (GitHub Pages/Netlify) — "try it live" beats "clone and run."

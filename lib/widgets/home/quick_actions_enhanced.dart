@@ -9,6 +9,7 @@ import 'package:financial_app/utils/responsive_helper.dart';
 import 'package:financial_app/services/quick_actions_analytics_service.dart';
 import 'package:financial_app/core/di/service_locator.dart';
 import 'package:financial_app/utils/design_tokens.dart';
+import 'package:financial_app/utils/formatters.dart';
 
 /// Enhanced Quick Actions dengan customization, analytics, swipe gestures, dan categories
 class QuickActionsEnhanced extends StatefulWidget {
@@ -19,7 +20,8 @@ class QuickActionsEnhanced extends StatefulWidget {
 }
 
 class _QuickActionsEnhancedState extends State<QuickActionsEnhanced> {
-  final QuickActionsAnalyticsService _analyticsService = getIt<QuickActionsAnalyticsService>();
+  final QuickActionsAnalyticsService _analyticsService =
+      getIt<QuickActionsAnalyticsService>();
   List<Map<String, dynamic>> _actions = [];
   bool _isLoading = true;
   String? _selectedCategory;
@@ -62,13 +64,12 @@ class _QuickActionsEnhancedState extends State<QuickActionsEnhanced> {
 
                   // Parse colorHex safely
                   Color? resolvedColor;
-                  if (pref['colorHex'] != null && defaultAction['color'] != null) {
-                    try {
-                      final hex = pref['colorHex'].toString().replaceFirst('#', '0x');
-                      resolvedColor = Color(int.parse(hex));
-                    } catch (_) {
-                      resolvedColor = defaultAction['color'] as Color?;
-                    }
+                  if (pref['colorHex'] != null &&
+                      defaultAction['color'] != null) {
+                    resolvedColor = ColorParsing.parse(
+                      pref['colorHex'].toString(),
+                      fallback: defaultAction['color'] as Color? ?? Colors.grey,
+                    );
                   } else {
                     resolvedColor = defaultAction['color'] as Color?;
                   }
@@ -78,7 +79,8 @@ class _QuickActionsEnhancedState extends State<QuickActionsEnhanced> {
                     'id': pref['id'] ?? defaultAction['id'],
                     'label': pref['label'] ?? defaultAction['label'],
                     'category': pref['category'] ?? defaultAction['category'],
-                    'visible': pref['visible'] ?? defaultAction['visible'] ?? true,
+                    'visible':
+                        pref['visible'] ?? defaultAction['visible'] ?? true,
                     'order': pref['order'] ?? defaultAction['order'] ?? 0,
                     'icon': defaultAction['icon'],
                     'color': resolvedColor,
@@ -118,19 +120,29 @@ class _QuickActionsEnhancedState extends State<QuickActionsEnhanced> {
         'visible': true,
         'order': 0,
         'onTap':
-            () =>
-                Navigator.push(context, MaterialPageRoute(builder: (context) => const AIBudgetRecommendationScreen())),
+            () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const AIBudgetRecommendationScreen(),
+              ),
+            ),
       },
       {
         'id': 'riwayat',
         'icon': Iconsax.note_2,
-        'label': 'Riwayat', // l10n not accessible here — label is stored in preferences
+        'label':
+            'Riwayat', // l10n not accessible here — label is stored in preferences
         'color': DesignTokens.primaryColor,
         'category': 'Transactions',
         'visible': true,
         'order': 1,
         'onTap':
-            () => Navigator.push(context, MaterialPageRoute(builder: (context) => const TransactionHistoryScreen())),
+            () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const TransactionHistoryScreen(),
+              ),
+            ),
       },
       {
         'id': 'tagihan',
@@ -141,7 +153,12 @@ class _QuickActionsEnhancedState extends State<QuickActionsEnhanced> {
         'visible': true,
         'order': 2,
         'onTap':
-            () => Navigator.push(context, MaterialPageRoute(builder: (context) => const FinancialObligationsScreen())),
+            () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const FinancialObligationsScreen(),
+              ),
+            ),
       },
       {
         'id': 'backup',
@@ -151,7 +168,11 @@ class _QuickActionsEnhancedState extends State<QuickActionsEnhanced> {
         'category': 'Settings',
         'visible': true,
         'order': 3,
-        'onTap': () => Navigator.push(context, MaterialPageRoute(builder: (context) => const BackupScreen())),
+        'onTap':
+            () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const BackupScreen()),
+            ),
       },
       {
         'id': 'berulang',
@@ -164,7 +185,12 @@ class _QuickActionsEnhancedState extends State<QuickActionsEnhanced> {
         'onTap':
             () => Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => const FinancialObligationsScreen(initialTab: 'recurring')),
+              MaterialPageRoute(
+                builder:
+                    (context) => const FinancialObligationsScreen(
+                      initialTab: 'recurring',
+                    ),
+              ),
             ),
       },
     ];
@@ -185,13 +211,19 @@ class _QuickActionsEnhancedState extends State<QuickActionsEnhanced> {
     if (_selectedCategory == null) {
       return _actions.where((a) => a['visible'] == true).toList();
     }
-    return _actions.where((a) => a['visible'] == true && a['category'] == _selectedCategory).toList();
+    return _actions
+        .where(
+          (a) => a['visible'] == true && a['category'] == _selectedCategory,
+        )
+        .toList();
   }
 
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
-      return const Center(child: CircularProgressIndicator(color: DesignTokens.primaryColor));
+      return const Center(
+        child: CircularProgressIndicator(color: DesignTokens.primaryColor),
+      );
     }
 
     return Column(
@@ -209,7 +241,10 @@ class _QuickActionsEnhancedState extends State<QuickActionsEnhanced> {
               ),
             ),
             IconButton(
-              icon: const Icon(Iconsax.setting_2, color: DesignTokens.primaryColor),
+              icon: const Icon(
+                Iconsax.setting_2,
+                color: DesignTokens.primaryColor,
+              ),
               onPressed: () => _showCustomizationDialog(),
             ),
           ],
@@ -225,7 +260,9 @@ class _QuickActionsEnhancedState extends State<QuickActionsEnhanced> {
               SizedBox(width: ResponsiveHelper.horizontalSpacing(context, 8)),
               ..._analyticsService.getActionCategories().map((category) {
                 return Padding(
-                  padding: EdgeInsets.only(right: ResponsiveHelper.horizontalSpacing(context, 8)),
+                  padding: EdgeInsets.only(
+                    right: ResponsiveHelper.horizontalSpacing(context, 8),
+                  ),
                   child: _buildCategoryChip(category, category),
                 );
               }),
@@ -239,7 +276,11 @@ class _QuickActionsEnhancedState extends State<QuickActionsEnhanced> {
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: ResponsiveHelper.gridCrossAxisCount(context, phone: 4, tablet: 5),
+            crossAxisCount: ResponsiveHelper.gridCrossAxisCount(
+              context,
+              phone: 4,
+              tablet: 5,
+            ),
             crossAxisSpacing: ResponsiveHelper.horizontalSpacing(context, 10),
             mainAxisSpacing: ResponsiveHelper.verticalSpacing(context, 12),
             childAspectRatio: ResponsiveHelper.isTablet(context) ? 0.9 : 0.85,
@@ -263,11 +304,23 @@ class _QuickActionsEnhancedState extends State<QuickActionsEnhanced> {
         });
       },
       child: Container(
-        padding: ResponsiveHelper.symmetricPadding(context, horizontal: 12, vertical: 6),
+        padding: ResponsiveHelper.symmetricPadding(
+          context,
+          horizontal: 12,
+          vertical: 6,
+        ),
         decoration: BoxDecoration(
-          color: isSelected ? DesignTokens.primaryColor.withValues(alpha: 0.2) : DesignTokens.surfaceDark,
+          color:
+              isSelected
+                  ? DesignTokens.primaryColor.withValues(alpha: 0.2)
+                  : DesignTokens.surfaceDark,
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: isSelected ? DesignTokens.primaryColor : DesignTokens.borderDark),
+          border: Border.all(
+            color:
+                isSelected
+                    ? DesignTokens.primaryColor
+                    : DesignTokens.borderDark,
+          ),
         ),
         child: Text(
           label,
@@ -281,7 +334,10 @@ class _QuickActionsEnhancedState extends State<QuickActionsEnhanced> {
     );
   }
 
-  Widget _buildQuickActionItem({required BuildContext context, required Map<String, dynamic> action}) {
+  Widget _buildQuickActionItem({
+    required BuildContext context,
+    required Map<String, dynamic> action,
+  }) {
     final iconSize = ResponsiveHelper.iconSize(context, 48);
     final label = action['label'] as String? ?? '';
     return Semantics(
@@ -299,7 +355,9 @@ class _QuickActionsEnhancedState extends State<QuickActionsEnhanced> {
                 color:
                     (action['color'] as Color?)?.withValues(alpha: 0.1) ??
                     DesignTokens.primaryColor.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(ResponsiveHelper.borderRadius(context, 14)),
+                borderRadius: BorderRadius.circular(
+                  ResponsiveHelper.borderRadius(context, 14),
+                ),
                 border: Border.all(
                   color:
                       (action['color'] as Color?)?.withValues(alpha: 0.3) ??
@@ -316,7 +374,10 @@ class _QuickActionsEnhancedState extends State<QuickActionsEnhanced> {
             Flexible(
               child: Text(
                 action['label'] as String? ?? '',
-                style: GoogleFonts.poppins(color: Colors.white70, fontSize: ResponsiveHelper.fontSize(context, 12)),
+                style: GoogleFonts.poppins(
+                  color: Colors.white70,
+                  fontSize: ResponsiveHelper.fontSize(context, 12),
+                ),
                 textAlign: TextAlign.center,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
@@ -334,7 +395,10 @@ class _QuickActionsEnhancedState extends State<QuickActionsEnhanced> {
       builder:
           (context) => AlertDialog(
             backgroundColor: DesignTokens.surfaceDark,
-            title: Text('Customize Quick Actions', style: GoogleFonts.poppins(color: Colors.white)),
+            title: Text(
+              'Customize Quick Actions',
+              style: GoogleFonts.poppins(color: Colors.white),
+            ),
             content: SizedBox(
               width: double.maxFinite,
               child: ListView.builder(
@@ -343,7 +407,10 @@ class _QuickActionsEnhancedState extends State<QuickActionsEnhanced> {
                 itemBuilder: (context, index) {
                   final action = _actions[index];
                   return CheckboxListTile(
-                    title: Text(action['label'] as String, style: GoogleFonts.poppins(color: Colors.white)),
+                    title: Text(
+                      action['label'] as String,
+                      style: GoogleFonts.poppins(color: Colors.white),
+                    ),
                     value: action['visible'] as bool,
                     onChanged: (value) {
                       setState(() {
@@ -358,7 +425,10 @@ class _QuickActionsEnhancedState extends State<QuickActionsEnhanced> {
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context),
-                child: Text('Done', style: GoogleFonts.poppins(color: DesignTokens.primaryColor)),
+                child: Text(
+                  'Done',
+                  style: GoogleFonts.poppins(color: DesignTokens.primaryColor),
+                ),
               ),
             ],
           ),
