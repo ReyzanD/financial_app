@@ -77,10 +77,8 @@ logs/
 .claude/
 .crush/
 /docs/*
-# But allow manually created documentation files (not auto-generated)
-!/docs/BUGS_I_FOUND.md
+# Keep only the canonical architecture doc; everything else is in docs/archive/
 !/docs/ARCHITECTURE.md
-!/docs/ACCESSIBILITY.md
 # Database
 *.db
 *.sqlite
